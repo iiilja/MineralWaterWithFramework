@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+            http://www.springframework.org/schema/context
+            http://www.springframework.org/schema/context/spring-context-4.0.xsd
+            http://www.springframework.org/schema/task
+            http://www.springframework.org/schema/task/spring-task-4.0.xsd">
+
+
+    
+    <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+        <property name="host"><value>smtp.sendgrid.net</value></property>
+        <property name="port"><value>587</value></property>
+        <property name="username"><value>javelin</value></property>
+        <property name="password"><value>r5luT6jELQkvoHKPeoZK</value></property>
+        <property name="javaMailProperties">
+            <props>
+                <prop key="mail.smtp.auth">true</prop>
+                <prop key="mail.smtp.port">587</prop>
+            </props>
+        </property>
+        <property name="defaultEncoding" value="UTF-8"/>
+    </bean>
+
+    <bean id="velocityEngine" class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
+        <property name="velocityProperties">
+            <value>
+            resource.loader=class
+            class.resource.loader.class=org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+            </value>
+        </property>
+    </bean>
+    <!--
+    <bean id="locationService" class="com.maxmind.geoip.LookupService">
+        <constructor-arg index="0" value="${geo.ip.path}"/>
+        <constructor-arg index="1" value="1"/>
+    </bean>
+-->
+
+    <task:annotation-driven executor="myExecutor" scheduler="myScheduler"/>
+
+    <task:executor id="myExecutor" pool-size="2-200" queue-capacity="100"/>
+
+    <task:scheduler id="myScheduler" pool-size="200"/>
+
+</beans>

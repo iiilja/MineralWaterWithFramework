@@ -30,7 +30,6 @@
    
     <bean class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
 
-    <tx:annotation-driven/>
 
     <bean id="sessionFactory"
           class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
@@ -56,26 +55,14 @@
     <bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
         <property name="sessionFactory" ref="sessionFactory"/>
     </bean>
+    
+    <tx:annotation-driven transaction-manager="transactionManager"/>
 
     <bean id="transactionTemplate" class="org.springframework.transaction.support.TransactionTemplate">
         <property name="transactionManager"  ref="transactionManager"/>
     </bean>
     
     <bean id="userService" class="ee.promobox.service.UserServiceImpl" />
-    
-    
-    <tx:advice id="txAdvice" transaction-manager="transactionManager">
-        <tx:attributes>
-            <tx:method name="find*" read-only="true" />
-            <tx:method name="*" />
-        </tx:attributes>
-    </tx:advice>
- 
-    <aop:config>
-        <aop:pointcut id="userServiceP"
-                              expression="execution(* ee.promobox.service.*Service.*(..))" />
-        <aop:advisor advice-ref="txAdvice" pointcut-ref="userServiceP" />
-    </aop:config>
     
    
     

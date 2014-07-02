@@ -10,6 +10,8 @@ import java.io.Writer;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,22 +32,30 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-
     @RequestMapping("/index")
     public ModelAndView indexHandler(
             HttpServletRequest request,
-            HttpServletResponse response) throws Exception{
-        
-   
+            HttpServletResponse response) throws Exception {
+
+        JSONObject json = new JSONObject();
+        json.put("response", "OK");
+        JSONArray userAr = new JSONArray();
+
         List<Users> list = userService.findAllUsers();
-        
+
         for (Users u : list) {
-           
-            response.getOutputStream().print(u.getFirstname());
+
+            JSONObject jsonUser = new JSONObject();
+            jsonUser.put("firstname", u.getFirstname());
+            jsonUser.put("surname", u.getSurname());
+
+            userAr.put(jsonUser);
 
         }
 
-        return null;
+        json.put("users", userAr);
+
+        return printResult(json.toString(), response);
 
     }
 

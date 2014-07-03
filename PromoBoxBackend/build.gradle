@@ -1,3 +1,8 @@
+apply plugin: 'war'
+
+String spring_version = "4.0.5.RELEASE@jar" ; 
+String hibernate_version = "4.2.6.Final@jar" ; 
+
 configurations {
    moreLibs
 }
@@ -7,13 +12,36 @@ repositories {
    mavenCentral()
 }
 
+List spring = ["org.springframework:spring-context:"+spring_version,
+		"org.springframework:spring-beans:"+spring_version,
+		"org.springframework:spring-core:"+spring_version,
+		"org.springframework:spring-aop:"+spring_version,
+		"org.springframework:spring-expression:"+spring_version,
+		"org.springframework:spring-jdbc:"+spring_version,
+		"org.springframework:spring-tx:"+spring_version,
+		"org.springframework:spring-web:"+spring_version,
+		"org.springframework:spring-webmvc:"+spring_version,
+		"org.springframework:spring-orm:"+spring_version] 
+
+List hibernate_api = ["org.hibernate.javax.persistence:hibernate-jpa-2.0-api:1.0.1.Final@jar"] 
+
+List hibernate = [
+    "org.jboss.spec.javax.transaction:jboss-transaction-api_1.1_spec:1.0.1.Final@jar",
+    "org.hibernate.common:hibernate-commons-annotations:4.0.1.Final@jar",
+    "org.javassist:javassist:3.16.1-GA",
+    "org.hibernate:hibernate-entitymanager:"+hibernate_version,
+    "org.hibernate:hibernate-core:"+hibernate_version
+]
+
 dependencies {
-    compile 'org.springframework:spring-context:4.0.5.RELEASE'
+    compile hibernate_api
+    compile hibernate
+    compile spring 
+    runtime "postgresql:postgresql:9.3-1101.jdbc41@jar"
 }
 
 war {
     from 'web' // adds a file-set to the root of the archive
-    webInf { from 'web/WEB-INF' } // adds a file-set to the WEB-INF dir.
     classpath fileTree('additionalLibs') // adds a file-set to the WEB-INF/lib dir.
     classpath configurations.moreLibs // adds a configuration to the WEB-INF/lib dir.
     webXml = file('web/WEB-INF/web.xml') // copies a file to WEB-INF/web.xml

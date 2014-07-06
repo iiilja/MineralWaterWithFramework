@@ -7,6 +7,7 @@ package ee.promobox.service;
 
 import ee.promobox.entity.Users;
 import java.util.List;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,5 +30,17 @@ public class UserServiceImpl implements UserService {
         List<Users> list = session.createQuery("from Users").list();
 
         return list;
+    }
+    
+    
+     public Users findUserByEmailAndPassword(String email, String password) {
+        Session session = sessionFactory.getCurrentSession();
+        
+        Query q  = session.createQuery("from Users where email = :email and password = :password");
+        
+        q.setParameter("email", email);
+        q.setParameter("password", password);
+
+        return (Users)q.uniqueResult();
     }
 }

@@ -5,9 +5,14 @@
 package ee.promobox.controller;
 
 import ee.promobox.entity.Users;
+import ee.promobox.service.Session;
+import ee.promobox.service.SessionService;
 import ee.promobox.service.UserService;
+import ee.promobox.util.RequestUitls;
 import java.io.Writer;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.json.JSONArray;
@@ -17,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
@@ -31,6 +37,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+    
+    @Autowired
+    private SessionService sessionService;
 
     @RequestMapping("/index")
     public ModelAndView indexHandler(
@@ -56,6 +65,38 @@ public class UserController {
         json.put("users", userAr);
 
         return printResult(json.toString(), response);
+
+    }
+    
+    
+    @RequestMapping("/user/login")
+    public ModelAndView userLoginHandler(
+            @RequestParam String email,
+            @RequestParam String password,
+            HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+
+        JSONObject resp = RequestUitls.getErrorResponse();
+        
+        Users user = userService.findUserByEmailAndPassword(email, password);
+        
+        if (user!=null) {
+            resp.put("response", RequestUitls.OK);
+            
+            Session session = new  Session();
+            
+            session.setIp(request.getRemoteAddr());
+            session.setUserId(user.getId());
+            session.setClientId(user.getClientId());
+            session.setCreatedDate(new Date());
+            session.setUuid(UUID.randomUUID().toString().replaceAll("-", ""));
+            
+            sessionService.addSession(session);
+            
+            resp.put("token", session.getUuid());
+        }
+
+        return printResult(resp.toString(), response);
 
     }
 

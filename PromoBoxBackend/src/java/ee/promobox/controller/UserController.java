@@ -4,6 +4,8 @@
  */
 package ee.promobox.controller;
 
+import ee.promobox.entity.AdCampaigns;
+import ee.promobox.entity.Devices;
 import ee.promobox.entity.Users;
 import ee.promobox.service.Session;
 import ee.promobox.service.SessionService;
@@ -94,6 +96,39 @@ public class UserController {
             sessionService.addSession(session);
             
             resp.put("token", session.getUuid());
+        }
+
+        return printResult(resp.toString(), response);
+
+    }
+    
+    
+    @RequestMapping("/user/date")
+    public ModelAndView userDataHandler(
+            @RequestParam String token,
+            HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+
+        JSONObject resp = RequestUitls.getErrorResponse();
+        
+        Session session = sessionService.findSession(token);
+        
+        if (session!=null) {
+            resp.put("response", RequestUitls.OK);
+            
+            List<AdCampaigns> campaigns = userService.findUserAdCompaigns(session.getUserId());
+            List<Devices> devices = userService.findUserDevieces(session.getUserId());
+            
+            JSONArray arCamp = new JSONArray();
+            
+            for (AdCampaigns a: campaigns) {
+                JSONObject obj = new JSONObject();
+                obj.put("name", a.getName());
+                arCamp.put(obj);
+            }
+            
+            resp.put("campaigns", arCamp);
+
         }
 
         return printResult(resp.toString(), response);

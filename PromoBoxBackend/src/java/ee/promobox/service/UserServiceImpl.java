@@ -5,6 +5,8 @@
  */
 package ee.promobox.service;
 
+import ee.promobox.entity.AdCampaigns;
+import ee.promobox.entity.Devices;
 import ee.promobox.entity.Users;
 import java.util.List;
 import org.hibernate.Query;
@@ -31,16 +33,35 @@ public class UserServiceImpl implements UserService {
 
         return list;
     }
-    
-    
-     public Users findUserByEmailAndPassword(String email, String password) {
+
+    public Users findUserByEmailAndPassword(String email, String password) {
         Session session = sessionFactory.getCurrentSession();
-        
-        Query q  = session.createQuery("from Users where email = :email and password = :password");
-        
+
+        Query q = session.createQuery("from Users where email = :email and password = :password");
+
         q.setParameter("email", email);
         q.setParameter("password", password);
 
-        return (Users)q.uniqueResult();
+        return (Users) q.uniqueResult();
+    }
+
+    public List<AdCampaigns> findUserAdCompaigns(int userId) {
+        Session session = sessionFactory.getCurrentSession();
+
+        Query q = session.createQuery("from AdCampaings where userId = :userId");
+
+        q.setParameter("userId", userId);
+
+        return q.list();
+    }
+    
+    public List<Devices> findUserDevieces(int userId) {
+        Session session = sessionFactory.getCurrentSession();
+
+        Query q = session.createQuery("from Devices where userId = :userId");
+
+        q.setParameter("userId", userId);
+
+        return q.list();
     }
 }

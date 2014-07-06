@@ -6,6 +6,8 @@
 
 package ee.promobox.service;
 
+import ee.promobox.entity.AdCampaigns;
+import ee.promobox.entity.Devices;
 import ee.promobox.entity.Users;
 import java.util.List;
 
@@ -16,4 +18,6 @@ import java.util.List;
 public interface UserService {
     public List<Users> findAllUsers();
     public Users findUserByEmailAndPassword(String email, String password);
+    public List<AdCampaigns> findUserAdCompaigns(int userId);
+    public List<Devices> findUserDevieces(int userId);
 }

@@ -1,4 +1,19 @@
+buildscript {
+  repositories {
+    mavenCentral()
+    jcenter()
+  }
+  dependencies {
+    classpath 'org.hidetake:gradle-ssh-plugin:0.3.10'
+    classpath 'org.gradle.api.plugins:gradle-tomcat-plugin:1.2.4'
+  }
+}
+
 apply plugin: 'war'
+apply plugin: 'ssh'
+apply plugin: 'groovy'
+apply plugin: 'tomcat'
+apply plugin: 'tomcat-base'
 
 String spring_version = "4.0.5.RELEASE@jar" ; 
 String hibernate_version = "4.2.6.Final@jar" ; 
@@ -37,12 +52,21 @@ dependencies {
     compile hibernate_api
     compile hibernate
     compile spring 
+    compile "json:json@jar"
+    compile 'org.slf4j:slf4j-api:1.7.2'  
+    providedCompile 'javax.servlet:servlet-api:2.5'
+    runtime 'javax.servlet:jstl:1.1.2'
     runtime "postgresql:postgresql:9.3-1101.jdbc41@jar"
 }
 
-war {
-    from 'web' // adds a file-set to the root of the archive
-    classpath fileTree('additionalLibs') // adds a file-set to the WEB-INF/lib dir.
-    classpath configurations.moreLibs // adds a configuration to the WEB-INF/lib dir.
-    webXml = file('web/WEB-INF/web.xml') // copies a file to WEB-INF/web.xml
+sourceSets {
+    main {
+        java {
+            srcDir 'src/java'
+        }
+    }
+}
+
+war {   
+    webInf { from 'web/' }
 }

@@ -1,0 +1,12 @@
+{
+	campaignId:1,
+	campaignName:'test',
+	files: [
+		{path: 'c:\\test\\1.png', type:1},
+		{path: 'c:\\test\\2.png', type:1},
+		{path: 'c:\\test\\3.png', type:1},
+		{path: 'c:\\test\\4.png', type:1},
+		{path: 'c:\\test\\5.png', type:1},
+		{path: 'c:\\test\\test.mp4', type:2}
+	]
+}

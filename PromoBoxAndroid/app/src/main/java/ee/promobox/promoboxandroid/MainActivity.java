@@ -12,6 +12,8 @@ import android.widget.LinearLayout;
 
 import java.util.Vector;
 
+//http://thebitplague.wordpress.com/2013/04/05/kiosk-mode-on-the-nexus-7/
+//http://www.tutorialspoint.com/android/android_imageswitcher.htm
 public class MainActivity extends Activity {
 
     ImageView slide;

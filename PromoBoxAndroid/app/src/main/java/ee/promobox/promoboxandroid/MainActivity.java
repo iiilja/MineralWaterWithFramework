@@ -1,14 +1,19 @@
 package ee.promobox.promoboxandroid;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import java.util.Vector;
 
@@ -20,6 +25,8 @@ public class MainActivity extends Activity {
 
     Vector<Integer> imageIds;
     LinearLayout linLayout;
+
+    private MainService mainService;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -37,6 +44,36 @@ public class MainActivity extends Activity {
         imageViewAnimatedChange(getBaseContext(), slide, bm);
 
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Intent intent= new Intent(this, MainService.class);
+        bindService(intent, mConnection,
+                Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unbindService(mConnection);
+    }
+
+
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        public void onServiceConnected(ComponentName className,
+                                       IBinder binder) {
+            MainService.MyBinder b = (MainService.MyBinder) binder;
+            mainService = b.getService();
+            Toast.makeText(MainActivity.this, "Connected", Toast.LENGTH_SHORT)
+                    .show();
+        }
+
+        public void onServiceDisconnected(ComponentName className) {
+            mainService = null;
+        }
+    };
 
     public static void imageViewAnimatedChange(Context c, final ImageView v, final Bitmap new_image) {
         final Animation anim_out = AnimationUtils.loadAnimation(c, android.R.anim.fade_out);

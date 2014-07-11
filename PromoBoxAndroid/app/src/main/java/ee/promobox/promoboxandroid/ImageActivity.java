@@ -6,16 +6,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
 import java.util.Timer;
 import java.util.TimerTask;
-
-import ee.promobox.promoboxandroid.R;
 
 public class ImageActivity extends Activity {
 
@@ -39,7 +35,9 @@ public class ImageActivity extends Activity {
             @Override
             public void run() {
                 Bitmap bm = BitmapFactory.decodeResource(getResources(), images[currentPlace]);
+
                 imageViewAnimatedChange(getBaseContext(), slide, bm);
+
                 currentPlace++;
 
                 if (currentPlace == images.length) {
@@ -70,6 +68,7 @@ public class ImageActivity extends Activity {
 
 
     public static void imageViewAnimatedChange(Context c, final ImageView v, final Bitmap new_image) {
+
         final Animation anim_out = AnimationUtils.loadAnimation(c, android.R.anim.fade_out);
         final Animation anim_in  = AnimationUtils.loadAnimation(c, android.R.anim.fade_in);
 

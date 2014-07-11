@@ -5,17 +5,9 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Toast;
-
-import java.util.Vector;
 
 //http://thebitplague.wordpress.com/2013/04/05/kiosk-mode-on-the-nexus-7/
 //http://www.tutorialspoint.com/android/android_imageswitcher.htm

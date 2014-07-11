@@ -21,11 +21,6 @@ import java.util.Vector;
 //http://www.tutorialspoint.com/android/android_imageswitcher.htm
 public class MainActivity extends Activity {
 
-    ImageView slide;
-
-    Vector<Integer> imageIds;
-    LinearLayout linLayout;
-
     private MainService mainService;
 
     @Override
@@ -35,13 +30,11 @@ public class MainActivity extends Activity {
 
         setContentView(R.layout.activity_main);
 
-        slide = (ImageView) findViewById(R.id.slide_1);
+        Intent i = new Intent(this, ImageActivity.class);
 
-        slide.setImageResource(R.drawable.test);
+        i.putExtra("images", new int[] {R.drawable.test, R.drawable.test2});
 
-        Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.test2);
-
-        imageViewAnimatedChange(getBaseContext(), slide, bm);
+        startActivityForResult(i, 1);
 
     }
 
@@ -75,30 +68,7 @@ public class MainActivity extends Activity {
         }
     };
 
-    public static void imageViewAnimatedChange(Context c, final ImageView v, final Bitmap new_image) {
-        final Animation anim_out = AnimationUtils.loadAnimation(c, android.R.anim.fade_out);
-        final Animation anim_in  = AnimationUtils.loadAnimation(c, android.R.anim.fade_in);
 
-        anim_out.setAnimationListener(new Animation.AnimationListener()
-        {
-            @Override public void onAnimationStart(Animation animation) {}
-            @Override public void onAnimationRepeat(Animation animation) {}
-            @Override public void onAnimationEnd(Animation animation)
-            {
-                v.setImageBitmap(new_image);
-
-                anim_in.setAnimationListener(new Animation.AnimationListener() {
-                    @Override public void onAnimationStart(Animation animation) {}
-                    @Override public void onAnimationRepeat(Animation animation) {}
-                    @Override public void onAnimationEnd(Animation animation) {}
-                });
-
-                v.startAnimation(anim_in);
-            }
-        });
-
-        v.startAnimation(anim_out);
-    }
 
 
 

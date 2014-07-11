@@ -22,11 +22,17 @@ public class MainActivity extends Activity {
 
         setContentView(R.layout.activity_main);
 
-        Intent i = new Intent(this, ImageActivity.class);
+//        Intent i = new Intent(this, ImageActivity.class);
+//
+//        i.putExtra("images", new int[] {R.drawable.test, R.drawable.test2});
+//
+//        startActivityForResult(i, 1);
 
-        i.putExtra("images", new int[] {R.drawable.test, R.drawable.test2});
 
-        startActivityForResult(i, 1);
+
+        Intent i = new Intent(this, AudioActivity.class);
+        startActivity(i);
+
 
     }
 

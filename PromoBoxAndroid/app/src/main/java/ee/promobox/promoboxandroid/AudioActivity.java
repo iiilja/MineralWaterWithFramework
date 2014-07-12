@@ -1,6 +1,10 @@
 package ee.promobox.promoboxandroid;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -8,6 +12,7 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 
 import com.pheelicks.visualizer.VisualizerView;
 import com.pheelicks.visualizer.renderer.CircleBarRenderer;
@@ -22,6 +27,14 @@ public class AudioActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_audio);
+
+        LocalBroadcastManager bManager = LocalBroadcastManager.getInstance(this);
+
+        IntentFilter intentFilter = new IntentFilter();
+
+        intentFilter.addAction(MainActivity.ACTIVITY_FINISH);
+
+        bManager.registerReceiver(bReceiver, intentFilter);
     }
 
     @Override
@@ -43,25 +56,43 @@ public class AudioActivity extends Activity {
         super.onDestroy();
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        cleanUp();
+
+    }
 
 
     private void init() throws Exception
     {
-        AssetFileDescriptor afd = getAssets().openFd("Hawaii.mp3");
-
         mPlayer = new MediaPlayer();
-        mPlayer.setDataSource(afd.getFileDescriptor());
-        mPlayer.prepare();
-        mPlayer.setLooping(true);
-        mPlayer.start();
 
-        // We need to link the visualizer view to the media player so that
-        // it displays something
+        mPlayer.setDataSource(getIntent().getStringExtra("source"));
+        mPlayer.prepare();
+
+
         mVisualizerView = (VisualizerView) findViewById(R.id.visualizerView);
         mVisualizerView.link(mPlayer);
 
-        // Start with just line renderer
         addCircleBarRenderer();
+
+        mPlayer.start();
+
+        mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
+
+                cleanUp();
+
+                Intent returnIntent = new Intent();
+
+                returnIntent.putExtra("result", 1);
+
+                AudioActivity.this.setResult(RESULT_OK, returnIntent);
+                AudioActivity.this.finish();
+            }
+        });
     }
 
     private void cleanUp()
@@ -69,6 +100,7 @@ public class AudioActivity extends Activity {
         if (mPlayer != null)
         {
             mVisualizerView.release();
+            mPlayer.stop();
             mPlayer.release();
             mPlayer = null;
         }
@@ -86,6 +118,15 @@ public class AudioActivity extends Activity {
         CircleBarRenderer circleBarRenderer = new CircleBarRenderer(paint, 32, true);
         mVisualizerView.addRenderer(circleBarRenderer);
     }
+
+    private BroadcastReceiver bReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(intent.getAction().equals(MainActivity.ACTIVITY_FINISH)) {
+               AudioActivity.this.finish();
+            }
+        }
+    };
 
 
 

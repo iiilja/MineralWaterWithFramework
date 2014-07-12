@@ -1,16 +1,104 @@
 <!DOCTYPE html>
-<!--
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
--->
-<html>
+<html lang="en" ng-app="promoboxAdminApp">
     <head>
-        <title>TODO supply a title</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <meta charset="utf-8">
+        <title>PromoBox Login</title>
+        <meta name="generator" content="Bootply" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+        <link href="core/css/bootstrap.min.css" rel="stylesheet">
+        <link href="core/css/styles.css" rel="stylesheet">
+
+        <!-- script references -->
+        <!--[if lt IE 9]>
+            <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+        <script src="core/js/angular.min.js"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
+        <script src="core/js/bootstrap.min.js"></script>
+        <script src="core/js/scripts.js"></script>
+
     </head>
-    <body>
-        <div>TODO write content</div>
+    <body ng-controller="userControl as control">
+        <!--login modal-->
+        <section ng-init="page = 0">
+            <div ng-show="page === 0">
+                <div id="loginModal" class="modal show" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="text-center">{{ control.text.login_form.heder}}</h1>
+                            </div>
+                            <div class="modal-body">
+                                <form class="form col-md-12 center-block">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control input-lg" placeholder="{{ control.text.login_form.email}}">
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="password" class="form-control input-lg" placeholder="{{ control.text.login_form.password}}">
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="checkbox">
+                                            <label>
+                                                <input type="checkbox"> {{ control.text.login_form.remember}}
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <button class="btn btn-primary btn-lg btn-block">{{ control.text.login_form.sign_in}}</button>
+                                        <span class="pull-right"><a href ng-click="page = 1">{{ control.text.login_form.register}}</a></span>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--login modal-->
+            <div ng-show="page === 1">
+                <div id="registerModal" class="modal show" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="text-center">{{ control.text.registration_form.heder}}</h1>
+                            </div>
+                            <div class="modal-body">
+                                <form class="form col-md-12 center-block">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control input-lg" placeholder="{{ control.text.registration_form.firstname}}">
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="text" class="form-control input-lg" placeholder="{{ control.text.registration_form.lastname}}">
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="text" class="form-control input-lg" placeholder="{{ control.text.registration_form.company}}">
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="text" class="form-control input-lg" placeholder="{{ control.text.registration_form.email}}">
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="checkbox">
+                                            <label>
+                                                <input type="checkbox"> {{ control.text.registration_form.remember}}
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <button class="btn btn-primary btn-lg btn-block">{{ control.text.registration_form.register}}</button>
+                                        <span class="pull-right"><a href ng-click="page = 0">{{ control.text.registration_form.sign_in}}</a></span>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
     </body>
 </html>

@@ -5,7 +5,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.AssetFileDescriptor;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
@@ -123,6 +122,7 @@ public class AudioActivity extends Activity {
         @Override
         public void onReceive(Context context, Intent intent) {
             if(intent.getAction().equals(MainActivity.ACTIVITY_FINISH)) {
+               cleanUp();
                AudioActivity.this.finish();
             }
         }

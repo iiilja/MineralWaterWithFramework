@@ -54,6 +54,7 @@ public class MainActivity extends Activity {
 
             if (position == campaign.getFiles().size()) {
                 position = 0;
+                mainService.checkAndDownloadCampaign();
             }
 
             if (file.getType() == CampaignFileType.IMAGE) {

@@ -14,8 +14,7 @@
             android:layout_gravity="center_vertical"
             android:layout_width="573dp"
             android:layout_height="382dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/test" />
+            android:scaleType="centerCrop" />
 
     </FrameLayout>
 

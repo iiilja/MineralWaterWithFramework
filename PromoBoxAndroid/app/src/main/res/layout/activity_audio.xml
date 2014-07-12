@@ -3,19 +3,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg"
+    android:keepScreenOn="true"
     tools:context="ee.promobox.promoboxandroid.AudioActivity">
-
-    <FrameLayout
-        android:layout_width="wrap_content"
-        android:keepScreenOn="true"
-        android:layout_height="wrap_content">
-        android:background="#000" >
 
         <com.pheelicks.visualizer.VisualizerView
             android:id="@+id/visualizerView"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent" >
         </com.pheelicks.visualizer.VisualizerView>
-    </FrameLayout>
 
 </RelativeLayout>

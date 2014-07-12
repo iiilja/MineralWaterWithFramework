@@ -37,6 +37,12 @@ public class MainService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
+        checkAndDownloadCampaign();
+
+        return Service.START_NOT_STICKY;
+    }
+
+    public void checkAndDownloadCampaign() {
         try {
             File data = new File(root, "data.json");
 
@@ -50,8 +56,6 @@ public class MainService extends Service {
         DownloadFilesTask dTask = new DownloadFilesTask();
 
         dTask.execute(String.format(DEFAULT_SERVER, TEST_CLIENT_ID));
-
-        return Service.START_NOT_STICKY;
     }
 
     public Campaign getCampaign() {

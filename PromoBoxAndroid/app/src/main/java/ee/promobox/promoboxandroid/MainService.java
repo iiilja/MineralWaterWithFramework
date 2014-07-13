@@ -20,9 +20,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-/**
- * Created by Maxim on 10.07.2014.
- */
+
 public class MainService extends Service {
 
     private final static int TEST_CLIENT_ID = 1;
@@ -33,6 +31,8 @@ public class MainService extends Service {
     private final IBinder mBinder = new MyBinder();
 
     private Campaign campaign;
+
+    private DownloadFilesTask dTask = new DownloadFilesTask();;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -53,14 +53,17 @@ public class MainService extends Service {
             Log.e("MainService", ex.getMessage(), ex);
         }
 
-        DownloadFilesTask dTask = new DownloadFilesTask();
+        if (dTask.getStatus() != AsyncTask.Status.RUNNING) {
+            dTask = new DownloadFilesTask();
+            dTask.execute(String.format(DEFAULT_SERVER, TEST_CLIENT_ID));
+        }
 
-        dTask.execute(String.format(DEFAULT_SERVER, TEST_CLIENT_ID));
     }
 
     public Campaign getCampaign() {
         return campaign;
     }
+
 
     @Override
     public IBinder onBind(Intent arg0) {
@@ -95,6 +98,8 @@ public class MainService extends Service {
 
                     LocalBroadcastManager.getInstance(MainService.this).sendBroadcast(update);
 
+                } else if (oldCamp != null) {
+                    downloadFiles();
                 }
 
             } catch (Exception ex) {
@@ -104,11 +109,17 @@ public class MainService extends Service {
             return null;
         }
 
-        private void downloadFiles() {
-            for (CampaignFile f: campaign.getFiles()) {
-                downloadFile(String.format("http://46.182.31.94/%s/%s/%s", campaign.getClientId(), campaign.getCampaignId(), f.getName()), f.getName());
-            }
+        public void downloadFiles() {
+            for (CampaignFile f : campaign.getFiles()) {
+                File dir = new File(root.getAbsolutePath() + String.format("/%s/", campaign.getCampaignId()));
+                dir.mkdirs();
 
+                File file = new File(dir, f.getName());
+
+                if (!file.exists() || file.length() != f.getSize()) {
+                    downloadFile(String.format("http://46.182.31.94/%s/%s/%s", campaign.getClientId(), campaign.getCampaignId(), f.getName()), f.getName());
+                }
+            }
         }
 
         private File downloadFile(String fileURL, String fileName) {
@@ -122,7 +133,6 @@ public class MainService extends Service {
                     throw new Exception("Failed to connect");
 
                 File dir = new File(root.getAbsolutePath() + String.format("/%s/", campaign.getCampaignId()));
-                dir.mkdirs();
 
                 File file = new File(dir, fileName);
 
@@ -132,7 +142,7 @@ public class MainService extends Service {
 
                 IOUtils.copy(in, f);
 
-                Log.i("test", "Size " + file.getAbsolutePath()+ " = "  + file.length());
+                Log.i("test", "Size " + file.getAbsolutePath() + " = " + file.length());
 
                 return file;
             } catch (Exception e) {
@@ -143,7 +153,7 @@ public class MainService extends Service {
 
         }
 
-        private Campaign loadCampaign(String url) throws Exception  {
+        private Campaign loadCampaign(String url) throws Exception {
             URL u = new URL(url);
 
             HttpURLConnection c = (HttpURLConnection) u.openConnection();
@@ -165,6 +175,7 @@ public class MainService extends Service {
 
             return camp;
         }
+
 
         protected void onProgressUpdate(Integer... progress) {
 

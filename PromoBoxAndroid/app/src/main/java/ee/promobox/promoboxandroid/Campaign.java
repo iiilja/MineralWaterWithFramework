@@ -7,6 +7,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +19,11 @@ public class Campaign {
     private int campaignId;
     private int updateId;
     private String campaignName;
+
+    private Date startDate;
+    private Date endDate;
+    private int delay;
+
     private List<CampaignFile> files = new ArrayList<CampaignFile>();
 
     public Campaign() {
@@ -39,8 +45,10 @@ public class Campaign {
                 JSONObject obj = ar.getJSONObject(i);
 
                 CampaignFile f = new CampaignFile();
+
                 f.setName(obj.getString("path"));
                 f.setType(CampaignFileType.valueOf(obj.getInt("type")));
+                f.setSize(obj.getInt("size"));
 
                 files.add(f);
 
@@ -94,5 +102,29 @@ public class Campaign {
 
     public void setFiles(List<CampaignFile> files) {
         this.files = files;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
+
+    public int getDelay() {
+        return delay;
+    }
+
+    public void setDelay(int delay) {
+        this.delay = delay;
     }
 }

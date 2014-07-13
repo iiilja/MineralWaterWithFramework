@@ -7,9 +7,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
+import android.view.View;
 import android.widget.Toast;
 
 import java.io.File;
@@ -24,12 +26,27 @@ public class MainActivity extends Activity {
     private int position;
     private Campaign campaign;
 
+    private void hideSystemUI() {
+
+        this.getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
+        );
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+
+        hideSystemUI();
 
         Intent service = new Intent(this, MainService.class);
 
@@ -61,17 +78,31 @@ public class MainActivity extends Activity {
 
                 Intent i = new Intent(this, ImageActivity.class);
 
-                i.putExtra("source", new File(campaign.getRoot(), file.getName()).getAbsolutePath());
+                File dFile = new File(campaign.getRoot(), file.getName());
 
-                startActivityForResult(i, 1);
+                if (dFile.exists()) {
+
+                    i.putExtra("source", new File(campaign.getRoot(), file.getName()).getAbsolutePath());
+
+                    startActivityForResult(i, 1);
+                } else {
+                    startNextFile();
+                }
 
             } else if (file.getType() == CampaignFileType.AUDIO) {
 
                 Intent i = new Intent(this, AudioActivity.class);
 
-                i.putExtra("source", new File(campaign.getRoot(), file.getName()).getAbsolutePath());
+                File dFile = new File(campaign.getRoot(), file.getName());
 
-                startActivityForResult(i, 1);
+                if (dFile.exists()) {
+
+                    i.putExtra("source", new File(campaign.getRoot(), file.getName()).getAbsolutePath());
+
+                    startActivityForResult(i, 1);
+                } else {
+                    startNextFile();
+                }
             }
 
 
@@ -95,6 +126,8 @@ public class MainActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+
+        hideSystemUI();
 
         Intent intent = new Intent(this, MainService.class);
 

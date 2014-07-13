@@ -6,6 +6,7 @@ package ee.promobox.promoboxandroid;
 public class CampaignFile {
     private String name;
     private CampaignFileType type;
+    private int size;
 
     public String getName() {
         return name;
@@ -21,5 +22,13 @@ public class CampaignFile {
 
     public void setType(CampaignFileType type) {
         this.type = type;
+    }
+
+    public int getSize() {
+        return size;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
     }
 }

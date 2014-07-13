@@ -1,25 +1,22 @@
 package ee.promobox.promoboxandroid;
 
 import android.app.Activity;
-import android.app.Application;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.MediaStore;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
+import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
@@ -60,10 +57,10 @@ public class ImageActivity extends Activity {
             options.inSampleSize = scale;
             options.inPurgeable = true;
             options.inInputShareable = true;
-            options.inDither=false;
-            options.inTempStorage=new byte[32 * 1024];
+            options.inDither = false;
+            options.inTempStorage = new byte[32 * 1024];
 
-            FileInputStream fs= new FileInputStream(file);
+            FileInputStream fs = new FileInputStream(file);
 
             bm = BitmapFactory.decodeFileDescriptor(fs.getFD(), null, options);
 
@@ -76,11 +73,27 @@ public class ImageActivity extends Activity {
         return bm;
     }
 
+    private void hideSystemUI() {
+
+        this.getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
+        );
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_image);
+
+        hideSystemUI();
+
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
         LocalBroadcastManager bManager = LocalBroadcastManager.getInstance(this);
 
@@ -94,54 +107,58 @@ public class ImageActivity extends Activity {
 
         Bundle extras = getIntent().getExtras();
 
-        slide.setImageBitmap(decodeBitmap(new File(extras.getString("source"))));
+        File file = new File(extras.getString("source"));
 
-        final Runnable mUpdateResults = new Runnable() {
-            @Override
-            public void run() {
-//                Bitmap bm = BitmapFactory.decodeResource(getResources(), images[currentPlace]);
-//
-//                imageViewAnimatedChange(getBaseContext(), slide, bm);
-//
-//                currentPlace++;
+        if (file.exists()) {
 
-//                if (currentPlace == images.length) {
-                Intent returnIntent = new Intent();
-                returnIntent.putExtra("result", 1);
-                setResult(RESULT_OK, returnIntent);
+            slide.setImageBitmap(decodeBitmap(file));
 
-                ImageActivity.this.finish();
-//                }
+            final Runnable mUpdateResults = new Runnable() {
+                @Override
+                public void run() {
 
-            }
-        };
+                    Intent returnIntent = new Intent();
+                    returnIntent.putExtra("result", 1);
+                    setResult(RESULT_OK, returnIntent);
 
-        final Handler mHandler = new Handler();
+                    ImageActivity.this.finish();
 
-        int delay = 3000; // delay for 1 sec.
+                }
+            };
 
-        int period = 3000; // repeat every 4 sec.
+            final Handler mHandler = new Handler();
 
-        Timer timer = new Timer();
+            int delay = 3000; // delay for 1 sec.
 
-        timer.schedule(new TimerTask() {
+            int period = 3000; // repeat every 4 sec.
 
-            public void run() {
+            Timer timer = new Timer();
 
-                mHandler.post(mUpdateResults);
-            }
+            timer.schedule(new TimerTask() {
 
-        }, delay);
+                public void run() {
+
+                    mHandler.post(mUpdateResults);
+                }
+
+            }, delay);
+        } else {
+            Intent returnIntent = new Intent();
+            returnIntent.putExtra("result", 1);
+            setResult(RESULT_OK, returnIntent);
+
+            ImageActivity.this.finish();
+        }
 
     }
 
 
     @Override
     protected void onDestroy() {
-        Drawable toRecycle = slide.getDrawable();
+        BitmapDrawable toRecycle = (BitmapDrawable)slide.getDrawable();
 
-        if (toRecycle != null) {
-            ((BitmapDrawable) slide.getDrawable()).getBitmap().recycle();
+        if (toRecycle != null && toRecycle.getBitmap() != null) {
+            toRecycle.getBitmap().recycle();
         }
 
         slide.destroyDrawingCache();

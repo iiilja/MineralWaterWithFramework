@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
@@ -12,6 +13,7 @@ import android.graphics.PorterDuffXfermode;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
+import android.view.View;
 
 import com.pheelicks.visualizer.VisualizerView;
 import com.pheelicks.visualizer.renderer.CircleBarRenderer;
@@ -22,10 +24,26 @@ public class AudioActivity extends Activity {
     private MediaPlayer mPlayer;
     private VisualizerView mVisualizerView;
 
+    private void hideSystemUI() {
+
+        this.getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
+        );
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_audio);
+
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+
+        hideSystemUI();
 
         LocalBroadcastManager bManager = LocalBroadcastManager.getInstance(this);
 

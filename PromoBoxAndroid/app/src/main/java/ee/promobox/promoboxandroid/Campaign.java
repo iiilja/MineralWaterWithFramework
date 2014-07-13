@@ -15,6 +15,7 @@ import java.util.List;
  * Created by MaximDorofeev on 12.07.2014.
  */
 public class Campaign {
+
     private int clientId;
     private int campaignId;
     private int updateId;
@@ -29,8 +30,6 @@ public class Campaign {
     public Campaign() {
 
     }
-
-
 
     public Campaign(JSONObject json) {
         try {

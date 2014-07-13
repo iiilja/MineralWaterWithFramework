@@ -13,16 +13,21 @@ import android.graphics.PorterDuffXfermode;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.View;
 
 import com.pheelicks.visualizer.VisualizerView;
 import com.pheelicks.visualizer.renderer.CircleBarRenderer;
+
+import java.io.FileInputStream;
 
 //https://github.com/felixpalmer/android-visualizer
 public class AudioActivity extends Activity {
 
     private MediaPlayer mPlayer;
     private VisualizerView mVisualizerView;
+    private LocalBroadcastManager bManager;
+    private FileInputStream inputStream;
 
     private void hideSystemUI() {
 
@@ -41,11 +46,7 @@ public class AudioActivity extends Activity {
 
         setContentView(R.layout.activity_audio);
 
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-
-        hideSystemUI();
-
-        LocalBroadcastManager bManager = LocalBroadcastManager.getInstance(this);
+        bManager = LocalBroadcastManager.getInstance(this);
 
         IntentFilter intentFilter = new IntentFilter();
 
@@ -55,9 +56,13 @@ public class AudioActivity extends Activity {
     }
 
     @Override
-    protected void onResume()
-    {
+    protected void onResume() {
         super.onResume();
+
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+
+        hideSystemUI();
+
         try {
             init();
         } catch (Exception ex) {
@@ -67,9 +72,11 @@ public class AudioActivity extends Activity {
 
 
     @Override
-    protected void onDestroy()
-    {
+    protected void onDestroy() {
         cleanUp();
+
+        bManager.unregisterReceiver(bReceiver);
+
         super.onDestroy();
     }
 
@@ -77,17 +84,16 @@ public class AudioActivity extends Activity {
     protected void onPause() {
         super.onPause();
         cleanUp();
-
     }
 
 
-    private void init() throws Exception
-    {
+    private void init() throws Exception {
         mPlayer = new MediaPlayer();
 
-        mPlayer.setDataSource(getIntent().getStringExtra("source"));
-        mPlayer.prepare();
+        inputStream = new FileInputStream(getIntent().getStringExtra("source"));
 
+        mPlayer.setDataSource(inputStream.getFD());
+        mPlayer.prepare();
 
         mVisualizerView = (VisualizerView) findViewById(R.id.visualizerView);
         mVisualizerView.link(mPlayer);
@@ -107,26 +113,30 @@ public class AudioActivity extends Activity {
                 returnIntent.putExtra("result", 1);
 
                 AudioActivity.this.setResult(RESULT_OK, returnIntent);
+
                 AudioActivity.this.finish();
             }
         });
     }
 
-    private void cleanUp()
-    {
-        if (mPlayer != null)
-        {
+    private void cleanUp() {
+        if (mPlayer != null) {
             mVisualizerView.release();
             mPlayer.stop();
             mPlayer.release();
             mPlayer = null;
         }
 
+        try {
+            inputStream.close();
+        } catch (Exception ex) {
+            Log.e("AudioActivity", ex.getMessage(), ex);
+        }
+
 
     }
 
-    private void addCircleBarRenderer()
-    {
+    private void addCircleBarRenderer() {
         Paint paint = new Paint();
         paint.setStrokeWidth(8f);
         paint.setAntiAlias(true);
@@ -139,13 +149,12 @@ public class AudioActivity extends Activity {
     private BroadcastReceiver bReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if(intent.getAction().equals(MainActivity.ACTIVITY_FINISH)) {
-               cleanUp();
-               AudioActivity.this.finish();
+            if (intent.getAction().equals(MainActivity.ACTIVITY_FINISH)) {
+                cleanUp();
+                AudioActivity.this.finish();
             }
         }
     };
-
 
 
 }

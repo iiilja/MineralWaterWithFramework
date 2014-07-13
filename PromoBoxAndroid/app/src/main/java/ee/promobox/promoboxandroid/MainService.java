@@ -12,6 +12,7 @@ import android.util.Log;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.http.client.utils.URIUtils;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -19,6 +20,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 
 
 public class MainService extends Service {
@@ -117,7 +119,9 @@ public class MainService extends Service {
                 File file = new File(dir, f.getName());
 
                 if (!file.exists() || file.length() != f.getSize()) {
-                    downloadFile(String.format("http://46.182.31.94/%s/%s/%s", campaign.getClientId(), campaign.getCampaignId(), f.getName()), f.getName());
+
+                    downloadFile(String.format("http://46.182.31.94/%s/%s/%s", campaign.getClientId(), campaign.getCampaignId(),f.getName()), f.getName());
+
                 }
             }
         }
@@ -126,6 +130,8 @@ public class MainService extends Service {
             try {
 
                 URL u = new URL(fileURL);
+
+                Log.i("Downloader", u.toString());
 
                 HttpURLConnection c = (HttpURLConnection) u.openConnection();
 

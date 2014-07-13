@@ -44,10 +44,6 @@ public class MainActivity extends Activity {
 
         setContentView(R.layout.activity_main);
 
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-
-        hideSystemUI();
-
         Intent service = new Intent(this, MainService.class);
 
         startService(service);
@@ -63,7 +59,7 @@ public class MainActivity extends Activity {
     }
 
     private void startNextFile() {
-        if (campaign != null) {
+        if (campaign != null && campaign.getFiles()!=null && campaign.getFiles().size() > 0) {
 
             CampaignFile file = campaign.getFiles().get(position);
 
@@ -84,6 +80,8 @@ public class MainActivity extends Activity {
 
                     i.putExtra("source", new File(campaign.getRoot(), file.getName()).getAbsolutePath());
 
+                    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
                     startActivityForResult(i, 1);
                 } else {
                     startNextFile();
@@ -98,6 +96,8 @@ public class MainActivity extends Activity {
                 if (dFile.exists()) {
 
                     i.putExtra("source", new File(campaign.getRoot(), file.getName()).getAbsolutePath());
+
+                    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
                     startActivityForResult(i, 1);
                 } else {
@@ -128,6 +128,8 @@ public class MainActivity extends Activity {
         super.onResume();
 
         hideSystemUI();
+
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
         Intent intent = new Intent(this, MainService.class);
 

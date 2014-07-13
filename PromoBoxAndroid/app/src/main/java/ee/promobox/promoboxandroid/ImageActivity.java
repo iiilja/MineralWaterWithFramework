@@ -10,9 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.Display;
@@ -28,8 +26,9 @@ import java.util.TimerTask;
 
 public class ImageActivity extends Activity {
 
-    ImageView slide;
-    int currentPlace = 0;
+    private ImageView slide;
+    private LocalBroadcastManager bManager;
+    private Timer timer = new Timer();
 
     private Bitmap decodeBitmap(File file) {
         Bitmap bm = null;
@@ -84,6 +83,16 @@ public class ImageActivity extends Activity {
         );
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        hideSystemUI();
+
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,11 +100,7 @@ public class ImageActivity extends Activity {
 
         setContentView(R.layout.activity_image);
 
-        hideSystemUI();
-
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-
-        LocalBroadcastManager bManager = LocalBroadcastManager.getInstance(this);
+        bManager = LocalBroadcastManager.getInstance(this);
 
         IntentFilter intentFilter = new IntentFilter();
 
@@ -113,8 +118,10 @@ public class ImageActivity extends Activity {
 
             slide.setImageBitmap(decodeBitmap(file));
 
-            final Runnable mUpdateResults = new Runnable() {
-                @Override
+            int delay = 3000; // delay for 1 sec.
+
+            timer.schedule(new TimerTask() {
+
                 public void run() {
 
                     Intent returnIntent = new Intent();
@@ -122,32 +129,9 @@ public class ImageActivity extends Activity {
                     setResult(RESULT_OK, returnIntent);
 
                     ImageActivity.this.finish();
-
-                }
-            };
-
-            final Handler mHandler = new Handler();
-
-            int delay = 3000; // delay for 1 sec.
-
-            int period = 3000; // repeat every 4 sec.
-
-            Timer timer = new Timer();
-
-            timer.schedule(new TimerTask() {
-
-                public void run() {
-
-                    mHandler.post(mUpdateResults);
                 }
 
             }, delay);
-        } else {
-            Intent returnIntent = new Intent();
-            returnIntent.putExtra("result", 1);
-            setResult(RESULT_OK, returnIntent);
-
-            ImageActivity.this.finish();
         }
 
     }
@@ -164,6 +148,9 @@ public class ImageActivity extends Activity {
         slide.destroyDrawingCache();
         slide = null;
 
+        bManager.unregisterReceiver(bReceiver);
+
+        timer.cancel();
 
         super.onDestroy();
     }

@@ -12,7 +12,6 @@ import android.util.Log;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.client.utils.URIUtils;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -20,7 +19,6 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
 
 
 public class MainService extends Service {
@@ -34,7 +32,7 @@ public class MainService extends Service {
 
     private Campaign campaign;
 
-    private DownloadFilesTask dTask = new DownloadFilesTask();;
+    private DownloadFilesTask dTask = new DownloadFilesTask();
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -100,7 +98,7 @@ public class MainService extends Service {
 
                     LocalBroadcastManager.getInstance(MainService.this).sendBroadcast(update);
 
-                } else if (oldCamp != null) {
+                } else {
                     downloadFiles();
                 }
 
@@ -177,9 +175,7 @@ public class MainService extends Service {
 
             IOUtils.copy(in, f);
 
-            Campaign camp = new Campaign(new JSONObject(FileUtils.readFileToString(file)));
-
-            return camp;
+            return new Campaign(new JSONObject(FileUtils.readFileToString(file)));
         }
 
 

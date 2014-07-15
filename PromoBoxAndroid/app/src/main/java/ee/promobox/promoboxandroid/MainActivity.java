@@ -20,7 +20,8 @@ import java.io.File;
 public class MainActivity extends Activity {
 
     public final static String CAMPAIGN_UPDATE = "ee.promobox.promoboxandroid.UPDATE";
-    public final static String ACTIVITY_FINISH = "ee,promobox.promoboxandroid.FINISH";
+    public final static String ACTIVITY_FINISH = "ee.promobox.promoboxandroid.FINISH";
+    public final static String APP_START = "ee.promobox.promoboxandroid.START";
 
     private MainService mainService;
     private int position;
@@ -53,6 +54,10 @@ public class MainActivity extends Activity {
         IntentFilter intentFilter = new IntentFilter();
 
         intentFilter.addAction(CAMPAIGN_UPDATE);
+
+        Intent start = new Intent();
+        start.setAction(MainActivity.APP_START);
+        sendBroadcast(start);
 
         bManager.registerReceiver(bReceiver, intentFilter);
 
@@ -103,6 +108,22 @@ public class MainActivity extends Activity {
                 } else {
                     startNextFile();
                 }
+            } else if (file.getType() == CampaignFileType.VIDEO) {
+
+                Intent i = new Intent(this, VideoActivity.class);
+
+                File dFile = new File(campaign.getRoot(), file.getName());
+
+                if (dFile.exists()) {
+
+                    i.putExtra("source", new File(campaign.getRoot(), file.getName()).getAbsolutePath());
+
+                    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+                    startActivityForResult(i, 1);
+                } else {
+                    startNextFile();
+                }
             }
 
 
@@ -112,14 +133,7 @@ public class MainActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         if (requestCode == 1) {
-
-            if (resultCode == RESULT_OK) {
-                startNextFile();
-            }
-
-            if (resultCode == RESULT_CANCELED) {
-                //Write your code if there's no result
-            }
+            startNextFile();
         }
     }
 

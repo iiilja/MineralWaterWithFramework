@@ -7,6 +7,10 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.GET_TASKS" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
 
     <application
         android:allowBackup="true"
@@ -21,16 +25,17 @@
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <receiver android:name=".MyScheduleReceiver" >
+        <receiver android:name=".MyScheduleReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="ee.promobox.promoboxandroid.START" />
             </intent-filter>
         </receiver>
+
         <receiver android:name=".MyStartServiceReceiver" >
         </receiver>
 
@@ -45,13 +50,16 @@
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_image" >
         </activity>
+
         <activity
             android:name=".AudioActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_audio" >
         </activity>
+
         <activity
             android:name=".VideoActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_video" >
         </activity>
     </application>

@@ -1,6 +1,8 @@
 package ee.promobox.promoboxandroid;
 
+import android.app.ActivityManager;
 import android.app.Service;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Binder;
@@ -19,6 +21,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
 
 
 public class MainService extends Service {
@@ -58,6 +61,20 @@ public class MainService extends Service {
             dTask.execute(String.format(DEFAULT_SERVER, TEST_CLIENT_ID));
         }
 
+    }
+
+    public boolean isForeground(String myPackage){
+        ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+
+        List< ActivityManager.RunningTaskInfo > runningTaskInfo = manager.getRunningTasks(1);
+
+        ComponentName componentInfo = runningTaskInfo.get(0).topActivity;
+
+        if(componentInfo.getPackageName().startsWith(myPackage)) {
+            return true;
+        }
+
+        return false;
     }
 
     public Campaign getCampaign() {

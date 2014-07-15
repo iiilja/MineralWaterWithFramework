@@ -9,14 +9,13 @@ import android.content.pm.ActivityInfo;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.VideoView;
 
 import java.io.File;
 
 //http://cadabracorp.com/blog/2013/04/24/playing-a-full-screen-video-the-easy-way/
-public class VideoActivity extends Activity implements MediaPlayer.OnCompletionListener,MediaPlayer.OnPreparedListener,View.OnTouchListener {
+public class VideoActivity extends Activity implements MediaPlayer.OnCompletionListener {
 
 
     private VideoView videoView;
@@ -44,11 +43,9 @@ public class VideoActivity extends Activity implements MediaPlayer.OnCompletionL
             videoView.setVideoPath(file.getAbsolutePath());
         }
 
-        videoView.setOnCompletionListener(this);
-        videoView.setOnPreparedListener(this);
-        videoView.setOnTouchListener(this);
-
         videoView.start();
+
+        videoView.setOnCompletionListener(this);
     }
 
     private void hideSystemUI() {
@@ -72,32 +69,18 @@ public class VideoActivity extends Activity implements MediaPlayer.OnCompletionL
 
     }
 
-
-    public void stopPlaying() {
-        videoView.stopPlayback();
-        this.finish();
-    }
-
     @Override
     public void onCompletion(MediaPlayer mp) {
+
         Intent returnIntent = new Intent();
 
         returnIntent.putExtra("result", 1);
 
         setResult(RESULT_OK, returnIntent);
 
+        videoView.stopPlayback();
+
         VideoActivity.this.finish();
-    }
-
-    @Override
-    public boolean onTouch(View v, MotionEvent event) {
-        stopPlaying();
-        return true;
-    }
-
-    @Override
-    public void onPrepared(MediaPlayer mp) {
-        mp.setLooping(true);
     }
 
 

@@ -175,6 +175,9 @@ public class MainService extends Service {
 
             IOUtils.copy(in, f);
 
+            f.close();
+            in.close();
+
             return new Campaign(new JSONObject(FileUtils.readFileToString(file)));
         }
 

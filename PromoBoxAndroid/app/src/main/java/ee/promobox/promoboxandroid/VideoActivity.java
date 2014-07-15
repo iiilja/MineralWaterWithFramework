@@ -27,6 +27,8 @@ public class VideoActivity extends Activity implements MediaPlayer.OnCompletionL
 
         setContentView(R.layout.activity_video);
 
+        bManager = LocalBroadcastManager.getInstance(this);
+
         IntentFilter intentFilter = new IntentFilter();
 
         intentFilter.addAction(MainActivity.ACTIVITY_FINISH);

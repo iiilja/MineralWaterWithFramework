@@ -1,0 +1,33 @@
+<!--login modal-->
+<div id="loginModal" class="modal show" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="text-center">{{ login.text.heder}}</h1>
+            </div>
+            <div class="modal-body">
+                <form class="form col-md-12 center-block">
+                    <div class="form-group">
+                        <input type="text" class="form-control input-lg" placeholder="{{ login.text.email}}">
+                    </div>
+                    <div class="form-group">
+                        <input type="password" class="form-control input-lg" placeholder="{{ login.text.password}}">
+                    </div>
+                    <div class="form-group">
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox"> {{ login.text.remember}}
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <button class="btn btn-primary btn-lg btn-block">{{ login.text.sign_in}}</button>
+                        <span class="pull-right"><a href ng-click="control.selectLink(1)">{{ login.text.register}}</a></span>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>

@@ -9,17 +9,24 @@ import android.content.pm.ActivityInfo;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.View;
-import android.widget.VideoView;
 
-import java.io.File;
+import java.io.FileInputStream;
 
 //http://cadabracorp.com/blog/2013/04/24/playing-a-full-screen-video-the-easy-way/
-public class VideoActivity extends Activity implements MediaPlayer.OnCompletionListener {
+public class VideoActivity extends Activity implements MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener, SurfaceHolder.Callback {
 
 
-    private VideoView videoView;
+    private SurfaceView videoView;
     private LocalBroadcastManager bManager;
+    private String[] paths;
+    private int position = 0;
+    private MediaPlayer mediaPlayer;
+    private FileInputStream streamMediaPlayer;
+    private SurfaceHolder surfaceHolder;
 
     @Override
     public void onCreate(Bundle b) {
@@ -37,17 +44,39 @@ public class VideoActivity extends Activity implements MediaPlayer.OnCompletionL
 
         Bundle extras = getIntent().getExtras();
 
-        File file = new File(extras.getString("source"));
+        paths = extras.getStringArray("paths");
 
-        videoView = (VideoView)findViewById(R.id.videoview);
+        videoView = (SurfaceView) findViewById(R.id.videoview);
 
-        if (file.exists()) {
-            videoView.setVideoPath(file.getAbsolutePath());
+        surfaceHolder = videoView.getHolder();
+
+        surfaceHolder.addCallback(this);
+
+    }
+
+
+    public void playVideo() {
+        try {
+
+            mediaPlayer = new MediaPlayer();
+
+            mediaPlayer.setDisplay(surfaceHolder);
+
+            streamMediaPlayer = new FileInputStream(paths[position]);
+
+            mediaPlayer.setDataSource(streamMediaPlayer.getFD());
+
+            mediaPlayer.prepareAsync();
+
+            mediaPlayer.setOnPreparedListener(this);
+
+            position++;
+
+            mediaPlayer.setOnCompletionListener(this);
+
+        } catch (Exception ex) {
+            Log.e("VideoActivity", ex.getMessage(), ex);
         }
-
-        videoView.start();
-
-        videoView.setOnCompletionListener(this);
     }
 
     private void hideSystemUI() {
@@ -74,29 +103,53 @@ public class VideoActivity extends Activity implements MediaPlayer.OnCompletionL
     @Override
     public void onCompletion(MediaPlayer mp) {
 
-        Intent returnIntent = new Intent();
+        if (position < paths.length) {
+            mediaPlayer.setOnCompletionListener(null);
+            mediaPlayer.release();
 
-        returnIntent.putExtra("result", 1);
+            try {
+                streamMediaPlayer.close();
+            } catch (Exception ex) {
+                Log.e("VideoActivity", ex.getMessage(), ex);
+            }
 
-        setResult(RESULT_OK, returnIntent);
+            playVideo();
+        } else {
 
-        videoView.stopPlayback();
+            Intent returnIntent = new Intent();
 
-        VideoActivity.this.finish();
+            returnIntent.putExtra("result", 1);
+
+            setResult(RESULT_OK, returnIntent);
+
+            VideoActivity.this.finish();
+        }
     }
 
 
     @Override
     protected void onDestroy() {
         videoView.destroyDrawingCache();
-        videoView.invalidate();
+
+        if (mediaPlayer != null) {
+            mediaPlayer.stop();
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
+
+        try {
+            if (streamMediaPlayer != null) {
+                streamMediaPlayer.close();
+            }
+
+        } catch (Exception ex) {
+            Log.e("VideoActivity", ex.getMessage(), ex);
+        }
 
         bManager.unregisterReceiver(bReceiver);
 
         super.onDestroy();
     }
-
-
 
 
     private BroadcastReceiver bReceiver = new BroadcastReceiver() {
@@ -109,4 +162,23 @@ public class VideoActivity extends Activity implements MediaPlayer.OnCompletionL
     };
 
 
+    @Override
+    public void surfaceCreated(SurfaceHolder surfaceHolder) {
+        playVideo();
+    }
+
+    @Override
+    public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i2, int i3) {
+
+    }
+
+    @Override
+    public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
+
+    }
+
+    @Override
+    public void onPrepared(MediaPlayer mediaPlayer) {
+        mediaPlayer.start();
+    }
 }

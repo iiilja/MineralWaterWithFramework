@@ -5,7 +5,7 @@
     android:keepScreenOn="true"
     tools:context="ee.promobox.promoboxandroid.VideoActivity">
 
-    <VideoView
+    <SurfaceView
         android:id="@+id/videoview"
         android:layout_gravity="fill"
         android:adjustViewBounds="true"

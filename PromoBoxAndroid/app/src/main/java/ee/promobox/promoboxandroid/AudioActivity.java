@@ -27,6 +27,8 @@ public class AudioActivity extends Activity {
     private MediaPlayer mPlayer;
     private VisualizerView mVisualizerView;
     private LocalBroadcastManager bManager;
+    private String[] paths;
+    private int position = 0;
     private FileInputStream inputStream;
 
     private void hideSystemUI() {
@@ -53,6 +55,10 @@ public class AudioActivity extends Activity {
         intentFilter.addAction(MainActivity.ACTIVITY_FINISH);
 
         bManager.registerReceiver(bReceiver, intentFilter);
+
+        Bundle extras = getIntent().getExtras();
+
+        paths = extras.getStringArray("paths");
     }
 
     @Override
@@ -64,7 +70,7 @@ public class AudioActivity extends Activity {
         hideSystemUI();
 
         try {
-            init();
+            playAudio();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -86,38 +92,55 @@ public class AudioActivity extends Activity {
         cleanUp();
     }
 
-
-    private void init() throws Exception {
+    private void playAudio() {
         mPlayer = new MediaPlayer();
 
-        inputStream = new FileInputStream(getIntent().getStringExtra("source"));
+        try {
+            inputStream = new FileInputStream(paths[position]);
 
-        mPlayer.setDataSource(inputStream.getFD());
-        mPlayer.prepare();
+            mPlayer.setDataSource(inputStream.getFD());
+            mPlayer.prepare();
 
-        mVisualizerView = (VisualizerView) findViewById(R.id.visualizerView);
-        mVisualizerView.link(mPlayer);
+            mVisualizerView = (VisualizerView) findViewById(R.id.visualizerView);
+            mVisualizerView.link(mPlayer);
 
-        addCircleBarRenderer();
+            addCircleBarRenderer();
 
-        mPlayer.start();
+            mPlayer.start();
 
-        mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mediaPlayer) {
+            mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mediaPlayer) {
+                    cleanUp();
 
-                cleanUp();
+                    if (position == paths.length) {
 
-                Intent returnIntent = new Intent();
+                        Intent returnIntent = new Intent();
 
-                returnIntent.putExtra("result", 1);
+                        returnIntent.putExtra("result", 1);
 
-                AudioActivity.this.setResult(RESULT_OK, returnIntent);
+                        AudioActivity.this.setResult(RESULT_OK, returnIntent);
 
-                AudioActivity.this.finish();
-            }
-        });
+                        AudioActivity.this.finish();
+                    } else {
+                        playAudio();
+                    }
+                }
+            });
+
+            position++;
+
+        } catch (Exception ex) {
+            Log.e("AudioActivity", ex.getMessage(), ex);
+            position++;
+            playAudio();
+        }
+
+
     }
+
+
+
 
     private void cleanUp() {
         if (mPlayer != null) {

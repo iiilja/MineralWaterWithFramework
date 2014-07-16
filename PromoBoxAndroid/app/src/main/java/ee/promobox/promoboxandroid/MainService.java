@@ -14,6 +14,11 @@ import android.util.Log;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -144,28 +149,35 @@ public class MainService extends Service {
         private File downloadFile(String fileURL, String fileName) {
             try {
 
-                URL u = new URL(fileURL);
+                Log.i("Downloader", fileURL);
 
-                Log.i("Downloader", u.toString());
+                HttpClient httpclient = new DefaultHttpClient();
 
-                HttpURLConnection c = (HttpURLConnection) u.openConnection();
+                HttpGet httpget = new HttpGet(fileURL);
 
-                if (c.getResponseCode() != 200)
-                    throw new Exception("Failed to connect");
+                HttpResponse response = httpclient.execute(httpget);
 
-                File dir = new File(root.getAbsolutePath() + String.format("/%s/", campaign.getCampaignId()));
+                HttpEntity entity = response.getEntity();
 
-                File file = new File(dir, fileName);
+                if (entity != null) {
+                    File dir = new File(root.getAbsolutePath() + String.format("/%s/", campaign.getCampaignId()));
 
-                FileOutputStream f = new FileOutputStream(file);
+                    File file = new File(dir, fileName);
 
-                InputStream in = c.getInputStream();
+                    FileOutputStream f = new FileOutputStream(file);
 
-                IOUtils.copy(in, f);
+                    InputStream in = entity.getContent();
 
-                Log.i("test", "Size " + file.getAbsolutePath() + " = " + file.length());
+                    IOUtils.copy(in, f);
 
-                return file;
+                    IOUtils.closeQuietly(in);
+                    IOUtils.closeQuietly(f);
+
+                    Log.i("test", "Size " + file.getAbsolutePath() + " = " + file.length());
+
+                    return file;
+                }
+
             } catch (Exception e) {
                 Log.d("Downloader", e.getMessage(), e);
             }

@@ -15,6 +15,8 @@ import android.view.View;
 import android.widget.Toast;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class MainActivity extends Activity {
@@ -64,66 +66,67 @@ public class MainActivity extends Activity {
     }
 
     private void startNextFile() {
-        if (campaign != null && campaign.getFiles()!=null && campaign.getFiles().size() > 0) {
-
-            CampaignFile file = campaign.getFiles().get(position);
-
-            position++;
+        if (campaign != null && campaign.getFiles() != null && campaign.getFiles().size() > 0) {
 
             if (position == campaign.getFiles().size()) {
                 position = 0;
                 mainService.checkAndDownloadCampaign();
             }
 
-            if (file.getType() == CampaignFileType.IMAGE) {
+            CampaignFileType fileType = null;
+            List<String> filePack = new ArrayList<String>();
+
+            for (int i = position; i < campaign.getFiles().size(); i++) {
+                CampaignFile cFile = campaign.getFiles().get(i);
+
+                if (fileType == null) {
+                    fileType = cFile.getType();
+                }
+
+                if (cFile.getType() == fileType) {
+                    File f = new File(campaign.getRoot(), cFile.getName());
+                    if (f.exists()) {
+                        filePack.add(f.getAbsolutePath());
+                        fileType = cFile.getType();
+                        position++;
+                    }
+                } else {
+                    break;
+                }
+            }
+
+
+            if (fileType == CampaignFileType.IMAGE) {
 
                 Intent i = new Intent(this, ImageActivity.class);
 
-                File dFile = new File(campaign.getRoot(), file.getName());
+                i.putExtra("paths", filePack.toArray(new String[filePack.size()]));
 
-                if (dFile.exists()) {
+                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-                    i.putExtra("source", new File(campaign.getRoot(), file.getName()).getAbsolutePath());
+                startActivityForResult(i, 1);
 
-                    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-                    startActivityForResult(i, 1);
-                } else {
-                    startNextFile();
-                }
-
-            } else if (file.getType() == CampaignFileType.AUDIO) {
+            } else if (fileType == CampaignFileType.AUDIO) {
 
                 Intent i = new Intent(this, AudioActivity.class);
 
-                File dFile = new File(campaign.getRoot(), file.getName());
+                i.putExtra("paths", filePack.toArray(new String[filePack.size()]));
 
-                if (dFile.exists()) {
+                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-                    i.putExtra("source", new File(campaign.getRoot(), file.getName()).getAbsolutePath());
+                startActivityForResult(i, 1);
 
-                    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-                    startActivityForResult(i, 1);
-                } else {
-                    startNextFile();
-                }
-            } else if (file.getType() == CampaignFileType.VIDEO) {
+            } else if (fileType == CampaignFileType.VIDEO) {
 
                 Intent i = new Intent(this, VideoActivity.class);
 
-                File dFile = new File(campaign.getRoot(), file.getName());
+                i.putExtra("paths", filePack.toArray(new String[filePack.size()]));
 
-                if (dFile.exists()) {
+                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-                    i.putExtra("source", new File(campaign.getRoot(), file.getName()).getAbsolutePath());
+                startActivityForResult(i, 1);
 
-                    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-                    startActivityForResult(i, 1);
-                } else {
-                    startNextFile();
-                }
             }
 
 
@@ -185,10 +188,10 @@ public class MainActivity extends Activity {
     private BroadcastReceiver bReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if(intent.getAction().equals(CAMPAIGN_UPDATE)) {
-              campaign = mainService.getCampaign();
-              position = 0;
-              startNextFile();
+            if (intent.getAction().equals(CAMPAIGN_UPDATE)) {
+                campaign = mainService.getCampaign();
+                position = 0;
+                startNextFile();
             }
         }
     };

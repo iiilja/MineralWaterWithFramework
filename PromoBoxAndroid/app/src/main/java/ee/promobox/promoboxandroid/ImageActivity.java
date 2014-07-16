@@ -26,32 +26,15 @@ public class ImageActivity extends Activity {
 
     private ImageView slide;
     private LocalBroadcastManager bManager;
-    private Timer timer = new Timer();
+    private String[] paths;
+    private int position = 0;
 
     private Bitmap decodeBitmap(File file) {
         Bitmap bm = null;
 
         try {
-            BitmapFactory.Options o = new BitmapFactory.Options();
-            o.inJustDecodeBounds = true;
-
-            BitmapFactory.decodeStream(new FileInputStream(file), null, o);
-
-            Display display = getWindowManager().getDefaultDisplay();
-            Point size = new Point();
-            display.getSize(size);
-
-            final int REQUIRED_WIDTH = size.x;
-            final int REQUIRED_HIGHT = size.y;
-
-            int scale = 1;
-
-            while (o.outWidth / scale / 2 >= REQUIRED_WIDTH && o.outHeight / scale / 2 >= REQUIRED_HIGHT)
-                scale *= 2;
-
             BitmapFactory.Options options = new BitmapFactory.Options();
 
-            options.inSampleSize = scale;
             options.inPurgeable = true;
             options.inInputShareable = true;
             options.inDither = false;
@@ -89,6 +72,8 @@ public class ImageActivity extends Activity {
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
+        playImage(paths[position]);
+
     }
 
 
@@ -110,27 +95,39 @@ public class ImageActivity extends Activity {
 
         Bundle extras = getIntent().getExtras();
 
-        File file = new File(extras.getString("source"));
+        paths = extras.getStringArray("paths");
 
-        if (file.exists()) {
 
-            slide.setImageBitmap(decodeBitmap(file));
 
-            int delay = 3000; // delay for 1 sec.
+    }
 
-            timer.schedule(new TimerTask() {
+    private void playImage(String path) {
+        File file = new File(path);
 
-                public void run() {
+        slide.setImageBitmap(decodeBitmap(file));
+
+        position++;
+
+        final long delay = 3000; // delay for 1 sec.
+
+        final Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                if (position == paths.length) {
 
                     Intent returnIntent = new Intent();
                     returnIntent.putExtra("result", 1);
                     setResult(RESULT_OK, returnIntent);
 
                     ImageActivity.this.finish();
+                } else {
+                    playImage(paths[position]);
                 }
+            }
+        };
 
-            }, delay);
-        }
+        slide.postDelayed(r, delay);
+
 
     }
 
@@ -147,8 +144,6 @@ public class ImageActivity extends Activity {
         slide = null;
 
         bManager.unregisterReceiver(bReceiver);
-
-        timer.cancel();
 
         super.onDestroy();
     }

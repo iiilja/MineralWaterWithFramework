@@ -1,12 +1,12 @@
 buildscript {
-  repositories {
-    mavenCentral()
-    jcenter()
-  }
-  dependencies {
-    classpath 'org.hidetake:gradle-ssh-plugin:0.3.10'
-    classpath 'org.gradle.api.plugins:gradle-tomcat-plugin:1.2.4'
-  }
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+    dependencies {
+        classpath 'org.hidetake:gradle-ssh-plugin:0.3.10'
+        classpath 'org.gradle.api.plugins:gradle-tomcat-plugin:1.2.4'
+    }
 }
 
 apply plugin: 'war'
@@ -19,12 +19,12 @@ String spring_version = "4.0.5.RELEASE@jar" ;
 String hibernate_version = "4.2.6.Final@jar" ; 
 
 configurations {
-   moreLibs
+    moreLibs
 }
 
 repositories {
-   flatDir { dirs "lib" }
-   mavenCentral()
+    flatDir { dirs "lib" }
+    mavenCentral()
 }
 
 List spring = ["org.springframework:spring-context:"+spring_version,
@@ -86,30 +86,30 @@ war {
 }
 
 remotes {
-  webServer {
-    host = '46.182.31.94'
-    user = 'root'
-  }
+    webServer {
+        host = '46.182.31.94'
+        user = 'root'
+    }
 }
 
 ssh {
-  //identity = file('id_rsa')     // Enable public key authentication
-  knownHosts = allowAnyHosts    // Disable host key verification
+    identity = file("${System.properties['user.home']}/.ssh/id_dsa")
+    knownHosts = allowAnyHosts    // Disable host key verification
 }
 
 
 task deploy(type: SshTask, dependsOn: war) {
-  description = 'Deploys an application to the server.'
+    description = 'Deploys an application to the server.'
   
     ssh {
-    // Enable PTY allocation for sudo
-    pty = true
-  }
+        // Enable PTY allocation for sudo
+        pty = true
+    }
   
-  session(remotes.webServer) {
-    // Put a built WAR to the server
-    put war.archivePath, '/webapps'
-    // Restart the application server
-    execute 'sudo service tomcat restart'
-  }
+    session(remotes.webServer) {
+        // Put a built WAR to the server
+        put war.archivePath, '/webapps'
+        // Restart the application server
+        execute 'sudo service tomcat restart'
+    }
 }

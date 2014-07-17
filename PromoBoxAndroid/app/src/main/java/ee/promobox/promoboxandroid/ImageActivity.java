@@ -8,19 +8,15 @@ import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-import android.view.Display;
 import android.view.View;
 import android.widget.ImageView;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class ImageActivity extends Activity {
 

@@ -204,8 +204,8 @@ public class MainService extends Service {
 
             IOUtils.copy(in, f);
 
-            f.close();
-            in.close();
+            IOUtils.closeQuietly(f);
+            IOUtils.closeQuietly(in);
 
             return new Campaign(new JSONObject(FileUtils.readFileToString(file)));
         }

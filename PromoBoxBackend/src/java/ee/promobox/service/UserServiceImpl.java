@@ -6,7 +6,9 @@
 package ee.promobox.service;
 
 import ee.promobox.entity.AdCampaigns;
+import ee.promobox.entity.CampaignsFiles;
 import ee.promobox.entity.Devices;
+import ee.promobox.entity.Files;
 import ee.promobox.entity.Users;
 import java.util.List;
 import org.hibernate.Query;
@@ -54,7 +56,7 @@ public class UserServiceImpl implements UserService {
 
         return q.list();
     }
-    
+
     public List<Devices> findUserDevieces(int userId) {
         Session session = sessionFactory.getCurrentSession();
 
@@ -63,5 +65,45 @@ public class UserServiceImpl implements UserService {
         q.setParameter("userId", userId);
 
         return q.list();
+    }
+
+    public List<Files> findCampaignFiles(int campgaignId) {
+        Session session = sessionFactory.getCurrentSession();
+
+        Query q = session.createQuery("select f from Files f, CampaignsFiles cf where cf.campgainId = :campaignId and f.id = cf.fileId");
+
+        q.setParameter("campaignId", campgaignId);
+
+        return q.list();
+    }
+
+    public void addCampaign(AdCampaigns campaign) {
+        Session session = sessionFactory.getCurrentSession();
+        session.save(campaign);
+        session.flush();
+    }
+
+    public void updateCampaign(AdCampaigns campaign) {
+        Session session = sessionFactory.getCurrentSession();
+        session.update(campaign);
+        session.flush();
+    }
+
+    public void addFile(Files file) {
+        Session session = sessionFactory.getCurrentSession();
+        session.save(file);
+        session.flush();
+    }
+
+    public void addCampaignFile(CampaignsFiles file) {
+        Session session = sessionFactory.getCurrentSession();
+        session.save(file);
+        session.flush();
+    }
+
+    public void updateCampaignFile(CampaignsFiles file) {
+        Session session = sessionFactory.getCurrentSession();
+        session.update(file);
+        session.flush();
     }
 }

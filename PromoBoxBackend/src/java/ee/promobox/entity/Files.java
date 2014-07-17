@@ -48,6 +48,8 @@ public class Files implements Serializable {
     private String path;
     @Column(name = "file_type")
     private Integer fileType;
+    @Column(name = "size")
+    private Integer size;
     @Column(name = "created_dt")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDt;
@@ -122,6 +124,20 @@ public class Files implements Serializable {
     @Override
     public String toString() {
         return "ee.promobox.entity.Files[ id=" + id + " ]";
+    }
+
+    /**
+     * @return the size
+     */
+    public Integer getSize() {
+        return size;
+    }
+
+    /**
+     * @param size the size to set
+     */
+    public void setSize(Integer size) {
+        this.size = size;
     }
     
 }

@@ -103,7 +103,7 @@ public class UserController {
     }
     
     
-    @RequestMapping("/user/date")
+    @RequestMapping("/user/data")
     public ModelAndView userDataHandler(
             @RequestParam String token,
             HttpServletRequest request,
@@ -123,11 +123,26 @@ public class UserController {
             
             for (AdCampaigns a: campaigns) {
                 JSONObject obj = new JSONObject();
+                
+                obj.put("id", a.getId());
                 obj.put("name", a.getName());
+                
                 arCamp.put(obj);
             }
-            
+                                    
             resp.put("campaigns", arCamp);
+            
+            JSONArray devs = new JSONArray();
+            
+            for (Devices d: devices) {
+                JSONObject obj = new JSONObject();
+                
+                obj.put("id", d.getId());
+                obj.put("status", d.getStatus());
+                obj.put("uuid", d.getUuid());
+            }
+            
+            resp.put("devices", devs);
 
         }
 

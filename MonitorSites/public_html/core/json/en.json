@@ -7,7 +7,7 @@
         "sign_in": "Sign In",
         "register": "Register"
     },
-        "registration_form": {
+    "registration_form": {
         "heder": "PromoBox Registration",
         "firstname": "Firstname",
         "lastname": "Lastname",

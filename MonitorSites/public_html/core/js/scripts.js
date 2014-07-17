@@ -1,29 +1,32 @@
 (function (){
     var app = angular.module('promoboxAdminApp', []);
     
-    app.controller('userControl',[ '$http', function($http){
-        this.page = 0;
+    app.controller('userControl',[ '$http','$scope', function($http, $scope){
+        $scope.page = this.page;
+        $scope.page = 0;
+        
 
         this.selectLink = function(link) {
-            this.page = link;
+            $scope.page = link;
         };
         
         this.pageSelected= function(selected) {
-          return this.page === selected;  
+          return $scope.page === selected;  
         };
         
-//        var lenguage = this;
-//        $http.get('/json/en.json').seccess(function (data){
-//        lenguage.text = data;
-//        });
     }]);
     
     app.directive('loginForm', function(){
         return {
           restrict: 'E',
           templateUrl: 'login-form.html',
-          controller: function() {
-              this.text = lenguage.login_form;
+          controller: function($http,$scope) {
+              var language = this;
+              $http.get("http://localhost:8383/MonitorSites/core/json/en.json").success(function (s_data) {
+                  language.text = s_data.login_form;
+              }).error(function (e_data){
+                  alert('Error');
+              });
           },
           controllerAs: 'login'
         };
@@ -33,32 +36,16 @@
         return {
           restrict: 'E',
           templateUrl: 'register-form.html',
-          controller: function() {
-              this.text = lenguage.registration_form;
+          controller: function($http,$scope) {
+              var language = this;
+              $http.get("http://localhost:8383/MonitorSites/core/json/en.json").success(function (s_data) {
+                  language.text = s_data.registration_form;
+              }).error(function (e_data){
+                  alert('Error');
+              });
           },
           controllerAs: 'register'
         };
     });
-    
-    var lenguage = {
-        'login_form': {
-            'heder': "PromoBox Login",
-            'email': "Email",
-            'password': "Password",
-            'remember': "Remember me",
-            'sign_in': "Sign In",
-            'register': "Register"
-        },
-        'registration_form': {
-            'heder': "PromoBox Registration",
-            'firstname': "Firstname",
-            'lastname': "Lastname",
-            'company': "Company",
-            'email': "Email",
-            'remember': "Remember me",
-            'register': "Register",
-            'sign_in': "Sign In"
-        }
-    };
     
 })();

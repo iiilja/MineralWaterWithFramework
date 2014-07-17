@@ -52,9 +52,23 @@ dependencies {
     compile hibernate_api
     compile hibernate
     compile spring 
-    compile "json:json@jar"
+    compile 'org.json:json:20140107'
     compile 'org.slf4j:slf4j-api:1.7.2'  
+    compile 'com.maxmind.geoip:geoip-api:1.2.10'
+    compile 'log4j:apache-log4j-extras:1.2.17'
+    compile 'commons-codec:commons-codec:1.9'
+    compile 'commons-collections:commons-collections:3.2.1'
+    compile 'commons-dbcp:commons-dbcp:1.4'
+    compile 'commons-httpclient:commons-httpclient:3.1'
+    compile 'commons-io:commons-io:2.4'
+    compile 'commons-pool:commons-pool:1.6'
+    compile 'log4j:log4j:1.2.17'
+    compile 'com.sun.mail:javax.mail:1.5.2'
+    compile 'com.sun.mail:smtp:1.5.2'
+    compile 'velocity:velocity:1.5'
+    
     providedCompile 'javax.servlet:servlet-api:2.5'
+    
     runtime 'javax.servlet:jstl:1.1.2'
     runtime "postgresql:postgresql:9.3-1101.jdbc41@jar"
 }
@@ -68,5 +82,34 @@ sourceSets {
 }
 
 war {   
-    webInf { from 'web/' }
+    webInf { from 'web/WEB-INF/' }
+}
+
+remotes {
+  webServer {
+    host = '46.182.31.94'
+    user = 'root'
+  }
+}
+
+ssh {
+  //identity = file('id_rsa')     // Enable public key authentication
+  knownHosts = allowAnyHosts    // Disable host key verification
+}
+
+
+task deploy(type: SshTask, dependsOn: war) {
+  description = 'Deploys an application to the server.'
+  
+    ssh {
+    // Enable PTY allocation for sudo
+    pty = true
+  }
+  
+  session(remotes.webServer) {
+    // Put a built WAR to the server
+    put war.archivePath, '/webapps'
+    // Restart the application server
+    execute 'sudo service tomcat restart'
+  }
 }

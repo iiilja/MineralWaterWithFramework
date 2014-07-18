@@ -34,6 +34,7 @@ List spring = ["org.springframework:spring-context:"+spring_version,
 		"org.springframework:spring-expression:"+spring_version,
 		"org.springframework:spring-jdbc:"+spring_version,
 		"org.springframework:spring-tx:"+spring_version,
+                'org.springframework:spring-context-support:'+spring_version,
 		"org.springframework:spring-web:"+spring_version,
 		"org.springframework:spring-webmvc:"+spring_version,
 		"org.springframework:spring-orm:"+spring_version] 
@@ -65,7 +66,14 @@ dependencies {
     compile 'log4j:log4j:1.2.17'
     compile 'com.sun.mail:javax.mail:1.5.2'
     compile 'com.sun.mail:smtp:1.5.2'
-    compile 'velocity:velocity:1.5'
+    compile 'org.apache.velocity:velocity:1.7'
+    compile 'org.slf4j:slf4j-log4j12:1.6.1'
+    compile 'aopalliance:aopalliance:1.0'
+    compile 'dom4j:dom4j:1.6.1'
+    compile 'org.jboss.logging:jboss-logging:3.1.4.GA'
+    compile 'antlr:antlr:2.7.7'
+    compile 'commons-logging:commons-logging:1.2'
+
     
     providedCompile 'javax.servlet:servlet-api:2.5'
     
@@ -73,9 +81,15 @@ dependencies {
     runtime "postgresql:postgresql:9.3-1101.jdbc41@jar"
 }
 
+sourceCompatibility = 1.7
+
 sourceSets {
     main {
         java {
+            srcDir 'src/java'
+        }
+        
+        resources  {
             srcDir 'src/java'
         }
     }
@@ -93,7 +107,7 @@ remotes {
 }
 
 ssh {
-    identity = file("${System.properties['user.home']}/.ssh/id_dsa")
+    identity = file("${System.properties['user.home']}/.ssh/github.pem")
     knownHosts = allowAnyHosts    // Disable host key verification
 }
 
@@ -107,9 +121,34 @@ task deploy(type: SshTask, dependsOn: war) {
     }
   
     session(remotes.webServer) {
-        // Put a built WAR to the server
-        put war.archivePath, '/webapps'
-        // Restart the application server
-        execute 'sudo service tomcat restart'
+
+        put war.archivePath, '/root/'
+        
+        execute 'cp /opt/api.promobox.ee/WEB-INF/cfg/production.properties .'
+        
+        execute 'cp /opt/api.promobox.ee/WEB-INF/classes/log4j.xml .'
+        
+        execute 'rm -rf /opt/api.promobox.ee/'
+        
+        execute 'unzip ' + war.archiveName + ' -d /opt/api.promobox.ee/'
+        
+        execute 'mv production.properties /opt/api.promobox.ee/WEB-INF/cfg/production.properties'
+        
+        execute 'mv log4j.xml /opt/api.promobox.ee/WEB-INF/classes/log4j.xml'
+
+        execute 'sudo service tomcat7 restart'
+    }
+}
+
+
+task deploy_static(type: SshTask) {
+    description = 'Deploys an static to the server.'
+  
+    session(remotes.webServer) {
+
+        put "../MonitorSites/public_html/" , '.'
+        execute 'cp -r public_html/* /opt/promobox.ee/'
+        execute 'rm -rf public_html/'
+
     }
 }

@@ -140,6 +140,8 @@ public class UserController {
                 obj.put("id", d.getId());
                 obj.put("status", d.getStatus());
                 obj.put("uuid", d.getUuid());
+                
+                devs.put(obj);
             }
             
             resp.put("devices", devs);

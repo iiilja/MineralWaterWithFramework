@@ -116,8 +116,8 @@ public class UserController {
         if (session!=null) {
             resp.put("response", RequestUitls.OK);
             
-            List<AdCampaigns> campaigns = userService.findUserAdCompaigns(session.getUserId());
-            List<Devices> devices = userService.findUserDevieces(session.getUserId());
+            List<AdCampaigns> campaigns = userService.findUserAdCompaigns(session.getClientId());
+            List<Devices> devices = userService.findUserDevieces(session.getClientId());
             
             JSONArray arCamp = new JSONArray();
             

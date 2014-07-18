@@ -47,22 +47,22 @@ public class UserServiceImpl implements UserService {
         return (Users) q.uniqueResult();
     }
 
-    public List<AdCampaigns> findUserAdCompaigns(int userId) {
+    public List<AdCampaigns> findUserAdCompaigns(int clientId) {
         Session session = sessionFactory.getCurrentSession();
 
-        Query q = session.createQuery("from AdCampaings where userId = :userId");
+        Query q = session.createQuery("from AdCampaigns where clientId = :clientId");
 
-        q.setParameter("userId", userId);
+        q.setParameter("clientId", clientId);
 
         return q.list();
     }
 
-    public List<Devices> findUserDevieces(int userId) {
+    public List<Devices> findUserDevieces(int clientId) {
         Session session = sessionFactory.getCurrentSession();
 
-        Query q = session.createQuery("from Devices where userId = :userId");
+        Query q = session.createQuery("from Devices where clientId = :clientId");
 
-        q.setParameter("userId", userId);
+        q.setParameter("clientId", clientId);
 
         return q.list();
     }

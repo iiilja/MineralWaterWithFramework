@@ -5,7 +5,10 @@
  */
 package ee.promobox.util;
 
+import java.io.Writer;
+import javax.servlet.http.HttpServletResponse;
 import org.json.JSONObject;
+import org.springframework.web.servlet.ModelAndView;
 
 /**
  *
@@ -17,9 +20,9 @@ public class RequestUitls {
     public final static String OK = "OK";
 
     public static JSONObject getErrorResponse() {
-        
+
         JSONObject obj = new JSONObject();
-        
+
         try {
             obj.put("response", ERROR);
         } catch (Exception ex) {
@@ -27,6 +30,20 @@ public class RequestUitls {
         }
 
         return obj;
+    }
+
+    public static ModelAndView printResult(String text, HttpServletResponse response) throws Exception {
+
+        response.setContentType("text/html; charset=UTF-8");
+        response.setCharacterEncoding("UTF-8");
+
+        Writer writer = response.getWriter();
+
+        writer.write(text);
+
+        writer.flush();
+
+        return null;
     }
 
 }

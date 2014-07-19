@@ -66,7 +66,7 @@ public class UserController {
 
         json.put("users", userAr);
 
-        return printResult(json.toString(), response);
+        return RequestUitls.printResult(json.toString(), response);
 
     }
     
@@ -98,7 +98,7 @@ public class UserController {
             resp.put("token", session.getUuid());
         }
 
-        return printResult(resp.toString(), response);
+        return RequestUitls.printResult(resp.toString(), response);
 
     }
     
@@ -148,21 +148,8 @@ public class UserController {
 
         }
 
-        return printResult(resp.toString(), response);
-
+        return RequestUitls.printResult(resp.toString(), response);
     }
 
-    private ModelAndView printResult(String text, HttpServletResponse response) throws Exception {
 
-        response.setContentType("text/html; charset=UTF-8");
-        response.setCharacterEncoding("UTF-8");
-
-        Writer writer = response.getWriter();
-
-        writer.write(text);
-
-        writer.flush();
-
-        return null;
-    }
 }

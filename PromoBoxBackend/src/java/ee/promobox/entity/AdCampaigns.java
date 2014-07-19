@@ -17,6 +17,8 @@ import javax.persistence.Lob;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -49,8 +51,10 @@ public class AdCampaigns implements Serializable {
     @Column(name = "sequence")
     private int sequence;
     @Column(name = "start")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date start;
     @Column(name = "finish")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date finish;
     @Column(name = "duration")
     private int duration;

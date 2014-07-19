@@ -75,6 +75,11 @@ public class CampaignsController {
     public ModelAndView addCampaign(
             @RequestParam String token,
             @RequestParam String name,
+            @RequestParam boolean active,
+            @RequestParam int sequence,
+            @RequestParam long start,
+            @RequestParam long finish,
+            @RequestParam int duration,
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
@@ -85,6 +90,11 @@ public class CampaignsController {
             AdCampaigns campaign = new AdCampaigns();
             campaign.setName(name);
             campaign.setClientId(session.getClientId());
+            campaign.setActive(active);
+            campaign.setStart(new Date(start));
+            campaign.setFinish(new Date(finish));
+            campaign.setSequence(sequence);
+            campaign.setDuration(duration);
 
             userService.addCampaign(campaign);
             resp.put("response", RequestUtils.OK);
@@ -100,6 +110,8 @@ public class CampaignsController {
             @RequestParam String name,
             @RequestParam boolean active,
             @RequestParam int sequence,
+            @RequestParam long start,
+            @RequestParam long finish,
             @RequestParam int duration,
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
@@ -138,6 +150,8 @@ public class CampaignsController {
                     campaign.setClientId(clientId);
                     campaign.setActive(active);
                     campaign.setSequence(sequence);
+                    campaign.setStart(new Date(start));
+                    campaign.setFinish(new Date(finish));
                     campaign.setDuration(duration);
                     userService.updateCampaign(campaign);
 

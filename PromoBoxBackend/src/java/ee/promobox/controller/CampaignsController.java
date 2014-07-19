@@ -8,7 +8,7 @@ package ee.promobox.controller;
 
 import ee.promobox.service.Session;
 import ee.promobox.service.SessionService;
-import ee.promobox.util.RequestUitls;
+import ee.promobox.util.RequestUtils;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.json.JSONException;
@@ -34,14 +34,14 @@ public class CampaignsController {
             @RequestParam String token,
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
-        JSONObject resp = RequestUitls.getErrorResponse();
+        JSONObject resp = RequestUtils.getErrorResponse();
         
         Session session = sessionService.findSession(token);
         
         if (session != null) {
-            resp.put("response", RequestUitls.OK);
+            resp.put("response", RequestUtils.OK);
         } 
         
-        return RequestUitls.printResult(resp.toString(), response);
+        return RequestUtils.printResult(resp.toString(), response);
     }
 }

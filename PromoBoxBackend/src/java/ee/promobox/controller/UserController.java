@@ -10,7 +10,7 @@ import ee.promobox.entity.Users;
 import ee.promobox.service.Session;
 import ee.promobox.service.SessionService;
 import ee.promobox.service.UserService;
-import ee.promobox.util.RequestUitls;
+import ee.promobox.util.RequestUtils;
 import java.io.Writer;
 import java.util.Date;
 import java.util.List;
@@ -66,7 +66,7 @@ public class UserController {
 
         json.put("users", userAr);
 
-        return RequestUitls.printResult(json.toString(), response);
+        return RequestUtils.printResult(json.toString(), response);
 
     }
     
@@ -78,12 +78,12 @@ public class UserController {
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
-        JSONObject resp = RequestUitls.getErrorResponse();
+        JSONObject resp = RequestUtils.getErrorResponse();
         
         Users user = userService.findUserByEmailAndPassword(email, password);
         
         if (user!=null) {
-            resp.put("response", RequestUitls.OK);
+            resp.put("response", RequestUtils.OK);
             
             Session session = new  Session();
             
@@ -98,7 +98,7 @@ public class UserController {
             resp.put("token", session.getUuid());
         }
 
-        return RequestUitls.printResult(resp.toString(), response);
+        return RequestUtils.printResult(resp.toString(), response);
 
     }
     
@@ -109,12 +109,12 @@ public class UserController {
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
-        JSONObject resp = RequestUitls.getErrorResponse();
+        JSONObject resp = RequestUtils.getErrorResponse();
         
         Session session = sessionService.findSession(token);
         
         if (session!=null) {
-            resp.put("response", RequestUitls.OK);
+            resp.put("response", RequestUtils.OK);
             
             List<AdCampaigns> campaigns = userService.findUserAdCompaigns(session.getClientId());
             List<Devices> devices = userService.findUserDevieces(session.getClientId());
@@ -148,7 +148,7 @@ public class UserController {
 
         }
 
-        return RequestUitls.printResult(resp.toString(), response);
+        return RequestUtils.printResult(resp.toString(), response);
     }
 
 

@@ -14,7 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
  *
  * @author Maxim
  */
-public class RequestUitls {
+public class RequestUtils {
 
     public final static String ERROR = "ERROR";
     public final static String OK = "OK";

@@ -1,9 +1,17 @@
 (function (){
-    var app = angular.module('promoboxAdminApp', []);
+    var app = angular.module('promoboxAdminApp', ['ngCookies','ui.bootstrap']);
     
-    app.controller('userControl',[ '$http','$scope', function($http, $scope){
+    app.controller('userControl',[ '$http','$scope','$cookies', function($http, $scope, $cookies){
         $scope.page = 0;
         this.title = 'PromoBox';
+        
+        $scope.email = $cookies.email;
+        $scope.password = $cookies.password;
+        $scope.remember = $cookies.remember;
+        
+        console.log($scope.email + ' ' + $scope.password + ' ' + $scope.remember);
+        
+
 
         $scope.selectLink = function(link) {
             $scope.page = link;
@@ -19,7 +27,7 @@
         return {
           restrict: 'E',
           templateUrl: 'login-form.html',
-          controller: function($http,$scope) {
+          controller: function($http,$scope,$cookies) {
               var login = this;
               
               $http.get("http://localhost:8383/MonitorSites/core/json/en.json").success(function (s_data) {
@@ -30,11 +38,20 @@
               
               $scope.submitLogin = function () {
                 if ($scope.loginForm.$valid) {
-                    var email = $scope.loginForm.email.$modelValue;
-                    var password = $scope.loginForm.password.$modelValue;
-                    var remember = $scope.loginForm.remember.$modelValue;
+                    $cookies.email = $scope.loginForm.email.$modelValue;
+                    $cookies.password = $scope.loginForm.password.$modelValue;
+                    if($scope.loginForm.remember.$modelValue === undefined) {
+                        $cookies.remember = "false";
+                    } else {
+                        $cookies.remember = $scope.loginForm.remember.$modelValue;
+                    }
                     
-                    $http.get("http://localhost:8383/MonitorSites/core/json/user_data.json").success(function (s_data) {
+                    $scope.getUserData();
+		}
+              };
+              
+              $scope.getUserData = function () {
+                  $http.get("http://localhost:8383/MonitorSites/core/json/user_data.json").success(function (s_data) {
                         if(s_data.return) {
                             $scope.id = s_data.id;
                             $scope.login = s_data.login;
@@ -44,7 +61,6 @@
                     }).error(function (e_data){
                         alert('Error');
                     });
-		}
               };
           },
           controllerAs: 'login'
@@ -55,7 +71,7 @@
         return {
           restrict: 'E',
           templateUrl: 'register-form.html',
-          controller: function($http,$scope) {
+          controller: function($http,$scope,$cookies) {
               var register = this;
               
               $http.get("http://localhost:8383/MonitorSites/core/json/en.json").success(function (s_data) {
@@ -72,8 +88,14 @@
         return {
           restrict: 'E',
           templateUrl: 'mainpage.html',
-          controller: function($http,$scope) {
+          controller: function($http,$scope,$cookies) {
+              var mainpage = this;
               
+              $http.get("http://localhost:8383/MonitorSites/core/json/en.json").success(function (s_data) {
+                  mainpage.text = s_data.mainpage;
+              }).error(function (e_data){
+                  alert('Error');
+              });
           },
           controllerAs: 'mainpage'
         };

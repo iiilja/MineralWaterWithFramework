@@ -77,14 +77,14 @@ public class UserServiceImpl implements UserService {
         return q.list();
     }
 
-    public boolean hasAccess(int id, int clientId) {
+    public AdCampaigns findCampaignByIdAndClientId(int id, int clientId) {
         Session session = sessionFactory.getCurrentSession();
 
         Query q = session.createQuery("FROM AdCampaigns WHERE id = :id AND clientId = :clientId");
         q.setParameter("id", id);
         q.setParameter("clientId", clientId);
 
-        return !q.list().isEmpty();
+        return (AdCampaigns) q.uniqueResult();
     }
 
     public void addCampaign(AdCampaigns campaign) {

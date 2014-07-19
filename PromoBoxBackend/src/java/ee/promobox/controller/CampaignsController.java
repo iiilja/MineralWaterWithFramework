@@ -98,6 +98,8 @@ public class CampaignsController {
 
             userService.addCampaign(campaign);
             
+            List<AdCampaigns> campaigns = userService.findUserAdCompaigns(session.getClientId());
+            
             resp.put("response", RequestUtils.OK);
             resp.put("id", campaign.getId());
         }
@@ -107,6 +109,7 @@ public class CampaignsController {
 
     @RequestMapping("campaigns/update")
     public ModelAndView updateCampaign(
+            @RequestParam String json,
             @RequestParam String token,
             @RequestParam int id,
             @RequestParam String name,
@@ -120,17 +123,18 @@ public class CampaignsController {
 
         JSONObject resp = RequestUtils.getErrorResponse();
         Session session = sessionService.findSession(token);
+        
+        JSONObject objectGiven = new JSONObject(json);
 
         // if session exists
         if (session != null) {
             int clientId = session.getClientId();
             
-            if (userService.hasAccess(id, clientId)) {
-                // create new adcampaigns object
-                AdCampaigns campaign = new AdCampaigns();
-
+            AdCampaigns campaign = userService.findCampaignByIdAndClientId(id, clientId);
+            
+            if (campaign != null) {
+                
                 // fill all the fields with data provided by the client
-                campaign.setId(id);
                 campaign.setName(name);
                 campaign.setClientId(clientId);
                 campaign.setActive(active);

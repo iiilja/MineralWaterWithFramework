@@ -1,3 +1,14 @@
-Its main page
-{{ id }}
-{{ login }}
+<div>
+    <span class="pull-right" style="margin: 10px;">{{ mainpage.text.exit }}</span>
+    <span class="pull-right" style="margin: 10px;">{{ login }}</span>
+</div>
+
+<tabset justified="false">
+    <tab heading="{{ mainpage.text.tab1}}">
+        <company-view></company-view>
+    </tab>
+    <tab heading="{{ mainpage.text.tab2}}">
+        
+        <span style="float: right; margin: 10px;">Tab212 123 123</span>
+    </tab>
+</tabset>

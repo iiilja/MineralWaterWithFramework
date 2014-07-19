@@ -123,7 +123,7 @@ public class CampaignsController {
                 // iterate trough the list of campaigns that belong to the client
                 for (AdCampaigns campaign : campaigns) {
                     // if there is match then the client has access to modify it
-                    if (campaign.getClientId() == clientId) {
+                    if (campaign.getId() == id) {
                         hasAccess = true;
                     }
                 }

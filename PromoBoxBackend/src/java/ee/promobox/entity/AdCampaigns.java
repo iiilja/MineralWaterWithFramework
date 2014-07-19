@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package ee.promobox.entity;
 
 import java.io.Serializable;
+import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -33,6 +33,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "AdCampaigns.findByClientId", query = "SELECT a FROM AdCampaigns a WHERE a.clientId = :clientId"),
     @NamedQuery(name = "AdCampaigns.findByActive", query = "SELECT a FROM AdCampaigns a WHERE a.active = :active")})
 public class AdCampaigns implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,13 +42,18 @@ public class AdCampaigns implements Serializable {
     private Integer id;
     @Column(name = "name")
     private String name;
-    @Lob
-    @Column(name = "params")
-    private Object params;
     @Column(name = "client_id")
     private Integer clientId;
     @Column(name = "active")
     private Boolean active;
+    @Column(name = "sequence")
+    private int sequence;
+    @Column(name = "start")
+    private Date start;
+    @Column(name = "finish")
+    private Date finish;
+    @Column(name = "duration")
+    private int duration;
 
     public AdCampaigns() {
     }
@@ -72,14 +78,6 @@ public class AdCampaigns implements Serializable {
         this.name = name;
     }
 
-    public Object getParams() {
-        return params;
-    }
-
-    public void setParams(Object params) {
-        this.params = params;
-    }
-
     public Integer getClientId() {
         return clientId;
     }
@@ -94,6 +92,38 @@ public class AdCampaigns implements Serializable {
 
     public void setActive(Boolean active) {
         this.active = active;
+    }
+
+    public int getSequence() {
+        return sequence;
+    }
+
+    public void setSequence(int sequence) {
+        this.sequence = sequence;
+    }
+
+    public Date getStart() {
+        return start;
+    }
+
+    public void setStart(Date start) {
+        this.start = start;
+    }
+
+    public Date getFinish() {
+        return finish;
+    }
+
+    public void setFinish(Date finish) {
+        this.finish = finish;
+    }
+
+    public int getDuration() {
+        return duration;
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
     }
 
     @Override
@@ -120,5 +150,5 @@ public class AdCampaigns implements Serializable {
     public String toString() {
         return "ee.promobox.entity.AdCampaigns[ id=" + id + " ]";
     }
-    
+
 }

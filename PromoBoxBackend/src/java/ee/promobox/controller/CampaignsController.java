@@ -121,43 +121,25 @@ public class CampaignsController {
 
         // if session exists
         if (session != null) {
-            boolean hasAccess = false;
-            /*
-             in order to find out all the campaigns that belong to the client
-             we have to find out clients id
-             */
             int clientId = session.getClientId();
-            // get all the campaigns that belong to the client
-            List<AdCampaigns> campaigns = userService.findUserAdCompaigns(clientId);
+            
+            if (userService.hasAccess(id, clientId)) {
+                // create new adcampaigns object
+                AdCampaigns campaign = new AdCampaigns();
 
-            // if the client has campaigns
-            if (!campaigns.isEmpty()) {
-                // iterate trough the list of campaigns that belong to the client
-                for (AdCampaigns campaign : campaigns) {
-                    // if there is match then the client has access to modify it
-                    if (campaign.getId() == id) {
-                        hasAccess = true;
-                    }
-                }
+                // fill all the fields with data provided by the client
+                campaign.setId(id);
+                campaign.setName(name);
+                campaign.setClientId(clientId);
+                campaign.setActive(active);
+                campaign.setSequence(sequence);
+                campaign.setStart(new Date(start));
+                campaign.setFinish(new Date(finish));
+                campaign.setDuration(duration);
+                userService.updateCampaign(campaign);
 
-                if (hasAccess) {
-                    // create new adcampaigns object
-                    AdCampaigns campaign = new AdCampaigns();
-
-                    // fill all the fields with data provided by the client
-                    campaign.setId(id);
-                    campaign.setName(name);
-                    campaign.setClientId(clientId);
-                    campaign.setActive(active);
-                    campaign.setSequence(sequence);
-                    campaign.setStart(new Date(start));
-                    campaign.setFinish(new Date(finish));
-                    campaign.setDuration(duration);
-                    userService.updateCampaign(campaign);
-
-                    // if this line of code is reached, put OK in the response
-                    resp.put("response", RequestUtils.OK);
-                }
+                // if this line of code is reached, put OK in the response
+                resp.put("response", RequestUtils.OK);
             }
         }
 

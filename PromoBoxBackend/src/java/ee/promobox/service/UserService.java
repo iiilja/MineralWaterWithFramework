@@ -27,6 +27,8 @@ public interface UserService {
     public List<Devices> findUserDevieces(int userId);
 
     public List<Files> findCampaignFiles(int campgaignId);
+    
+    public boolean hasAccess(int id, int clientId);
 
     public void addCampaign(AdCampaigns campaign);
 

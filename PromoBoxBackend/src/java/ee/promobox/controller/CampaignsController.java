@@ -98,10 +98,8 @@ public class CampaignsController {
 
             userService.addCampaign(campaign);
             
-            List<AdCampaigns> campaigns = userService.findUserAdCompaigns(session.getClientId());
-            
             resp.put("response", RequestUtils.OK);
-            resp.put("id", campaigns.get(campaigns.size() - 1).getId());
+            resp.put("id", campaign.getId());
         }
 
         return RequestUtils.printResult(resp.toString(), response);

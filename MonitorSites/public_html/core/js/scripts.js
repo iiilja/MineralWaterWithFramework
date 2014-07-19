@@ -101,4 +101,22 @@
         };
     });
     
+    app.directive('companyView', function(){
+        return {
+          restrict: 'E',
+          templateUrl: 'company-view.html',
+          controller: function($http,$scope,$cookies) {
+              var companyview = this;
+              
+              $http.get("http://localhost:8383/MonitorSites/core/json/company.json").success(function (s_data) {
+                  console.log(s_data);
+                  companyview.company_data = s_data;
+              }).error(function (e_data){
+                  alert('Error');
+              });
+          },
+          controllerAs: 'companyview'
+        };
+    });
+    
 })();

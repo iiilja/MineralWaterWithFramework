@@ -16,5 +16,12 @@
         "remember": "Remember me",
         "register": "Register",
         "sign_in": "Sign In"
+    },
+    "mainpage" : {
+        "tab1": "Рекламные компании",
+        "tab2": "Устройства",
+        "exit": "Выход",
+        "edit": "Изменить",
+        "delete": "Удалить"
     }
 }

@@ -107,5 +107,4 @@ public class Session {
         this.clientId = clientId;
     }
     
-    
 }

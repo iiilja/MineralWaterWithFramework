@@ -22,11 +22,13 @@ public interface UserService {
 
     public Users findUserByEmailAndPassword(String email, String password);
 
-    public List<AdCampaigns> findUserAdCompaigns(int userId);
+    public List<AdCampaigns> findUserAdCompaigns(int clientId);
 
-    public List<Devices> findUserDevieces(int userId);
+    public List<Devices> findUserDevieces(int clientId);
 
     public List<Files> findCampaignFiles(int campgaignId);
+    
+    public AdCampaigns findCampaignByIdAndClientId(int id, int clientId);
 
     public void addCampaign(AdCampaigns campaign);
 

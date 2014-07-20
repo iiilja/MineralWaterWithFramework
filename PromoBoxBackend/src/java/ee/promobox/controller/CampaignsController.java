@@ -75,11 +75,7 @@ public class CampaignsController {
     public ModelAndView addCampaign(
             @RequestParam String token,
             @RequestParam String name,
-            @RequestParam boolean active,
-            @RequestParam int sequence,
-            @RequestParam long start,
-            @RequestParam long finish,
-            @RequestParam int duration,
+            @RequestParam String json,
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
@@ -87,18 +83,19 @@ public class CampaignsController {
         Session session = sessionService.findSession(token);
 
         if (session != null) {
+
+            JSONObject objectGiven = new JSONObject(json);
+
             AdCampaigns campaign = new AdCampaigns();
             campaign.setName(name);
             campaign.setClientId(session.getClientId());
-            campaign.setActive(active);
-            campaign.setStart(new Date(start));
-            campaign.setFinish(new Date(finish));
-            campaign.setSequence(sequence);
-            campaign.setDuration(duration);
+            campaign.setActive(objectGiven.getBoolean("active"));
+            campaign.setSequence(objectGiven.getInt("sequence"));
+            campaign.setStart(new Date(objectGiven.getLong("start")));
+            campaign.setFinish(new Date(objectGiven.getLong("finish")));
+            campaign.setDuration(objectGiven.getInt("duration"));
 
             userService.addCampaign(campaign);
-            
-            List<AdCampaigns> campaigns = userService.findUserAdCompaigns(session.getClientId());
             
             resp.put("response", RequestUtils.OK);
             resp.put("id", campaign.getId());
@@ -109,39 +106,34 @@ public class CampaignsController {
 
     @RequestMapping("campaigns/update")
     public ModelAndView updateCampaign(
-            @RequestParam String json,
             @RequestParam String token,
             @RequestParam int id,
             @RequestParam String name,
-            @RequestParam boolean active,
-            @RequestParam int sequence,
-            @RequestParam long start,
-            @RequestParam long finish,
-            @RequestParam int duration,
+            @RequestParam String json,
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
         JSONObject resp = RequestUtils.getErrorResponse();
         Session session = sessionService.findSession(token);
-        
-        JSONObject objectGiven = new JSONObject(json);
 
         // if session exists
         if (session != null) {
             int clientId = session.getClientId();
-            
+
             AdCampaigns campaign = userService.findCampaignByIdAndClientId(id, clientId);
-            
+
             if (campaign != null) {
-                
+
+                JSONObject objectGiven = new JSONObject(json);
+
                 // fill all the fields with data provided by the client
                 campaign.setName(name);
                 campaign.setClientId(clientId);
-                campaign.setActive(active);
-                campaign.setSequence(sequence);
-                campaign.setStart(new Date(start));
-                campaign.setFinish(new Date(finish));
-                campaign.setDuration(duration);
+                campaign.setActive(objectGiven.getBoolean("active"));
+                campaign.setSequence(objectGiven.getInt("sequence"));
+                campaign.setStart(new Date(objectGiven.getLong("start")));
+                campaign.setFinish(new Date(objectGiven.getLong("finish")));
+                campaign.setDuration(objectGiven.getInt("duration"));
                 userService.updateCampaign(campaign);
 
                 // if this line of code is reached, put OK in the response

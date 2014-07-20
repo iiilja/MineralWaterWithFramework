@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ee.promobox.entity;
+package ee.promobox.controller;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -11,8 +11,17 @@ import org.springframework.web.multipart.MultipartFile;
  *
  * @author Dan
  */
-public class FileUpload {
+public class FileUploadCommand {
 
-    MultipartFile file;
+    private MultipartFile file;
+
     //getter and setter methods
+    public MultipartFile getFile() {
+        return file;
+    }
+
+    public void setFile(MultipartFile file) {
+        this.file = file;
+    }
+    
 }

@@ -27,8 +27,8 @@ public class MainActivity extends Activity {
     public final static String CAMPAIGN_UPDATE = "ee.promobox.promoboxandroid.UPDATE";
     public final static String ACTIVITY_FINISH = "ee.promobox.promoboxandroid.FINISH";
     public final static String APP_START = "ee.promobox.promoboxandroid.START";
-    public final int RESULT_FINISH_PLAY = 1;
-    public final int RESULT_FINISH_FIRST_START = 2;
+    public final static int RESULT_FINISH_PLAY = 1;
+    public final static int RESULT_FINISH_FIRST_START = 2;
 
     private MainService mainService;
     private int position;

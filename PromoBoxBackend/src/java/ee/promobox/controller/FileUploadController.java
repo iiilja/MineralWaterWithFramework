@@ -45,7 +45,8 @@ public class FileUploadController {
     
     @RequestMapping("files/upload")
     public ModelAndView uploadFile(
-            @RequestParam String token,
+            /*
+            @RequestParam String token,*/
             @ModelAttribute FileUploadCommand command,
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {

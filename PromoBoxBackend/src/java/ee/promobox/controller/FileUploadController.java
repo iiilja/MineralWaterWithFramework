@@ -14,10 +14,12 @@ import ee.promobox.service.Session;
 import ee.promobox.service.SessionService;
 import ee.promobox.service.UserService;
 import ee.promobox.util.RequestUtils;
+import java.io.File;
 import java.util.Date;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -59,6 +61,11 @@ public class FileUploadController {
         
         JSONObject resp = RequestUtils.getErrorResponse();
         resp.put("response", "OK");
+        
+        /* Save file example
+        File f = new File("path/to/file");
+        FileUtils.writeByteArrayToFile(f, multipartFile.getBytes());
+        */
         
         return RequestUtils.printResult(resp.toString(), response);
     }

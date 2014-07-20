@@ -32,15 +32,37 @@ import java.util.List;
 public class MainService extends Service {
 
     private final static int TEST_CLIENT_ID = 1;
-    private final String DEFAULT_SERVER = "http://46.182.31.94/%s/data.json";
+    private final String DEFAULT_SERVER = "http://api.dev.promobox.ee/";
+    private final String DEFAULT_CDN = "http://dev.promobox.ee/";
+    private final String DEFAULT_SERVER_JSON = DEFAULT_CDN + "%s/data.json";
+    private JSONObject settings;
+    private int deviceId;
 
     File root = new File(Environment.getExternalStorageDirectory().getAbsoluteFile() + "/promobox/");
 
-    private final IBinder mBinder = new MyBinder();
+    private final IBinder mBinder = new MainServiceBinder();
 
     private Campaign campaign;
 
     private DownloadFilesTask dTask = new DownloadFilesTask();
+
+    @Override
+    public void onCreate() {
+        if (getSettings() == null) {
+            try {
+                settings = loadSettings();
+
+                if (settings != null) {
+                    deviceId = settings.getInt("deviceId");
+                    Log.i(this.getClass().getName(), "Device id: " + deviceId);
+                }
+            } catch (Exception ex) {
+                Log.e(this.getClass().getName(), ex.getMessage(), ex);
+            }
+
+        }
+    }
+
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -48,6 +70,24 @@ public class MainService extends Service {
         checkAndDownloadCampaign();
 
         return Service.START_NOT_STICKY;
+    }
+
+    public JSONObject loadSettings() throws Exception {
+        File settings = new File(root, "settings.json");
+
+        JSONObject obj = null;
+
+        if (settings.exists()) {
+            obj = new JSONObject(FileUtils.readFileToString(settings));
+        }
+
+        return obj;
+    }
+
+    public void saveSettings(JSONObject obj) throws  Exception {
+        File settings = new File(root, "settings.json");
+        FileUtils.writeStringToFile(settings, obj.toString());
+
     }
 
     public void checkAndDownloadCampaign() {
@@ -63,7 +103,7 @@ public class MainService extends Service {
 
         if (dTask.getStatus() != AsyncTask.Status.RUNNING) {
             dTask = new DownloadFilesTask();
-            dTask.execute(String.format(DEFAULT_SERVER, TEST_CLIENT_ID));
+            dTask.execute(String.format(DEFAULT_SERVER_JSON, TEST_CLIENT_ID));
         }
 
     }
@@ -92,7 +132,15 @@ public class MainService extends Service {
         return mBinder;
     }
 
-    public class MyBinder extends Binder {
+    public void setSettings(JSONObject settings) {
+        this.settings = settings;
+    }
+
+    public JSONObject getSettings() {
+        return settings;
+    }
+
+    public class MainServiceBinder extends Binder {
         MainService getService() {
             return MainService.this;
         }
@@ -140,7 +188,7 @@ public class MainService extends Service {
 
                 if (!file.exists() || file.length() != f.getSize()) {
 
-                    downloadFile(String.format("http://46.182.31.94/%s/%s/%s", campaign.getClientId(), campaign.getCampaignId(),f.getName()), f.getName());
+                    downloadFile(String.format(DEFAULT_CDN + "%s/%s/%s", campaign.getClientId(), campaign.getCampaignId(),f.getName()), f.getName());
 
                 }
             }

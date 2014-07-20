@@ -11,8 +11,11 @@ import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
+
+import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -24,6 +27,8 @@ public class MainActivity extends Activity {
     public final static String CAMPAIGN_UPDATE = "ee.promobox.promoboxandroid.UPDATE";
     public final static String ACTIVITY_FINISH = "ee.promobox.promoboxandroid.FINISH";
     public final static String APP_START = "ee.promobox.promoboxandroid.START";
+    public final int RESULT_FINISH_PLAY = 1;
+    public final int RESULT_FINISH_FIRST_START = 2;
 
     private MainService mainService;
     private int position;
@@ -46,10 +51,6 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
-
-        Intent service = new Intent(this, MainService.class);
-
-        startService(service);
 
         LocalBroadcastManager bManager = LocalBroadcastManager.getInstance(this);
 
@@ -104,7 +105,7 @@ public class MainActivity extends Activity {
 
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-                startActivityForResult(i, 1);
+                startActivityForResult(i, RESULT_FINISH_PLAY);
 
 
             } else if (fileType == CampaignFileType.AUDIO) {
@@ -115,7 +116,7 @@ public class MainActivity extends Activity {
 
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-                startActivityForResult(i, 1);
+                startActivityForResult(i, RESULT_FINISH_PLAY);
 
             } else if (fileType == CampaignFileType.VIDEO) {
 
@@ -125,7 +126,7 @@ public class MainActivity extends Activity {
 
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-                startActivityForResult(i, 1);
+                startActivityForResult(i, RESULT_FINISH_PLAY);
 
             }
 
@@ -135,8 +136,21 @@ public class MainActivity extends Activity {
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        if (requestCode == 1) {
+        if (requestCode == RESULT_FINISH_PLAY) {
             startNextFile();
+        } else if (requestCode == RESULT_FINISH_FIRST_START) {
+            try {
+                JSONObject settings = new JSONObject();
+                settings.put("deviceId", data.getIntExtra("id", 0));
+
+                mainService.setSettings(settings);
+                mainService.saveSettings(settings);
+
+                startNextFile();
+
+            } catch (Exception ex) {
+                Log.e(this.getClass().getName(), ex.getMessage(), ex);
+            }
         }
     }
 
@@ -153,12 +167,13 @@ public class MainActivity extends Activity {
         bindService(intent, mConnection,
                 Context.BIND_AUTO_CREATE);
 
+        startService(intent);
+
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        //unbindService(mConnection);
     }
 
 
@@ -167,16 +182,21 @@ public class MainActivity extends Activity {
         public void onServiceConnected(ComponentName className,
                                        IBinder binder) {
 
-            MainService.MyBinder b = (MainService.MyBinder) binder;
+            MainService.MainServiceBinder b = (MainService.MainServiceBinder) binder;
 
             mainService = b.getService();
 
             campaign = mainService.getCampaign();
 
-            Toast.makeText(MainActivity.this, "Connected", Toast.LENGTH_SHORT)
-                    .show();
+            if (mainService.getSettings() == null) {
+                startActivityForResult(new Intent(MainActivity.this, FirstActivity.class), 2);
+            } else {
 
-            startNextFile();
+                Toast.makeText(MainActivity.this, "Connected", Toast.LENGTH_SHORT)
+                        .show();
+
+                startNextFile();
+            }
 
         }
 

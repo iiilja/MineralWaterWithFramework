@@ -13,6 +13,9 @@ import org.springframework.web.multipart.MultipartFile;
  * @author Dan
  */
 public class FileUtils {
+    
+    public static final int FILE_TYPE_JPG = 1;
+    public static final int FILE_TYPE_PNG = 2;
    
     public static String renameFile(String filename) {
         
@@ -21,9 +24,9 @@ public class FileUtils {
     
     public static int determineFileTypeNumber(String filetype) {
         switch (filetype.toUpperCase()) {
-            case "JPG":  return 1;
-            case "JPEG": return 2;
-            case "PNG": return 3;
+            case "JPG":  return FILE_TYPE_JPG;
+            case "JPEG": return FILE_TYPE_JPG;
+            case "PNG": return FILE_TYPE_PNG;
             case "MP3": return 4;
             case "MP4": return 5;
             case "AAC": return 6;

@@ -21,6 +21,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Date;
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.json.JSONArray;
@@ -58,6 +59,7 @@ public class FileUploadController {
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
+        // TODO: check if user has rights to add files for campaign
         JSONObject resp = RequestUtils.getErrorResponse();
         Session session = sessionService.findSession(token);
 
@@ -71,7 +73,7 @@ public class FileUploadController {
 
                 // define path for users directory
                 String userFilePath = FILE_DIRECTORY + session.getClientId() + "\\";
-
+                session.getClientId();
                 // if users folder doesnt exist, create one
                 File userFolder = new File(userFilePath);
 
@@ -120,6 +122,38 @@ public class FileUploadController {
                 physicalFile.renameTo(new File(userFilePath + databaseFile.getId() + "." + fileType));
 
                 resp.put("response", "OK");
+            }
+        }
+
+        return RequestUtils.printResult(resp.toString(), response);
+    }
+
+    @RequestMapping("files/show")
+    public ModelAndView showCampaignFiles(
+            @RequestParam String token,
+            @RequestParam int campaignId,
+            HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+        
+        JSONObject resp = RequestUtils.getErrorResponse();
+        Session session = sessionService.findSession(token);
+
+        if (session != null) {
+            List<Files> campaignFiles = userService.findUsersCampaignFiles(campaignId, session.getClientId());
+
+            if (campaignFiles != null) {
+                JSONArray jsonCampaignFiles = new JSONArray();
+                for (Files file : campaignFiles) {
+                    JSONObject jsonCampaignFile = new JSONObject();
+                    jsonCampaignFile.put("id", file.getId());
+                    jsonCampaignFile.put("name", file.getFilename());
+                    jsonCampaignFile.put("created", file.getCreatedDt());
+
+                    jsonCampaignFiles.put(jsonCampaignFile);
+                }
+
+                resp.put("campaignfiles", jsonCampaignFiles);
+                resp.put("response", RequestUtils.OK);
             }
         }
 

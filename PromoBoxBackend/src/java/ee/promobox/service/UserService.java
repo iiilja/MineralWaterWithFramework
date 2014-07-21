@@ -28,6 +28,8 @@ public interface UserService {
 
     public List<Files> findCampaignFiles(int campgaignId);
     
+    public List<Files> findUsersCampaignFiles(int campaignId, int clientId);
+    
     public AdCampaigns findCampaignByIdAndClientId(int id, int clientId);
 
     public void addCampaign(AdCampaigns campaign);

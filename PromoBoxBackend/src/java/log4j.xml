@@ -22,7 +22,7 @@
     </appender>
     
     
-    <logger name="com.darknessproject">
+    <logger name="ee.promobox">
         <!-- Other levels are: ALL, DEBUG, INFO, WARN, ERROR -->
         <level value="DEBUG"/>
     </logger>

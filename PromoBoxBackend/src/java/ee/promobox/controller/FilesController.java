@@ -9,6 +9,7 @@ package ee.promobox.controller;
  *
  * @author Dan
  */
+import ee.promobox.KioskConfig;
 import ee.promobox.entity.AdCampaigns;
 import ee.promobox.entity.CampaignsFiles;
 import ee.promobox.entity.Files;
@@ -44,12 +45,13 @@ public class FilesController {
 
     @Autowired
     private UserService userService;
+    
+    @Autowired
+    private KioskConfig config;
+
 
     private final static Logger log = LoggerFactory.getLogger(
             FilesController.class);
-
-    private final static String FILE_DIRECTORY = "C:\\Users\\Dan\\Desktop\\KioskFiles\\";
-    private final static String TEMP = FILE_DIRECTORY + "TEMP\\";
 
     @RequestMapping("files/upload")
     public ModelAndView uploadFile(
@@ -75,7 +77,7 @@ public class FilesController {
                     log.info("Filesize: " + multipartFile.getSize());
 
                     // define path for users directory
-                    String userFilePath = FILE_DIRECTORY + session.getClientId() + "\\";
+                    String userFilePath = config.getDataDir() + session.getClientId() + File.pathSeparator;
                     session.getClientId();
                     // if users folder doesnt exist, create one
                     File userFolder = new File(userFilePath);
@@ -92,7 +94,7 @@ public class FilesController {
                     long fileSize = multipartFile.getSize() / 1024;
 
                     // upload file to the temp folder on server
-                    File physicalFile = new File(TEMP + fileName);
+                    File physicalFile = new File(userFolder + fileName);
 
                     byte[] bytes = multipartFile.getBytes();
 

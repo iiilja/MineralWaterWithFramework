@@ -4,6 +4,7 @@
  */
 package ee.promobox.controller;
 
+import ee.promobox.KioskConfig;
 import ee.promobox.entity.AdCampaigns;
 import ee.promobox.entity.Devices;
 import ee.promobox.entity.Users;
@@ -42,7 +43,7 @@ public class UserController {
     
     @Autowired
     private SessionService sessionService;
-
+    
     @RequestMapping("/index")
     public ModelAndView indexHandler(
             HttpServletRequest request,
@@ -53,7 +54,7 @@ public class UserController {
         JSONArray userAr = new JSONArray();
 
         List<Users> list = userService.findAllUsers();
-
+        
         for (Users u : list) {
 
             JSONObject jsonUser = new JSONObject();

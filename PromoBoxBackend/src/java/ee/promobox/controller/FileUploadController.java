@@ -10,6 +10,7 @@ package ee.promobox.controller;
  * @author Dan
  */
 import ee.promobox.entity.AdCampaigns;
+import ee.promobox.entity.CampaignsFiles;
 import ee.promobox.entity.Files;
 import ee.promobox.service.Session;
 import ee.promobox.service.SessionService;
@@ -52,6 +53,7 @@ public class FileUploadController {
     @RequestMapping("files/upload")
     public ModelAndView uploadFile(
             @RequestParam String token,
+            @RequestParam int campaignId,
             @ModelAttribute FileUploadCommand command,
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
@@ -61,46 +63,59 @@ public class FileUploadController {
 
         if (session != null) {
             MultipartFile multipartFile = command.getFile();
-            
+
             if (!multipartFile.isEmpty()) {
                 // output data about the file into console
                 log.info("Filename: " + multipartFile.getOriginalFilename());
                 log.info("Filesize: " + multipartFile.getSize());
-                
+
                 // define path for users directory
-                String userFilePath =  FILE_DIRECTORY + session.getClientId() + "\\";
-                
+                String userFilePath = FILE_DIRECTORY + session.getClientId() + "\\";
+
                 // if users folder doesnt exist, create one
                 File userFolder = new File(userFilePath);
-                
+
                 if (!userFolder.exists()) {
                     userFolder.mkdir();
                 }
-                
+
                 // get data about the file
                 String fileName = multipartFile.getOriginalFilename();
                 String fileType = fileName.split("\\.")[1];
-                long fileSize = multipartFile.getSize();
-                
+                int fileTypeNumber = FileUtils.determineFileTypeNumber(fileType);
+                // divide by 1024 so that we get result in kilobytes
+                long fileSize = multipartFile.getSize() / 1024;
+
                 // upload file to the temp folder on server
                 File physicalFile = new File(TEMP + fileName);
 
                 byte[] bytes = multipartFile.getBytes();
-                BufferedOutputStream stream = new BufferedOutputStream(
-                        new FileOutputStream(physicalFile));
-                stream.write(bytes);
-                stream.close();   
-                
-                // populate database with data about file
+
+                try (BufferedOutputStream stream = new BufferedOutputStream(
+                        new FileOutputStream(physicalFile))) {
+                    stream.write(bytes);
+                } catch (Exception ex) {
+                    return RequestUtils.printResult(resp.toString(), response);
+                }
+
+                // populate file table with data about file
                 Files databaseFile = new Files();
                 databaseFile.setFilename(fileName);
-                databaseFile.setFileType(FileUtils.determineFileTypeNumber(fileType));
+                databaseFile.setFileType(fileTypeNumber);
                 databaseFile.setPath(userFilePath);
                 databaseFile.setCreatedDt(new Date(System.currentTimeMillis()));
-                databaseFile.setSize((int)fileSize);
-                userService.addFile(databaseFile); 
+                databaseFile.setSize((int) fileSize);
+                userService.addFile(databaseFile);
 
-                
+                // populate campaign files table with data about file
+                CampaignsFiles campaignFile = new CampaignsFiles();
+                campaignFile.setClientId(session.getClientId());
+                campaignFile.setAdCampaignsId(campaignId);
+                campaignFile.setFileId(databaseFile.getId());
+                campaignFile.setFileType(fileTypeNumber);
+                campaignFile.setOrderId(null);
+                userService.addCampaignFile(campaignFile);
+
                 // move file to the users folder and rename it to its DB id
                 physicalFile.renameTo(new File(userFilePath + databaseFile.getId() + "." + fileType));
 

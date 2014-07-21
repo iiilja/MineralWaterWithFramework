@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
  * @author vitalispiridonov
  */
 @Configuration
-@PropertySource("classpath:production.properties")
+@PropertySource("WEB-INF/cfg/production.properties")
 public class KioskConfig {
 
     @Value("${dataDir}")

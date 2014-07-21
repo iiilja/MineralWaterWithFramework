@@ -1,4 +1,4 @@
-/*
+/* 
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
@@ -59,69 +59,73 @@ public class FileUploadController {
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
-        // TODO: check if user has rights to add files for campaign
         JSONObject resp = RequestUtils.getErrorResponse();
         Session session = sessionService.findSession(token);
 
         if (session != null) {
-            MultipartFile multipartFile = command.getFile();
+            AdCampaigns campaign = userService.findCampaignByIdAndClientId(campaignId, session.getClientId());
 
-            if (!multipartFile.isEmpty()) {
-                // output data about the file into console
-                log.info("Filename: " + multipartFile.getOriginalFilename());
-                log.info("Filesize: " + multipartFile.getSize());
+            // if this campaign belongs to user
+            if (campaign != null) {
+                MultipartFile multipartFile = command.getFile();
 
-                // define path for users directory
-                String userFilePath = FILE_DIRECTORY + session.getClientId() + "\\";
-                session.getClientId();
-                // if users folder doesnt exist, create one
-                File userFolder = new File(userFilePath);
+                if (!multipartFile.isEmpty()) {
+                    // output data about the file into console
+                    log.info("Filename: " + multipartFile.getOriginalFilename());
+                    log.info("Filesize: " + multipartFile.getSize());
 
-                if (!userFolder.exists()) {
-                    userFolder.mkdir();
+                    // define path for users directory
+                    String userFilePath = FILE_DIRECTORY + session.getClientId() + "\\";
+                    session.getClientId();
+                    // if users folder doesnt exist, create one
+                    File userFolder = new File(userFilePath);
+
+                    if (!userFolder.exists()) {
+                        userFolder.mkdir();
+                    }
+
+                    // get data about the file
+                    String fileName = multipartFile.getOriginalFilename();
+                    String fileType = fileName.split("\\.")[1];
+                    int fileTypeNumber = FileUtils.determineFileTypeNumber(fileType);
+                    // divide by 1024 so that we get result in kilobytes
+                    long fileSize = multipartFile.getSize() / 1024;
+
+                    // upload file to the temp folder on server
+                    File physicalFile = new File(TEMP + fileName);
+
+                    byte[] bytes = multipartFile.getBytes();
+
+                    try (BufferedOutputStream stream = new BufferedOutputStream(
+                            new FileOutputStream(physicalFile))) {
+                        stream.write(bytes);
+                    } catch (Exception ex) {
+                        return RequestUtils.printResult(resp.toString(), response);
+                    }
+
+                    // populate file table with data about file
+                    Files databaseFile = new Files();
+                    databaseFile.setFilename(fileName);
+                    databaseFile.setFileType(fileTypeNumber);
+                    databaseFile.setPath(userFilePath);
+                    databaseFile.setCreatedDt(new Date(System.currentTimeMillis()));
+                    databaseFile.setSize((int) fileSize);
+                    userService.addFile(databaseFile);
+
+                    // populate campaign files table with data about file
+                    CampaignsFiles campaignFile = new CampaignsFiles();
+                    campaignFile.setClientId(session.getClientId());
+                    campaignFile.setAdCampaignsId(campaignId);
+                    campaignFile.setFileId(databaseFile.getId());
+                    campaignFile.setFileType(fileTypeNumber);
+                    campaignFile.setOrderId(null);
+                    userService.addCampaignFile(campaignFile);
+
+                    // move file to the users folder and rename it to its DB id
+                    physicalFile.renameTo(new File(userFilePath + databaseFile.getId() + "." + fileType));
+
+                    resp.put("response", "OK");
                 }
-
-                // get data about the file
-                String fileName = multipartFile.getOriginalFilename();
-                String fileType = fileName.split("\\.")[1];
-                int fileTypeNumber = FileUtils.determineFileTypeNumber(fileType);
-                // divide by 1024 so that we get result in kilobytes
-                long fileSize = multipartFile.getSize() / 1024;
-
-                // upload file to the temp folder on server
-                File physicalFile = new File(TEMP + fileName);
-
-                byte[] bytes = multipartFile.getBytes();
-
-                try (BufferedOutputStream stream = new BufferedOutputStream(
-                        new FileOutputStream(physicalFile))) {
-                    stream.write(bytes);
-                } catch (Exception ex) {
-                    return RequestUtils.printResult(resp.toString(), response);
-                }
-
-                // populate file table with data about file
-                Files databaseFile = new Files();
-                databaseFile.setFilename(fileName);
-                databaseFile.setFileType(fileTypeNumber);
-                databaseFile.setPath(userFilePath);
-                databaseFile.setCreatedDt(new Date(System.currentTimeMillis()));
-                databaseFile.setSize((int) fileSize);
-                userService.addFile(databaseFile);
-
-                // populate campaign files table with data about file
-                CampaignsFiles campaignFile = new CampaignsFiles();
-                campaignFile.setClientId(session.getClientId());
-                campaignFile.setAdCampaignsId(campaignId);
-                campaignFile.setFileId(databaseFile.getId());
-                campaignFile.setFileType(fileTypeNumber);
-                campaignFile.setOrderId(null);
-                userService.addCampaignFile(campaignFile);
-
-                // move file to the users folder and rename it to its DB id
-                physicalFile.renameTo(new File(userFilePath + databaseFile.getId() + "." + fileType));
-
-                resp.put("response", "OK");
             }
         }
 
@@ -134,7 +138,7 @@ public class FileUploadController {
             @RequestParam int campaignId,
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
-        
+
         JSONObject resp = RequestUtils.getErrorResponse();
         Session session = sessionService.findSession(token);
 

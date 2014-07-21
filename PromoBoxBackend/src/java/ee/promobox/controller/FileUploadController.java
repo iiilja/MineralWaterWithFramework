@@ -93,13 +93,12 @@ public class FileUploadController {
                 
                 // populate database with data about file
                 Files databaseFile = new Files();
+                databaseFile.setFilename(fileName);
                 databaseFile.setFileType(FileUtils.determineFileTypeNumber(fileType));
                 databaseFile.setPath(userFilePath);
                 databaseFile.setCreatedDt(new Date(System.currentTimeMillis()));
                 databaseFile.setSize((int)fileSize);
                 userService.addFile(databaseFile); 
-                
-                databaseFile.setFilename(databaseFile.getId() + "." + fileType);
 
                 
                 // move file to the users folder and rename it to its DB id

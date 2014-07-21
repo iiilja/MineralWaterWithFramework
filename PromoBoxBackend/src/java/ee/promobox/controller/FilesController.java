@@ -119,6 +119,7 @@ public class FilesController {
                     campaignFile.setFileId(databaseFile.getId());
                     campaignFile.setFileType(fileTypeNumber);
                     campaignFile.setOrderId(null);
+                    campaignFile.setStatus(CampaignsFiles.STATUS_ACTIVE);
                     userService.addCampaignFile(campaignFile);
 
                     // move file to the users folder and rename it to its DB id
@@ -129,6 +130,31 @@ public class FilesController {
             }
         }
 
+        return RequestUtils.printResult(resp.toString(), response);
+    }
+    
+    @RequestMapping("files/archive")
+    public ModelAndView archiveCampaignFiles(
+            @RequestParam String token,
+            @RequestParam int fileId,
+            HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+        
+        JSONObject resp = RequestUtils.getErrorResponse();
+        Session session = sessionService.findSession(token);
+
+        if (session != null) {
+            CampaignsFiles campaignsFile = userService.findCampaignFile(fileId, session.getClientId());
+            
+            if (campaignsFile != null) {
+                campaignsFile.setStatus(CampaignsFiles.STATUS_ARCHIVED);
+                
+                userService.updateCampaignFile(campaignsFile);
+                
+                resp.put("response", RequestUtils.OK);
+            }
+        }
+        
         return RequestUtils.printResult(resp.toString(), response);
     }
 

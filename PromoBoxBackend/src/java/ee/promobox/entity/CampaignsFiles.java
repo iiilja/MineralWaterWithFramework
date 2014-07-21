@@ -34,6 +34,10 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "CampaignsFiles.findByFileType", query = "SELECT c FROM CampaignsFiles c WHERE c.fileType = :fileType"),
     @NamedQuery(name = "CampaignsFiles.findByOrderId", query = "SELECT c FROM CampaignsFiles c WHERE c.orderId = :orderId")})
 public class CampaignsFiles implements Serializable {
+    
+    public static final int STATUS_ACTIVE = 0;
+    public static final int STATUS_ARCHIVED = 1;
+    
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,6 +54,8 @@ public class CampaignsFiles implements Serializable {
     private Integer fileType;
     @Column(name = "order_id")
     private Integer orderId;
+    @Column(name = "status")
+    private int status;
 
     public CampaignsFiles() {
     }
@@ -106,6 +112,14 @@ public class CampaignsFiles implements Serializable {
         this.orderId = orderId;
     }
 
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+    
     @Override
     public int hashCode() {
         int hash = 0;

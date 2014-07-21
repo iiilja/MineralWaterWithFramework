@@ -37,7 +37,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
-public class FileUploadController {
+public class FilesController {
 
     @Autowired
     private SessionService sessionService;
@@ -46,7 +46,7 @@ public class FileUploadController {
     private UserService userService;
 
     private final static Logger log = LoggerFactory.getLogger(
-            FileUploadController.class);
+            FilesController.class);
 
     private final static String FILE_DIRECTORY = "C:\\Users\\Dan\\Desktop\\KioskFiles\\";
     private final static String TEMP = FILE_DIRECTORY + "TEMP\\";

@@ -1,6 +1,36 @@
 (function (){
     var app = angular.module('promoboxAdminApp', ['ngCookies','ui.bootstrap']);
     
+    app.config(['$routeProvider', function($routeProvider) {
+            $routeProvider
+                    .when('/', {
+                        controller: 'LoginController',
+                        templateUrl: '/views/login.html'
+                    })
+                    .when('/main', {
+                        controller: 'MainController',
+                        resolve: {
+                            campgaigns: function(CampaignsLoader) {
+                                return CampaignsLoader();
+                            }
+                        },
+                        templateUrl: '/views/main.html'
+                    })
+                    .when('/edit/:cId', {
+                        controller: 'EditController',
+                        resolve: {
+                            campgaign: function(CampaignLoader) {
+                                return CampaignLoader();
+                            }
+                        },
+                        templateUrl: '/views/campaign_edit.html'
+                    })
+                    .when('/new', {
+                        controller: 'CreateController',
+                        templateUrl: '/views/create_campaign.html'
+                    }).otherwise({redirectTo: '/'});
+        }]);
+    
     app.controller('userControl',[ '$http','$scope','$cookies', function($http, $scope, $cookies){
         $scope.page = 0;
         this.title = 'PromoBox';

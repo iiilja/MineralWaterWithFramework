@@ -1,0 +1,22 @@
+{
+    "login_form_header": "PromoBox Login",
+    "login_form_email": "Email",
+    "login_form_password": "Password",
+    "login_form_remember": "Remember me",
+    "login_form_sign_in": "Sign In",
+    "login_form_register": "Register",
+    "registration_form_header": "PromoBox Registration",
+    "registration_form_firstname": "Firstname",
+    "registration_form_lastname": "Lastname",
+    "registration_form_company": "Company",
+    "registration_form_email": "Email",
+    "registration_form_remember": "Remember me",
+    "registration_form_register": "Register",
+    "registration_form_sign_in": "Sign In",
+    "mainpage_campaign": "Рекламные компании",
+    "mainpage_devices": "Устройства",
+    "mainpage_exit": "Выход",
+    "mainpage_edit": "Изменить",
+    "mainpage_delete": "Удалить",
+    "mainpage_new_company": "Новая компания"
+}

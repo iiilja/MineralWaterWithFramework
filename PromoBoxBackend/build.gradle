@@ -146,9 +146,9 @@ task deploy_static(type: SshTask) {
   
     session(remotes.webServer) {
 
-        put "../MonitorSites/public_html/" , '.'
-        execute 'cp -r public_html/* /opt/promobox.ee/'
-        execute 'rm -rf public_html/'
+        put "../PromoboxFrontend/public/" , '.'
+        execute 'cp -r public/* /opt/promobox.ee/'
+        execute 'rm -rf public/'
 
     }
 }

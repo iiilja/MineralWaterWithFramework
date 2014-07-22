@@ -6,7 +6,7 @@
                 <h1 class="text-center">{{ 'login_form_header' | translate}}</h1>
             </div>
             <div class="modal-body">
-                <form class="form col-md-12 center-block" name="loginForm" ng-submit="login()" novalidate>
+                <form class="form col-md-12 center-block" name="login_form" ng-submit="login()" novalidate>
                     <div class="form-group"
                          ng-class="{ 'has-error' : loginForm.email.$invalid && !loginForm.email.$pristine }">
                         <input type="email" name="email" class="form-control input-lg"

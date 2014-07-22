@@ -1,4 +1,8 @@
+var apiEndpoint = "http://api.dev.promobox.ee/service/";
+
 var app = angular.module('promobox', ['ngRoute', 'ui.bootstrap', 'pascalprecht.translate', 'promobox.services']);
+
+app.value('token', {value: ''});
 
 app.config(['$routeProvider', function ($routeProvider) {
     $routeProvider
@@ -8,16 +12,15 @@ app.config(['$routeProvider', function ($routeProvider) {
         })
         .when('/main', {
             controller: 'MainController',
-            resolve: {
-                campaigns: function (MultiCampgaignLoader) {
-                    return MultiCampgaignLoader();
-                }
-            },
             templateUrl: '/views/main.html'
         }).otherwise({redirectTo: '/'});
 }]);
 
-app.config(function($translateProvider) {
+app.config(function ($httpProvider) {
+    $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
+});
+
+app.config(function ($translateProvider) {
     $translateProvider.useStaticFilesLoader({
         prefix: '/json/',
         suffix: '.json'
@@ -28,17 +31,28 @@ app.config(function($translateProvider) {
 });
 
 
-app.controller('LoginController', ['$scope', '$location',
-    function ($scope, $location) {
-        $scope.login_form = {email:'', password:'', remember:false};
+app.controller('LoginController', ['$scope', '$location', '$http', 'token',
+    function ($scope, $location, $http, token) {
+
+        $scope.login_form = {email: '', password: '', remember: false};
 
         $scope.login = function () {
-            $location.path('/main/');
+            $http.post(apiEndpoint + "user/login",
+                $.param({
+                    email: $scope.login_form.email,
+                    password: $scope.login_form.password
+                }))
+                .success(function (data) {
+                    token.value = data.token;
+                    console.log("Login success: " + token.value);
+                    $location.path('/main/');
+                });
         };
     }]);
 
 
-app.controller('MainController', ['$scope', '$location', 'campaigns',
-    function ($scope, $location, campaigns) {
-
+app.controller('MainController', ['$scope', '$location', 'token',
+    function ($scope, $location, token) {
+        $scope.token = token.value;
+        console.log("Main token: " + token.value);
     }]);

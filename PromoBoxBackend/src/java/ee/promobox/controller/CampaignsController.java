@@ -56,7 +56,7 @@ public class CampaignsController {
                     JSONObject jsonCampaign = new JSONObject();
                     jsonCampaign.put("id", campaign.getId());
                     jsonCampaign.put("name", campaign.getName());
-                    jsonCampaign.put("active", campaign.getActive());
+                    jsonCampaign.put("status", campaign.getStatus());
 
                     campaignsArray.put(jsonCampaign);
                 }
@@ -89,7 +89,7 @@ public class CampaignsController {
             AdCampaigns campaign = new AdCampaigns();
             campaign.setName(name);
             campaign.setClientId(session.getClientId());
-            campaign.setActive(objectGiven.getBoolean("active"));
+            campaign.setStatus(objectGiven.getInt("status"));
             campaign.setSequence(objectGiven.getInt("sequence"));
             campaign.setStart(new Date(objectGiven.getLong("start")));
             campaign.setFinish(new Date(objectGiven.getLong("finish")));
@@ -129,7 +129,7 @@ public class CampaignsController {
                 // fill all the fields with data provided by the client
                 campaign.setName(name);
                 campaign.setClientId(clientId);
-                campaign.setActive(objectGiven.getBoolean("active"));
+                campaign.setStatus(objectGiven.getInt("status"));
                 campaign.setSequence(objectGiven.getInt("sequence"));
                 campaign.setStart(new Date(objectGiven.getLong("start")));
                 campaign.setFinish(new Date(objectGiven.getLong("finish")));

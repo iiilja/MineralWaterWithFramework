@@ -13,7 +13,12 @@ app.config(['$routeProvider', function ($routeProvider) {
         .when('/main', {
             controller: 'MainController',
             templateUrl: '/views/main.html'
-        }).otherwise({redirectTo: '/'});
+        })
+        .when('/campaign/edit/:cId', {
+            controller: 'CampaignEditController',
+            templateUrl: '/views/campaign_edit.html'
+        })
+        .otherwise({redirectTo: '/'});
 }]);
 
 app.config(function ($httpProvider) {
@@ -51,8 +56,34 @@ app.controller('LoginController', ['$scope', '$location', '$http', 'token',
     }]);
 
 
-app.controller('MainController', ['$scope', '$location', 'token',
-    function ($scope, $location, token) {
+app.controller('CampaignEditController', ['$scope', '$routeParams', '$http', 'token',
+    function ($scope, $routeParams, $http, token) {
+
+        $http.post(apiEndpoint + "campaign/data",
+            $.param({
+                'token': $scope.token,
+                'id': $routeParams.cId
+            }))
+            .success(function (data) {
+                $scope.campaign = data.campaign;
+            });
+
+    }]);
+
+
+app.controller('MainController', ['$scope', '$location', '$http', 'token',
+    function ($scope, $location, $http, token) {
         $scope.token = token.value;
-        console.log("Main token: " + token.value);
+
+        $scope.remove = function(campaign) {
+            $scope.campaigns.splice($scope.campaigns.indexOf(campaign), 1);
+        }
+
+        $http.post(apiEndpoint + "user/data",
+            $.param({
+                'token': $scope.token
+            }))
+            .success(function (data) {
+                $scope.campaigns = data.campaigns;
+            });
     }]);

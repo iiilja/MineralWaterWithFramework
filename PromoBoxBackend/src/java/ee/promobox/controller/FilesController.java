@@ -91,7 +91,7 @@ public class FilesController {
                     String fileType = fileName.split("\\.")[1];
                     int fileTypeNumber = FileUtils.determineFileTypeNumber(fileType);
                     // divide by 1024 so that we get result in kilobytes
-                    long fileSize = multipartFile.getSize() / 1024;
+                    long fileSize = multipartFile.getSize();
 
                     // upload file to the temp folder on server
                     File physicalFile = new File(userFolder + fileName);
@@ -111,7 +111,7 @@ public class FilesController {
                     databaseFile.setFileType(fileTypeNumber);
                     databaseFile.setPath(userFilePath);
                     databaseFile.setCreatedDt(new Date(System.currentTimeMillis()));
-                    databaseFile.setSize((int) fileSize);
+                    databaseFile.setSize(fileSize);
                     userService.addFile(databaseFile);
 
                     // populate campaign files table with data about file

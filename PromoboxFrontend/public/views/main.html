@@ -1,1 +1,22 @@
 <div>{{ token }}</div>
+
+<table class="table table-hover">
+    <thead>
+    <tr>
+        <th>#</th>
+        <th>Name</th>
+        <th>Edit</th>
+        <th>Delete</th>
+    </tr>
+    </thead>
+
+    <tbody>
+
+    <tr ng-repeat="campaign in campaigns">
+        <td>{{campaign.id}}</td>
+        <td>{{campaign.name}}</td>
+        <td><a href="/#/campaign/edit/{{campaign.id}}">Edit</a></td>
+        <td><a href="" ng-click="remove(campaign)">Delete</a></td>
+    </tr>
+    </tbody>
+</table>

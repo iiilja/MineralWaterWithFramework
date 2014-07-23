@@ -55,7 +55,7 @@ public class CampaignsFiles implements Serializable {
     @Column(name = "order_id")
     private Integer orderId;
     @Column(name = "status")
-    private int status;
+    private Integer status;
 
     public CampaignsFiles() {
     }
@@ -112,11 +112,11 @@ public class CampaignsFiles implements Serializable {
         this.orderId = orderId;
     }
 
-    public int getStatus() {
+    public Integer getStatus() {
         return status;
     }
 
-    public void setStatus(int status) {
+    public void setStatus(Integer status) {
         this.status = status;
     }
     

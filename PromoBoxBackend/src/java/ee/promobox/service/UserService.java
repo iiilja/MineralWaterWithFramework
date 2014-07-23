@@ -28,7 +28,7 @@ public interface UserService {
 
     public List<Files> findCampaignFiles(int campgaignId);
     
-    public CampaignsFiles findCampaignFile(int fileId, int userId);
+    public CampaignsFiles findCampaignFile(int fileId, int clientId);
     
     public List<Files> findUsersCampaignFiles(int campaignId, int clientId);
     

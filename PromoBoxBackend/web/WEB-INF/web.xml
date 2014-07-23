@@ -11,6 +11,20 @@
             /WEB-INF/applicationContext.xml
         </param-value>
     </context-param>
+    
+    
+    <filter>
+        <filter-name>AccessFilter</filter-name>
+        <filter-class>ee.promobox.filter.AccessFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>AccessFilter</filter-name>
+        <url-pattern>*.html</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>AccessFilter</filter-name>
+        <url-pattern>/service/*</url-pattern>
+    </filter-mapping>
 
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>

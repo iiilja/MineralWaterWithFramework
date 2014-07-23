@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module external.linked.project.path="$MODULE_DIR$" external.root.project.path="$MODULE_DIR$" external.system.id="GRADLE" external.system.module.group="" external.system.module.version="unspecified" type="JAVA_MODULE" version="4">
+  <component name="FacetManager">
+    <facet type="web" name="Web Gradle : PromoBoxBackend.war">
+      <configuration>
+        <webroots>
+          <root url="file://$MODULE_DIR$/web/WEB-INF" relative="/WEB-INF" />
+          <root url="file://$MODULE_DIR$/web/WEB-INF/cfg" relative="/WEB-INF/cfg" />
+        </webroots>
+        <sourceRoots>
+          <root url="file://$MODULE_DIR$/src/main/groovy" />
+          <root url="file://$MODULE_DIR$/src/main/java" />
+          <root url="file://$MODULE_DIR$/src/java" />
+          <root url="file://$MODULE_DIR$/src/main/resources" />
+        </sourceRoots>
+      </configuration>
+    </facet>
+  </component>
+  <component name="NewModuleRootManager" inherit-compiler-output="false">
+    <output url="file://$MODULE_DIR$/build/classes/main" />
+    <output-test url="file://$MODULE_DIR$/build/classes/test" />
+    <exclude-output />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/src/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/main/groovy" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/test/groovy" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/main/resources" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/test/resources" type="java-test-resource" />
+      <excludeFolder url="file://$MODULE_DIR$/.gradle" />
+      <excludeFolder url="file://$MODULE_DIR$/build" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: servlet-api-2.5" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: hibernate-jpa-2.0-api-1.0.1.Final" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: jboss-transaction-api_1.1_spec-1.0.1.Final" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: hibernate-commons-annotations-4.0.1.Final" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: javassist-3.16.1-GA" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: hibernate-entitymanager-4.2.6.Final" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: hibernate-core-4.2.6.Final" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: spring-context-4.0.5.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: spring-beans-4.0.5.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: spring-core-4.0.5.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: spring-aop-4.0.5.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: spring-expression-4.0.5.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: spring-jdbc-4.0.5.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: spring-tx-4.0.5.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: spring-context-support-4.0.5.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: spring-web-4.0.5.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: spring-webmvc-4.0.5.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: spring-orm-4.0.5.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: json-20140107" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: slf4j-api-1.7.2" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: geoip-api-1.2.10" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: apache-log4j-extras-1.2.17" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: commons-codec-1.9" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: commons-collections-3.2.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: commons-dbcp-1.4" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: commons-httpclient-3.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: commons-io-2.4" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: commons-pool-1.6" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: log4j-1.2.17" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: javax.mail-1.5.2" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: smtp-1.5.2" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: velocity-1.7" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: slf4j-log4j12-1.6.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: aopalliance-1.0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: dom4j-1.6.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: jboss-logging-3.1.4.GA" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: antlr-2.7.7" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: commons-logging-1.2" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: activation-1.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: commons-lang-2.4" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: xml-apis-1.0.b2" level="project" />
+    <orderEntry type="library" exported="" scope="RUNTIME" name="Gradle: jstl-1.1.2" level="project" />
+    <orderEntry type="library" exported="" scope="RUNTIME" name="Gradle: postgresql-9.3-1101.jdbc41" level="project" />
+  </component>
+</module>
+

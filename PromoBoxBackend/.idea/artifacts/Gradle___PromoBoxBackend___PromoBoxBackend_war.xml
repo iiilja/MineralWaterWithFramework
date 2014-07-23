@@ -1,0 +1,60 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="Gradle : PromoBoxBackend : PromoBoxBackend.war">
+    <output-path>$PROJECT_DIR$/classes/artifacts/PromoBoxBackend</output-path>
+    <root id="archive" name="PromoBoxBackend.war">
+      <element id="javaee-facet-resources" facet="PromoBoxBackend/web/Web Gradle : PromoBoxBackend.war" />
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="PromoBoxBackend" />
+        </element>
+        <element id="directory" name="lib">
+          <element id="library" level="project" name="Gradle: hibernate-jpa-2.0-api-1.0.1.Final" />
+          <element id="library" level="project" name="Gradle: jboss-transaction-api_1.1_spec-1.0.1.Final" />
+          <element id="library" level="project" name="Gradle: hibernate-commons-annotations-4.0.1.Final" />
+          <element id="library" level="project" name="Gradle: javassist-3.16.1-GA" />
+          <element id="library" level="project" name="Gradle: hibernate-entitymanager-4.2.6.Final" />
+          <element id="library" level="project" name="Gradle: hibernate-core-4.2.6.Final" />
+          <element id="library" level="project" name="Gradle: spring-context-4.0.5.RELEASE" />
+          <element id="library" level="project" name="Gradle: spring-beans-4.0.5.RELEASE" />
+          <element id="library" level="project" name="Gradle: spring-core-4.0.5.RELEASE" />
+          <element id="library" level="project" name="Gradle: spring-aop-4.0.5.RELEASE" />
+          <element id="library" level="project" name="Gradle: spring-expression-4.0.5.RELEASE" />
+          <element id="library" level="project" name="Gradle: spring-jdbc-4.0.5.RELEASE" />
+          <element id="library" level="project" name="Gradle: spring-tx-4.0.5.RELEASE" />
+          <element id="library" level="project" name="Gradle: spring-context-support-4.0.5.RELEASE" />
+          <element id="library" level="project" name="Gradle: spring-web-4.0.5.RELEASE" />
+          <element id="library" level="project" name="Gradle: spring-webmvc-4.0.5.RELEASE" />
+          <element id="library" level="project" name="Gradle: spring-orm-4.0.5.RELEASE" />
+          <element id="library" level="project" name="Gradle: json-20140107" />
+          <element id="library" level="project" name="Gradle: slf4j-api-1.7.2" />
+          <element id="library" level="project" name="Gradle: geoip-api-1.2.10" />
+          <element id="library" level="project" name="Gradle: apache-log4j-extras-1.2.17" />
+          <element id="library" level="project" name="Gradle: commons-codec-1.9" />
+          <element id="library" level="project" name="Gradle: commons-collections-3.2.1" />
+          <element id="library" level="project" name="Gradle: commons-dbcp-1.4" />
+          <element id="library" level="project" name="Gradle: commons-httpclient-3.1" />
+          <element id="library" level="project" name="Gradle: commons-io-2.4" />
+          <element id="library" level="project" name="Gradle: commons-pool-1.6" />
+          <element id="library" level="project" name="Gradle: log4j-1.2.17" />
+          <element id="library" level="project" name="Gradle: javax.mail-1.5.2" />
+          <element id="library" level="project" name="Gradle: smtp-1.5.2" />
+          <element id="library" level="project" name="Gradle: velocity-1.7" />
+          <element id="library" level="project" name="Gradle: slf4j-log4j12-1.6.1" />
+          <element id="library" level="project" name="Gradle: aopalliance-1.0" />
+          <element id="library" level="project" name="Gradle: dom4j-1.6.1" />
+          <element id="library" level="project" name="Gradle: jboss-logging-3.1.4.GA" />
+          <element id="library" level="project" name="Gradle: antlr-2.7.7" />
+          <element id="library" level="project" name="Gradle: commons-logging-1.2" />
+          <element id="library" level="project" name="Gradle: activation-1.1" />
+          <element id="library" level="project" name="Gradle: commons-lang-2.4" />
+          <element id="library" level="project" name="Gradle: xml-apis-1.0.b2" />
+          <element id="library" level="project" name="Gradle: jstl-1.1.2" />
+          <element id="library" level="project" name="Gradle: postgresql-9.3-1101.jdbc41" />
+        </element>
+      </element>
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/classes/artifacts/PromoBoxBackend/exploded/PromoBoxBackend.war/META-INF/MANIFEST.MF" />
+      </element>
+    </root>
+  </artifact>
+</component>

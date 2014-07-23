@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
@@ -45,18 +46,49 @@ public class FilesController {
 
     @Autowired
     private UserService userService;
-    
+
     @Autowired
     private KioskConfig config;
-
 
     private final static Logger log = LoggerFactory.getLogger(
             FilesController.class);
 
-    @RequestMapping("files/upload")
+    @RequestMapping("files/show/{id}")
+    public ModelAndView showCampaignFiles(
+            @RequestParam String token,
+            @PathVariable("id") int campaignId,
+            HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+
+        JSONObject resp = RequestUtils.getErrorResponse();
+        Session session = sessionService.findSession(token);
+
+        if (session != null) {
+            List<Files> campaignFiles = userService.findUsersCampaignFiles(campaignId, session.getClientId());
+
+            if (campaignFiles != null) {
+                JSONArray jsonCampaignFiles = new JSONArray();
+                for (Files file : campaignFiles) {
+                    JSONObject jsonCampaignFile = new JSONObject();
+                    jsonCampaignFile.put("id", file.getId());
+                    jsonCampaignFile.put("name", file.getFilename());
+                    jsonCampaignFile.put("created", file.getCreatedDt());
+
+                    jsonCampaignFiles.put(jsonCampaignFile);
+                }
+
+                resp.put("campaignfiles", jsonCampaignFiles);
+                resp.put("response", RequestUtils.OK);
+            }
+        }
+
+        return RequestUtils.printResult(resp.toString(), response);
+    }
+
+    @RequestMapping("files/upload/{id}")
     public ModelAndView uploadFile(
             @RequestParam String token,
-            @RequestParam int campaignId,
+            @PathVariable("id") int campaignId,
             @ModelAttribute FileUploadCommand command,
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
@@ -77,8 +109,8 @@ public class FilesController {
                     log.info("Filesize: " + multipartFile.getSize());
 
                     // define path for users directory
-                    String userFilePath = config.getDataDir() + session.getClientId() + File.pathSeparator;
-                    session.getClientId();
+                    String temporaryFolder = config.getDataDir() + "TEMP\\";
+                    String userFilePath = config.getDataDir() + session.getClientId() + File.separator;
                     // if users folder doesnt exist, create one
                     File userFolder = new File(userFilePath);
 
@@ -94,7 +126,7 @@ public class FilesController {
                     long fileSize = multipartFile.getSize();
 
                     // upload file to the temp folder on server
-                    File physicalFile = new File(userFolder + fileName);
+                    File physicalFile = new File(temporaryFolder + fileName);
 
                     byte[] bytes = multipartFile.getBytes();
 
@@ -134,57 +166,25 @@ public class FilesController {
 
         return RequestUtils.printResult(resp.toString(), response);
     }
-    
-    @RequestMapping("files/archive")
+
+    @RequestMapping("files/archive/{id}")
     public ModelAndView archiveCampaignFiles(
             @RequestParam String token,
-            @RequestParam int fileId,
+            @PathVariable("id") int fileId,
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
-        
+
         JSONObject resp = RequestUtils.getErrorResponse();
         Session session = sessionService.findSession(token);
 
         if (session != null) {
             CampaignsFiles campaignsFile = userService.findCampaignFile(fileId, session.getClientId());
-            
+
             if (campaignsFile != null) {
                 campaignsFile.setStatus(CampaignsFiles.STATUS_ARCHIVED);
-                
+
                 userService.updateCampaignFile(campaignsFile);
-                
-                resp.put("response", RequestUtils.OK);
-            }
-        }
-        
-        return RequestUtils.printResult(resp.toString(), response);
-    }
 
-    @RequestMapping("files/show")
-    public ModelAndView showCampaignFiles(
-            @RequestParam String token,
-            @RequestParam int campaignId,
-            HttpServletRequest request,
-            HttpServletResponse response) throws Exception {
-
-        JSONObject resp = RequestUtils.getErrorResponse();
-        Session session = sessionService.findSession(token);
-
-        if (session != null) {
-            List<Files> campaignFiles = userService.findUsersCampaignFiles(campaignId, session.getClientId());
-
-            if (campaignFiles != null) {
-                JSONArray jsonCampaignFiles = new JSONArray();
-                for (Files file : campaignFiles) {
-                    JSONObject jsonCampaignFile = new JSONObject();
-                    jsonCampaignFile.put("id", file.getId());
-                    jsonCampaignFile.put("name", file.getFilename());
-                    jsonCampaignFile.put("created", file.getCreatedDt());
-
-                    jsonCampaignFiles.put(jsonCampaignFile);
-                }
-
-                resp.put("campaignfiles", jsonCampaignFiles);
                 resp.put("response", RequestUtils.OK);
             }
         }

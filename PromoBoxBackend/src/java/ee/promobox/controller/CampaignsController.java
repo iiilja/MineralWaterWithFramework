@@ -77,7 +77,7 @@ public class CampaignsController {
         return RequestUtils.printResult(resp.toString(), response);
     }
 
-    @RequestMapping("campaigns/all")
+    @RequestMapping("campaigns/show/")
     public ModelAndView showAllCampaigns(
             @RequestParam String token,
             HttpServletRequest request,
@@ -113,8 +113,8 @@ public class CampaignsController {
         return RequestUtils.printResult(resp.toString(), response);
     }
 
-    @RequestMapping("campaigns/add")
-    public ModelAndView addCampaign(
+    @RequestMapping("campaigns/create")
+    public ModelAndView createCampaign(
             @RequestParam String token,
             @RequestParam String name,
             @RequestParam String json,
@@ -146,10 +146,10 @@ public class CampaignsController {
         return RequestUtils.printResult(resp.toString(), response);
     }
 
-    @RequestMapping("campaigns/update")
+    @RequestMapping("campaigns/update/{id}")
     public ModelAndView updateCampaign(
             @RequestParam String token,
-            @RequestParam int id,
+            @PathVariable("id") int id,
             @RequestParam String name,
             @RequestParam String json,
             HttpServletRequest request,

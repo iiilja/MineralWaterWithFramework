@@ -35,6 +35,13 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "AdCampaigns.findByClientId", query = "SELECT a FROM AdCampaigns a WHERE a.clientId = :clientId"),
     @NamedQuery(name = "AdCampaigns.findByActive", query = "SELECT a FROM AdCampaigns a WHERE a.active = :active")})
 public class AdCampaigns implements Serializable {
+    
+    
+    public static final int STATUS_CREATED = 0;
+    public static final int STATUS_PREPARED = 1;
+    public static final int STATUS_PUBLISHED = 2;
+    public static final int STATUS_UNPUBLISHED = 3;
+    public static final int STATUS_AHRCHIVED = 4;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -46,8 +53,8 @@ public class AdCampaigns implements Serializable {
     private String name;
     @Column(name = "client_id")
     private Integer clientId;
-    @Column(name = "active")
-    private Boolean active;
+    @Column(name = "status")
+    private int status;
     @Column(name = "sequence")
     private int sequence;
     @Column(name = "start")
@@ -90,14 +97,14 @@ public class AdCampaigns implements Serializable {
         this.clientId = clientId;
     }
 
-    public Boolean getActive() {
-        return active;
+    public int getStatus() {
+        return status;
     }
 
-    public void setActive(Boolean active) {
-        this.active = active;
+    public void setStatus(int status) {
+        this.status = status;
     }
-
+    
     public int getSequence() {
         return sequence;
     }

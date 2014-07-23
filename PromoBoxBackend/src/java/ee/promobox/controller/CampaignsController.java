@@ -16,8 +16,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
@@ -28,12 +31,51 @@ import org.springframework.web.servlet.ModelAndView;
  */
 @Controller
 public class CampaignsController {
+    
+    private final static Logger log = LoggerFactory.getLogger(
+            CampaignsController.class);
 
     @Autowired
     private SessionService sessionService;
 
     @Autowired
     private UserService userService;
+    
+    
+    @RequestMapping("token/{token}/campaign/{campaignId}")
+    public ModelAndView showAllCampaigns(
+            @PathVariable("token") String token,
+            @PathVariable("campaignId") int campaignId,
+            HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+
+        JSONObject resp = RequestUtils.getErrorResponse();
+        Session session = sessionService.findSession(token);
+
+        if (session != null) {
+            int clientId = session.getClientId();
+            AdCampaigns campaign = userService.findCampaignByIdAndClientId(campaignId, clientId);
+
+            if (campaign != null) {
+
+                resp.put("id", campaign.getId());
+                resp.put("name", campaign.getName());
+                resp.put("status", campaign.getStatus());
+                resp.put("clientId", campaign.getClientId());
+                resp.put("duration", campaign.getDuration());
+                resp.put("finish", campaign.getFinish() == null ? null : campaign.getFinish().getTime());
+                resp.put("sequence", campaign.getSequence());
+                resp.put("start", campaign.getStart() == null ? null : campaign.getStart().getTime());
+
+            }
+
+            // everything's fine, put ok in the response
+            resp.put("response", RequestUtils.OK);
+        }
+        
+
+        return RequestUtils.printResult(resp.toString(), response);
+    }
 
     @RequestMapping("campaigns/all")
     public ModelAndView showAllCampaigns(

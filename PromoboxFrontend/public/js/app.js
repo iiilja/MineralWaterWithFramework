@@ -49,6 +49,7 @@ app.controller('LoginController', ['$scope', '$location', '$http', 'token',
                 }))
                 .success(function (data) {
                     token.value = data.token;
+                    console.log("Test log" + data);
                     console.log("Login success: " + token.value);
                     $location.path('/main/');
                 });
@@ -77,7 +78,7 @@ app.controller('MainController', ['$scope', '$location', '$http', 'token',
 
         $scope.remove = function(campaign) {
             $scope.campaigns.splice($scope.campaigns.indexOf(campaign), 1);
-        }
+        };
 
         $http.post(apiEndpoint + "user/data",
             $.param({

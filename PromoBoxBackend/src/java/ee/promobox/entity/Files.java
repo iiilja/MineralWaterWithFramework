@@ -49,7 +49,7 @@ public class Files implements Serializable {
     @Column(name = "file_type")
     private Integer fileType;
     @Column(name = "size")
-    private Integer size;
+    private Long size;
     @Column(name = "created_dt")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDt;
@@ -129,14 +129,14 @@ public class Files implements Serializable {
     /**
      * @return the size
      */
-    public Integer getSize() {
+    public Long getSize() {
         return size;
     }
 
     /**
      * @param size the size to set
      */
-    public void setSize(Integer size) {
+    public void setSize(Long size) {
         this.size = size;
     }
     

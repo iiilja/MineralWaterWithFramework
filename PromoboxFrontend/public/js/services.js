@@ -5,5 +5,10 @@ var services = angular.module('promobox.services', ['ngResource']);
 
 services.factory('Campaign', ['$resource', 'token',
     function ($resource, token) {
-        return $resource('http://:url/token/:token/campaign/:id/', {url:apiEndpoint, 'token':token.value, id: '@id'});
+        return $resource(apiEndpoint + '/token/:t/campaign/:id/', {t:token.value, id: '@id'});
     }]);
+
+
+services.factory("token", function () {
+    return {"value": ''};
+});

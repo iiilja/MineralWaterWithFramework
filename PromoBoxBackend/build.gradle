@@ -108,7 +108,7 @@ remotes {
 }
 
 ssh {
-    identity = file("${System.properties['user.home']}/.ssh/id_rsa")
+    identity = file("${System.properties['user.home']}/.ssh/github.pem")
     knownHosts = allowAnyHosts    // Disable host key verification
 }
 

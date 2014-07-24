@@ -2,7 +2,6 @@ var apiEndpoint = "http://api.dev.promobox.ee/service/";
 
 var app = angular.module('promobox', ['ngRoute', 'ui.bootstrap', 'pascalprecht.translate', 'promobox.services']);
 
-app.value('token', {value: ''});
 
 app.config(['$routeProvider', function ($routeProvider) {
     $routeProvider
@@ -65,17 +64,10 @@ app.controller('RegistrationController', ['$scope', '$location', '$http', 'token
 
     }]);
 
-app.controller('CampaignEditController', ['$scope', '$routeParams', '$http', 'token',
-    function ($scope, $routeParams, $http, token) {
+app.controller('CampaignEditController', ['$scope', '$routeParams', '$http', 'token', 'Campaign',
+    function ($scope, $routeParams, $http, token, Campaign) {
 
-        $http.post(apiEndpoint + "campaign/data",
-            $.param({
-                'token': $scope.token,
-                'id': $routeParams.cId
-            }))
-            .success(function (data) {
-                $scope.campaign = data.campaign;
-            });
+       $scope.campaign = Campaign.get({id: $routeParams.cId});
 
     }]);
 

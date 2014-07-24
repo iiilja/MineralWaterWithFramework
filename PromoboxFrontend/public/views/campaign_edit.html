@@ -1,1 +1,52 @@
 <div>{{ token }}</div>
+
+<form role="form">
+    <div class="form-group">
+        <h3>Создание/Изменение компании</h3>
+    </div>
+
+    <div class="form-group">
+        <label for="campaign_name">Имя кампании</label>
+        <input type="text" class="form-control" name="campaign_name" id="campaign_name" placeholder="Нозвание">
+    </div>
+
+    <div class="form-group" style="position:relative;">
+        <a class='btn btn-primary' href='javascript:;'>
+            Загрузить файлы...
+            <input type="file" style='position:absolute;z-index:2;top:0;left:0;filter: alpha(opacity=0);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";opacity:0;background-color:transparent;color:transparent;' name="file_source" size="40"  onchange='$("#upload-file-info").html($(this).val());'>
+        </a>
+        &nbsp;
+        <span class='label label-info' id="upload-file-info"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="time">Время смены</label>
+        <select class="form-control" name="time" id="time">
+            <option value="1">1 мин</option>
+            <option value="2">2 мин</option>
+            <option value="3">3 мин</option>
+            <option value="4">4 мин</option>
+            <option value="5">5 мин</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="order">Порядок</label>
+        <select class="form-control" name="order" id="order">
+            <option value="1">Случайный</option>
+            <option value="2">Подряд</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="start">Дата начала:</label>
+        <input type="text" class="form-control" name="start" id="start" placeholder="">
+    </div>
+
+    <div class="form-group">
+        <label for="end">Дата конца:</label>
+        <input type="text" class="form-control" name="end" id="end" placeholder="">
+    </div>
+
+    <button type="submit" class="btn btn-default">Сохранить компанию</button>
+</form>

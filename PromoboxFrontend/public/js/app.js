@@ -53,7 +53,7 @@ app.controller('LoginController', ['$scope', '$location', '$http', 'token',
                 }))
                 .success(function (data) {
                     token.value = data.token;
-                    console.log("Test log" + data);
+                    console.log(data);
                     console.log("Login success: " + token.value);
                     $location.path('/main/');
                 });

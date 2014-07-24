@@ -7,5 +7,3 @@ services.factory('Campaign', ['$resource', 'token',
     function ($resource, token) {
         return $resource('http://:url/token/:token/campaign/:id/', {url:apiEndpoint, 'token':token.value, id: '@id'});
     }]);
-
-

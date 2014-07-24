@@ -10,6 +10,10 @@ app.config(['$routeProvider', function ($routeProvider) {
             controller: 'LoginController',
             templateUrl: '/views/login.html'
         })
+        .when('/registration', {
+            controller: 'RegistrationController',
+            templateUrl: '/views/register.html'
+        })
         .when('/main', {
             controller: 'MainController',
             templateUrl: '/views/main.html'
@@ -56,6 +60,10 @@ app.controller('LoginController', ['$scope', '$location', '$http', 'token',
         };
     }]);
 
+app.controller('RegistrationController', ['$scope', '$location', '$http', 'token',
+    function ($scope, $location, $http, token) {
+
+    }]);
 
 app.controller('CampaignEditController', ['$scope', '$routeParams', '$http', 'token',
     function ($scope, $routeParams, $http, token) {

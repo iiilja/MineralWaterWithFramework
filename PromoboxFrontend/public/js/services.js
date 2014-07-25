@@ -1,5 +1,6 @@
 /**
  * Created by Maxim on 22.07.2014.
+ * https://medium.com/opinionated-angularjs/techniques-for-authentication-in-angularjs-applications-7bbf0346acec
  */
 var services = angular.module('promobox.services', ['ngResource', 'ngCookies']);
 

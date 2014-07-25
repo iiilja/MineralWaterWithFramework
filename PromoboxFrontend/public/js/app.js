@@ -64,27 +64,24 @@ app.controller('RegistrationController', ['$scope', '$location', '$http', 'token
 
     }]);
 
-app.controller('CampaignEditController', ['$scope', '$routeParams', '$http', 'token', 'Campaign',
-    function ($scope, $routeParams, $http, token, Campaign) {
+app.controller('CampaignEditController', ['$scope', '$routeParams', 'Campaign',
+    function ($scope, $routeParams, Campaign) {
 
        $scope.campaign = Campaign.get({id: $routeParams.cId});
 
     }]);
 
 
-app.controller('MainController', ['$scope', '$location', '$http', 'token',
-    function ($scope, $location, $http, token) {
+app.controller('MainController', ['$scope', '$location', '$http', 'token', 'Campaign',
+    function ($scope, $location, $http, token, Campaign) {
         $scope.token = token.value;
 
-        $scope.remove = function(campaign) {
+        $scope.remove = function (campaign) {
             $scope.campaigns.splice($scope.campaigns.indexOf(campaign), 1);
         };
 
-        $http.post(apiEndpoint + "user/data",
-            $.param({
-                'token': $scope.token
-            }))
-            .success(function (data) {
-                $scope.campaigns = data.campaigns;
-            });
+        Campaign.all(function (response) {
+            $scope.campaigns = response.campaigns;
+        });
+
     }]);

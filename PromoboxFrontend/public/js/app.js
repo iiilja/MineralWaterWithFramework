@@ -53,10 +53,13 @@ app.controller('LoginController', ['$scope', '$location', '$http', 'token',
                         password: $scope.login_form.password
                     }))
                     .success(function (data) {
-                        token.put(data.token);
-                        console.log(data);
-                        console.log("Login success: " + token.get());
-                        $location.path('/main/');
+                        if (data.response == 'OK') {
+                            token.put(data.token);
+
+                            console.log(data);
+
+                            $location.path('/main/');
+                        }
                     });
             };
         } else {
@@ -89,7 +92,9 @@ app.controller('MainController', ['$scope', '$location', '$http', 'token', 'Camp
             };
 
             Campaign.all({token: token.get()},function (response) {
-                $scope.campaigns = response.campaigns;
+                if (response.response == 'OK') {
+                    $scope.campaigns = response.campaigns;
+                }
             });
         }
 

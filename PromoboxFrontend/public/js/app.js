@@ -51,9 +51,9 @@ app.controller('LoginController', ['$scope', '$location', '$http', 'token',
                     password: $scope.login_form.password
                 }))
                 .success(function (data) {
-                    token.value = data.token;
+                    token.put(data.token);
                     console.log(data);
-                    console.log("Login success: " + token.value);
+                    console.log("Login success: " + token.get());
                     $location.path('/main/');
                 });
         };
@@ -64,8 +64,9 @@ app.controller('RegistrationController', ['$scope', '$location', '$http', 'token
 
     }]);
 
-app.controller('CampaignEditController', ['$scope', '$routeParams', 'Campaign',
-    function ($scope, $routeParams, Campaign) {
+app.controller('CampaignEditController', ['$scope', '$routeParams', 'token', 'Campaign',
+    function ($scope, $routeParams, token, Campaign) {
+       token.check();
 
        $scope.campaign = Campaign.get({id: $routeParams.cId});
 
@@ -74,14 +75,17 @@ app.controller('CampaignEditController', ['$scope', '$routeParams', 'Campaign',
 
 app.controller('MainController', ['$scope', '$location', '$http', 'token', 'Campaign',
     function ($scope, $location, $http, token, Campaign) {
-        $scope.token = token.value;
+        if (token.check()) {
 
-        $scope.remove = function (campaign) {
-            $scope.campaigns.splice($scope.campaigns.indexOf(campaign), 1);
-        };
+            $scope.token = token.get();
 
-        Campaign.all(function (response) {
-            $scope.campaigns = response.campaigns;
-        });
+            $scope.remove = function (campaign) {
+                $scope.campaigns.splice($scope.campaigns.indexOf(campaign), 1);
+            };
+
+            Campaign.all({token: token.get()},function (response) {
+                $scope.campaigns = response.campaigns;
+            });
+        }
 
     }]);

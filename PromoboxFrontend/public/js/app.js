@@ -42,21 +42,26 @@ app.config(function ($translateProvider) {
 app.controller('LoginController', ['$scope', '$location', '$http', 'token',
     function ($scope, $location, $http, token) {
 
-        $scope.login_form = {email: '', password: '', remember: false};
+        if (!token.check()) {
 
-        $scope.login = function () {
-            $http.post(apiEndpoint + "user/login",
-                $.param({
-                    email: $scope.login_form.email,
-                    password: $scope.login_form.password
-                }))
-                .success(function (data) {
-                    token.put(data.token);
-                    console.log(data);
-                    console.log("Login success: " + token.get());
-                    $location.path('/main/');
-                });
-        };
+            $scope.login_form = {email: '', password: '', remember: false};
+
+            $scope.login = function () {
+                $http.post(apiEndpoint + "user/login",
+                    $.param({
+                        email: $scope.login_form.email,
+                        password: $scope.login_form.password
+                    }))
+                    .success(function (data) {
+                        token.put(data.token);
+                        console.log(data);
+                        console.log("Login success: " + token.get());
+                        $location.path('/main/');
+                    });
+            };
+        } else {
+            $location.path('/main/');
+        }
     }]);
 
 app.controller('RegistrationController', ['$scope', '$location', '$http', 'token',
@@ -68,7 +73,7 @@ app.controller('CampaignEditController', ['$scope', '$routeParams', 'token', 'Ca
     function ($scope, $routeParams, token, Campaign) {
        token.check();
 
-       $scope.campaign = Campaign.get({id: $routeParams.cId});
+       $scope.campaign = Campaign.get({id: $routeParams.cId, token: token.get()});
 
     }]);
 

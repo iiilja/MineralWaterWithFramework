@@ -1,7 +1,7 @@
 /**
  * Created by Maxim on 22.07.2014.
  */
-var services = angular.module('promobox.services', ['ngResource']);
+var services = angular.module('promobox.services', ['ngResource', 'ngCookies']);
 
 services.factory('Campaign', ['$resource',
     function ($resource) {
@@ -13,8 +13,10 @@ services.factory('Campaign', ['$resource',
     }]);
 
 
-services.factory("token", ['$location', function ($location) {
+services.factory("token", ['$cookies', '$location', function ($cookies, $location) {
     var token = '';
+
+    token = $cookies.token;
 
     return {
         check: function () {
@@ -28,6 +30,7 @@ services.factory("token", ['$location', function ($location) {
 
         put: function (value) {
             token = value;
+            $cookies.token = value;
         },
 
         get: function () {

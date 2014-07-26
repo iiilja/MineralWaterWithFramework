@@ -44,6 +44,8 @@ public class Devices implements Serializable {
     private Integer clientId;
     @Column(name = "status")
     private Integer status;
+    @Column(name = "description")
+    private String description;
 
     public Devices() {
     }
@@ -82,6 +84,14 @@ public class Devices implements Serializable {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }   
+    
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     @Override

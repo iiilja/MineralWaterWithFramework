@@ -34,6 +34,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
@@ -53,9 +54,9 @@ public class FilesController {
     private final static Logger log = LoggerFactory.getLogger(
             FilesController.class);
 
-    @RequestMapping("files/show/{id}")
+    @RequestMapping(value = "token/{token}/files/{id}", method = RequestMethod.GET)
     public ModelAndView showCampaignFiles(
-            @RequestParam String token,
+            @PathVariable("token") String token,
             @PathVariable("id") int campaignId,
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
@@ -66,7 +67,7 @@ public class FilesController {
         if (session != null) {
             List<Files> campaignFiles = userService.findUsersCampaignFiles(campaignId, session.getClientId());
 
-            if (campaignFiles != null) {
+            if (!campaignFiles.isEmpty()) {
                 JSONArray jsonCampaignFiles = new JSONArray();
                 for (Files file : campaignFiles) {
                     JSONObject jsonCampaignFile = new JSONObject();
@@ -85,9 +86,9 @@ public class FilesController {
         return RequestUtils.printResult(resp.toString(), response);
     }
 
-    @RequestMapping("files/upload/{id}")
+    @RequestMapping(value = "token/{token}/files/{id}", method = RequestMethod.POST)
     public ModelAndView uploadFile(
-            @RequestParam String token,
+            @PathVariable("token") String token,
             @PathVariable("id") int campaignId,
             @ModelAttribute FileUploadCommand command,
             HttpServletRequest request,
@@ -167,9 +168,9 @@ public class FilesController {
         return RequestUtils.printResult(resp.toString(), response);
     }
 
-    @RequestMapping("files/archive/{id}")
+    @RequestMapping(value = "token/{token}/files/archive/{id}", method = RequestMethod.PUT)
     public ModelAndView archiveCampaignFiles(
-            @RequestParam String token,
+            @PathVariable("token") String token,
             @PathVariable("id") int fileId,
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {

@@ -81,6 +81,22 @@ public class DevicesCampaigns implements Serializable {
     public void setDeviceId(Integer deviceId) {
         this.deviceId = deviceId;
     }
+    
+    public Date getUpdatedDt() {
+        return updatedDt;
+    }
+    
+    public void setUpdatedDt(Date updatedDt) {
+        this.updatedDt = updatedDt;
+    }
+    
+    public Date getLastDeviceRequestDt() {
+        return lastDeviceRequestDt;
+    }
+    
+    public void setLastDeviceRequestDt(Date lastDeviceRequestDt) {
+        this.lastDeviceRequestDt = lastDeviceRequestDt;
+    }
 
     @Override
     public int hashCode() {

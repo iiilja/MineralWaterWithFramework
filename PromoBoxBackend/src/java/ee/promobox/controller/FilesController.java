@@ -25,7 +25,9 @@ import java.util.Date;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.hibernate.Query;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -192,4 +194,20 @@ public class FilesController {
 
         return RequestUtils.printResult(resp.toString(), response);
     }
+
+    public static JSONArray getFilesInformation(List<Files> campaignFiles) throws Exception {
+        
+        JSONArray fileInformation = new JSONArray();
+        
+        for (Files file : campaignFiles) {
+            JSONObject jsonCampaignFile = new JSONObject();
+            jsonCampaignFile.put("id", file.getId());
+            jsonCampaignFile.put("name", file.getFilename());
+            jsonCampaignFile.put("created", file.getCreatedDt());
+
+            fileInformation.put(jsonCampaignFile);
+        }
+
+        return fileInformation;
+    } 
 }

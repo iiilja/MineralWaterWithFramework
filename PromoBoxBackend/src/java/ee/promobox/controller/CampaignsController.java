@@ -6,6 +6,7 @@
 package ee.promobox.controller;
 
 import ee.promobox.entity.AdCampaigns;
+import ee.promobox.entity.Files;
 import ee.promobox.service.Session;
 import ee.promobox.service.SessionService;
 import ee.promobox.service.UserService;
@@ -67,9 +68,15 @@ public class CampaignsController {
                 resp.put("sequence", campaign.getSequence());
                 resp.put("start", campaign.getStart() == null ? null : campaign.getStart().getTime());
                 
+                // put information about files associated with campaign
+                List<Files> campaignFiles = userService.findUsersCampaignFiles(campaignId, clientId);
+                resp.put("files", FilesController.getFilesInformation(campaignFiles));
+                
                 // everything's fine, put ok in the response
                 resp.put("response", RequestUtils.OK);
             }
+            
+            
         }
         
 

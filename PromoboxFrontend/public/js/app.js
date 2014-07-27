@@ -86,28 +86,29 @@ app.controller('RegistrationController', ['$scope', '$location', '$http', 'token
         }
     }]);
 
-app.controller('CampaignEditController', ['$scope', '$routeParams', 'token', 'Campaign', '$upload',
-    function ($scope, $routeParams, token, Campaign, $upload) {
+app.controller('CampaignEditController', ['$scope', '$routeParams', 'token', 'Campaign', '$upload','$location', '$http',
+    function ($scope, $routeParams, token, Campaign, $upload, $location, $http) {
        if (token.check()) {
            $scope.campaign = Campaign.get({id: $routeParams.cId, token: token.get()});
            console.log($scope.campaign);
 
-           $scope.edit_company = function () {
-               console.log($scope.edit_company_form);
-           };
+           $scope.campaign_form = {campaign_name: $scope.campaign.name, campaign_time: $scope.campaign.duration, campaign_order: $scope.campaign.sequence, campaign_start: $scope.campaign.start, campaign_finish: $scope.campaign.finish};
+
 
            $scope.onFileSelect = function($files) {
                //$files: an array of files selected, each file has name, size, and type.
                for (var i = 0; i < $files.length; i++) {
                    var file = $files[i];
+                   console.log(file);
                    $scope.upload = $upload.upload({
-                       url: 'upload', //upload.php script, node.js route, or servlet url
+                       url: apiEndpoint+'token/'+token.get()+'/files/'+$scope.campaign.id, //upload.php script, node.js route, or servlet url
+                       //method: 'POST' or 'PUT',
                        method: 'POST',
                        //headers: {'header-key': 'header-value'},
                        //withCredentials: true,
                        //data: {myObj: $scope.myModelObj},
                        file: file // or list of files ($files) for html5 only
-                       //fileName: 'doc.jpg' or ['1.jpg', '2.jpg', ...] // to modify the name of the file(s)
+                       //fileName   : 'doc.jpg' or ['1.jpg', '2.jpg', ...] // to modify the name of the file(s)
                        // customize file formData name ('Content-Desposition'), server side file variable name.
                        //fileFormDataName: myFile, //or a list of names for multiple files (html5). Default is 'file'
                        // customize how data is added to formData. See #40#issuecomment-28612000 for sample code
@@ -129,20 +130,39 @@ app.controller('CampaignEditController', ['$scope', '$routeParams', 'token', 'Ca
                // $scope.upload = $upload.http({...})  see 88#issuecomment-31366487 for sample code.
            };
 
+           $scope.edit_company = function () {
+                console.log($scope.campaign_form);
+               $http.post(apiEndpoint + "token/"+token.get()+"/campaigns/"+$scope.campaign.id,
+                   $.param({
+                       "status":"0",
+                       "sequence":$scope.campaign_form.campaign_order,
+                       "start":$scope.campaign_form.campaign_start,
+                       "finish":$scope.campaign_form.campaign_finish,
+                       "duration":$scope.campaign_form.campaign_time}))
+                   .success(function (data) {
+                       if (data.response == 'OK') {
+                           console.log(data);
+                           $location.path('/main/');
+                       }
+                   });
+           };
+
+
+
        }
     }]);
 
 app.controller('DatepickerCtrl', ['$scope',
     function ($scope) {
         $scope.today = function() {
-            $scope.edit_company_form.dt_start = new Date();
-            $scope.edit_company_form.dt_end = new Date();
+            $scope.campaign_form.campaign_start = new Date();
+            $scope.campaign_form.campaign_finish = new Date();
         };
-        $scope.today();
+//        $scope.today();
 
         $scope.clear = function () {
-            $scope.dt_start = null;
-            $scope.dt_end = null;
+            $scope.campaign_form.campaign_start = null;
+            $scope.campaign_form.campaign_finish = null;
         };
 
         // Disable weekend selection

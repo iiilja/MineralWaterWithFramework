@@ -1,52 +1,49 @@
 <div>{{token}}</div>
 <div>{{campaign.id}}</div>
-<div>{{campaign.name}}</div>
 
-<form role="form" name="edit_company_form" ng-submit="edit_company()" style="width: 50%; margin-left: auto; margin-right: auto; display: block;">
+<form role="form" name="campaign_form" ng-submit="edit_company()" style="width: 40%; margin-left: auto; margin-right: auto; display: block;">
     <div class="form-group">
         <h3>Создание/Изменение компании</h3>
     </div>
 
     <div class="form-group">
         <label for="campaign_name">Имя кампании</label>
-        <input type="text" class="form-control" name="campaign_name" id="campaign_name" placeholder="Имя компании" ng-model="edit_company_form.name" value="{{ campaign.name }}">
+        <input type="text" class="form-control" id="campaign_name" placeholder="Имя компании" name="campaign_name" ng-model="campaign_form.campaign_name">
     </div>
 
     <div class="form-group" style="position:relative;">
-        <a class='btn btn-primary' href='javascript:;'>
-            Загрузить файлы...
-            <input type="file" ng-model="edit_company_form.files" style='position:absolute;z-index:2;top:0;left:0;filter: alpha(opacity=0);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";opacity:0;background-color:transparent;color:transparent;' name="file_source" size="40"  onchange='$("#upload-file-info").html($(this).val());'>
-        </a>
-        &nbsp;
-        <span class='label label-info' id="upload-file-info"></span>
+        <input type="file" ng-file-select="onFileSelect($files)" multiple>
     </div>
 
     <div class="form-group">
-        <label for="time">Время смены</label>
-        <select class="form-control" name="time" id="time" ng-model="edit_company_form.time">
-            <option value="1">1 мин</option>
-            <option value="2">2 мин</option>
-            <option value="3">3 мин</option>
-            <option value="4">4 мин</option>
+        <label for="campaign_time">Время смены</label>
+        <select class="form-control" id="campaign_time" name="campaign_time" ng-model="campaign_form.campaign_time">
             <option value="5">5 мин</option>
+            <option value="10">10 мин</option>
+            <option value="15">15 мин</option>
+            <option value="20">20 мин</option>
+            <option value="30">30 мин</option>
         </select>
     </div>
 
 
 
     <div class="form-group">
-        <label for="order">Порядок</label>
-        <select class="form-control" name="order" id="order" ng-model="edit_company_form.order">
-            <option value="1">Случайный</option>
-            <option value="2">Подряд</option>
+        <label for="campaign_order">Порядок</label>
+        <select class="form-control" id="campaign_order" name="campaign_order" ng-model="campaign_form.campaign_order">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
         </select>
     </div>
 
     <div class="row" ng-controller="DatepickerCtrl">
         <div class="col-md-6">
-            <label for="start">Дата начала:</label>
+            <label for="campaign_start">Дата начала:</label>
             <p class="input-group">
-                <input type="text" name="start" id="start" class="form-control" datepicker-popup="dd-MMMM-yyyy" ng-model="edit_company_form.dt_start" is-open="opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" />
+                <input type="text" id="campaign_start" class="form-control" datepicker-popup="dd-MMMM-yyyy" name="campaign_start" ng-model="campaign_form.campaign_start" is-open="opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" />
               <span class="input-group-btn">
                 <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
               </span>
@@ -56,9 +53,9 @@
 
     <div class="row" ng-controller="DatepickerCtrl">
         <div class="col-md-6">
-            <label for="end">Дата конца:</label>
+            <label for="campaign_finish">Дата конца:</label>
             <p class="input-group">
-                <input type="text" name="end" id="end" class="form-control" datepicker-popup="dd-MMMM-yyyy" ng-model="edit_company_form.dt_end" is-open="opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" />
+                <input type="text" id="campaign_finish" class="form-control" datepicker-popup="dd-MMMM-yyyy" name="campaign_finish" ng-model="campaign_form.campaign_finish" is-open="opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" />
               <span class="input-group-btn">
                 <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
               </span>

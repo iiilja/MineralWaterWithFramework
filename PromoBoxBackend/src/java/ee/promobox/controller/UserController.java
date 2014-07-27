@@ -4,7 +4,6 @@
  */
 package ee.promobox.controller;
 
-import ee.promobox.KioskConfig;
 import ee.promobox.entity.AdCampaigns;
 import ee.promobox.entity.Devices;
 import ee.promobox.entity.Users;
@@ -12,7 +11,6 @@ import ee.promobox.service.Session;
 import ee.promobox.service.SessionService;
 import ee.promobox.service.UserService;
 import ee.promobox.util.RequestUtils;
-import java.io.Writer;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;

@@ -55,6 +55,8 @@ public interface UserService {
 
     public void updateCampaignFile(CampaignsFiles file);
     
+    public void updateDevice(Devices d);
+    
     public void updateDeviceAdCampaign(DevicesCampaigns dc);
     
     public void updateFile(Files file);

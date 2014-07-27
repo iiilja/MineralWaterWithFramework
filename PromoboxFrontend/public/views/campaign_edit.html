@@ -1,19 +1,21 @@
+<div>{{token}}</div>
 <div>{{campaign.id}}</div>
+<div>{{campaign.name}}</div>
 
-<form role="form">
+<form role="form" name="edit_company_form" ng-submit="edit_company()" style="width: 50%; margin-left: auto; margin-right: auto; display: block;">
     <div class="form-group">
         <h3>Создание/Изменение компании</h3>
     </div>
 
     <div class="form-group">
         <label for="campaign_name">Имя кампании</label>
-        <input type="text" class="form-control" name="campaign_name" id="campaign_name" placeholder="{{ campaign.name }}">
+        <input type="text" class="form-control" name="campaign_name" id="campaign_name" placeholder="Имя компании" ng-model="edit_company_form.name" value="{{ campaign.name }}">
     </div>
 
     <div class="form-group" style="position:relative;">
         <a class='btn btn-primary' href='javascript:;'>
             Загрузить файлы...
-            <input type="file" style='position:absolute;z-index:2;top:0;left:0;filter: alpha(opacity=0);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";opacity:0;background-color:transparent;color:transparent;' name="file_source" size="40"  onchange='$("#upload-file-info").html($(this).val());'>
+            <input type="file" ng-model="edit_company_form.files" style='position:absolute;z-index:2;top:0;left:0;filter: alpha(opacity=0);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";opacity:0;background-color:transparent;color:transparent;' name="file_source" size="40"  onchange='$("#upload-file-info").html($(this).val());'>
         </a>
         &nbsp;
         <span class='label label-info' id="upload-file-info"></span>
@@ -21,7 +23,7 @@
 
     <div class="form-group">
         <label for="time">Время смены</label>
-        <select class="form-control" name="time" id="time">
+        <select class="form-control" name="time" id="time" ng-model="edit_company_form.time">
             <option value="1">1 мин</option>
             <option value="2">2 мин</option>
             <option value="3">3 мин</option>
@@ -34,20 +36,34 @@
 
     <div class="form-group">
         <label for="order">Порядок</label>
-        <select class="form-control" name="order" id="order">
+        <select class="form-control" name="order" id="order" ng-model="edit_company_form.order">
             <option value="1">Случайный</option>
             <option value="2">Подряд</option>
         </select>
     </div>
 
-    <div class="form-group">
-        <label for="start">Дата начала:</label>
-        <input type="text" class="form-control" name="start" id="start" placeholder="">
+    <div class="row" ng-controller="DatepickerCtrl">
+        <div class="col-md-6">
+            <label for="start">Дата начала:</label>
+            <p class="input-group">
+                <input type="text" name="start" id="start" class="form-control" datepicker-popup="dd-MMMM-yyyy" ng-model="edit_company_form.dt_start" is-open="opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" />
+              <span class="input-group-btn">
+                <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+              </span>
+            </p>
+        </div>
     </div>
 
-    <div class="form-group">
-        <label for="end">Дата конца:</label>
-        <input type="text" class="form-control" name="end" id="end" placeholder="">
+    <div class="row" ng-controller="DatepickerCtrl">
+        <div class="col-md-6">
+            <label for="end">Дата конца:</label>
+            <p class="input-group">
+                <input type="text" name="end" id="end" class="form-control" datepicker-popup="dd-MMMM-yyyy" ng-model="edit_company_form.dt_end" is-open="opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" />
+              <span class="input-group-btn">
+                <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+              </span>
+            </p>
+        </div>
     </div>
 
     <button type="submit" class="btn btn-default">Сохранить компанию</button>

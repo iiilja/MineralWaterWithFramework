@@ -16,7 +16,6 @@ services.factory('Campaign', ['$resource',
 
 services.factory("token", ['$cookies', '$location', function ($cookies, $location) {
     var token = '';
-
     token = $cookies.token;
 
     return {

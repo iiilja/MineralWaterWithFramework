@@ -32,9 +32,6 @@ public class DevicesCampaignController {
     @Autowired
     private UserService userService;
 
-    private final static Logger log = LoggerFactory.getLogger(
-            FilesController.class);
-
     @RequestMapping("/device/{uuid}/pull")
     public ModelAndView showCampaign(
             @PathVariable("uuid") String uuid,
@@ -53,14 +50,18 @@ public class DevicesCampaignController {
                 // if campaign on device was updated after last request
                 if (dc.getUpdatedDt().after(dc.getLastDeviceRequestDt())) {
                     AdCampaigns ad = userService.findCampaignByCampaignId(dc.getAdCampaignsId());
+                    
+                    resp.put("uuid", d.getUuid());
+                    resp.put("device_status", d.getStatus());
+                    resp.put("device_desc", d.getDescription());
 
-                    resp.put("name", ad.getName());
-                    resp.put("status", ad.getStatus());
+                    resp.put("campaign_name", ad.getName());
+                    resp.put("campaign_status", ad.getStatus());
 
                     // update last request date               
-                    dc.setLastDeviceRequestDt(new Date(System.currentTimeMillis()));
+                    dc.setLastDeviceRequestDt(new Date());
                     userService.updateDeviceAdCampaign(dc);
-                    
+
                     // if this line of code is reached, put OK in the response
                     resp.put("response", RequestUtils.OK);
                 }

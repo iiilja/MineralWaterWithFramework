@@ -6,8 +6,6 @@
 
 package ee.promobox.util;
 
-import org.springframework.web.multipart.MultipartFile;
-
 /**
  *
  * @author Dan

@@ -8,6 +8,7 @@ package ee.promobox.service;
 import ee.promobox.entity.AdCampaigns;
 import ee.promobox.entity.CampaignsFiles;
 import ee.promobox.entity.Devices;
+import ee.promobox.entity.DevicesCampaigns;
 import ee.promobox.entity.Files;
 import ee.promobox.entity.Users;
 import java.util.List;
@@ -33,6 +34,14 @@ public interface UserService {
     public List<Files> findUsersCampaignFiles(int campaignId, int clientId);
     
     public AdCampaigns findCampaignByIdAndClientId(int id, int clientId);
+    
+    // public AdCampaigns findCampaignByUuid(String uuid);
+    
+    public Devices findDeviceByUuid(String uuid);
+    
+    public DevicesCampaigns findDeviceCampaignByDeviceId(int deviceId);
+    
+    public AdCampaigns findCampaignByCampaignId(int campaignId);
 
     public void addCampaign(AdCampaigns campaign);
 
@@ -43,4 +52,6 @@ public interface UserService {
     public void addCampaignFile(CampaignsFiles file);
 
     public void updateCampaignFile(CampaignsFiles file);
+    
+    public void updateDeviceAdCampaign(DevicesCampaigns dc);
 }

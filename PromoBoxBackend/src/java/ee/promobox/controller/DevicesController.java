@@ -37,7 +37,7 @@ public class DevicesController {
     @RequestMapping("/device/{uuid}/pull")
     public ModelAndView showCampaign(
             @PathVariable("uuid") String uuid,
-            @RequestBody String json,
+            @RequestParam String json,
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 

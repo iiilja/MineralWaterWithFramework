@@ -43,7 +43,7 @@ public class CampaignsController {
     
     
     @RequestMapping("token/{token}/campaign/{campaignId}")
-    public ModelAndView showAllCampaigns(
+    public ModelAndView showCampaign(
             @PathVariable("token") String token,
             @PathVariable("campaignId") int campaignId,
             HttpServletRequest request,
@@ -77,9 +77,9 @@ public class CampaignsController {
         return RequestUtils.printResult(resp.toString(), response);
     }
 
-    @RequestMapping("campaigns/show/")
+    @RequestMapping("token/{token}/campaigns")
     public ModelAndView showAllCampaigns(
-            @RequestParam String token,
+            @PathVariable("token") String token,
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 

@@ -1,4 +1,4 @@
-<div>{{ token }}</div>
+<div>{{campaign.id}}</div>
 
 <form role="form">
     <div class="form-group">
@@ -7,7 +7,7 @@
 
     <div class="form-group">
         <label for="campaign_name">Имя кампании</label>
-        <input type="text" class="form-control" name="campaign_name" id="campaign_name" placeholder="Нозвание">
+        <input type="text" class="form-control" name="campaign_name" id="campaign_name" placeholder="{{ campaign.name }}">
     </div>
 
     <div class="form-group" style="position:relative;">
@@ -51,4 +51,5 @@
     </div>
 
     <button type="submit" class="btn btn-default">Сохранить компанию</button>
+    <a href="#/main/"><button type="submit"  class="btn btn-default">Отмена</button></a>
 </form>

@@ -2,7 +2,6 @@ var apiEndpoint = "http://api.dev.promobox.ee/service/";
 
 var app = angular.module('promobox', ['ngRoute', 'ui.bootstrap', 'pascalprecht.translate', 'promobox.services']);
 
-app.value('token', {value: ''});
 
 app.config(['$routeProvider', function ($routeProvider) {
     $routeProvider
@@ -43,21 +42,29 @@ app.config(function ($translateProvider) {
 app.controller('LoginController', ['$scope', '$location', '$http', 'token',
     function ($scope, $location, $http, token) {
 
-        $scope.login_form = {email: '', password: '', remember: false};
+        if (!token.check()) {
 
-        $scope.login = function () {
-            $http.post(apiEndpoint + "user/login",
-                $.param({
-                    email: $scope.login_form.email,
-                    password: $scope.login_form.password
-                }))
-                .success(function (data) {
-                    token.value = data.token;
-                    console.log(data);
-                    console.log("Login success: " + token.value);
-                    $location.path('/main/');
-                });
-        };
+            $scope.login_form = {email: '', password: '', remember: false};
+
+            $scope.login = function () {
+                $http.post(apiEndpoint + "user/login",
+                    $.param({
+                        email: $scope.login_form.email,
+                        password: $scope.login_form.password
+                    }))
+                    .success(function (data) {
+                        if (data.response == 'OK') {
+                            token.put(data.token);
+
+                            console.log(data);
+
+                            $location.path('/main/');
+                        }
+                    });
+            };
+        } else {
+            $location.path('/main/');
+        }
     }]);
 
 app.controller('RegistrationController', ['$scope', '$location', '$http', 'token',
@@ -65,34 +72,30 @@ app.controller('RegistrationController', ['$scope', '$location', '$http', 'token
 
     }]);
 
-app.controller('CampaignEditController', ['$scope', '$routeParams', '$http', 'token',
-    function ($scope, $routeParams, $http, token) {
+app.controller('CampaignEditController', ['$scope', '$routeParams', 'token', 'Campaign',
+    function ($scope, $routeParams, token, Campaign) {
+       token.check();
 
-        $http.post(apiEndpoint + "campaign/data",
-            $.param({
-                'token': $scope.token,
-                'id': $routeParams.cId
-            }))
-            .success(function (data) {
-                $scope.campaign = data.campaign;
-            });
+       $scope.campaign = Campaign.get({id: $routeParams.cId, token: token.get()});
 
     }]);
 
 
-app.controller('MainController', ['$scope', '$location', '$http', 'token',
-    function ($scope, $location, $http, token) {
-        $scope.token = token.value;
+app.controller('MainController', ['$scope', '$location', '$http', 'token', 'Campaign',
+    function ($scope, $location, $http, token, Campaign) {
+        if (token.check()) {
 
-        $scope.remove = function(campaign) {
-            $scope.campaigns.splice($scope.campaigns.indexOf(campaign), 1);
-        };
+            $scope.token = token.get();
 
-        $http.post(apiEndpoint + "user/data",
-            $.param({
-                'token': $scope.token
-            }))
-            .success(function (data) {
-                $scope.campaigns = data.campaigns;
+            $scope.remove = function (campaign) {
+                $scope.campaigns.splice($scope.campaigns.indexOf(campaign), 1);
+            };
+
+            Campaign.all({token: token.get()},function (response) {
+                if (response.response == 'OK') {
+                    $scope.campaigns = response.campaigns;
+                }
             });
+        }
+
     }]);

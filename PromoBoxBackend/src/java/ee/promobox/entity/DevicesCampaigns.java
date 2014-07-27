@@ -47,9 +47,6 @@ public class DevicesCampaigns implements Serializable {
     @Column(name = "updated_dt")
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedDt;
-    @Column(name = "last_device_request_dt")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date lastDeviceRequestDt;
 
     public DevicesCampaigns() {
     }
@@ -88,14 +85,6 @@ public class DevicesCampaigns implements Serializable {
     
     public void setUpdatedDt(Date updatedDt) {
         this.updatedDt = updatedDt;
-    }
-    
-    public Date getLastDeviceRequestDt() {
-        return lastDeviceRequestDt;
-    }
-    
-    public void setLastDeviceRequestDt(Date lastDeviceRequestDt) {
-        this.lastDeviceRequestDt = lastDeviceRequestDt;
     }
 
     @Override

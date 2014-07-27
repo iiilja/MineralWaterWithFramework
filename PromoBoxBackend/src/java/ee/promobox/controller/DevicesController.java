@@ -32,9 +32,10 @@ public class DevicesController {
     @Autowired
     private UserService userService;
 
-    @RequestMapping("/device/{uuid}/pull")
+    @RequestMapping("/device/{uuid}/pull/{json}")
     public ModelAndView showCampaign(
             @PathVariable("uuid") String uuid,
+            @PathVariable("json") String json,
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
@@ -43,29 +44,30 @@ public class DevicesController {
 
         // if this device exists and status is active
         if (d != null && d.getStatus() == 1) {
-            DevicesCampaigns dc = userService.findDeviceCampaignByDeviceId(d.getId());
+            JSONObject objectGiven = new JSONObject(json);
+            // update data about device
+            d.setStatus(objectGiven.getInt("status"));
+            d.setFreeSpace(objectGiven.getLong("freeSpace"));
+            d.setDescription(objectGiven.getString("desc"));
 
+            DevicesCampaigns dc = userService.findDeviceCampaignByDeviceId(d.getId());
             // if there is campaign associated with device
             if (dc != null) {
                 // if campaign on device was updated after last request
-                if (dc.getUpdatedDt().after(dc.getLastDeviceRequestDt())) {
+                if (dc.getUpdatedDt().after(d.getLastDeviceRequestDt())) {
                     AdCampaigns ad = userService.findCampaignByCampaignId(dc.getAdCampaignsId());
-                    
-                    resp.put("uuid", d.getUuid());
-                    resp.put("deviceStatus", d.getStatus());
-                    resp.put("deviceDesc", d.getDescription());
 
                     resp.put("campaignName", ad.getName());
                     resp.put("campaignStatus", ad.getStatus());
-
-                    // update last request date               
-                    dc.setLastDeviceRequestDt(new Date());
-                    userService.updateDeviceAdCampaign(dc);
-
-                    // if this line of code is reached, put OK in the response
-                    resp.put("response", RequestUtils.OK);
                 }
             }
+
+            // update last request date               
+            d.setLastDeviceRequestDt(new Date());
+            userService.updateDevice(d);
+
+            // if this line of code is reached, put OK in the response
+            resp.put("response", RequestUtils.OK);
         }
 
         return RequestUtils.printResult(resp.toString(), response);

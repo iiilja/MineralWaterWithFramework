@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package ee.promobox.entity;
 
 import java.io.Serializable;
+import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,6 +16,8 @@ import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -32,6 +34,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Devices.findByClientId", query = "SELECT d FROM Devices d WHERE d.clientId = :clientId"),
     @NamedQuery(name = "Devices.findByStatus", query = "SELECT d FROM Devices d WHERE d.status = :status")})
 public class Devices implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,6 +49,11 @@ public class Devices implements Serializable {
     private Integer status;
     @Column(name = "description")
     private String description;
+    @Column(name = "last_device_request_dt")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date lastDeviceRequestDt;
+    @Column(name = "free_space")
+    private long freeSpace;
 
     public Devices() {
     }
@@ -84,14 +92,30 @@ public class Devices implements Serializable {
 
     public void setStatus(Integer status) {
         this.status = status;
-    }   
-    
+    }
+
     public String getDescription() {
         return description;
     }
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public long getFreeSpace() {
+        return freeSpace;
+    }
+
+    public void setFreeSpace(long freeSpace) {
+        this.freeSpace = freeSpace;
+    }
+
+    public Date getLastDeviceRequestDt() {
+        return lastDeviceRequestDt;
+    }
+
+    public void setLastDeviceRequestDt(Date lastDeviceRequestDt) {
+        this.lastDeviceRequestDt = lastDeviceRequestDt;
     }
 
     @Override
@@ -118,5 +142,5 @@ public class Devices implements Serializable {
     public String toString() {
         return "ee.promobox.entity.Devices[ id=" + id + " ]";
     }
-    
+
 }

@@ -7,6 +7,7 @@
 package ee.promobox.entity;
 
 import java.io.Serializable;
+import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,6 +17,8 @@ import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -41,6 +44,12 @@ public class DevicesCampaigns implements Serializable {
     private Integer adCampaignsId;
     @Column(name = "device_id")
     private Integer deviceId;
+    @Column(name = "updated_dt")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date updatedDt;
+    @Column(name = "last_device_request_dt")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date lastDeviceRequestDt;
 
     public DevicesCampaigns() {
     }
@@ -71,6 +80,22 @@ public class DevicesCampaigns implements Serializable {
 
     public void setDeviceId(Integer deviceId) {
         this.deviceId = deviceId;
+    }
+    
+    public Date getUpdatedDt() {
+        return updatedDt;
+    }
+    
+    public void setUpdatedDt(Date updatedDt) {
+        this.updatedDt = updatedDt;
+    }
+    
+    public Date getLastDeviceRequestDt() {
+        return lastDeviceRequestDt;
+    }
+    
+    public void setLastDeviceRequestDt(Date lastDeviceRequestDt) {
+        this.lastDeviceRequestDt = lastDeviceRequestDt;
     }
 
     @Override

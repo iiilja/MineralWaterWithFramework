@@ -6,6 +6,7 @@
 package ee.promobox.controller;
 
 import ee.promobox.entity.AdCampaigns;
+import ee.promobox.entity.Files;
 import ee.promobox.service.Session;
 import ee.promobox.service.SessionService;
 import ee.promobox.service.UserService;
@@ -22,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -41,8 +43,7 @@ public class CampaignsController {
     @Autowired
     private UserService userService;
     
-    
-    @RequestMapping("token/{token}/campaign/{campaignId}")
+    @RequestMapping(value = "token/{token}/campaigns/{campaignId}", method=RequestMethod.GET)
     public ModelAndView showCampaign(
             @PathVariable("token") String token,
             @PathVariable("campaignId") int campaignId,
@@ -66,18 +67,23 @@ public class CampaignsController {
                 resp.put("finish", campaign.getFinish() == null ? null : campaign.getFinish().getTime());
                 resp.put("sequence", campaign.getSequence());
                 resp.put("start", campaign.getStart() == null ? null : campaign.getStart().getTime());
-
+                
+                // put information about files associated with campaign
+                List<Files> campaignFiles = userService.findUsersCampaignFiles(campaignId, clientId);
+                resp.put("files", FilesController.getFilesInformation(campaignFiles));
+                
+                // everything's fine, put ok in the response
+                resp.put("response", RequestUtils.OK);
             }
-
-            // everything's fine, put ok in the response
-            resp.put("response", RequestUtils.OK);
+            
+            
         }
         
 
         return RequestUtils.printResult(resp.toString(), response);
     }
 
-    @RequestMapping("token/{token}/campaigns")
+    @RequestMapping(value = "token/{token}/campaigns", method=RequestMethod.GET)
     public ModelAndView showAllCampaigns(
             @PathVariable("token") String token,
             HttpServletRequest request,
@@ -113,9 +119,9 @@ public class CampaignsController {
         return RequestUtils.printResult(resp.toString(), response);
     }
 
-    @RequestMapping("campaigns/create")
+    @RequestMapping(value = "token/{token}/campaigns/", method = RequestMethod.POST)
     public ModelAndView createCampaign(
-            @RequestParam String token,
+            @PathVariable("token") String token,
             @RequestParam String name,
             @RequestParam String json,
             HttpServletRequest request,
@@ -146,9 +152,9 @@ public class CampaignsController {
         return RequestUtils.printResult(resp.toString(), response);
     }
 
-    @RequestMapping("campaigns/update/{id}")
+    @RequestMapping(value = "token/{token}/campaigns/{id}", method = RequestMethod.PUT)
     public ModelAndView updateCampaign(
-            @RequestParam String token,
+            @PathVariable("token") String token,
             @PathVariable("id") int id,
             @RequestParam String name,
             @RequestParam String json,

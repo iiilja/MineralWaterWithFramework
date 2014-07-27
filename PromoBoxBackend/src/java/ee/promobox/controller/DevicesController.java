@@ -27,7 +27,7 @@ import org.springframework.web.servlet.ModelAndView;
  * @author Dan
  */
 @Controller
-public class DevicesCampaignController {
+public class DevicesController {
 
     @Autowired
     private UserService userService;
@@ -52,11 +52,11 @@ public class DevicesCampaignController {
                     AdCampaigns ad = userService.findCampaignByCampaignId(dc.getAdCampaignsId());
                     
                     resp.put("uuid", d.getUuid());
-                    resp.put("device_status", d.getStatus());
-                    resp.put("device_desc", d.getDescription());
+                    resp.put("deviceStatus", d.getStatus());
+                    resp.put("deviceDesc", d.getDescription());
 
-                    resp.put("campaign_name", ad.getName());
-                    resp.put("campaign_status", ad.getStatus());
+                    resp.put("campaignName", ad.getName());
+                    resp.put("campaignStatus", ad.getStatus());
 
                     // update last request date               
                     dc.setLastDeviceRequestDt(new Date());

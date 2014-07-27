@@ -136,6 +136,14 @@ public class UserServiceImpl implements UserService {
         
         return (AdCampaigns) q.uniqueResult();
     }
+    
+    public Files findFileById(int id) {
+        Session session = sessionFactory.getCurrentSession();
+        
+        Query q = session.getNamedQuery("Files.findById").setInteger("id", id);
+        
+        return (Files) q.uniqueResult();
+    }
 
     public void addCampaign(AdCampaigns campaign) {
         Session session = sessionFactory.getCurrentSession();
@@ -170,6 +178,12 @@ public class UserServiceImpl implements UserService {
     public void updateDeviceAdCampaign(DevicesCampaigns dc) {
         Session session = sessionFactory.getCurrentSession();
         session.update(dc);
+        session.flush();
+    }
+    
+    public void updateFile(Files file) {
+        Session session = sessionFactory.getCurrentSession();
+        session.update(file);
         session.flush();
     }
 

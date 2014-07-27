@@ -42,6 +42,8 @@ public interface UserService {
     public DevicesCampaigns findDeviceCampaignByDeviceId(int deviceId);
     
     public AdCampaigns findCampaignByCampaignId(int campaignId);
+    
+    public Files findFileById(int id);
 
     public void addCampaign(AdCampaigns campaign);
 
@@ -54,4 +56,6 @@ public interface UserService {
     public void updateCampaignFile(CampaignsFiles file);
     
     public void updateDeviceAdCampaign(DevicesCampaigns dc);
+    
+    public void updateFile(Files file);
 }

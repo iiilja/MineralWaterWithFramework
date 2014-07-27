@@ -20,11 +20,14 @@ import ee.promobox.util.FileUtils;
 import ee.promobox.util.RequestUtils;
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.Date;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -53,7 +56,7 @@ public class FilesController {
     private final static Logger log = LoggerFactory.getLogger(
             FilesController.class);
 
-    @RequestMapping(value = "token/{token}/files/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "token/{token}/campaigns/{id}/files/", method = RequestMethod.GET)
     public ModelAndView showCampaignFiles(
             @PathVariable("token") String token,
             @PathVariable("id") int campaignId,
@@ -85,7 +88,7 @@ public class FilesController {
         return RequestUtils.printResult(resp.toString(), response);
     }
 
-    @RequestMapping(value = "token/{token}/files/{id}", method = RequestMethod.POST)
+    @RequestMapping(value = "token/{token}/campaigns/{id}/files/", method = RequestMethod.POST)
     public ModelAndView uploadFile(
             @PathVariable("token") String token,
             @PathVariable("id") int campaignId,
@@ -158,6 +161,9 @@ public class FilesController {
 
                     // move file to the users folder and rename it to its DB id
                     physicalFile.renameTo(new File(userFilePath + databaseFile.getId() + "." + fileType));
+                    // assign new name for file in database
+                    databaseFile.setFilename(databaseFile.getId() + "." + fileType);
+                    userService.updateFile(databaseFile);
 
                     resp.put("response", "OK");
                 }
@@ -192,10 +198,45 @@ public class FilesController {
         return RequestUtils.printResult(resp.toString(), response);
     }
 
+    @RequestMapping("files/{id}")
+    public ModelAndView getFile(
+            @PathVariable("id") int id,
+            HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+              
+        JSONObject resp = RequestUtils.getErrorResponse();
+        Files dbFile = userService.findFileById(id);
+
+        // if this file exists
+        if (dbFile != null) {
+            
+            // set proper headers for testing
+            response.setHeader("Content-disposition", "attachment;filename=" + dbFile.getFilename());
+            response.setHeader("Content-type", "application/octet-stream");
+            response.setHeader("Content-length", dbFile.getSize().toString());
+            
+            // open file
+            File file = new File(dbFile.getPath() + dbFile.getFilename());           
+
+            FileInputStream fileInputStream = new FileInputStream(file);
+            OutputStream outputStream = response.getOutputStream();
+
+            IOUtils.copy(fileInputStream, outputStream);
+            
+            IOUtils.closeQuietly(fileInputStream);
+            IOUtils.closeQuietly(outputStream);
+            
+            // put ok in the response
+            resp.put("response", RequestUtils.OK);
+        }
+
+        return RequestUtils.printResult(resp.toString(), response);
+    }
+
     public static JSONArray getFilesInformation(List<Files> campaignFiles) throws Exception {
-        
+
         JSONArray fileInformation = new JSONArray();
-        
+
         for (Files file : campaignFiles) {
             JSONObject jsonCampaignFile = new JSONObject();
             jsonCampaignFile.put("id", file.getId());
@@ -206,5 +247,5 @@ public class FilesController {
         }
 
         return fileInformation;
-    } 
+    }
 }

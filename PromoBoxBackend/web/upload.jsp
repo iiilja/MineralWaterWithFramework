@@ -13,7 +13,7 @@ and open the template in the editor.
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
     <body>
-        <form action="/service/token/096ca54381ee401184d39a9eaf73d8be/files/1" method="POST" enctype="multipart/form-data">
+        <form action="/service/token/8160390392794db7a486b542dd0bf2c4/campaigns/1/files/" method="POST" enctype="multipart/form-data">
             <input type="file" name="file"><br>
             <input type="submit" value="Submit">
         </form>

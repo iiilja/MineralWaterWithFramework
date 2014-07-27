@@ -19,7 +19,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
@@ -35,6 +37,7 @@ public class DevicesController {
     @RequestMapping("/device/{uuid}/pull")
     public ModelAndView showCampaign(
             @PathVariable("uuid") String uuid,
+            @RequestParam String json,
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
@@ -43,29 +46,30 @@ public class DevicesController {
 
         // if this device exists and status is active
         if (d != null && d.getStatus() == 1) {
-            DevicesCampaigns dc = userService.findDeviceCampaignByDeviceId(d.getId());
+            JSONObject objectGiven = new JSONObject(json);
+            // update data about device
+            d.setStatus(objectGiven.getInt("status"));
+            d.setFreeSpace(objectGiven.getLong("freeSpace"));
+            d.setDescription(objectGiven.getString("desc"));
 
+            DevicesCampaigns dc = userService.findDeviceCampaignByDeviceId(d.getId());
             // if there is campaign associated with device
             if (dc != null) {
                 // if campaign on device was updated after last request
-                if (dc.getUpdatedDt().after(dc.getLastDeviceRequestDt())) {
+                if (dc.getUpdatedDt().after(d.getLastDeviceRequestDt())) {
                     AdCampaigns ad = userService.findCampaignByCampaignId(dc.getAdCampaignsId());
-                    
-                    resp.put("uuid", d.getUuid());
-                    resp.put("deviceStatus", d.getStatus());
-                    resp.put("deviceDesc", d.getDescription());
 
                     resp.put("campaignName", ad.getName());
                     resp.put("campaignStatus", ad.getStatus());
-
-                    // update last request date               
-                    dc.setLastDeviceRequestDt(new Date());
-                    userService.updateDeviceAdCampaign(dc);
-
-                    // if this line of code is reached, put OK in the response
-                    resp.put("response", RequestUtils.OK);
                 }
             }
+
+            // update last request date               
+            d.setLastDeviceRequestDt(new Date());
+            userService.updateDevice(d);
+
+            // if this line of code is reached, put OK in the response
+            resp.put("response", RequestUtils.OK);
         }
 
         return RequestUtils.printResult(resp.toString(), response);

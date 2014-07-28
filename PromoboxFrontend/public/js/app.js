@@ -131,7 +131,7 @@ app.controller('CampaignEditController', ['$scope', '$routeParams', 'token', 'Ca
 
            $scope.edit_company = function () {
                 console.log($scope.campaign_form);
-               $http.post({method:'PUT', url: apiEndpoint + "token/"+token.get()+"/campaigns/"+$scope.campaign.id},
+               $http.put(apiEndpoint + "token/" + token.get() + "/campaigns/" + $scope.campaign.id,
                    $.param({
                        "status":"0",
                        "sequence":$scope.campaign_form.campaign_order,

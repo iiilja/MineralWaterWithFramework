@@ -30,6 +30,9 @@ app.config(['$routeProvider', function ($routeProvider) {
 
 app.config(function ($httpProvider) {
     $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
+    $httpProvider.defaults.headers.put['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
+    $httpProvider.defaults.headers.common['x-requested-with'] = 'promobox.ee';
+
 });
 
 app.config(function ($translateProvider) {

@@ -92,6 +92,7 @@ app.controller('RegistrationController', ['$scope', '$location', '$http', 'token
 app.controller('CampaignEditController', ['$scope', '$routeParams', 'token', 'Campaign', '$upload','$location', '$http',
     function ($scope, $routeParams, token, Campaign, $upload, $location, $http) {
        if (token.check()) {
+
            $scope.campaign = Campaign.get({id: $routeParams.cId, token: token.get()}, function(response) {
                $scope.campaign = response;
                $scope.campaign_form = {campaign_name: $scope.campaign.name, campaign_time: $scope.campaign.duration, campaign_order: $scope.campaign.sequence, campaign_start: $scope.campaign.start, campaign_finish: $scope.campaign.finish};
@@ -135,12 +136,12 @@ app.controller('CampaignEditController', ['$scope', '$routeParams', 'token', 'Ca
            $scope.edit_company = function () {
                 console.log($scope.campaign_form);
                $http.put(apiEndpoint + "token/" + token.get() + "/campaigns/" + $scope.campaign.id,
-                   $.param({
+                   {
                        "status":"0",
                        "sequence":$scope.campaign_form.campaign_order,
                        "start":$scope.campaign_form.campaign_start,
                        "finish":$scope.campaign_form.campaign_finish,
-                       "duration":$scope.campaign_form.campaign_time}))
+                       "duration":$scope.campaign_form.campaign_time})
                    .success(function (data) {
                        if (data.response == 'OK') {
                            console.log(data);

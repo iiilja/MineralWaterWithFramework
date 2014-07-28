@@ -54,7 +54,7 @@
         <entry file="file://$PROJECT_DIR$/public/js/app.js">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.39273927" vertical-offset="1921" max-vertical-offset="3706">
-              <caret line="134" column="115" selection-start-line="134" selection-start-column="115" selection-end-line="134" selection-end-column="115" />
+              <caret line="134" column="78" selection-start-line="134" selection-start-column="78" selection-end-line="134" selection-end-column="78" />
               <folding />
             </state>
           </provider>
@@ -529,7 +529,7 @@
       <changelist id="9b44007b-a825-43ba-8a60-51fd2b364aed" name="Default" comment="" />
       <created>1406146834478</created>
       <updated>1406146834478</updated>
-      <workItem from="1406527320089" duration="1236000" />
+      <workItem from="1406527320089" duration="1538000" />
     </task>
     <task id="LOCAL-00001" summary="Test 2">
       <created>1406150675432</created>
@@ -563,11 +563,15 @@
       <created>1406528135214</created>
       <updated>1406528135214</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="Fixed method for service">
+      <created>1406528578748</created>
+      <updated>1406528578748</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="1236000" />
+    <option name="totallyTimeSpent" value="1538000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -624,7 +628,8 @@
     <MESSAGE value="Chech" />
     <MESSAGE value="Edit Comp" />
     <MESSAGE value="Fixed url service" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed url service" />
+    <MESSAGE value="Fixed method for service" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed method for service" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -918,7 +923,7 @@
     <entry file="file://$PROJECT_DIR$/public/js/app.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.39273927" vertical-offset="1921" max-vertical-offset="3706">
-          <caret line="134" column="115" selection-start-line="134" selection-start-column="115" selection-end-line="134" selection-end-column="115" />
+          <caret line="134" column="78" selection-start-line="134" selection-start-column="78" selection-end-line="134" selection-end-column="78" />
           <folding />
         </state>
       </provider>

@@ -89,11 +89,10 @@ app.controller('RegistrationController', ['$scope', '$location', '$http', 'token
 app.controller('CampaignEditController', ['$scope', '$routeParams', 'token', 'Campaign', '$upload','$location', '$http',
     function ($scope, $routeParams, token, Campaign, $upload, $location, $http) {
        if (token.check()) {
-           $scope.campaign = Campaign.get({id: $routeParams.cId, token: token.get()});
-           console.log($scope.campaign);
-
-           $scope.campaign_form = {campaign_name: $scope.campaign.name, campaign_time: $scope.campaign.duration, campaign_order: $scope.campaign.sequence, campaign_start: $scope.campaign.start, campaign_finish: $scope.campaign.finish};
-
+           $scope.campaign = Campaign.get({id: $routeParams.cId, token: token.get()}, function(response) {
+               $scope.campaign = response;
+               $scope.campaign_form = {campaign_name: $scope.campaign.name, campaign_time: $scope.campaign.duration, campaign_order: $scope.campaign.sequence, campaign_start: $scope.campaign.start, campaign_finish: $scope.campaign.finish};
+           });
 
            $scope.onFileSelect = function($files) {
                //$files: an array of files selected, each file has name, size, and type.

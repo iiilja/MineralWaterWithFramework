@@ -21,7 +21,7 @@
     <!-- Configure the multipart resolver -->
     <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
         <!-- one of the properties available; the maximum file size in bytes -->
-        <property name="maxUploadSize" value="1500000"/>
+        <property name="maxUploadSize" value="150000000"/>
     </bean>
     
     

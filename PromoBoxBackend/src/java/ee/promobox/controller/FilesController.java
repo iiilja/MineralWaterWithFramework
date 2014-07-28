@@ -112,7 +112,7 @@ public class FilesController {
                     log.info("Filesize: " + multipartFile.getSize());
 
                     // define path for users directory
-                    String temporaryFolder = config.getDataDir() + "TEMP\\";
+                    String temporaryFolder = config.getDataDir() + "TEMP" + File.separator;
                     String userFilePath = config.getDataDir() + session.getClientId() + File.separator;
                     // if users folder doesnt exist, create one
                     File userFolder = new File(userFilePath);
@@ -137,6 +137,7 @@ public class FilesController {
                             new FileOutputStream(physicalFile))) {
                         stream.write(bytes);
                     } catch (Exception ex) {
+                        log.error(ex.getMessage(), ex);
                         return RequestUtils.printResult(resp.toString(), response);
                     }
 

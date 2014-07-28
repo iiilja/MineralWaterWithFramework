@@ -104,7 +104,7 @@ app.controller('CampaignEditController', ['$scope', '$routeParams', 'token', 'Ca
                    var file = $files[i];
                    console.log(file);
                    $scope.upload = $upload.upload({
-                       url: apiEndpoint+'token/'+token.get()+'/files/'+$scope.campaign.id, //upload.php script, node.js route, or servlet url
+                       url: apiEndpoint+'token/' + token.get()+'/campaigns/' + $scope.campaign.id + '/files', //upload.php script, node.js route, or servlet url
                        //method: 'POST' or 'PUT',
                        method: 'POST',
                        //headers: {'header-key': 'header-value'},

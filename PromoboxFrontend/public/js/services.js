@@ -34,6 +34,13 @@ services.factory("token", ['$cookies', '$location', function ($cookies, $locatio
         },
 
         get: function () {
+            this.check();
             return token;
-        }}
+        },
+
+        remove: function () {
+            token = undefined;
+            $location.path('/');
+        }
+    }
 }]);

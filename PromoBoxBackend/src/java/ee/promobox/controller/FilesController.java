@@ -56,7 +56,7 @@ public class FilesController {
     private final static Logger log = LoggerFactory.getLogger(
             FilesController.class);
 
-    @RequestMapping(value = "token/{token}/campaigns/{id}/files", method = RequestMethod.GET)
+    @RequestMapping(value = "token/{token}/campaigns/{id}/files/", method = RequestMethod.GET)
     public ModelAndView showCampaignFiles(
             @PathVariable("token") String token,
             @PathVariable("id") int campaignId,
@@ -88,7 +88,7 @@ public class FilesController {
         return RequestUtils.printResult(resp.toString(), response);
     }
 
-    @RequestMapping(value = "token/{token}/campaigns/{id}/files", method = RequestMethod.POST)
+    @RequestMapping(value = "token/{token}/campaigns/{id}/files/", method = RequestMethod.POST)
     public ModelAndView uploadFile(
             @PathVariable("token") String token,
             @PathVariable("id") int campaignId,
@@ -112,7 +112,7 @@ public class FilesController {
                     log.info("Filesize: " + multipartFile.getSize());
 
                     // define path for users directory
-                    String temporaryFolder = config.getDataDir() + "TEMP\\";
+                    String temporaryFolder = config.getDataDir() + "TEMP" + File.separator;
                     String userFilePath = config.getDataDir() + session.getClientId() + File.separator;
                     // if users folder doesnt exist, create one
                     File userFolder = new File(userFilePath);
@@ -137,6 +137,7 @@ public class FilesController {
                             new FileOutputStream(physicalFile))) {
                         stream.write(bytes);
                     } catch (Exception ex) {
+                        log.error(ex.getMessage(), ex);
                         return RequestUtils.printResult(resp.toString(), response);
                     }
 

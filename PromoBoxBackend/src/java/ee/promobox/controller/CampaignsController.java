@@ -119,7 +119,7 @@ public class CampaignsController {
         return RequestUtils.printResult(resp.toString(), response);
     }
 
-    @RequestMapping(value = "token/{token}/campaigns/", method = RequestMethod.POST)
+    @RequestMapping(value = "token/{token}/campaigns", method = RequestMethod.POST)
     public ModelAndView createCampaign(
             @PathVariable("token") String token,
             @RequestParam String name,

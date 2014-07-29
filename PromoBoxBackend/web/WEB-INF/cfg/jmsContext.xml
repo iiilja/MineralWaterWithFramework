@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:amq="http://activemq.apache.org/schema/core"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jms="http://www.springframework.org/schema/jms"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+       http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms-4.0.xsd
+       http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core-5.10.0.xsd">
+    
+    <bean id="fileConsumerService" class="ee.promobox.jms.FileConsumerService"/>
+    
+    <amq:broker id="kioskBroker" brokerName="kioskBroker" useJmx="true" persistent="true">
+        <amq:persistenceAdapter>
+            <amq:kahaDB directory="${amqKahaDBDir}"/>
+        </amq:persistenceAdapter>
+        
+        <amq:transportConnectors>
+            <amq:transportConnector uri="vm://kioskBroker"/>
+        </amq:transportConnectors>
+    </amq:broker>
+    
+    <amq:connectionFactory id="jmsFactory"
+            brokerURL="vm://kioskBroker?create=false"
+            useAsyncSend="true"
+            copyMessageOnSend="false"/>
+
+    <amq:queue id="fileDestination" physicalName="fileQueue"/>
+
+    <bean id="jmsConsumerManager" class="ee.promobox.jms.JmsConsumerManager" factory-method="getInstance" depends-on="kioskBroker">
+        <property name="listeningContainers">
+            <list>
+                <ref bean="fileConsumerListener"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="fileConsumerListener" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+        <property name="connectionFactory" ref="jmsFactory"/>
+        <property name="maxConcurrentConsumers" value="1"/>
+        <property name="sessionTransacted" value="true"/>
+        <property name="destination" ref="fileDestination"/>
+        <property name="messageListener" ref="fileConsumerService"/>
+    </bean>
+
+
+    <bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+        <property name="connectionFactory">
+            <bean class="org.springframework.jms.connection.SingleConnectionFactory">
+                <property name="targetConnectionFactory">
+                    <ref bean="jmsFactory"/>
+                </property>
+            </bean>
+        </property>
+    </bean>
+</beans>

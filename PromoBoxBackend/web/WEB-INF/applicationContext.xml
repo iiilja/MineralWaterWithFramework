@@ -17,6 +17,7 @@
 
     <import resource="cfg/promoboxBeansContext.xml"/>
     <import resource="cfg/dataAccessContext.xml"/>
+    <import resource="cfg/jmsContext.xml"/>
     
     <!-- Configure the multipart resolver -->
     <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">

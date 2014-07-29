@@ -13,6 +13,7 @@ import ee.promobox.KioskConfig;
 import ee.promobox.entity.AdCampaigns;
 import ee.promobox.entity.CampaignsFiles;
 import ee.promobox.entity.Files;
+import ee.promobox.jms.FileDto;
 import ee.promobox.service.Session;
 import ee.promobox.service.SessionService;
 import ee.promobox.service.UserService;
@@ -25,6 +26,7 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.Date;
 import java.util.List;
+import javax.jms.Destination;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
@@ -33,6 +35,8 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -52,9 +56,26 @@ public class FilesController {
 
     @Autowired
     private KioskConfig config;
+    
+    @Autowired
+    @Qualifier("fileDestination")
+    private Destination fileDestination;
+    @Autowired
+    private JmsTemplate jmsTemplate;
 
     private final static Logger log = LoggerFactory.getLogger(
             FilesController.class);
+    
+    @RequestMapping("queue-example")
+    public ModelAndView showCampaignFiles(
+            HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+        FileDto fileDto = new FileDto();
+        fileDto.setId(10);
+        jmsTemplate.convertAndSend(fileDestination, fileDto);
+
+        return null;
+    }
 
     @RequestMapping(value = "token/{token}/campaigns/{id}/files/", method = RequestMethod.GET)
     public ModelAndView showCampaignFiles(
@@ -165,6 +186,10 @@ public class FilesController {
                     // assign new name for file in database
                     databaseFile.setFilename(databaseFile.getId() + "." + fileType);
                     userService.updateFile(databaseFile);
+                    
+                    FileDto fileDto = new FileDto();
+                    fileDto.setId(databaseFile.getId());
+                    jmsTemplate.convertAndSend(fileDestination, fileDto);
 
                     resp.put("response", "OK");
                 }

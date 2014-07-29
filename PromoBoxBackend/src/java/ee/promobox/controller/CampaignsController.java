@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -155,7 +156,7 @@ public class CampaignsController {
     public ModelAndView updateCampaign(
             @PathVariable("token") String token,
             @PathVariable("id") int id,
-            @RequestParam String json,
+            @RequestBody String json,
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 

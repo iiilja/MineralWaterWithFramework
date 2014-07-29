@@ -109,19 +109,22 @@ app.controller('RegistrationController', ['$scope', '$location', '$http', 'token
     }]);
 
 app.controller('CampaignEditController', ['$scope', '$routeParams', 'token', 'Campaign', '$upload', '$location', '$http', 'Showfiles',
-    function ($scope, $routeParams, token, Campaign, $upload, $location, $http) {
+    function ($scope, $routeParams, token, Campaign, $upload, $location, $http, Showfiles) {
 
+        $scope.filesArray = [];
         $scope.campaign = Campaign.get({id: $routeParams.cId, token: token.get()}, function (response) {
             $scope.campaign = response;
-            console.log($scope.campaign);
-            $scope.campaign_form = {campaign_name: $scope.campaign.name, campaign_time: $scope.campaign.duration, campaign_order: $scope.campaign.sequence, campaign_start: $scope.campaign.start, campaign_finish: $scope.campaign.finish};
+            $scope.campaign_form = {campaign_status: $scope.campaign.status, filesArray: $scope.campaign.files, campaign_name: $scope.campaign.name, campaign_time: $scope.campaign.duration, campaign_order: $scope.campaign.sequence, campaign_start: $scope.campaign.start, campaign_finish: $scope.campaign.finish};
         });
 
-        $scope.files = Showfiles.get({id: $routeParams.cId, token: token.get()}, function (response) {
-            $scope.files = response;
-            console.log($scope.files);
-        });
-
+        $scope.inArchive = function (id) {
+            $http.put(apiEndpoint + "token/" + token.get() + "/files/archive/" + id + "/")
+                .success(function (data) {
+                    if (data.response == 'OK') {
+                        refreshFilesModel();
+                    }
+                });
+        };
 
         $scope.onFileSelect = function ($files) {
 
@@ -135,32 +138,41 @@ app.controller('CampaignEditController', ['$scope', '$routeParams', 'token', 'Ca
                 }).progress(function (evt) {
                     console.log('percent: ' + parseInt(100.0 * evt.loaded / evt.total));
                 }).success(function (data, status, headers, config) {
-                    console.log(data);
+                    refreshFilesModel();
                 });
 
             }
 
         };
 
-        $scope.edit_company = function () {
+        var refreshFilesModel = function () {
+            $scope.files = Showfiles.get({id: $routeParams.cId, token: token.get()}, function (response) {
+                $scope.files = response;
+                $scope.campaign_form.filesArray = $scope.files.campaignfiles;
+            });
+        }
 
-            var timeStart = new Date($scope.campaign_form.campaign_start).getTime() + 15*60*1000;
-            var timeFinish = new Date($scope.campaign_form.campaign_finish).getTime() + 15*60*1000;
+        var dataToTime = function(data) {
+            return new Date(data).getTime() + 15*60*1000;
+        }
+
+        $scope.edit_company = function () {
             $http.put(apiEndpoint + "token/" + token.get() + "/campaigns/" + $scope.campaign.id,
                 {
-                    "status": "0",
+                    "status": $scope.campaign_form.campaign_status,
                     "name": $scope.campaign_form.campaign_name,
                     "sequence": $scope.campaign_form.campaign_order,
-                    "start": timeStart,
-                    "finish": timeFinish,
+                    "start": dataToTime($scope.campaign_form.campaign_start),
+                    "finish": dataToTime($scope.campaign_form.campaign_finish),
                     "duration": $scope.campaign_form.campaign_time})
                 .success(function (data) {
                     if (data.response == 'OK') {
-                        console.log(data);
                         $location.path('/main/');
                     }
                 });
         };
+
+
 
 
     }]);

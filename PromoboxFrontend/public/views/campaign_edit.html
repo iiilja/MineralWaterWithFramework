@@ -7,12 +7,24 @@
     </div>
 
     <div class="form-group">
+        <label for="campaign_status">Активность кампании</label>
+        <select class="form-control" id="campaign_status" name="campaign_status" ng-model="campaign_form.campaign_status">
+            <option value="0">Приостановлена</option>
+            <option value="1">Запущена</option>
+        </select>
+    </div>
+
+    <div class="form-group">
         <label for="campaign_name">Имя кампании</label>
         <input type="text" class="form-control" id="campaign_name" placeholder="Имя компании" name="campaign_name" ng-model="campaign_form.campaign_name">
     </div>
 
     <div class="form-group" style="position:relative;">
         <input type="file" ng-file-select="onFileSelect($files)" multiple>
+    </div>
+
+    <div class="form-group" ng-repeat="promofile in campaign_form.filesArray" >
+        <div>{{ promofile.id }} - {{ promofile.name }} <a href ng-click="inArchive(promofile.id)">In Archive</a></div>
     </div>
 
     <div class="form-group">
@@ -25,8 +37,6 @@
             <option value="30">30 мин</option>
         </select>
     </div>
-
-
 
     <div class="form-group">
         <label for="campaign_order">Порядок</label>

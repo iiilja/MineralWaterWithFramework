@@ -13,6 +13,12 @@ services.factory('Campaign', ['$resource',
             });
     }]);
 
+services.factory('Showfiles', ['$resource',
+    function ($resource) {
+        return $resource(apiEndpoint + 'token/:token/campaigns/:id/files/',
+            {"token": '@token', id: '@id'});
+    }]);
+
 
 services.factory("token", ['$cookies', '$location', function ($cookies, $location) {
     var token = '';

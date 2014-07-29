@@ -108,13 +108,20 @@ app.controller('RegistrationController', ['$scope', '$location', '$http', 'token
         }
     }]);
 
-app.controller('CampaignEditController', ['$scope', '$routeParams', 'token', 'Campaign', '$upload', '$location', '$http',
+app.controller('CampaignEditController', ['$scope', '$routeParams', 'token', 'Campaign', '$upload', '$location', '$http', 'Showfiles',
     function ($scope, $routeParams, token, Campaign, $upload, $location, $http) {
 
         $scope.campaign = Campaign.get({id: $routeParams.cId, token: token.get()}, function (response) {
             $scope.campaign = response;
+            console.log($scope.campaign);
             $scope.campaign_form = {campaign_name: $scope.campaign.name, campaign_time: $scope.campaign.duration, campaign_order: $scope.campaign.sequence, campaign_start: $scope.campaign.start, campaign_finish: $scope.campaign.finish};
         });
+
+        $scope.files = Showfiles.get({id: $routeParams.cId, token: token.get()}, function (response) {
+            $scope.files = response;
+            console.log($scope.files);
+        });
+
 
         $scope.onFileSelect = function ($files) {
 
@@ -136,13 +143,16 @@ app.controller('CampaignEditController', ['$scope', '$routeParams', 'token', 'Ca
         };
 
         $scope.edit_company = function () {
+
+            var timeStart = new Date($scope.campaign_form.campaign_start).getTime() + 15*60*1000;
+            var timeFinish = new Date($scope.campaign_form.campaign_finish).getTime() + 15*60*1000;
             $http.put(apiEndpoint + "token/" + token.get() + "/campaigns/" + $scope.campaign.id,
                 {
                     "status": "0",
                     "name": $scope.campaign_form.campaign_name,
                     "sequence": $scope.campaign_form.campaign_order,
-                    "start": $scope.campaign_form.campaign_start,
-                    "finish": $scope.campaign_form.campaign_finish,
+                    "start": timeStart,
+                    "finish": timeFinish,
                     "duration": $scope.campaign_form.campaign_time})
                 .success(function (data) {
                     if (data.response == 'OK') {

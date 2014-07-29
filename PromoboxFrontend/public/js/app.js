@@ -139,6 +139,7 @@ app.controller('CampaignEditController', ['$scope', '$routeParams', 'token', 'Ca
             $http.put(apiEndpoint + "token/" + token.get() + "/campaigns/" + $scope.campaign.id,
                 {
                     "status": "0",
+                    "name": $scope.campaign_form.campaign_name,
                     "sequence": $scope.campaign_form.campaign_order,
                     "start": $scope.campaign_form.campaign_start,
                     "finish": $scope.campaign_form.campaign_finish,

@@ -122,7 +122,6 @@ public class CampaignsController {
     @RequestMapping(value = "token/{token}/campaigns", method = RequestMethod.POST)
     public ModelAndView createCampaign(
             @PathVariable("token") String token,
-            @RequestParam String name,
             @RequestParam String json,
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
@@ -135,7 +134,7 @@ public class CampaignsController {
             JSONObject objectGiven = new JSONObject(json);
 
             AdCampaigns campaign = new AdCampaigns();
-            campaign.setName(name);
+            campaign.setName(objectGiven.getString("name"));
             campaign.setClientId(session.getClientId());
             campaign.setStatus(objectGiven.getInt("status"));
             campaign.setSequence(objectGiven.getInt("sequence"));
@@ -156,7 +155,6 @@ public class CampaignsController {
     public ModelAndView updateCampaign(
             @PathVariable("token") String token,
             @PathVariable("id") int id,
-            @RequestParam String name,
             @RequestParam String json,
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
@@ -175,7 +173,7 @@ public class CampaignsController {
                 JSONObject objectGiven = new JSONObject(json);
 
                 // fill all the fields with data provided by the client
-                campaign.setName(name);
+                campaign.setName(objectGiven.getString("name"));
                 campaign.setClientId(clientId);
                 campaign.setStatus(objectGiven.getInt("status"));
                 campaign.setSequence(objectGiven.getInt("sequence"));

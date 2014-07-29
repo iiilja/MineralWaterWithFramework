@@ -28,25 +28,6 @@ app.config(['$routeProvider', function ($routeProvider) {
         .otherwise({redirectTo: '/'});
 }]);
 
-app.factory('AuthInterceptor',['$q', '$location', function($q, $location){
-    return {
-        response: function(response){
-            return $q.defer().promise.then(
-                function success(response) {
-                    return response;
-                },
-                function error(response) {
-                    if(response.status === 401){
-                        $location.path('/');
-                        return $q.reject(response);
-                    } else {
-                        return $q.reject(response);
-                    }
-                });
-        }
-    }
-}]);
-
 
 app.factory('AuthInterceptor', ['$q', 'token' ,function ($q, token) {
     return {

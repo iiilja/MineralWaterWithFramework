@@ -77,7 +77,7 @@ public class FilesController {
         return null;
     }
 
-    @RequestMapping(value = "token/{token}/campaigns/{id}/files/", method = RequestMethod.GET)
+    @RequestMapping(value = "token/{token}/campaigns/{id}/files", method = RequestMethod.GET)
     public ModelAndView showCampaignFiles(
             @PathVariable("token") String token,
             @PathVariable("id") int campaignId,
@@ -109,7 +109,7 @@ public class FilesController {
         return RequestUtils.printResult(resp.toString(), response);
     }
 
-    @RequestMapping(value = "token/{token}/campaigns/{id}/files/", method = RequestMethod.POST)
+    @RequestMapping(value = "token/{token}/campaigns/{id}/files", method = RequestMethod.POST)
     public ModelAndView uploadFile(
             @PathVariable("token") String token,
             @PathVariable("id") int campaignId,

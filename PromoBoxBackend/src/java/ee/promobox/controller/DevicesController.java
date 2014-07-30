@@ -86,7 +86,9 @@ public class DevicesController {
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
-        JSONObject resp = RequestUtils.getErrorResponse();
+        JSONObject resp = new JSONObject();
+        
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         
         Session session = sessionService.findSession(token);
 
@@ -111,8 +113,8 @@ public class DevicesController {
                 }
 
                 resp.put("devices", devicesArray);
-
-                resp.put("response", RequestUtils.OK);
+                
+                response.setStatus(HttpServletResponse.SC_OK);
                 
                 RequestUtils.printResult(resp.toString(), response);
             }

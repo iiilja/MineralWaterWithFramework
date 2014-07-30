@@ -7,6 +7,7 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 public class AccessFilter implements Filter {
@@ -14,7 +15,7 @@ public class AccessFilter implements Filter {
     private FilterConfig filterConfig = null;
 
     public AccessFilter() {
-    	
+
     }
 
     public void doFilter(ServletRequest request, ServletResponse response,
@@ -31,8 +32,10 @@ public class AccessFilter implements Filter {
         httpServletResponse.setHeader("Access-Control-Allow-Methods", "POST, PUT, GET, OPTIONS, DELETE");
         httpServletResponse.setHeader("Access-Control-Max-Age", "3600");
         httpServletResponse.setHeader("Access-Control-Allow-Headers", "accept, x-requested-with, content-type");
-        
-        chain.doFilter(request, response);
+
+        if (!((HttpServletRequest) request).getMethod().equals("OPTIONS")) {
+            chain.doFilter(request, response);
+        }
 
     }
 

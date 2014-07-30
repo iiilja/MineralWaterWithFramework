@@ -121,35 +121,45 @@ public class CampaignsController {
     }
 
     @RequestMapping(value = "token/{token}/campaigns", method = RequestMethod.POST)
-    public ModelAndView createCampaign(
+    public void createCampaign(
             @PathVariable("token") String token,
-            @RequestParam String json,
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
-        JSONObject resp = RequestUtils.getErrorResponse();
+        JSONObject resp = new JSONObject();
+        
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                
         Session session = sessionService.findSession(token);
 
         if (session != null) {
 
-            JSONObject objectGiven = new JSONObject(json);
-
             AdCampaigns campaign = new AdCampaigns();
-            campaign.setName(objectGiven.getString("name"));
+            
+            campaign.setName("New campaign");
+            
             campaign.setClientId(session.getClientId());
-            campaign.setStatus(objectGiven.getInt("status"));
-            campaign.setSequence(objectGiven.getInt("sequence"));
-            campaign.setStart(new Date(objectGiven.getLong("start")));
-            campaign.setFinish(new Date(objectGiven.getLong("finish")));
-            campaign.setDuration(objectGiven.getInt("duration"));
+            
+            campaign.setStatus(AdCampaigns.STATUS_CREATED);
+            campaign.setSequence(1);
+            
+            campaign.setStart(new Date());
+            campaign.setFinish(new Date());
+            
+            campaign.setDuration(1);
 
             userService.addCampaign(campaign);
             
-            resp.put("response", RequestUtils.OK);
+            response.setStatus(HttpServletResponse.SC_OK);
+            
             resp.put("id", campaign.getId());
+            
+            RequestUtils.printResult(resp.toString(), response);
+            
+        } else {
+            RequestUtils.sendUnauthorized(response);
         }
-
-        return RequestUtils.printResult(resp.toString(), response);
+        
     }
 
     @RequestMapping(value = "token/{token}/campaigns/{id}", method = RequestMethod.PUT)

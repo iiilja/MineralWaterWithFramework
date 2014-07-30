@@ -8,6 +8,7 @@ package ee.promobox.controller;
 import ee.promobox.entity.AdCampaigns;
 import ee.promobox.entity.Devices;
 import ee.promobox.entity.DevicesCampaigns;
+import ee.promobox.entity.Files;
 import ee.promobox.service.Session;
 import ee.promobox.service.SessionService;
 import ee.promobox.service.UserService;
@@ -46,21 +47,23 @@ public class DevicesController {
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
-        JSONObject resp = RequestUtils.getErrorResponse();
+        JSONObject resp = new JSONObject();
+        
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        
         Devices d = userService.findDeviceByUuid(uuid);
 
-        // if this device exists and status is active
         if (d != null && d.getStatus() == 1) {
             JSONObject objectGiven = new JSONObject(json);
-            // update data about device
+
             d.setStatus(objectGiven.getInt("status"));
             d.setFreeSpace(objectGiven.getLong("freeSpace"));
             d.setDescription(objectGiven.getString("desc"));
 
             DevicesCampaigns dc = userService.findDeviceCampaignByDeviceId(d.getId());
-            // if there is campaign associated with device
+
             if (dc != null) {
-                // if campaign on device was updated after last request
+
                 if (dc.getUpdatedDt().after(d.getLastDeviceRequestDt())) {
                     AdCampaigns ad = userService.findCampaignByCampaignId(dc.getAdCampaignsId());
 
@@ -68,14 +71,30 @@ public class DevicesController {
                     resp.put("campaignStatus", ad.getStatus());
                 }
             }
+            
+            List<Files> campaignFiles = userService.findUsersCampaignFiles(dc.getAdCampaignsId(), d.getClientId());
 
-            // update last request date               
+            if (!campaignFiles.isEmpty()) {
+                JSONArray jsonCampaignFiles = new JSONArray();
+                
+                for (Files file : campaignFiles) {
+                    JSONObject jsonCampaignFile = new JSONObject();
+                    
+                    jsonCampaignFile.put("id", file.getId());
+                    jsonCampaignFile.put("type", file.getFileType().intValue());
+
+                    jsonCampaignFiles.put(jsonCampaignFile);
+                }
+
+                resp.put("files", jsonCampaignFiles);
+            }
+             
             d.setLastDeviceRequestDt(new Date());
+            
             userService.updateDevice(d);
 
-            // if this line of code is reached, put OK in the response
-            resp.put("response", RequestUtils.OK);
-        }
+            response.setStatus(HttpServletResponse.SC_OK);
+        } 
 
         return RequestUtils.printResult(resp.toString(), response);
     }

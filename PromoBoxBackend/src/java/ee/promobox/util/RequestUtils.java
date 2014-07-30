@@ -8,6 +8,8 @@ package ee.promobox.util;
 import java.io.Writer;
 import javax.servlet.http.HttpServletResponse;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
@@ -18,6 +20,9 @@ public class RequestUtils {
 
     public final static String ERROR = "ERROR";
     public final static String OK = "OK";
+    
+    private final static Logger log = LoggerFactory.getLogger(
+            RequestUtils.class);
 
     public static JSONObject getErrorResponse() {
 
@@ -44,6 +49,16 @@ public class RequestUtils {
         writer.flush();
 
         return null;
+    }
+    
+    
+    public static void sendUnauthorized(HttpServletResponse response) {
+        try {
+            response.reset();
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+        } catch(Exception ex) {
+            log.error(ex.getMessage(), ex);
+        }
     }
 
 }

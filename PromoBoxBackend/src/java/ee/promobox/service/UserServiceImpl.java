@@ -88,7 +88,8 @@ public class UserServiceImpl implements UserService {
     public List<Files> findUsersCampaignFiles(int campaignId, int clientId) {
         Session session = sessionFactory.getCurrentSession();
 
-        Query q = session.createQuery("SELECT f FROM Files f, CampaignsFiles cf WHERE cf.clientId = :clientId AND cf.adCampaignsId = :campaignId AND f.id = cf.fileId");
+        Query q = session.createQuery("SELECT f FROM Files f, CampaignsFiles cf "
+                + "WHERE cf.clientId = :clientId AND cf.adCampaignsId = :campaignId AND cf.status = 0 AND f.id = cf.fileId");
         q.setParameter("clientId", clientId);
         q.setParameter("campaignId", campaignId);
 

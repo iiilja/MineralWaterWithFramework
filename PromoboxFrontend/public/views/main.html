@@ -1,24 +1,21 @@
-<div>{{ token }}</div>
+<div>
+    <span class="pull-right" style="margin: 10px;"><a href="/#/exit">Выход</a></span>
+    <span class="pull-right" style="margin: 10px;">{{ token }}</span>
+</div>
 
-<div><a href="/#/exit">Выход</a></div>
+<tabset justified="false">
+    <tab heading="Кампании">
+        <div style="width: 60%; margin-right: auto; margin-left: auto;">
+            <button class="btn btn-primary btn-lg btn-block" style="margin-bottom: 20px;" onclick="window.location.href='/#/campaign/new'">Новая кампания</button>
 
-<table class="table table-hover">
-    <thead>
-    <tr>
-        <th>#</th>
-        <th>Name</th>
-        <th>Edit</th>
-        <th>Delete</th>
-    </tr>
-    </thead>
+            <alert type="success" ng-repeat="campaign in campaigns" close="remove(campaign)" style="height: 50px;">
+                <span class="pull-left">{{campaign.name}}</span>
+                <span class="pull-right"><a href="/#/campaign/edit/{{campaign.id}}">Edit</a></span>
+            </alert>
+        </div>
 
-    <tbody>
-
-    <tr ng-repeat="campaign in campaigns">
-        <td>{{campaign.id}}</td>
-        <td>{{campaign.name}}</td>
-        <td><a href="/#/campaign/edit/{{campaign.id}}">Edit</a></td>
-        <td><a href="" ng-click="remove(campaign)">Delete</a></td>
-    </tr>
-    </tbody>
-</table>
+    </tab>
+    <tab heading="Устройства">
+        Страница Устройств
+    </tab>
+</tabset>

@@ -21,6 +21,10 @@ app.config(['$routeProvider', function ($routeProvider) {
             controller: 'CampaignEditController',
             templateUrl: '/views/campaign_edit.html'
         })
+        .when('/campaign/new', {
+            controller: 'CampaignNewController',
+            templateUrl: '/views/campaign_new.html'
+        })
         .when('/exit', {
             controller: 'Exit',
             template: ''
@@ -177,29 +181,33 @@ app.controller('CampaignEditController', ['$scope', '$routeParams', 'token', 'Ca
 
     }]);
 
+app.controller('CampaignNewController', ['$scope', '$routeParams', 'token', 'Campaign', '$upload', '$location', '$http', 'Showfiles',
+    function ($scope, $routeParams, token, Campaign, $upload, $location, $http, Showfiles) {
+        $scope.campaign_new_form = {campaign_status: '', campaign_name: '', campaign_time: '', campaign_order: '', campaign_start: '', campaign_finish: ''};
+
+        var dataToTime = function(data) {
+            return new Date(data).getTime() + 15*60*1000;
+        }
+
+        $scope.new_company = function () {
+            $http.post(apiEndpoint + "token/" + token.get() + "/campaigns/",
+                {
+                    "status": $scope.campaign_new_form.campaign_status,
+                    "name": $scope.campaign_new_form.campaign_name,
+                    "sequence": $scope.campaign_new_form.campaign_order,
+                    "start": dataToTime($scope.campaign_new_form.campaign_start),
+                    "finish": dataToTime($scope.campaign_new_form.campaign_finish),
+                    "duration": $scope.campaign_new_form.campaign_time})
+                .success(function (data) {
+                    if (data.response == 'OK') {
+                        $location.path('/main/');
+                    }
+                });
+        };
+    }]);
+
 app.controller('DatepickerCtrl', ['$scope',
     function ($scope) {
-        $scope.today = function () {
-            $scope.campaign_form.campaign_start = new Date();
-            $scope.campaign_form.campaign_finish = new Date();
-        };
-//        $scope.today();
-
-        $scope.clear = function () {
-            $scope.campaign_form.campaign_start = null;
-            $scope.campaign_form.campaign_finish = null;
-        };
-
-        // Disable weekend selection
-        $scope.disabled = function (date, mode) {
-            return ( mode === 'day' && ( date.getDay() === 0 || date.getDay() === 6 ) );
-        };
-
-        $scope.toggleMin = function () {
-            $scope.minDate = $scope.minDate ? null : new Date();
-        };
-        $scope.toggleMin();
-
         $scope.open = function ($event) {
             $event.preventDefault();
             $event.stopPropagation();
@@ -211,10 +219,6 @@ app.controller('DatepickerCtrl', ['$scope',
             formatYear: 'yy',
             startingDay: 1
         };
-
-        $scope.initDate = new Date('2016-15-20');
-        $scope.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy', 'shortDate'];
-        $scope.format = $scope.formats[2];
     }]);
 
 app.controller('MainController', ['$scope', '$location', '$http', 'token', 'Campaign',

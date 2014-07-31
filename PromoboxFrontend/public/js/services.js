@@ -46,6 +46,7 @@ services.factory("token", ['$cookies', '$location', function ($cookies, $locatio
 
         remove: function () {
             token = undefined;
+            delete $cookies["token"];
             $location.path('/');
         }
     }

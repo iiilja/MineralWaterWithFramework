@@ -23,7 +23,7 @@ app.config(['$routeProvider', function ($routeProvider) {
         })
         .when('/campaign/new', {
             controller: 'CampaignNewController',
-            templateUrl: '/views/campaign_new.html'
+            template: ''
         })
         .when('/exit', {
             controller: 'Exit',
@@ -181,29 +181,12 @@ app.controller('CampaignEditController', ['$scope', '$routeParams', 'token', 'Ca
 
     }]);
 
-app.controller('CampaignNewController', ['$scope', '$routeParams', 'token', 'Campaign', '$upload', '$location', '$http', 'Showfiles',
-    function ($scope, $routeParams, token, Campaign, $upload, $location, $http, Showfiles) {
-        $scope.campaign_new_form = {campaign_status: '', campaign_name: '', campaign_time: '', campaign_order: '', campaign_start: '', campaign_finish: ''};
-
-        var dataToTime = function(data) {
-            return new Date(data).getTime() + 15*60*1000;
-        }
-
-        $scope.new_company = function () {
-            $http.post(apiEndpoint + "token/" + token.get() + "/campaigns/",
-                {
-                    "status": $scope.campaign_new_form.campaign_status,
-                    "name": $scope.campaign_new_form.campaign_name,
-                    "sequence": $scope.campaign_new_form.campaign_order,
-                    "start": dataToTime($scope.campaign_new_form.campaign_start),
-                    "finish": dataToTime($scope.campaign_new_form.campaign_finish),
-                    "duration": $scope.campaign_new_form.campaign_time})
-                .success(function (data) {
-                    if (data.response == 'OK') {
-                        $location.path('/main/');
-                    }
-                });
-        };
+app.controller('CampaignNewController', ['$scope', '$routeParams', 'token', '$location', '$http',
+    function ($scope, $routeParams, token, $location, $http) {
+        $http.post(apiEndpoint + "token/" + token.get() + "/campaigns/")
+            .success(function (data) {
+                    $location.path('/campaign/edit/' + data.id);
+            });
     }]);
 
 app.controller('DatepickerCtrl', ['$scope',

@@ -1,6 +1,6 @@
 var apiEndpoint = "http://api.dev.promobox.ee/service/";
 
-var app = angular.module('promobox', ['ngRoute', 'ui.bootstrap', 'pascalprecht.translate', 'promobox.services', 'angularFileUpload']);
+var app = angular.module('promobox', ['ngRoute', 'ui.bootstrap', 'pascalprecht.translate', 'promobox.services', 'angularFileUpload', 'toaster']);
 
 
 app.config(['$routeProvider', function ($routeProvider) {
@@ -204,14 +204,18 @@ app.controller('DatepickerCtrl', ['$scope',
         };
     }]);
 
-app.controller('MainController', ['$scope', '$location', '$http', 'token', 'Campaign',
-    function ($scope, $location, $http, token, Campaign) {
+app.controller('MainController', ['$scope', '$location', '$http', 'token', 'Campaign', 'toaster',
+    function ($scope, $location, $http, token, Campaign, toaster) {
         if (token.check()) {
 
             $scope.token = token.get();
 
             $scope.remove = function (campaign) {
                 $scope.campaigns.splice($scope.campaigns.indexOf(campaign), 1);
+                $http.delete(apiEndpoint + "token/" + token.get() + "/campaigns/" + campaign.id)
+                    .success(function (data) {
+                        toaster.pop('success', "Delete", campaign.name +  " deleted");
+                    });
             };
 
             Campaign.all({token: token.get()}, function (response) {

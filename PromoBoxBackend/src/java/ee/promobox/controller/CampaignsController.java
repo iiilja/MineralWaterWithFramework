@@ -161,6 +161,38 @@ public class CampaignsController {
         }
         
     }
+    
+    @RequestMapping(value = "token/{token}/campaigns/{id}", method = RequestMethod.DELETE)
+    public void deleteCampaign(
+            @PathVariable("token") String token,
+            @PathVariable("id") int id,
+            HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+
+        JSONObject resp = new JSONObject();
+        
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                
+        Session session = sessionService.findSession(token);
+
+        if (session != null) {
+
+            AdCampaigns camp = userService.findCampaignByIdAndClientId(id, session.getClientId());
+
+            camp.setStatus(AdCampaigns.STATUS_AHRCHIVED);
+            
+            userService.updateCampaign(camp);
+            
+            response.setStatus(HttpServletResponse.SC_OK);
+
+            
+            RequestUtils.printResult(resp.toString(), response);
+            
+        } else {
+            RequestUtils.sendUnauthorized(response);
+        }
+        
+    }
 
     @RequestMapping(value = "token/{token}/campaigns/{id}", method = RequestMethod.PUT)
     public ModelAndView updateCampaign(
@@ -186,7 +218,7 @@ public class CampaignsController {
                 // fill all the fields with data provided by the client
                 campaign.setName(objectGiven.getString("name"));
                 campaign.setClientId(clientId);
-                campaign.setStatus(objectGiven.getInt("status"));
+                campaign.setStatus(AdCampaigns.STATUS_PREPARED);
                 campaign.setSequence(objectGiven.getInt("sequence"));
                 campaign.setStart(new Date(objectGiven.getLong("start")));
                 campaign.setFinish(new Date(objectGiven.getLong("finish")));

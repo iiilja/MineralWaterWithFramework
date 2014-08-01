@@ -50,7 +50,7 @@ public class UserServiceImpl implements UserService {
     public List<AdCampaigns> findUserAdCompaigns(int clientId) {
         Session session = sessionFactory.getCurrentSession();
 
-        Query q = session.createQuery("from AdCampaigns where clientId = :clientId");
+        Query q = session.createQuery("from AdCampaigns where clientId = :clientId AND status > 0 AND status < 4");
         q.setParameter("clientId", clientId);
 
         return q.list();
@@ -157,7 +157,7 @@ public class UserServiceImpl implements UserService {
         session.update(campaign);
         session.flush();
     }
-
+    
     public void addFile(Files file) {
         Session session = sessionFactory.getCurrentSession();
         session.save(file);

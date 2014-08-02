@@ -23,12 +23,20 @@
         <input type="file" ng-file-select="onFileSelect($files)" multiple>
     </div>
 
-    <div class="form-group" ng-repeat="promofile in campaign_form.filesArray" >
-        <div>
-            <img src="http://api.dev.promobox.ee/service/files/{{ promofile.id }}" alt="" class="img-thumbnail">
-            <button type="button" class="close" ng-click="inArchive(promofile.id)"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+    <div class="form-group">
+        <div class="col-sm-6 col-md-3" ng-repeat="promofile in campaign_form.filesArray">
+            <div class="thumbnail">
+                <a href="http://api.dev.promobox.ee/service/files/{{ promofile.id }}" data-lightbox="roadtrip"><img src="http://api.dev.promobox.ee/service/files/{{ promofile.id }}" alt="" /></a>
+            </div>
+            <div class="caption">
+                <h3>{{promofile.name}}</h3>
+                <a href="#" class="btn btn-default" role="button" ng-click="inArchive(promofile.id)">Удалить</a>
+                </p>
+            </div>
         </div>
     </div>
+
+    <div class="clearfix"></div>
 
     <div class="form-group">
         <label for="campaign_time">Время смены</label>

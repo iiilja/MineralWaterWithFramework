@@ -137,7 +137,12 @@ public class DevicesController {
                         JSONObject aObj = new JSONObject();
 
                         aObj.put("name", a.getName());
-                        aObj.put("playing", a.getId() == ac.getId());
+
+                        if (ac != null) {
+                            aObj.put("playing", a.getId() == ac.getId());
+                        } else {
+                            aObj.put("playing", false);
+                        }
 
                         array.put(aObj);
                     }

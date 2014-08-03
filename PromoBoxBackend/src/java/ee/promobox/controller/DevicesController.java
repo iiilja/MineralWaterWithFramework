@@ -21,10 +21,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
@@ -127,7 +124,26 @@ public class DevicesController {
                     jsonD.put("uuid", d.getUuid());
                     jsonD.put("status", d.getStatus());
                     jsonD.put("space", d.getFreeSpace());
-         
+                    jsonD.put("orientation", d.getOrientation());
+                    jsonD.put("resolution", d.getResolution());
+
+                    List<AdCampaigns> adCampaignses = userService.findUserAdCompaigns(session.getClientId());
+
+                    AdCampaigns ac = userService.findCampaignByDeviceId(d.getId());
+
+                    JSONArray array = new JSONArray();
+
+                    for (AdCampaigns a : adCampaignses) {
+                        JSONObject aObj = new JSONObject();
+
+                        aObj.put("name", a.getName());
+                        aObj.put("playing", a.getId() == ac.getId());
+
+                        array.put(aObj);
+                    }
+
+                    jsonD.put("campaigns", array);
+
                     devicesArray.put(jsonD);
                 }
 
@@ -141,5 +157,50 @@ public class DevicesController {
             RequestUtils.sendUnauthorized(response);
         }
    
+    }
+
+    @RequestMapping(value = "token/{token}/device/{id}", method = RequestMethod.PUT)
+    public void updateDevice(
+            @PathVariable("token") String token,
+            @PathVariable("id") int id,
+            @RequestBody String json,
+            HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+
+        JSONObject resp = new JSONObject();
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+        Session session = sessionService.findSession(token);
+
+        if (session != null) {
+            int clientId = session.getClientId();
+
+            Devices device = userService.findDeviceByIdAndClientId(id, clientId);
+
+            if (device != null) {
+
+                JSONObject deviceUpdate = new JSONObject(json);
+
+                device.setOrientation(deviceUpdate.getInt("orientation"));
+                device.setResolution(deviceUpdate.getInt("resolution"));
+
+                DevicesCampaigns devicesCampaigns = userService.findDeviceCampaignByDeviceId(device.getId());
+
+                devicesCampaigns.setAdCampaignsId(deviceUpdate.getInt("campaignId"));
+                devicesCampaigns.setUpdatedDt(new Date());
+
+                userService.updateDeviceAdCampaign(devicesCampaigns);
+                userService.updateDevice(device);
+
+                response.setStatus(HttpServletResponse.SC_OK);
+
+                RequestUtils.printResult(resp.toString(), response);
+
+
+            } else {
+                RequestUtils.sendUnauthorized(response);
+            }
+        }
+
     }
 }

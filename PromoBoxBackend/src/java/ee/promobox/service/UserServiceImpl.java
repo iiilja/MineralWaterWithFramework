@@ -130,6 +130,14 @@ public class UserServiceImpl implements UserService {
         return (DevicesCampaigns) q.uniqueResult();
     }
 
+    public AdCampaigns findCampaignByDeviceId(int deviceId) {
+        Session session = sessionFactory.getCurrentSession();
+
+        Query q = session.getNamedQuery("select ad from AdCampaigns ad, DevicesCampaigns d where d.deviceId = :deviceId and ad.id = d.adCampaignsId").setInteger("deviceId", deviceId);
+
+        return (AdCampaigns) q.uniqueResult();
+    }
+
     public AdCampaigns findCampaignByCampaignId(int campaignId) {
         Session session = sessionFactory.getCurrentSession();
         
@@ -192,6 +200,18 @@ public class UserServiceImpl implements UserService {
         Session session = sessionFactory.getCurrentSession();
         session.update(file);
         session.flush();
+    }
+
+    @Override
+    public Devices findDeviceByIdAndClientId(int id, int clientId) {
+        Session session = sessionFactory.getCurrentSession();
+
+        Query q = session.createQuery("FROM Devices WHERE id = :id AND clientId = :clientId");
+
+        q.setParameter("id", id);
+        q.setParameter("clientId", clientId);
+
+        return (Devices) q.uniqueResult();
     }
 
 }

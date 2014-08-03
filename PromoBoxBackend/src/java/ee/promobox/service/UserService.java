@@ -40,6 +40,8 @@ public interface UserService {
     public Devices findDeviceByUuid(String uuid);
     
     public DevicesCampaigns findDeviceCampaignByDeviceId(int deviceId);
+
+    public AdCampaigns findCampaignByDeviceId(int deviceId);
     
     public AdCampaigns findCampaignByCampaignId(int campaignId);
     
@@ -60,4 +62,6 @@ public interface UserService {
     public void updateDeviceAdCampaign(DevicesCampaigns dc);
     
     public void updateFile(Files file);
+
+    public Devices findDeviceByIdAndClientId(int id, int clientId);
 }

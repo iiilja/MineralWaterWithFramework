@@ -35,6 +35,16 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Devices.findByStatus", query = "SELECT d FROM Devices d WHERE d.status = :status")})
 public class Devices implements Serializable {
 
+    public static final int ORIENTATION_LANDSCAPE = 1;
+    public static final int ORIENTATION_PORTRAIT = 2;
+
+    public static final int RESOLUTION_1920X1080 = 1;
+    public static final int RESOLUTION_1366X768 = 2;
+    public static final int RESOLUTION_1280X1024 = 3;
+    public static final int RESOLUTION_1280X800 = 4;
+    public static final int RESOLUTION_1024X768 = 5;
+
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,6 +59,13 @@ public class Devices implements Serializable {
     private Integer status;
     @Column(name = "description")
     private String description;
+
+    @Column(name = "orientation")
+    private Integer orientation;
+
+    @Column(name = "resolution")
+    private Integer resolution;
+
     @Column(name = "last_device_request_dt")
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastDeviceRequestDt;
@@ -143,4 +160,19 @@ public class Devices implements Serializable {
         return "ee.promobox.entity.Devices[ id=" + id + " ]";
     }
 
+    public Integer getOrientation() {
+        return orientation;
+    }
+
+    public void setOrientation(Integer orientation) {
+        this.orientation = orientation;
+    }
+
+    public Integer getResolution() {
+        return resolution;
+    }
+
+    public void setResolution(Integer resolution) {
+        this.resolution = resolution;
+    }
 }

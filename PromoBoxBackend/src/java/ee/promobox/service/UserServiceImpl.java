@@ -133,7 +133,7 @@ public class UserServiceImpl implements UserService {
     public AdCampaigns findCampaignByDeviceId(int deviceId) {
         Session session = sessionFactory.getCurrentSession();
 
-        Query q = session.getNamedQuery("select ad from AdCampaigns ad, DevicesCampaigns d where d.deviceId = :deviceId and ad.id = d.adCampaignsId").setInteger("deviceId", deviceId);
+        Query q = session.createQuery("select ad from AdCampaigns ad, DevicesCampaigns d where d.deviceId = :deviceId and ad.id = d.adCampaignsId").setInteger("deviceId", deviceId);
 
         return (AdCampaigns) q.uniqueResult();
     }

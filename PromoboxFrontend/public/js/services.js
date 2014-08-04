@@ -13,6 +13,15 @@ services.factory('Campaign', ['$resource',
             });
     }]);
 
+services.factory('Device', ['$resource',
+    function ($resource) {
+        return $resource(apiEndpoint + 'token/:token/devices/',
+            {"token": '@token', id: '@id'},
+            {
+                update: {method: 'PUT', url: apiEndpoint + 'token/:token/devices/:id/'}
+            });
+    }]);
+
 services.factory('Showfiles', ['$resource',
     function ($resource) {
         return $resource(apiEndpoint + 'token/:token/campaigns/:id/files/',

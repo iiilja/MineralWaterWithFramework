@@ -204,8 +204,8 @@ app.controller('DatepickerCtrl', ['$scope',
         };
     }]);
 
-app.controller('MainController', ['$scope', '$location', '$http', 'token', 'Campaign', 'toaster',
-    function ($scope, $location, $http, token, Campaign, toaster) {
+app.controller('MainController', ['$scope', '$location', '$http', 'token', 'Campaign', 'toaster', 'Device',
+    function ($scope, $location, $http, token, Campaign, toaster, Device) {
         if (token.check()) {
 
             $scope.token = token.get();
@@ -222,6 +222,10 @@ app.controller('MainController', ['$scope', '$location', '$http', 'token', 'Camp
                 if (response.response == 'OK') {
                     $scope.campaigns = response.campaigns;
                 }
+            });
+
+            Device.get({token: token.get()}, function (response) {
+                console.log(response);
             });
         }
 

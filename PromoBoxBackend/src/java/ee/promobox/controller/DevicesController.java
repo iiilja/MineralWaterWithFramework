@@ -135,7 +135,9 @@ public class DevicesController {
 
                     for (AdCampaigns a : adCampaignses) {
                         JSONObject aObj = new JSONObject();
-
+                        
+                        
+                        aObj.put("id", a.getId());
                         aObj.put("name", a.getName());
 
                         if (ac != null) {

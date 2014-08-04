@@ -224,8 +224,9 @@ app.controller('MainController', ['$scope', '$location', '$http', 'token', 'Camp
                 }
             });
 
-            Device.get({token: token.get()}, function (response) {
-                console.log(response);
+            $scope.devices = Device.get({token: token.get()}, function (response) {
+                $scope.devices = response.devices;
+                console.log(response.devices);
             });
         }
 

@@ -1,35 +1,44 @@
 var apiEndpoint = "http://api.dev.promobox.ee/service/";
 
-var app = angular.module('promobox', ['ngRoute', 'ui.bootstrap', 'pascalprecht.translate', 'promobox.services', 'angularFileUpload', 'toaster']);
+var app = angular.module('promobox', ['ngRoute', 'ui.bootstrap', 'pascalprecht.translate', 'promobox.services', 'angularFileUpload', 'toaster', 'ui.router']);
 
 
-app.config(['$routeProvider', function ($routeProvider) {
-    $routeProvider
-        .when('/', {
-            controller: 'LoginController',
-            templateUrl: '/views/login.html'
+app.config(['$routeProvider','$stateProvider','$urlRouterProvider', function ($routeProvider,$stateProvider, $urlRouterProvider) {
+    $urlRouterProvider.otherwise('/');
+    $stateProvider
+        .state('index', {
+            url: "/",
+            views: {
+                "rootView": { controller: 'LoginController',templateUrl: '/views/login.html' }
+            }
         })
-        .when('/registration', {
-            controller: 'RegistrationController',
-            templateUrl: '/views/register.html'
+        .state('registration', {
+            url: "/registration",
+            views: {
+                "rootView": { controller: 'RegistrationController',templateUrl: '/views/register.html' }
+            }
         })
-        .when('/main', {
-            controller: 'MainController',
-            templateUrl: '/views/main.html'
-        })
-        .when('/campaign/edit/:cId', {
-            controller: 'CampaignEditController',
-            templateUrl: '/views/campaign_edit.html'
-        })
-        .when('/campaign/new', {
-            controller: 'CampaignNewController',
-            template: ''
-        })
-        .when('/exit', {
-            controller: 'Exit',
-            template: ''
-        })
-        .otherwise({redirectTo: '/'});
+        .state('main', {
+            url: "/main",
+            views: {
+                "rootView": { controller: 'MainController',templateUrl: '/views/main.html' }
+            }
+        }).state('campaign_edit', {
+            url: "/campaign/edit/:cId",
+            views: {
+                "root_view": { controller: 'CampaignEditController', templateUrl: '/views/campaign_edit.html' }
+            }
+        }).state('campaign_new', {
+            url: "/campaign/new",
+            views: {
+                "rootView": { controller: 'CampaignNewController', template: '' }
+            }
+        }).state('exit', {
+            url: "/exit",
+            views: {
+                "rootView": { controller: 'Exit', template: '' }
+            }
+        });
 }]);
 
 

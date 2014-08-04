@@ -30,6 +30,7 @@
         <script src="js/translate/angular-translate-loader-url.js"></script>
         <script src="js/translate/angular-translate-loader-static-files.js"></script>
         <script src="js/libs/ui-bootstrap-tpls-0.11.0.min.js"></script>
+        <script src="js/libs/angular-ui-router.min.js"></script>
         <script src="js/libs/toaster.js"></script>
         <script src="js/lightbox.min.js"></script>
 
@@ -41,6 +42,6 @@
 
          <toaster-container toaster-options="{'time-out': 3000}"></toaster-container>
 
-         <div ng-view></div>
+         <div ui-view="rootView"></div>
     </body>
 </html>

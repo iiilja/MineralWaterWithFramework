@@ -6,7 +6,7 @@ var app = angular.module('promobox', ['ngRoute', 'ui.bootstrap', 'pascalprecht.t
 app.config(['$routeProvider','$stateProvider','$urlRouterProvider', function ($routeProvider,$stateProvider, $urlRouterProvider) {
     $urlRouterProvider.otherwise('/');
     $stateProvider
-        .state('index', {
+        .state('login', {
             url: "/",
             views: {
                 "rootView": { controller: 'LoginController',templateUrl: '/views/login.html' }
@@ -22,6 +22,16 @@ app.config(['$routeProvider','$stateProvider','$urlRouterProvider', function ($r
             url: "/main",
             views: {
                 "rootView": { controller: 'MainController',templateUrl: '/views/main.html' }
+            }
+        }).state('main.list', {
+            url: "/list",
+            views: {
+                "mainView": { controller: 'CampaignsController',templateUrl: '/views/list.html' }
+            }
+        }).state('main.device', {
+            url: "/device",
+            views: {
+                "mainView": { controller: 'DevicesController',templateUrl: '/views/device.html' }
             }
         }).state('campaign_edit', {
             url: "/campaign/edit/:cId",
@@ -102,12 +112,12 @@ app.controller('LoginController', ['$scope', '$location', '$http', 'token',
                     .success(function (data) {
                         if (data.response == 'OK') {
                             token.put(data.token);
-                            $location.path('/main/');
+                            $location.path('/main');
                         }
                     });
             };
         } else {
-            $location.path('/main/');
+            $location.path('/main');
         }
     }]);
 
@@ -180,7 +190,7 @@ app.controller('CampaignEditController', ['$scope', '$routeParams', 'token', 'Ca
                     "duration": $scope.campaign_form.campaign_time})
                 .success(function (data) {
                     if (data.response == 'OK') {
-                        $location.path('/main/');
+                        $location.path('/main');
                     }
                 });
         };
@@ -213,7 +223,35 @@ app.controller('DatepickerCtrl', ['$scope',
         };
     }]);
 
-app.controller('MainController', ['$scope', '$location', '$http', 'token', 'Campaign', 'toaster', 'Device',
+app.controller('MainController', ['$scope', '$location', '$http', 'token', 'Campaign', 'toaster', 'Device', '$state','$rootScope',
+    function ($scope, $location, $http, token, Campaign, toaster, Device, $state, $rootScope) {
+        if (token.check()) {
+            $scope.token = token.get();
+
+            $scope.go = function(route){
+                $state.go(route);
+            };
+
+            $scope.active = function(route){
+                return $state.is(route);
+            };
+
+            $scope.tabs = [
+                { heading: "Кампании", route:"main.list", active:false },
+                { heading: "Устройства", route:"main.device", active:false },
+            ];
+
+            $scope.$on("$stateChangeSuccess", function() {
+                $scope.tabs.forEach(function(tab) {
+                    tab.active = $scope.active(tab.route);
+                });
+            });
+
+
+        }
+    }]);
+
+app.controller('CampaignsController', ['$scope', '$location', '$http', 'token', 'Campaign', 'toaster', 'Device',
     function ($scope, $location, $http, token, Campaign, toaster, Device) {
         if (token.check()) {
 
@@ -232,11 +270,18 @@ app.controller('MainController', ['$scope', '$location', '$http', 'token', 'Camp
                     $scope.campaigns = response.campaigns;
                 }
             });
+        }
+    }]);
+
+app.controller('DevicesController', ['$scope', '$location', '$http', 'token', 'Campaign', 'toaster', 'Device',
+    function ($scope, $location, $http, token, Campaign, toaster, Device) {
+        if (token.check()) {
+
+            $scope.token = token.get();
 
             $scope.devices = Device.get({token: token.get()}, function (response) {
                 $scope.devices = response.devices;
                 console.log(response.devices);
             });
         }
-
     }]);

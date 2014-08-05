@@ -18,6 +18,7 @@ import ee.promobox.service.Session;
 import ee.promobox.service.SessionService;
 import ee.promobox.service.UserService;
 import ee.promobox.util.FileUtils;
+import ee.promobox.util.ImageOP;
 import ee.promobox.util.RequestUtils;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -152,53 +153,60 @@ public class FilesController {
                     String fileName = multipartFile.getOriginalFilename();
                     String fileType = fileName.split("\\.")[1];
                     int fileTypeNumber = FileUtils.determineFileTypeNumber(fileType);
-                    // divide by 1024 so that we get result in kilobytes
-                    long fileSize = multipartFile.getSize();
 
-                    // upload file to the temp folder on server
-                    File physicalFile = new File(temporaryFolder + fileName);
+                    // making sure that filetype is legal
+                    if (fileTypeNumber != 0) {
+                        long fileSize = multipartFile.getSize();
 
-                    byte[] bytes = multipartFile.getBytes();
+                        // upload file to the temp folder on server
+                        File physicalFile = new File(temporaryFolder + fileName);
 
-                    try (BufferedOutputStream stream = new BufferedOutputStream(
-                            new FileOutputStream(physicalFile))) {
-                        stream.write(bytes);
-                    } catch (Exception ex) {
-                        log.error(ex.getMessage(), ex);
+                        byte[] bytes = multipartFile.getBytes();
+
+                        try (BufferedOutputStream stream = new BufferedOutputStream(
+                                new FileOutputStream(physicalFile))) {
+                            stream.write(bytes);
+                        } catch (Exception ex) {
+                            log.error(ex.getMessage(), ex);
+                            RequestUtils.printResult(resp.toString(), response);
+                        }
+
+                        // populate file table with data about file
+                        Files databaseFile = new Files();
+                        databaseFile.setFilename(fileName);
+                        databaseFile.setFileType(fileTypeNumber);
+                        databaseFile.setPath(userFilePath);
+                        databaseFile.setCreatedDt(new Date(System.currentTimeMillis()));
+                        databaseFile.setSize(fileSize);
+                        userService.addFile(databaseFile);
+
+                        // populate campaign files table with data about file
+                        CampaignsFiles campaignFile = new CampaignsFiles();
+                        campaignFile.setClientId(session.getClientId());
+                        campaignFile.setAdCampaignsId(campaignId);
+                        campaignFile.setFileId(databaseFile.getId());
+                        campaignFile.setFileType(fileTypeNumber);
+                        campaignFile.setOrderId(null);
+                        campaignFile.setStatus(CampaignsFiles.STATUS_ACTIVE);
+                        userService.addCampaignFile(campaignFile);
+
+                        // move file to the users folder and rename it to its DB id
+                        physicalFile.renameTo(new File(userFilePath + databaseFile.getId() + "." + fileType));
+                        // assign new name for file in database
+                        databaseFile.setFilename(databaseFile.getId() + "." + fileType);
+                        userService.updateFile(databaseFile);
+                        
+
+                        FileDto fileDto = new FileDto();
+                        fileDto.setId(databaseFile.getId());
+                        jmsTemplate.convertAndSend(fileDestination, fileDto);
+                        
+                        // now when we are almost done, lets convert file to appropriate file format
+                        FileUtils.convertFile(new File(userFilePath + databaseFile.getId() + "." + fileType));
+
+                        response.setStatus(HttpServletResponse.SC_OK);
                         RequestUtils.printResult(resp.toString(), response);
                     }
-
-                    // populate file table with data about file
-                    Files databaseFile = new Files();
-                    databaseFile.setFilename(fileName);
-                    databaseFile.setFileType(fileTypeNumber);
-                    databaseFile.setPath(userFilePath);
-                    databaseFile.setCreatedDt(new Date(System.currentTimeMillis()));
-                    databaseFile.setSize(fileSize);
-                    userService.addFile(databaseFile);
-
-                    // populate campaign files table with data about file
-                    CampaignsFiles campaignFile = new CampaignsFiles();
-                    campaignFile.setClientId(session.getClientId());
-                    campaignFile.setAdCampaignsId(campaignId);
-                    campaignFile.setFileId(databaseFile.getId());
-                    campaignFile.setFileType(fileTypeNumber);
-                    campaignFile.setOrderId(null);
-                    campaignFile.setStatus(CampaignsFiles.STATUS_ACTIVE);
-                    userService.addCampaignFile(campaignFile);
-
-                    // move file to the users folder and rename it to its DB id
-                    physicalFile.renameTo(new File(userFilePath + databaseFile.getId() + "." + fileType));
-                    // assign new name for file in database
-                    databaseFile.setFilename(databaseFile.getId() + "." + fileType);
-                    userService.updateFile(databaseFile);
-
-                    FileDto fileDto = new FileDto();
-                    fileDto.setId(databaseFile.getId());
-                    jmsTemplate.convertAndSend(fileDestination, fileDto);
-
-                    response.setStatus(HttpServletResponse.SC_OK);
-                    RequestUtils.printResult(resp.toString(), response);
                 }
             }
         } else {
@@ -229,8 +237,8 @@ public class FilesController {
 
                 response.setStatus(HttpServletResponse.SC_OK);
                 RequestUtils.printResult(resp.toString(), response);
-            } else {             
-                response.sendError(HttpServletResponse.SC_NOT_FOUND);              
+            } else {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND);
             }
         } else {
             RequestUtils.sendUnauthorized(response);
@@ -288,5 +296,15 @@ public class FilesController {
         }
 
         return fileInformation;
+    }
+
+    @RequestMapping(value = "convert", method = RequestMethod.GET)
+    public void convertTester(
+            HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+        ImageOP converter = new ImageOP("C:\\Program Files\\ImageMagick-6.8.9-Q16\\convert.exe");
+        converter.input(new File(config.getDataDir() + "input.png"));
+        converter.resize(1920, 1080);
+        converter.processToFile(new File(config.getDataDir() + "output.png"));
     }
 }

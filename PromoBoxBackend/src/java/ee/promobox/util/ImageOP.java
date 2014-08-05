@@ -285,6 +285,13 @@ public class ImageOP {
     	return this;
     }
     
+    public ImageOP density(int density) {
+        args.add("-density");
+        args.add(Integer.toString(density));
+        
+        return this;
+    }
+    
     public ImageOP label(String label) {
     	args.add("label:" + label);
     	

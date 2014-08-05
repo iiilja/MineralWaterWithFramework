@@ -1,8 +1,8 @@
 <div style="width: 60%; margin-right: auto; margin-left: auto;">
-    <button class="btn btn-primary btn-lg btn-block" style="margin-bottom: 20px; margin-top: 20px;" onclick="window.location.href='/#/campaign/new'">Новая кампания</button>
+    <a ui-sref="main.campaign_new"><button class="btn btn-primary btn-lg btn-block" style="margin-bottom: 20px; margin-top: 20px;">Новая кампания</button></a>
 
     <alert type="success" ng-repeat="campaign in campaigns" close="remove(campaign)" style="height: 50px;">
         <span class="pull-left">{{campaign.name}}</span>
-        <span class="pull-right"><a href="/#/campaign/edit/{{campaign.id}}">Edit</a></span>
+        <span class="pull-right"><a href="/#/main/campaign/edit/{{campaign.id}}">Edit</a></span>
     </alert>
 </div>

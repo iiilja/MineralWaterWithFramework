@@ -3,7 +3,7 @@ var apiEndpoint = "http://api.dev.promobox.ee/service/";
 var app = angular.module('promobox', ['ngRoute', 'ui.bootstrap', 'pascalprecht.translate', 'promobox.services', 'angularFileUpload', 'toaster', 'ui.router']);
 
 
-app.config(['$routeProvider','$stateProvider','$urlRouterProvider', function ($routeProvider,$stateProvider, $urlRouterProvider) {
+app.config(['$routeProvider','$stateProvider','$urlRouterProvider', function ($routeProvider, $stateProvider, $urlRouterProvider) {
     $urlRouterProvider.otherwise('/');
     $stateProvider
         .state('login', {
@@ -23,27 +23,32 @@ app.config(['$routeProvider','$stateProvider','$urlRouterProvider', function ($r
             views: {
                 "rootView": { controller: 'MainController',templateUrl: '/views/main.html' }
             }
-        }).state('main.list', {
+        })
+        .state('main.campaign_edit', {
+            url: "/campaign/edit/:cId",
+            views: {
+                "mainView": { controller: "CampaignEditController", templateUrl: '/views/campaign_edit.html' }
+            }
+        })
+        .state('main.list', {
             url: "/list",
             views: {
                 "mainView": { controller: 'CampaignsController',templateUrl: '/views/list.html' }
             }
-        }).state('main.device', {
+        })
+        .state('main.device', {
             url: "/device",
             views: {
                 "mainView": { controller: 'DevicesController',templateUrl: '/views/device.html' }
             }
-        }).state('campaign_edit', {
-            url: "/campaign/edit/:cId",
-            views: {
-                "root_view": { controller: 'CampaignEditController', templateUrl: '/views/campaign_edit.html' }
-            }
-        }).state('campaign_new', {
+        })
+        .state('main.campaign_new', {
             url: "/campaign/new",
             views: {
-                "rootView": { controller: 'CampaignNewController', template: '' }
+                "mainView": { controller: 'CampaignNewController', template: '' }
             }
-        }).state('exit', {
+        })
+        .state('exit', {
             url: "/exit",
             views: {
                 "rootView": { controller: 'Exit', template: '' }
@@ -131,11 +136,13 @@ app.controller('RegistrationController', ['$scope', '$location', '$http', 'token
         }
     }]);
 
-app.controller('CampaignEditController', ['$scope', '$routeParams', 'token', 'Campaign', '$upload', '$location', '$http', 'Showfiles',
-    function ($scope, $routeParams, token, Campaign, $upload, $location, $http, Showfiles) {
+
+app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Campaign', '$upload', '$location', '$http', 'Showfiles',
+    function ($scope, $stateParams, token, Campaign, $upload, $location, $http, Showfiles) {
 
         $scope.filesArray = [];
-        $scope.campaign = Campaign.get({id: $routeParams.cId, token: token.get()}, function (response) {
+
+        Campaign.get({id: $stateParams.cId, token: token.get()}, function (response) {
             $scope.campaign = response;
             $scope.campaign_form = {campaign_status: $scope.campaign.status, filesArray: $scope.campaign.files, campaign_name: $scope.campaign.name, campaign_time: $scope.campaign.duration, campaign_order: $scope.campaign.sequence, campaign_start: $scope.campaign.start, campaign_finish: $scope.campaign.finish};
         });
@@ -169,15 +176,15 @@ app.controller('CampaignEditController', ['$scope', '$routeParams', 'token', 'Ca
         };
 
         var refreshFilesModel = function () {
-            $scope.files = Showfiles.get({id: $routeParams.cId, token: token.get()}, function (response) {
+            $scope.files = Showfiles.get({id: $stateParams.cId, token: token.get()}, function (response) {
                 $scope.files = response;
                 $scope.campaign_form.filesArray = $scope.files.campaignfiles;
             });
-        }
+        };
 
         var dataToTime = function(data) {
             return new Date(data).getTime() + 15*60*1000;
-        }
+        };
 
         $scope.edit_company = function () {
             $http.put(apiEndpoint + "token/" + token.get() + "/campaigns/" + $scope.campaign.id,
@@ -195,16 +202,13 @@ app.controller('CampaignEditController', ['$scope', '$routeParams', 'token', 'Ca
                 });
         };
 
-
-
-
     }]);
 
 app.controller('CampaignNewController', ['$scope', '$routeParams', 'token', '$location', '$http',
     function ($scope, $routeParams, token, $location, $http) {
         $http.post(apiEndpoint + "token/" + token.get() + "/campaigns/")
             .success(function (data) {
-                    $location.path('/campaign/edit/' + data.id);
+                    $location.path('/main/campaign/edit/' + data.id);
             });
     }]);
 
@@ -238,7 +242,7 @@ app.controller('MainController', ['$scope', '$location', '$http', 'token', 'Camp
 
             $scope.tabs = [
                 { heading: "Кампании", route:"main.list", active:false },
-                { heading: "Устройства", route:"main.device", active:false },
+                { heading: "Устройства", route:"main.device", active:false }
             ];
 
             $scope.$on("$stateChangeSuccess", function() {

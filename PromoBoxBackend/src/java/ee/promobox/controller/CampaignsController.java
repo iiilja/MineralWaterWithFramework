@@ -25,8 +25,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.ModelAndView;
 
 /**
  *
@@ -34,7 +32,7 @@ import org.springframework.web.servlet.ModelAndView;
  */
 @Controller
 public class CampaignsController {
-    
+
     private final static Logger log = LoggerFactory.getLogger(
             CampaignsController.class);
 
@@ -43,21 +41,26 @@ public class CampaignsController {
 
     @Autowired
     private UserService userService;
-    
-    @RequestMapping(value = "token/{token}/campaigns/{campaignId}", method=RequestMethod.GET)
-    public ModelAndView showCampaign(
+
+    @RequestMapping(value = "token/{token}/campaigns/{campaignId}", method = RequestMethod.GET)
+    public void showCampaign(
             @PathVariable("token") String token,
             @PathVariable("campaignId") int campaignId,
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
-        JSONObject resp = RequestUtils.getErrorResponse();
+        JSONObject resp = new JSONObject();
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+        // find session
         Session session = sessionService.findSession(token);
 
+        // if session is not empty
         if (session != null) {
             int clientId = session.getClientId();
             AdCampaigns campaign = userService.findCampaignByIdAndClientId(campaignId, clientId);
 
+            // if campaign isnt empty
             if (campaign != null) {
 
                 resp.put("id", campaign.getId());
@@ -68,29 +71,30 @@ public class CampaignsController {
                 resp.put("finish", campaign.getFinish() == null ? null : campaign.getFinish().getTime());
                 resp.put("sequence", campaign.getSequence());
                 resp.put("start", campaign.getStart() == null ? null : campaign.getStart().getTime());
-                
+
                 // put information about files associated with campaign
                 List<Files> campaignFiles = userService.findUsersCampaignFiles(campaignId, clientId);
                 resp.put("files", FilesController.getFilesInformation(campaignFiles));
-                
-                // everything's fine, put ok in the response
-                resp.put("response", RequestUtils.OK);
-            }
-            
-            
-        }
-        
 
-        return RequestUtils.printResult(resp.toString(), response);
+                response.setStatus(HttpServletResponse.SC_OK);
+                RequestUtils.printResult(resp.toString(), response);
+            }
+
+        } else {
+            RequestUtils.sendUnauthorized(response);
+        }
+
     }
 
-    @RequestMapping(value = "token/{token}/campaigns", method=RequestMethod.GET)
-    public ModelAndView showAllCampaigns(
+    @RequestMapping(value = "token/{token}/campaigns", method = RequestMethod.GET)
+    public void showAllCampaigns(
             @PathVariable("token") String token,
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
-        JSONObject resp = RequestUtils.getErrorResponse();
+        JSONObject resp = new JSONObject();
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
         Session session = sessionService.findSession(token);
 
         if (session != null) {
@@ -112,12 +116,14 @@ public class CampaignsController {
 
                 // put array of campaigns into response
                 resp.put("campaigns", campaignsArray);
-                // everything's fine, put ok in the response
-                resp.put("response", RequestUtils.OK);
+
+                response.setStatus(HttpServletResponse.SC_OK);
+                RequestUtils.printResult(resp.toString(), response);
             }
+        } else {
+            RequestUtils.sendUnauthorized(response);
         }
 
-        return RequestUtils.printResult(resp.toString(), response);
     }
 
     @RequestMapping(value = "token/{token}/campaigns", method = RequestMethod.POST)
@@ -127,41 +133,35 @@ public class CampaignsController {
             HttpServletResponse response) throws Exception {
 
         JSONObject resp = new JSONObject();
-        
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                
+
         Session session = sessionService.findSession(token);
 
         if (session != null) {
 
             AdCampaigns campaign = new AdCampaigns();
-            
+
             campaign.setName("New campaign");
-            
             campaign.setClientId(session.getClientId());
-            
             campaign.setStatus(AdCampaigns.STATUS_CREATED);
             campaign.setSequence(1);
-            
             campaign.setStart(new Date());
             campaign.setFinish(new Date());
-            
             campaign.setDuration(1);
 
             userService.addCampaign(campaign);
-            
+
             response.setStatus(HttpServletResponse.SC_OK);
-            
             resp.put("id", campaign.getId());
-            
+
             RequestUtils.printResult(resp.toString(), response);
-            
+
         } else {
             RequestUtils.sendUnauthorized(response);
         }
-        
+
     }
-    
+
     @RequestMapping(value = "token/{token}/campaigns/{id}", method = RequestMethod.DELETE)
     public void deleteCampaign(
             @PathVariable("token") String token,
@@ -170,45 +170,43 @@ public class CampaignsController {
             HttpServletResponse response) throws Exception {
 
         JSONObject resp = new JSONObject();
-        
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                
+
         Session session = sessionService.findSession(token);
 
         if (session != null) {
 
             AdCampaigns camp = userService.findCampaignByIdAndClientId(id, session.getClientId());
-
             camp.setStatus(AdCampaigns.STATUS_AHRCHIVED);
-            
-            userService.updateCampaign(camp);
-            
-            response.setStatus(HttpServletResponse.SC_OK);
 
-            
+            userService.updateCampaign(camp);
+
+            response.setStatus(HttpServletResponse.SC_OK);
             RequestUtils.printResult(resp.toString(), response);
-            
+
         } else {
             RequestUtils.sendUnauthorized(response);
         }
-        
+
     }
 
     @RequestMapping(value = "token/{token}/campaigns/{id}", method = RequestMethod.PUT)
-    public ModelAndView updateCampaign(
+    public void updateCampaign(
             @PathVariable("token") String token,
             @PathVariable("id") int id,
             @RequestBody String json,
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
-        JSONObject resp = RequestUtils.getErrorResponse();
+        JSONObject resp = new JSONObject();
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
         Session session = sessionService.findSession(token);
 
         // if session exists
         if (session != null) {
-            int clientId = session.getClientId();
 
+            int clientId = session.getClientId();
             AdCampaigns campaign = userService.findCampaignByIdAndClientId(id, clientId);
 
             if (campaign != null) {
@@ -225,12 +223,13 @@ public class CampaignsController {
                 campaign.setDuration(objectGiven.getInt("duration"));
                 userService.updateCampaign(campaign);
 
-                // if this line of code is reached, put OK in the response
-                resp.put("response", RequestUtils.OK);
+                response.setStatus(HttpServletResponse.SC_OK);
+                RequestUtils.printResult(resp.toString(), response);
             }
+        } else {
+            RequestUtils.sendUnauthorized(response);
         }
 
-        return RequestUtils.printResult(resp.toString(), response);
     }
 
 }

@@ -56,7 +56,7 @@ public class FilesController {
 
     @Autowired
     private KioskConfig config;
-    
+
     @Autowired
     @Qualifier("fileDestination")
     private Destination fileDestination;
@@ -65,7 +65,7 @@ public class FilesController {
 
     private final static Logger log = LoggerFactory.getLogger(
             FilesController.class);
-    
+
     @RequestMapping("queue-example")
     public ModelAndView showCampaignFiles(
             HttpServletRequest request,
@@ -78,13 +78,15 @@ public class FilesController {
     }
 
     @RequestMapping(value = "token/{token}/campaigns/{id}/files", method = RequestMethod.GET)
-    public ModelAndView showCampaignFiles(
+    public void showCampaignFiles(
             @PathVariable("token") String token,
             @PathVariable("id") int campaignId,
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
-        JSONObject resp = RequestUtils.getErrorResponse();
+        JSONObject resp = new JSONObject();
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
         Session session = sessionService.findSession(token);
 
         if (session != null) {
@@ -102,22 +104,26 @@ public class FilesController {
                 }
 
                 resp.put("campaignfiles", jsonCampaignFiles);
-                resp.put("response", RequestUtils.OK);
-            }
-        }
 
-        return RequestUtils.printResult(resp.toString(), response);
+                response.setStatus(HttpServletResponse.SC_OK);
+                RequestUtils.printResult(resp.toString(), response);
+            }
+        } else {
+            RequestUtils.sendUnauthorized(response);
+        }
     }
 
     @RequestMapping(value = "token/{token}/campaigns/{id}/files", method = RequestMethod.POST)
-    public ModelAndView uploadFile(
+    public void uploadFile(
             @PathVariable("token") String token,
             @PathVariable("id") int campaignId,
             @ModelAttribute FileUploadCommand command,
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
-        JSONObject resp = RequestUtils.getErrorResponse();
+        JSONObject resp = new JSONObject();
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
         Session session = sessionService.findSession(token);
 
         if (session != null) {
@@ -159,7 +165,7 @@ public class FilesController {
                         stream.write(bytes);
                     } catch (Exception ex) {
                         log.error(ex.getMessage(), ex);
-                        return RequestUtils.printResult(resp.toString(), response);
+                        RequestUtils.printResult(resp.toString(), response);
                     }
 
                     // populate file table with data about file
@@ -186,27 +192,31 @@ public class FilesController {
                     // assign new name for file in database
                     databaseFile.setFilename(databaseFile.getId() + "." + fileType);
                     userService.updateFile(databaseFile);
-                    
+
                     FileDto fileDto = new FileDto();
                     fileDto.setId(databaseFile.getId());
                     jmsTemplate.convertAndSend(fileDestination, fileDto);
 
-                    resp.put("response", "OK");
+                    response.setStatus(HttpServletResponse.SC_OK);
+                    RequestUtils.printResult(resp.toString(), response);
                 }
             }
+        } else {
+            RequestUtils.sendUnauthorized(response);
         }
 
-        return RequestUtils.printResult(resp.toString(), response);
     }
 
     @RequestMapping(value = "token/{token}/files/archive/{id}", method = RequestMethod.PUT)
-    public ModelAndView archiveCampaignFiles(
+    public void archiveCampaignFiles(
             @PathVariable("token") String token,
             @PathVariable("id") int fileId,
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
-        JSONObject resp = RequestUtils.getErrorResponse();
+        JSONObject resp = new JSONObject();
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
         Session session = sessionService.findSession(token);
 
         if (session != null) {
@@ -217,46 +227,51 @@ public class FilesController {
 
                 userService.updateCampaignFile(campaignsFile);
 
-                resp.put("response", RequestUtils.OK);
+                response.setStatus(HttpServletResponse.SC_OK);
+                RequestUtils.printResult(resp.toString(), response);
+            } else {             
+                response.sendError(HttpServletResponse.SC_NOT_FOUND);              
             }
+        } else {
+            RequestUtils.sendUnauthorized(response);
         }
-
-        return RequestUtils.printResult(resp.toString(), response);
     }
 
     @RequestMapping("files/{id}")
-    public ModelAndView getFile(
+    public void getFile(
             @PathVariable("id") int id,
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
-              
-        JSONObject resp = RequestUtils.getErrorResponse();
+
+        JSONObject resp = new JSONObject();
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
         Files dbFile = userService.findFileById(id);
 
         // if this file exists
         if (dbFile != null) {
-            
+
             // set proper headers for testing
             response.setHeader("Content-disposition", "attachment;filename=" + dbFile.getFilename());
             response.setHeader("Content-type", "application/octet-stream");
             response.setHeader("Content-length", dbFile.getSize().toString());
-            
+
             // open file
-            File file = new File(dbFile.getPath() + dbFile.getFilename());           
+            File file = new File(dbFile.getPath() + dbFile.getFilename());
 
             FileInputStream fileInputStream = new FileInputStream(file);
             OutputStream outputStream = response.getOutputStream();
 
             IOUtils.copy(fileInputStream, outputStream);
-            
+
             IOUtils.closeQuietly(fileInputStream);
             IOUtils.closeQuietly(outputStream);
-            
-            // put ok in the response
-            resp.put("response", RequestUtils.OK);
-        }
 
-        return RequestUtils.printResult(resp.toString(), response);
+            response.setStatus(HttpServletResponse.SC_OK);
+            RequestUtils.printResult(resp.toString(), response);
+        } else {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+        }
     }
 
     public static JSONArray getFilesInformation(List<Files> campaignFiles) throws Exception {

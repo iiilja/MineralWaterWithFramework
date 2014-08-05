@@ -22,7 +22,6 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 /**
  *
@@ -33,21 +32,20 @@ public class DevicesController {
 
     @Autowired
     private UserService userService;
-    
+
     @Autowired
     private SessionService sessionService;
 
     @RequestMapping("/device/{uuid}/pull")
-    public ModelAndView showCampaign(
+    public void showCampaign(
             @PathVariable("uuid") String uuid,
             @RequestParam String json,
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
         JSONObject resp = new JSONObject();
-        
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        
+
         Devices d = userService.findDeviceByUuid(uuid);
 
         if (d != null && d.getStatus() == 1) {
@@ -68,15 +66,15 @@ public class DevicesController {
                     resp.put("campaignStatus", ad.getStatus());
                 }
             }
-            
+
             List<Files> campaignFiles = userService.findUsersCampaignFiles(dc.getAdCampaignsId(), d.getClientId());
 
             if (!campaignFiles.isEmpty()) {
                 JSONArray jsonCampaignFiles = new JSONArray();
-                
+
                 for (Files file : campaignFiles) {
                     JSONObject jsonCampaignFile = new JSONObject();
-                    
+
                     jsonCampaignFile.put("id", file.getId());
                     jsonCampaignFile.put("type", file.getFileType().intValue());
 
@@ -85,32 +83,30 @@ public class DevicesController {
 
                 resp.put("files", jsonCampaignFiles);
             }
-             
+
             d.setLastDeviceRequestDt(new Date());
-            
+
             userService.updateDevice(d);
 
             response.setStatus(HttpServletResponse.SC_OK);
-        } 
-
-        return RequestUtils.printResult(resp.toString(), response);
+            RequestUtils.printResult(resp.toString(), response);
+        }
     }
-    
-    @RequestMapping(value = "token/{token}/devices", method=RequestMethod.GET)
+
+    @RequestMapping(value = "token/{token}/devices", method = RequestMethod.GET)
     public void showAllDevices(
             @PathVariable("token") String token,
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
         JSONObject resp = new JSONObject();
-        
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        
+
         Session session = sessionService.findSession(token);
 
         if (session != null) {
             int clientId = session.getClientId();
-            
+
             List<Devices> devices = userService.findUserDevieces(clientId);
 
             if (!devices.isEmpty()) {
@@ -119,7 +115,7 @@ public class DevicesController {
 
                 for (Devices d : devices) {
                     JSONObject jsonD = new JSONObject();
-                    
+
                     jsonD.put("id", d.getId());
                     jsonD.put("uuid", d.getUuid());
                     jsonD.put("status", d.getStatus());
@@ -135,8 +131,7 @@ public class DevicesController {
 
                     for (AdCampaigns a : adCampaignses) {
                         JSONObject aObj = new JSONObject();
-                        
-                        
+
                         aObj.put("id", a.getId());
                         aObj.put("name", a.getName());
 
@@ -155,15 +150,15 @@ public class DevicesController {
                 }
 
                 resp.put("devices", devicesArray);
-                
+
                 response.setStatus(HttpServletResponse.SC_OK);
-                
+
                 RequestUtils.printResult(resp.toString(), response);
             }
         } else {
             RequestUtils.sendUnauthorized(response);
         }
-   
+
     }
 
     @RequestMapping(value = "token/{token}/device/{id}", method = RequestMethod.PUT)
@@ -200,9 +195,7 @@ public class DevicesController {
                 userService.updateDevice(device);
 
                 response.setStatus(HttpServletResponse.SC_OK);
-
                 RequestUtils.printResult(resp.toString(), response);
-
 
             } else {
                 RequestUtils.sendUnauthorized(response);

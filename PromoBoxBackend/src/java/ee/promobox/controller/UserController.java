@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
@@ -58,6 +59,7 @@ public class UserController {
             JSONObject jsonUser = new JSONObject();
             jsonUser.put("firstname", u.getFirstname());
             jsonUser.put("surname", u.getSurname());
+            jsonUser.put("emai", u.getEmail());
 
             userAr.put(jsonUser);
 
@@ -102,13 +104,14 @@ public class UserController {
     }
     
     
-    @RequestMapping("/user/data")
-    public ModelAndView userDataHandler(
-            @RequestParam String token,
+    @RequestMapping("/user/data/{token}")
+    public void userDataHandler(
+            @PathVariable("token") String token,
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
-        JSONObject resp = RequestUtils.getErrorResponse();
+        JSONObject resp = new JSONObject();
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         
         Session session = sessionService.findSession(token);
         
@@ -144,10 +147,15 @@ public class UserController {
             }
             
             resp.put("devices", devs);
+            
+            response.setStatus(HttpServletResponse.SC_OK);
+            RequestUtils.printResult(resp.toString(), response);
 
+        } else {
+            RequestUtils.sendUnauthorized(response);
         }
 
-        return RequestUtils.printResult(resp.toString(), response);
+        
     }
 
 

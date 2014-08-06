@@ -62,6 +62,7 @@ public class FileConsumerService extends MessageListenerAdapter {
                 videoConvert = new VideoOP(config.getFfmpeg());
                 videoConvert.input(f)
                         .codecVideo("libx264")
+                        .scale("-1:720")
                         .preset("slow")
                         .crf(19)
                         .codecAudio("libvo_aacenc")

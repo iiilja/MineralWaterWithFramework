@@ -60,6 +60,12 @@ public class VideoOP {
         return this;
     }
     
+    public VideoOP scale(String scale) {
+        args.add("-vf scale=" + scale);
+        
+        return this;
+    }
+    
     public boolean processToFile(File outputFile) {
         String out = outputFile.getAbsolutePath();
 

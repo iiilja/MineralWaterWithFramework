@@ -23,6 +23,12 @@ public class KioskConfig {
 
     @Value("${dataDir}")
     private String dataDir;
+    
+    @Value("${imageMagick}")
+    private String imageMagick;
+    
+    @Value("${ffmpeg}")
+    private String ffmpeg;
 
     public String getDataDir() {
         return dataDir;
@@ -32,6 +38,22 @@ public class KioskConfig {
         this.dataDir = dataDir;
     }
 
+    public String getImageMagick() {
+        return imageMagick;
+    }
+
+    public void setImageMagick(String imageMagick) {
+        this.imageMagick = imageMagick;
+    }
+
+    public String getFfmpeg() {
+        return ffmpeg;
+    }
+
+    public void setFfmpeg(String ffmpeg) {
+        this.ffmpeg = ffmpeg;
+    }
+    
     @Bean
     public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
         return new PropertySourcesPlaceholderConfigurer();

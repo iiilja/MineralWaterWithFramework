@@ -30,6 +30,7 @@ import java.util.List;
 import javax.jms.Destination;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -66,17 +67,6 @@ public class FilesController {
 
     private final static Logger log = LoggerFactory.getLogger(
             FilesController.class);
-
-    @RequestMapping("queue-example")
-    public ModelAndView showCampaignFiles(
-            HttpServletRequest request,
-            HttpServletResponse response) throws Exception {
-        FileDto fileDto = new FileDto();
-        fileDto.setId(10);
-        jmsTemplate.convertAndSend(fileDestination, fileDto);
-
-        return null;
-    }
 
     @RequestMapping(value = "token/{token}/campaigns/{id}/files", method = RequestMethod.GET)
     public void showCampaignFiles(
@@ -151,11 +141,11 @@ public class FilesController {
 
                     // get data about the file
                     String fileName = multipartFile.getOriginalFilename();
-                    String fileType = fileName.split("\\.")[1];
+                    String fileType = FilenameUtils.getExtension(fileName);
                     int fileTypeNumber = FileUtils.determineFileTypeNumber(fileType);
 
                     // making sure that filetype is legal
-                    if (fileTypeNumber != 0) {
+                    if (fileTypeNumber != FileUtils.INVALID_FILE_TYPE) {
                         long fileSize = multipartFile.getSize();
 
                         // upload file to the temp folder on server
@@ -191,19 +181,17 @@ public class FilesController {
                         userService.addCampaignFile(campaignFile);
 
                         // move file to the users folder and rename it to its DB id
-                        physicalFile.renameTo(new File(userFilePath + databaseFile.getId() + "." + fileType));
+                        
+                        File f = new File(userFilePath + databaseFile.getId() + "." + fileType);
+                        physicalFile.renameTo(f);
                         // assign new name for file in database
                         databaseFile.setFilename(databaseFile.getId() + "." + fileType);
                         userService.updateFile(databaseFile);
                         
 
-                        FileDto fileDto = new FileDto();
-                        fileDto.setId(databaseFile.getId());
+                        FileDto fileDto = new FileDto(databaseFile.getId(), f);
                         jmsTemplate.convertAndSend(fileDestination, fileDto);
                         
-                        // now when we are almost done, lets convert file to appropriate file format
-                        FileUtils.convertFile(new File(userFilePath + databaseFile.getId() + "." + fileType));
-
                         response.setStatus(HttpServletResponse.SC_OK);
                         RequestUtils.printResult(resp.toString(), response);
                     }

@@ -13,6 +13,7 @@ import java.io.File;
  */
 public class FileUtils {
 
+    public static final int INVALID_FILE_TYPE = 0;
     public static final int FILE_TYPE_JPG = 1;
     public static final int FILE_TYPE_PNG = 2;
     public static final int FILE_TYPE_MP3 = 3;
@@ -53,43 +54,7 @@ public class FileUtils {
         }
     }
 
-    public static void convertFile(File f) {
-        // path to converter
-        ImageOP converter = new ImageOP("C:\\Program Files\\ImageMagick-6.8.9-Q16\\convert.exe");
-        // input file into conveter
-        converter.input(f);
-
-        // appropriate convert is chosen depending on file type      
-        switch (f.getName().split("\\.")[1].toUpperCase()) {
-            case "JPG":
-                break;
-            case "JPEG":
-                break;
-            case "PNG":
-                converter.resize(1920, 1080);
-                // give correct name to file for output
-                converter.processToFile(new File(f.getAbsolutePath().replace(".png", "_output.png")));
-                break;
-            case "MP3":
-                break;
-            case "MP4":
-                break;
-            case "AAC":
-                break;
-            case "AVI":
-                break;
-            case "MOV":
-                break;
-            case "PDF":
-                converter.density(300);
-                converter.resize(25, null, true);
-                // give correct name to file for output
-                converter.processToFile(new File(f.getAbsolutePath().replace(".pdf", ".png")));
-                break;
-            default:
-                break;
-        }
-    }
+    
 
     public static void createThumbnail() {
 

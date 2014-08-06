@@ -48,6 +48,14 @@ public class FileConsumerService extends MessageListenerAdapter {
                 imageConvert.resize(1920, 1080);
                 // give correct name to file for output
                 imageConvert.processToFile(new File(f.getAbsolutePath().replace(type, "_output.png")));
+                
+                
+                imageConvert = new ImageOP(config.getImageMagick());
+                // input file into conveter
+                imageConvert.input(f);
+                imageConvert.resize(320, 320);
+                // give correct name to file for output
+                imageConvert.processToFile(new File(f.getAbsolutePath().replace(type, "_thumb.png")));
                 break;
             case "MP3":
                 break;

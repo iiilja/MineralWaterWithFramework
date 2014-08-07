@@ -51,45 +51,55 @@ public class DevicesController {
         if (d != null && d.getStatus() == 1) {
             JSONObject objectGiven = new JSONObject(json);
 
-            d.setStatus(objectGiven.getInt("status"));
             d.setFreeSpace(objectGiven.getLong("freeSpace"));
-            d.setDescription(objectGiven.getString("desc"));
+
+            resp.put("lastUpdate", d.getLastDeviceRequestDt().getTime());
+
+            JSONObject campaign = new JSONObject();
 
             DevicesCampaigns dc = userService.findDeviceCampaignByDeviceId(d.getId());
 
             if (dc != null) {
 
-                if (dc.getUpdatedDt().after(d.getLastDeviceRequestDt())) {
+                if (dc.getUpdatedDt().after(d.getLastDeviceRequestDt()) || objectGiven.has("force")) {
+
                     AdCampaigns ad = userService.findCampaignByCampaignId(dc.getAdCampaignsId());
 
-                    resp.put("campaignName", ad.getName());
-                    resp.put("campaignStatus", ad.getStatus());
+                    campaign.put("campaignId", ad.getId());
+                    campaign.put("campaignName", ad.getName());
+                    campaign.put("campaignStatus", ad.getStatus());
+
+                    List<Files> campaignFiles = userService.findUsersCampaignFiles(dc.getAdCampaignsId(), d.getClientId());
+
+                    if (!campaignFiles.isEmpty()) {
+                        JSONArray jsonCampaignFiles = new JSONArray();
+
+                        for (Files file : campaignFiles) {
+                            JSONObject jsonCampaignFile = new JSONObject();
+
+                            jsonCampaignFile.put("id", file.getId());
+                            jsonCampaignFile.put("type", file.getFileType().intValue());
+
+                            jsonCampaignFiles.put(jsonCampaignFile);
+                        }
+
+                        campaign.put("files", jsonCampaignFiles);
+                    }
+
+                    resp.put("campaign", campaign);
+
                 }
+
+                d.setLastDeviceRequestDt(new Date());
+
+                userService.updateDevice(d);
+
+                response.setStatus(HttpServletResponse.SC_OK);
+
+                RequestUtils.printResult(resp.toString(), response);
+
             }
 
-            List<Files> campaignFiles = userService.findUsersCampaignFiles(dc.getAdCampaignsId(), d.getClientId());
-
-            if (!campaignFiles.isEmpty()) {
-                JSONArray jsonCampaignFiles = new JSONArray();
-
-                for (Files file : campaignFiles) {
-                    JSONObject jsonCampaignFile = new JSONObject();
-
-                    jsonCampaignFile.put("id", file.getId());
-                    jsonCampaignFile.put("type", file.getFileType().intValue());
-
-                    jsonCampaignFiles.put(jsonCampaignFile);
-                }
-
-                resp.put("files", jsonCampaignFiles);
-            }
-
-            d.setLastDeviceRequestDt(new Date());
-
-            userService.updateDevice(d);
-
-            response.setStatus(HttpServletResponse.SC_OK);
-            RequestUtils.printResult(resp.toString(), response);
         }
     }
 

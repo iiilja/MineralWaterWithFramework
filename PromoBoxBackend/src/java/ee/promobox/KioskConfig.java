@@ -27,8 +27,8 @@ public class KioskConfig {
     @Value("${imageMagick}")
     private String imageMagick;
     
-    @Value("${ffmpeg}")
-    private String ffmpeg;
+    @Value("${avconv}")
+    private String avconv;
 
     public String getDataDir() {
         return dataDir;
@@ -46,12 +46,12 @@ public class KioskConfig {
         this.imageMagick = imageMagick;
     }
 
-    public String getFfmpeg() {
-        return ffmpeg;
+    public String getAvconv() {
+        return avconv;
     }
 
-    public void setFfmpeg(String ffmpeg) {
-        this.ffmpeg = ffmpeg;
+    public void setAvconv(String avconv) {
+        this.avconv = avconv;
     }
     
     @Bean

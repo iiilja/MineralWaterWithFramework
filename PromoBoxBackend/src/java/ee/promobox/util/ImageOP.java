@@ -11,76 +11,75 @@ import org.apache.commons.lang.StringUtils;
 
 public class ImageOP {
     //private static final Log log = LogFactory.getLog(ImageOP.class);
-    
+
     private List<String> args = new ArrayList<String>();
     private byte[] inputData;
 
     private String outputFormat;
-    
-    
+
     public ImageOP(String path) {
         args.add(path);
     }
-    
+
     public ImageOP input(byte[] data) {
         inputData = data;
         args.add("-[0]");
-        
+
         return this;
     }
-    
+
     public ImageOP input(File file) {
         args.add(file.getAbsolutePath());
-        
+
         return this;
     }
-    
+
     public ImageOP strip() {
         args.add("-strip");
-        
+
         return this;
     }
-    
+
     public ImageOP size(int width, int height) {
         args.add("-size");
         args.add(String.format("%dx%d", width, height));
-        
+
         return this;
     }
-    
+
     public ImageOP width(int width) {
         args.add("-size");
         args.add(String.format("%dx", width));
-        
+
         return this;
     }
-    
+
     public ImageOP swap(int index1, int index2) {
         args.add("-swap");
         args.add(String.format("%d,%d", index1, index2));
-        
+
         return this;
     }
-    
+
     public ImageOP swapLastTwo() {
         args.add("+swap");
-        
+
         return this;
     }
-    
+
     public ImageOP composite() {
         args.add("-composite");
-        
+
         return this;
     }
-    
+
     public ImageOP quality(int quality) {
         quality = Math.max(quality, 0);
         quality = Math.min(quality, 100);
-        
+
         args.add("-quality");
         args.add(Integer.toString(quality, 10));
-        
+
         return this;
     }
 
@@ -116,17 +115,17 @@ public class ImageOP {
 
         return this;
     }
-    
+
     public ImageOP font(String font) {
-    	args.add("-font");
-    	args.add(font);
-    	
-    	return this;
+        args.add("-font");
+        args.add(font);
+
+        return this;
     }
 
     public ImageOP scale(Integer width, Integer height) {
         args.add("-scale");
-        
+
         StringBuilder builder = new StringBuilder();
         if (width != null) {
             builder.append(width);
@@ -136,21 +135,21 @@ public class ImageOP {
             builder.append(height);
         }
         args.add(builder.toString());
-        
+
         return this;
     }
-    
+
     public ImageOP resize(Integer width, Integer height) {
         return resize(width, height, false);
     }
-    
+
     public ImageOP resize(Integer width, Integer height, boolean percent) {
-    	return resize(width, height, percent, false, false);
+        return resize(width, height, percent, false, false);
     }
 
     public ImageOP resize(Integer width, Integer height, boolean percent, boolean ifExceed, boolean smallestFittingDimension) {
         StringBuilder builder = new StringBuilder();
-        
+
         if (width != null) {
             builder.append(width);
 
@@ -166,18 +165,18 @@ public class ImageOP {
                 builder.append('%');
             }
         }
-        
+
         if (ifExceed) {
-        	builder.append('>');
+            builder.append('>');
         }
-        
+
         if (smallestFittingDimension) {
-        	builder.append('^');
+            builder.append('^');
         }
 
         args.add("-resize");
         args.add(builder.toString());
-        
+
         return this;
     }
 
@@ -270,57 +269,55 @@ public class ImageOP {
 
         return this;
     }
-    
+
     public ImageOP pointsize(int pointsize) {
-    	args.add("-pointsize");
-    	args.add(Integer.toString(pointsize));
-    	
-    	return this;
+        args.add("-pointsize");
+        args.add(Integer.toString(pointsize));
+
+        return this;
     }
-    
+
     public ImageOP fill(String fill) {
-    	args.add("-fill");
-    	args.add(fill);
-    	
-    	return this;
+        args.add("-fill");
+        args.add(fill);
+
+        return this;
     }
-    
+
     public ImageOP density(int density) {
         args.add("-density");
         args.add(Integer.toString(density));
-        
+
         return this;
     }
-    
+
     public ImageOP label(String label) {
-    	args.add("label:" + label);
-    	
-    	return this;
+        args.add("label:" + label);
+
+        return this;
     }
-    
-    
+
     public ImageOP caption(String caption) {
-    	args.add("caption:" + caption);
-    	
-    	return this;
+        args.add("caption:" + caption);
+
+        return this;
     }
-    
-    
+
     public ImageOP outputFormat(String format) {
         this.outputFormat = format;
-        
+
         return this;
     }
-    
+
     public byte[] processToByteArray() {
         String out = (outputFormat != null ? outputFormat + ":-" : "-");
-        
+
         List<String> arguments = new ArrayList<String>(args);
         arguments.add(out);
-        
+
         try {
             Process process = new ProcessBuilder(arguments).start();
-            
+
             if (inputData != null) {
                 OutputStream output = null;
                 try {
@@ -330,7 +327,7 @@ public class ImageOP {
                     IOUtils.closeQuietly(output);
                 }
             }
-            
+
             InputStream inputStream = null;
             byte[] data = null;
             try {
@@ -339,7 +336,7 @@ public class ImageOP {
             } finally {
                 IOUtils.closeQuietly(inputStream);
             }
-            
+
             InputStream errorStream = null;
             String error = null;
             try {
@@ -348,34 +345,34 @@ public class ImageOP {
             } finally {
                 IOUtils.closeQuietly(errorStream);
             }
-            
+
             if (process.waitFor() != 0) {
                 System.err.print(error);
             } else {
                 return data;
             }
         } catch (Exception ex) {
-        	System.err.print(ex);
+            System.err.print(ex);
         }
-        
+
         return null;
     }
-    
+
     public boolean processToFile(File outputFile) {
         String out = null;
         if (outputFormat != null) {
-            out = outputFormat  + ":" + outputFile.getAbsolutePath();
+            out = outputFormat + ":" + outputFile.getAbsolutePath();
         } else {
             out = outputFile.getAbsolutePath();
         }
-        
+
         List<String> arguments = new ArrayList<String>(args);
         arguments.add(out);
-        
+
         System.out.println(arguments);
         try {
             Process process = new ProcessBuilder(arguments).start();
-            
+
             if (inputData != null) {
                 OutputStream output = null;
                 try {
@@ -385,7 +382,7 @@ public class ImageOP {
                     IOUtils.closeQuietly(output);
                 }
             }
-            
+
             InputStream errorStream = null;
             String error = null;
             try {
@@ -394,17 +391,17 @@ public class ImageOP {
             } finally {
                 IOUtils.closeQuietly(errorStream);
             }
-            
+
             if (process.waitFor() != 0) {
-            	System.err.print(error);
+                System.err.print(error);
             } else {
                 return true;
             }
         } catch (Exception ex) {
-        	System.err.print(ex);
-        	ex.printStackTrace();
+            System.err.print(ex);
+            ex.printStackTrace();
         }
-        
+
         return false;
     }
 
@@ -413,4 +410,3 @@ public class ImageOP {
         return String.format("ImageOp[%s]", StringUtils.join(args.iterator(), " "));
     }
 }
-

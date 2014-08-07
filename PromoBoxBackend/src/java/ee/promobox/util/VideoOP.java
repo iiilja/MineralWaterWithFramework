@@ -25,50 +25,50 @@ public class VideoOP {
     }
     
     public VideoOP input(File file) {
-        args.add("-i ");
+        args.add("-i");
         args.add(file.getAbsolutePath());
         
         return this;
     }
     
     public VideoOP codecVideo(String videoCodec) {
-        args.add("-c:v ");
+        args.add("-c:v");
         args.add(videoCodec);
         
         return this;
     }
     
     public VideoOP codecAudio(String audioCodec) {
-        args.add("-c:a ");
+        args.add("-c:a");
         args.add(audioCodec);
         
         return this;
     }
     
     public VideoOP preset(String preset) {
-        args.add("-preset ");
+        args.add("-preset");
         args.add(preset);
         
         return this;
     }
     
     public VideoOP crf(int crf) {
-        args.add("-crf ");
+        args.add("-crf");
         args.add("" + crf);
         
         return this;
     }
     
     public VideoOP bitrateAudio(String bitrateAudio) {
-        args.add("-c:a ");
+        args.add("-c:a");
         args.add(bitrateAudio);
         
         return this;
     }
     
     public VideoOP scale(String scale) {
-        args.add("-vf scale=");
-        args.add(scale);
+        args.add("-vf");
+        args.add("scale=" + scale);
         
         return this;
     }

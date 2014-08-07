@@ -31,17 +31,19 @@ public class FileConsumerService extends MessageListenerAdapter {
         log.info("Convert file here");
         
         log.info("File id: " + fileDto.getId());
+        
+        convertFile(fileDto.getFile());
     }
     
     public void convertFile(File f) {
+        String type = FilenameUtils.getExtension(f.getName());
+        
         ImageOP imageConvert = null;  
         VideoOP videoConvert = null;
-        switch (f.getName().split("\\.")[1].toUpperCase()) {
+        switch (type.toUpperCase()) {
             case "JPG":
             case "JPEG":
             case "PNG":
-                String type = FilenameUtils.getExtension(f.getName());
-                
                 imageConvert = new ImageOP(config.getImageMagick());
                 // input file into conveter
                 imageConvert.input(f);

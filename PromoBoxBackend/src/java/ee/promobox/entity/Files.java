@@ -53,6 +53,8 @@ public class Files implements Serializable {
     @Column(name = "created_dt")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDt;
+    @Column(name = "client_id")
+    private Integer clientId;
 
     public Files() {
     }
@@ -138,6 +140,20 @@ public class Files implements Serializable {
      */
     public void setSize(Long size) {
         this.size = size;
+    }
+
+    /**
+     * @return the clientId
+     */
+    public Integer getClientId() {
+        return clientId;
+    }
+
+    /**
+     * @param clientId the clientId to set
+     */
+    public void setClientId(Integer clientId) {
+        this.clientId = clientId;
     }
     
 }

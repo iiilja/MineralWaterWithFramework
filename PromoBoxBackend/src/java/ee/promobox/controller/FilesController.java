@@ -28,6 +28,7 @@ import java.io.OutputStream;
 import java.util.Date;
 import java.util.List;
 import javax.jms.Destination;
+import javax.print.attribute.standard.Destination;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.FilenameUtils;
@@ -45,7 +46,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 public class FilesController {
@@ -148,7 +148,6 @@ public class FilesController {
                     if (fileTypeNumber != FileUtils.INVALID_FILE_TYPE) {
                         long fileSize = multipartFile.getSize();
 
-                        // upload file to the temp folder on server
                         File physicalFile = new File(temporaryFolder + fileName);
 
                         byte[] bytes = multipartFile.getBytes();
@@ -168,6 +167,8 @@ public class FilesController {
                         databaseFile.setPath(userFilePath);
                         databaseFile.setCreatedDt(new Date(System.currentTimeMillis()));
                         databaseFile.setSize(fileSize);
+                        databaseFile.setClientId(session.getClientId());
+                        
                         userService.addFile(databaseFile);
 
                         // populate campaign files table with data about file
@@ -182,14 +183,17 @@ public class FilesController {
 
                         // move file to the users folder and rename it to its DB id
                         
-                        File f = new File(userFilePath + databaseFile.getId() + "." + fileType);
+                        File f = new File(userFilePath + databaseFile.getId());
+                        
                         physicalFile.renameTo(f);
+                        
                         // assign new name for file in database
-                        databaseFile.setFilename(databaseFile.getId() + "." + fileType);
-                        userService.updateFile(databaseFile);
+                        // databaseFile.setFilename(databaseFile.getId() + "." + fileType);
+                        //userService.updateFile(databaseFile);
                         
 
                         FileDto fileDto = new FileDto(databaseFile.getId(), f);
+                        
                         jmsTemplate.convertAndSend(fileDestination, fileDto);
                         
                         response.setStatus(HttpServletResponse.SC_OK);
@@ -252,8 +256,7 @@ public class FilesController {
             response.setHeader("Content-type", "application/octet-stream");
             response.setHeader("Content-length", dbFile.getSize().toString());
 
-            // open file
-            File file = new File(dbFile.getPath() + dbFile.getFilename());
+            File file = new File(config.getDataDir() + dbFile.getClientId() + File.separator + dbFile.getId());
 
             FileInputStream fileInputStream = new FileInputStream(file);
             OutputStream outputStream = response.getOutputStream();

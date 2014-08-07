@@ -67,7 +67,7 @@ public class FileConsumerService extends MessageListenerAdapter {
             case "MOV":
                 type = FilenameUtils.getExtension(f.getName());
                 
-                videoConvert = new VideoOP(config.getFfmpeg());
+                videoConvert = new VideoOP(config.getAvconv());
                 videoConvert.input(f)
                         .codecVideo("libx264")
                         .scale("-1:720")

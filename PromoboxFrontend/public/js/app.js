@@ -137,8 +137,8 @@ app.controller('RegistrationController', ['$scope', '$location', '$http', 'token
     }]);
 
 
-app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Campaign', '$upload', '$location', '$http', 'Showfiles',
-    function ($scope, $stateParams, token, Campaign, $upload, $location, $http, Showfiles) {
+app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Campaign', '$upload', '$location', '$http', 'toaster', 'Showfiles',
+    function ($scope, $stateParams, token, Campaign, $upload, $location, $http, toaster, Showfiles) {
 
         $scope.filesArray = [];
 
@@ -150,8 +150,8 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         $scope.inArchive = function (id) {
             $http.put(apiEndpoint + "token/" + token.get() + "/files/archive/" + id + "/")
                 .success(function (data) {
+                      toaster.pop('success', "Delete", "File deleted");
                       refreshFilesModel();
-
                 });
         };
 
@@ -175,7 +175,7 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         };
 
         var refreshFilesModel = function () {
-            $scope.files = Showfiles.get({id: $stateParams.cId, token: token.get()}, function (response) {
+            Showfiles.get({id: $stateParams.cId, token: token.get()}, function (response) {
                 $scope.files = response;
                 $scope.campaign_form.filesArray = $scope.files.campaignfiles;
             });

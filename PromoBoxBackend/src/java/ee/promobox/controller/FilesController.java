@@ -244,19 +244,12 @@ public class FilesController {
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
-        JSONObject resp = new JSONObject();
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
         Files dbFile = userService.findFileById(id);
 
         // if this file exists
         if (dbFile != null) {
-
-            // set proper headers for testing
-            response.setHeader("Content-disposition", "attachment;filename=" + dbFile.getFilename());
-            response.setHeader("Content-type", "application/octet-stream");
-            response.setHeader("Content-length", dbFile.getSize().toString());
-
             File file = new File(config.getDataDir() + dbFile.getClientId() + File.separator + dbFile.getId());
 
             FileInputStream fileInputStream = new FileInputStream(file);
@@ -268,7 +261,36 @@ public class FilesController {
             IOUtils.closeQuietly(outputStream);
 
             response.setStatus(HttpServletResponse.SC_OK);
-            RequestUtils.printResult(resp.toString(), response);
+        } else {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+        }
+    }
+    
+    
+    @RequestMapping("files/thumb/{id}")
+    public void getFileThumb(
+            @PathVariable("id") int id,
+            HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+        Files dbFile = userService.findFileById(id);
+
+        // if this file exists
+        if (dbFile != null) {
+
+            File file = new File(config.getDataDir() + dbFile.getClientId() + File.separator + dbFile.getId() + "_thumb");
+
+            FileInputStream fileInputStream = new FileInputStream(file);
+            OutputStream outputStream = response.getOutputStream();
+
+            IOUtils.copy(fileInputStream, outputStream);
+
+            IOUtils.closeQuietly(fileInputStream);
+            IOUtils.closeQuietly(outputStream);
+
+            response.setStatus(HttpServletResponse.SC_OK);
         } else {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
         }

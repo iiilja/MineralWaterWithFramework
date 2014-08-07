@@ -10,7 +10,6 @@ import ee.promobox.KioskConfig;
 import ee.promobox.util.ImageOP;
 import ee.promobox.util.VideoOP;
 import java.io.File;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,12 +30,13 @@ public class FileConsumerService extends MessageListenerAdapter {
         log.info("Convert file here");
         
         log.info("File id: " + fileDto.getId());
+        log.info("File extention: " + fileDto.getExtention());
         
-        convertFile(fileDto.getFile());
+        convertFile(fileDto);
     }
     
-    public void convertFile(File f) {
-        String type = FilenameUtils.getExtension(f.getName());
+    public void convertFile(FileDto f) {
+        String type = f.getExtention();
         
         ImageOP imageConvert = null;  
         VideoOP videoConvert = null;
@@ -45,19 +45,18 @@ public class FileConsumerService extends MessageListenerAdapter {
             case "JPEG":
             case "PNG":
                 imageConvert = new ImageOP(config.getImageMagick());
-                // input file into conveter
-                imageConvert.input(f);
+ 
+                imageConvert.input(f.getFile());
                 imageConvert.resize(1920, 1080);
-                // give correct name to file for output
-                imageConvert.processToFile(new File(f.getAbsolutePath().replace("." + type, "_output.png")));
-                
+
+                imageConvert.processToFile(new File(f.getFile().getAbsolutePath() + "_output"));
                 
                 imageConvert = new ImageOP(config.getImageMagick());
-                // input file into conveter
-                imageConvert.input(f);
+
+                imageConvert.input(f.getFile());
                 imageConvert.resize(320, 320);
-                // give correct name to file for output
-                imageConvert.processToFile(new File(f.getAbsolutePath().replace("." + type, "_thumb.png")));
+
+                imageConvert.processToFile(new File(f.getFile().getAbsolutePath() + "_thumb"));
                 break;
             case "MP3":
                 break;
@@ -68,7 +67,7 @@ public class FileConsumerService extends MessageListenerAdapter {
             case "AVI":
             case "MOV":
                 videoConvert = new VideoOP(config.getAvconv());
-                videoConvert.input(f)
+                videoConvert.input(f.getFile())
                         .codecVideo("libx264")
                         .scale("-1:720")
                         .preset("slow")
@@ -76,19 +75,19 @@ public class FileConsumerService extends MessageListenerAdapter {
                         .codecAudio("libvo_aacenc")
                         .bitrateAudio("128k");
                 
-                videoConvert.processToFile(new File(f.getAbsolutePath().replace("." + type, "_output.mp4")));
+                videoConvert.processToFile(new File(f.getFile().getAbsolutePath() + "_output"));
                         
                 
                 break;
             case "PDF":
                 imageConvert = new ImageOP(config.getImageMagick());
-                // input file into conveter
-                imageConvert.input(f);
+
+                imageConvert.input(f.getFile());
                 
                 imageConvert.density(300);
                 imageConvert.resize(25, null, true);
-                // give correct name to file for output
-                imageConvert.processToFile(new File(f.getAbsolutePath().replace(".pdf", "_output.png")));
+
+                imageConvert.processToFile(new File(f.getFile().getAbsolutePath() + "_output"));
                 break;
             default:
                 break;

@@ -54,8 +54,7 @@ public class RequestUtils {
     
     public static void sendUnauthorized(HttpServletResponse response) {
         try {
-            response.reset();
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         } catch(Exception ex) {
             log.error(ex.getMessage(), ex);
         }

@@ -287,5 +287,20 @@ app.controller('DevicesController', ['$scope', '$location', '$http', 'token', 'C
                 $scope.devices = response.devices;
                 console.log(response.devices);
             });
+
+            $scope.change_device = function(id, form) {
+                console.log(id);
+                console.log(form);
+
+//                $http.put(apiEndpoint + "token/" + token.get() + "/devices/" + id + '/',
+//                    {
+//                        campaigns: $scope.deviceForm.campaigns,
+//                        orientation: '@orientation',
+//                        resolution: '@resolution'
+//                    })
+//                    .success(function (data) {
+//                        console.log(response);
+//                    });
+            }
         }
     }]);

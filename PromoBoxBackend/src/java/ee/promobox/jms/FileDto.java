@@ -8,9 +8,6 @@ package ee.promobox.jms;
 
 import java.io.File;
 import java.io.Serializable;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
@@ -20,10 +17,12 @@ public class FileDto implements Serializable {
     
     private int id;
     private File file;
+    private String extention;
 
-    public FileDto(int id, File file) {
+    public FileDto(int id, File file, String extention) {
         this.id = id;
         this.file = file;
+        this.extention = extention;
     }
     
     public int getId() {
@@ -40,6 +39,20 @@ public class FileDto implements Serializable {
 
     public void setFile(File file) {
         this.file = file;
+    }
+
+    /**
+     * @return the extention
+     */
+    public String getExtention() {
+        return extention;
+    }
+
+    /**
+     * @param extention the extention to set
+     */
+    public void setExtention(String extention) {
+        this.extention = extention;
     }
 
 }

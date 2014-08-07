@@ -141,6 +141,7 @@ public class FilesController {
                     // get data about the file
                     String fileName = multipartFile.getOriginalFilename();
                     String fileType = FilenameUtils.getExtension(fileName);
+                    
                     int fileTypeNumber = FileUtils.determineFileTypeNumber(fileType);
 
                     // making sure that filetype is legal
@@ -191,11 +192,12 @@ public class FilesController {
                         //userService.updateFile(databaseFile);
                         
 
-                        FileDto fileDto = new FileDto(databaseFile.getId(), f);
+                        FileDto fileDto = new FileDto(databaseFile.getId(), f, fileType);
                         
                         jmsTemplate.convertAndSend(fileDestination, fileDto);
                         
                         response.setStatus(HttpServletResponse.SC_OK);
+                        
                         RequestUtils.printResult(resp.toString(), response);
                     }
                 }

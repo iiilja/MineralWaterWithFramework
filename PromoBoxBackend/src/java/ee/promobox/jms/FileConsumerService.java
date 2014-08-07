@@ -49,7 +49,7 @@ public class FileConsumerService extends MessageListenerAdapter {
                 imageConvert.input(f);
                 imageConvert.resize(1920, 1080);
                 // give correct name to file for output
-                imageConvert.processToFile(new File(f.getAbsolutePath().replace(type, "_output.png")));
+                imageConvert.processToFile(new File(f.getAbsolutePath().replace("." + type, "_output.png")));
                 
                 
                 imageConvert = new ImageOP(config.getImageMagick());
@@ -57,7 +57,7 @@ public class FileConsumerService extends MessageListenerAdapter {
                 imageConvert.input(f);
                 imageConvert.resize(320, 320);
                 // give correct name to file for output
-                imageConvert.processToFile(new File(f.getAbsolutePath().replace(type, "_thumb.png")));
+                imageConvert.processToFile(new File(f.getAbsolutePath().replace("." + type, "_thumb.png")));
                 break;
             case "MP3":
                 break;
@@ -67,8 +67,6 @@ public class FileConsumerService extends MessageListenerAdapter {
                 break;
             case "AVI":
             case "MOV":
-                type = FilenameUtils.getExtension(f.getName());
-                
                 videoConvert = new VideoOP(config.getAvconv());
                 videoConvert.input(f)
                         .codecVideo("libx264")
@@ -78,7 +76,7 @@ public class FileConsumerService extends MessageListenerAdapter {
                         .codecAudio("libvo_aacenc")
                         .bitrateAudio("128k");
                 
-                videoConvert.processToFile(new File(f.getAbsolutePath().replace(type, "_output.mp4")));
+                videoConvert.processToFile(new File(f.getAbsolutePath().replace("." + type, "_output.mp4")));
                         
                 
                 break;

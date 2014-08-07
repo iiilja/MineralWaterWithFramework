@@ -26,7 +26,7 @@
     <div class="form-group">
         <div class="col-sm-6 col-md-3" ng-repeat="promofile in campaign_form.filesArray">
             <div class="thumbnail">
-                <a href="http://api.dev.promobox.ee/service/files/{{ promofile.id }}" data-lightbox="roadtrip"><img src="http://api.dev.promobox.ee/service/files/{{ promofile.id }}" alt="" /></a>
+                <a href="http://api.dev.promobox.ee/service/files/{{ promofile.id }}" data-lightbox="roadtrip"><img src="http://api.dev.promobox.ee/service/files/thumb/{{ promofile.id }}" alt="" /></a>
             </div>
             <div class="caption">
                 <h3>{{promofile.name}}</h3>

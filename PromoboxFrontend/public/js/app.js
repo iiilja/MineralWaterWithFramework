@@ -150,9 +150,8 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         $scope.inArchive = function (id) {
             $http.put(apiEndpoint + "token/" + token.get() + "/files/archive/" + id + "/")
                 .success(function (data) {
-                    if (data.response == 'OK') {
-                        refreshFilesModel();
-                    }
+                      refreshFilesModel();
+
                 });
         };
 
@@ -196,9 +195,7 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
                     "finish": dataToTime($scope.campaign_form.campaign_finish),
                     "duration": $scope.campaign_form.campaign_time})
                 .success(function (data) {
-                    if (data.response == 'OK') {
-                        $location.path('/main');
-                    }
+                    $location.path('/main');
                 });
         };
 
@@ -270,9 +267,8 @@ app.controller('CampaignsController', ['$scope', '$location', '$http', 'token', 
             };
 
             Campaign.all({token: token.get()}, function (response) {
-                if (response.response == 'OK') {
-                    $scope.campaigns = response.campaigns;
-                }
+                $scope.campaigns = response.campaigns;
+
             });
         }
     }]);
@@ -283,9 +279,24 @@ app.controller('DevicesController', ['$scope', '$location', '$http', 'token', 'C
 
             $scope.token = token.get();
 
-            $scope.devices = Device.get({token: token.get()}, function (response) {
+            Device.get({token: token.get()}, function (response) {
                 $scope.devices = response.devices;
                 console.log(response.devices);
             });
+
+            $scope.change_device = function(id, form) {
+                console.log(id);
+                console.log(form);
+
+//                $http.put(apiEndpoint + "token/" + token.get() + "/devices/" + id + '/',
+//                    {
+//                        campaigns: $scope.deviceForm.campaigns,
+//                        orientation: '@orientation',
+//                        resolution: '@resolution'
+//                    })
+//                    .success(function (data) {
+//                        console.log(response);
+//                    });
+            }
         }
     }]);

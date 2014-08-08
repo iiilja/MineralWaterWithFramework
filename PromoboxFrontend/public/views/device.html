@@ -10,18 +10,18 @@
                 <h3>Нормер устройства: {{device.uuid}}</h3>
             </div>
             <div class="form-group">
-                <select class="form-control" ng-model="deviceForm.campaigns" ng-change="change_device(device.id, this)">
-                    <option ng-repeat="campaing in device.campaigns" ng-selected="{{campaing.playing == true}}" value="{{campaing.id}}">{{campaing.name}}</option>
+                <select ng-model="device.campaignId" ng-options="campaign.id as campaign.name for campaign in device.campaigns">
+                    <option value="-1">Выберите Кампанию</option>
                 </select>
             </div>
             <div class="form-group">
-                <select class="form-control" ng-selected={{device.orientation}} ng-model="deviceForm.orientation" ng-change="change_device(device.id, this)">
+                <select class="form-control" ng-model="device.orientation">
                     <option value="1">Горизонтальная оритация</option>
                     <option value="2">Вертикальная оритация</option>
                 </select>
             </div>
             <div class="form-group">
-                <select class="form-control" ng-selected="{{device.resolution}}" ng-model="deviceForm.resolution" ng-change="change_device(device.id, this)">
+                <select class="form-control" ng-model="device.resolution">
                     <option value="1">1920x1080</option>
                     <option value="2">1366x768</option>
                     <option value="3">1280x1024</option>

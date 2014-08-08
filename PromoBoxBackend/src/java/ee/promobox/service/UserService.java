@@ -64,4 +64,6 @@ public interface UserService {
     public void updateFile(Files file);
 
     public Devices findDeviceByIdAndClientId(int id, int clientId);
+    
+    public void addDeviceAdCampaign(DevicesCampaigns dc);
 }

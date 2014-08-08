@@ -286,7 +286,12 @@ app.controller('DevicesController', ['$scope', '$location', '$http', 'token', 'C
 
             $scope.change_device = function(device) {
                 console.log(device);
-                $http.put(apiEndpoint + "token/" + token.get() + "/devices/" + device.id + "/",
+                console.log({
+                    orientation: parseInt(device.orientation),
+                    resolution: parseInt(device.resolution),
+                    campaignId: parseInt(device.campaignId)
+                });
+                $http.put(apiEndpoint + "token/" + token.get() + "/device/" + device.id,
                     {
                         orientation: parseInt(device.orientation),
                         resolution: parseInt(device.resolution),

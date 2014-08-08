@@ -132,10 +132,16 @@ public class DevicesController {
                     jsonD.put("space", d.getFreeSpace());
                     jsonD.put("orientation", d.getOrientation());
                     jsonD.put("resolution", d.getResolution());
+                    
+                    AdCampaigns ac = userService.findCampaignByDeviceId(d.getId());
+                    
+                    if (ac!=null) {
+                        jsonD.put("campaignId", ac.getId());
+                    } else {
+                        jsonD.put("campaignId", -1);
+                    }
 
                     List<AdCampaigns> adCampaignses = userService.findUserAdCompaigns(session.getClientId());
-
-                    AdCampaigns ac = userService.findCampaignByDeviceId(d.getId());
 
                     JSONArray array = new JSONArray();
 

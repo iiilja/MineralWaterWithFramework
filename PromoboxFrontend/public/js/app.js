@@ -284,19 +284,17 @@ app.controller('DevicesController', ['$scope', '$location', '$http', 'token', 'C
                 console.log(response.devices);
             });
 
-            $scope.change_device = function(id, form) {
-                console.log(id);
-                console.log(form);
-
-//                $http.put(apiEndpoint + "token/" + token.get() + "/devices/" + id + '/',
-//                    {
-//                        campaigns: $scope.deviceForm.campaigns,
-//                        orientation: '@orientation',
-//                        resolution: '@resolution'
-//                    })
-//                    .success(function (data) {
-//                        console.log(response);
-//                    });
+            $scope.change_device = function(device) {
+                console.log(device);
+                $http.put(apiEndpoint + "token/" + token.get() + "/devices/" + device.id + "/",
+                    {
+                        orientation: parseInt(device.orientation),
+                        resolution: parseInt(device.resolution),
+                        campaignId: parseInt(device.campaignId)
+                    })
+                    .success(function (data) {
+                        console.log(data);
+                    });
             }
         }
     }]);

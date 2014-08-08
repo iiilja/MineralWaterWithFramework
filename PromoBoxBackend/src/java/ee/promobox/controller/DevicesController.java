@@ -132,10 +132,16 @@ public class DevicesController {
                     jsonD.put("space", d.getFreeSpace());
                     jsonD.put("orientation", d.getOrientation());
                     jsonD.put("resolution", d.getResolution());
+                    
+                    AdCampaigns ac = userService.findCampaignByDeviceId(d.getId());
+                    
+                    if (ac!=null) {
+                        jsonD.put("campaignId", ac.getId());
+                    } else {
+                        jsonD.put("campaignId", -1);
+                    }
 
                     List<AdCampaigns> adCampaignses = userService.findUserAdCompaigns(session.getClientId());
-
-                    AdCampaigns ac = userService.findCampaignByDeviceId(d.getId());
 
                     JSONArray array = new JSONArray();
 
@@ -197,14 +203,27 @@ public class DevicesController {
                 device.setResolution(deviceUpdate.getInt("resolution"));
 
                 DevicesCampaigns devicesCampaigns = userService.findDeviceCampaignByDeviceId(device.getId());
+                
+                if (devicesCampaigns == null) {
+                    
+                    devicesCampaigns = new DevicesCampaigns();
+                    
+                    devicesCampaigns.setDeviceId(device.getId());
+                    devicesCampaigns.setAdCampaignsId(deviceUpdate.getInt("campaignId"));
+                    devicesCampaigns.setUpdatedDt(new Date());
 
-                devicesCampaigns.setAdCampaignsId(deviceUpdate.getInt("campaignId"));
-                devicesCampaigns.setUpdatedDt(new Date());
+                    userService.addDeviceAdCampaign(devicesCampaigns);
+                } else {
+                    devicesCampaigns.setAdCampaignsId(deviceUpdate.getInt("campaignId"));
+                    devicesCampaigns.setUpdatedDt(new Date());
+                    
+                    userService.updateDeviceAdCampaign(devicesCampaigns);
+                }
 
-                userService.updateDeviceAdCampaign(devicesCampaigns);
                 userService.updateDevice(device);
 
                 response.setStatus(HttpServletResponse.SC_OK);
+                
                 RequestUtils.printResult(resp.toString(), response);
 
             } else {

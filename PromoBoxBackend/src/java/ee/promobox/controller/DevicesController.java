@@ -68,6 +68,11 @@ public class DevicesController {
                     campaign.put("campaignId", ad.getId());
                     campaign.put("campaignName", ad.getName());
                     campaign.put("campaignStatus", ad.getStatus());
+                    campaign.put("lastUpdate", dc.getUpdatedDt().getTime());
+                    campaign.put("clientId", ad.getClientId());
+                    campaign.put("startDate", ad.getStart().getTime());
+                    campaign.put("endDate", ad.getFinish().getTime());
+                    campaign.put("sequence", ad.getSequence());
 
                     List<Files> campaignFiles = userService.findUsersCampaignFiles(dc.getAdCampaignsId(), d.getClientId());
 
@@ -79,6 +84,7 @@ public class DevicesController {
 
                             jsonCampaignFile.put("id", file.getId());
                             jsonCampaignFile.put("type", file.getFileType().intValue());
+                            jsonCampaignFile.put("size", file.getSize());
 
                             jsonCampaignFiles.put(jsonCampaignFile);
                         }

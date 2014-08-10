@@ -85,7 +85,7 @@ public class MainActivity extends Activity {
                 }
 
                 if (cFile.getType() == fileType) {
-                    File f = new File(campaign.getRoot(), cFile.getName());
+                    File f = new File(campaign.getRoot(), cFile.getId() + "");
                     if (f.exists()) {
                         filePack.add(f.getAbsolutePath());
                         fileType = cFile.getType();

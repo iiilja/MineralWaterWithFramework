@@ -19,6 +19,7 @@ import android.view.View;
 import com.pheelicks.visualizer.VisualizerView;
 import com.pheelicks.visualizer.renderer.CircleBarRenderer;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
 import java.io.FileInputStream;
@@ -134,8 +135,15 @@ public class AudioActivity extends Activity {
 
         } catch (Exception ex) {
             Log.e("AudioActivity", ex.getMessage(), ex);
-            position++;
-            playAudio();
+            IOUtils.closeQuietly(inputStream);
+
+            Intent returnIntent = new Intent();
+
+            returnIntent.putExtra("result", MainActivity.RESULT_FINISH_PLAY);
+
+            AudioActivity.this.setResult(RESULT_OK, returnIntent);
+
+            AudioActivity.this.finish();
         }
 
     }

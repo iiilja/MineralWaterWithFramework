@@ -14,6 +14,8 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 
+import org.apache.commons.io.IOUtils;
+
 import java.io.FileInputStream;
 
 //http://cadabracorp.com/blog/2013/04/24/playing-a-full-screen-video-the-easy-way/
@@ -76,6 +78,7 @@ public class VideoActivity extends Activity implements MediaPlayer.OnCompletionL
 
         } catch (Exception ex) {
             Log.e("VideoActivity", ex.getMessage(), ex);
+            IOUtils.closeQuietly(streamMediaPlayer);
         }
     }
 
@@ -107,18 +110,14 @@ public class VideoActivity extends Activity implements MediaPlayer.OnCompletionL
             mediaPlayer.setOnCompletionListener(null);
             mediaPlayer.release();
 
-            try {
-                streamMediaPlayer.close();
-            } catch (Exception ex) {
-                Log.e("VideoActivity", ex.getMessage(), ex);
-            }
+            IOUtils.closeQuietly(streamMediaPlayer);
 
             playVideo();
         } else {
 
             Intent returnIntent = new Intent();
 
-            returnIntent.putExtra("result", 1);
+            returnIntent.putExtra("result", MainActivity.RESULT_FINISH_PLAY);
 
             setResult(RESULT_OK, returnIntent);
 
@@ -137,14 +136,7 @@ public class VideoActivity extends Activity implements MediaPlayer.OnCompletionL
             mediaPlayer = null;
         }
 
-        try {
-            if (streamMediaPlayer != null) {
-                streamMediaPlayer.close();
-            }
-
-        } catch (Exception ex) {
-            Log.e("VideoActivity", ex.getMessage(), ex);
-        }
+        IOUtils.closeQuietly(streamMediaPlayer);
 
         bManager.unregisterReceiver(bReceiver);
 

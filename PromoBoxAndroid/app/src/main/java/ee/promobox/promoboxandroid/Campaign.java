@@ -20,6 +20,7 @@ public class Campaign {
     private int campaignId;
     private int updateId;
     private String campaignName;
+    private long updateDate;
 
     private Date startDate;
     private Date endDate;
@@ -36,8 +37,8 @@ public class Campaign {
 
             setClientId(json.getInt("clientId"));
             setCampaignId(json.getInt("campaignId"));
-            setUpdateId(json.getInt("lastUpdate"));
             setCampaignName(json.getString("campaignName"));
+            setUpdateDate(json.getLong("updateDate"));
 
             JSONArray ar  = json.getJSONArray("files");
 
@@ -126,5 +127,13 @@ public class Campaign {
 
     public void setDelay(int delay) {
         this.delay = delay;
+    }
+
+    public long getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(long updateDate) {
+        this.updateDate = updateDate;
     }
 }

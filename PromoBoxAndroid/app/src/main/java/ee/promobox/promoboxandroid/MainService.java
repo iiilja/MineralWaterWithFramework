@@ -113,13 +113,13 @@ public class MainService extends Service {
             File data = new File(root, "data.json");
 
             if (data.exists()) {
-                campaign = new Campaign(new JSONObject(FileUtils.readFileToString(data)));
+                campaign = new Campaign(new JSONObject(FileUtils.readFileToString(data)).getJSONObject("campaign"));
             }
         } catch (Exception ex) {
             Log.e("MainService", ex.getMessage(), ex);
         }
 
-        if (dTask.getStatus() != AsyncTask.Status.RUNNING || uuid != null) {
+        if (dTask.getStatus() != AsyncTask.Status.RUNNING && uuid != null) {
             dTask = new DownloadFilesTask();
             dTask.execute(String.format(DEFAULT_SERVER_JSON, uuid));
         }
@@ -174,7 +174,7 @@ public class MainService extends Service {
 
                 Campaign newCamp = loadCampaign(urls[0]);
 
-                if (oldCamp == null || (newCamp.getUpdateId() > oldCamp.getUpdateId())) {
+                if (oldCamp == null || (newCamp.getUpdateDate() > oldCamp.getUpdateDate())) {
                     campaign = newCamp;
 
                     downloadFiles();
@@ -203,7 +203,7 @@ public class MainService extends Service {
                 File dir = new File(root.getAbsolutePath() + String.format("/%s/", campaign.getCampaignId()));
                 dir.mkdirs();
 
-                File file = new File(dir, f.getName());
+                File file = new File(dir, f.getId() + "");
 
                 if (!file.exists() || file.length() != f.getSize()) {
 
@@ -265,6 +265,8 @@ public class MainService extends Service {
             long bytesAvailable = (long)stat.getBlockSize() *(long)stat.getBlockCount();
 
             json.put("freeSpace", bytesAvailable);
+            json.put("force" , 1);
+
 
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
             nameValuePairs.add(new BasicNameValuePair("json", json.toString()));
@@ -291,7 +293,7 @@ public class MainService extends Service {
                     IOUtils.closeQuietly(f);
                     IOUtils.closeQuietly(in);
 
-                    return new Campaign(new JSONObject(FileUtils.readFileToString(file)));
+                    return new Campaign(new JSONObject(FileUtils.readFileToString(file)).getJSONObject("campaign"));
                 }
 
             }

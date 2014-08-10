@@ -100,30 +100,37 @@ public class ImageActivity extends Activity {
     private void playImage(String path) {
         File file = new File(path);
 
-        slide.setImageBitmap(decodeBitmap(file));
+        Log.d("ImageActivity", "Play file: " + path);
 
-        position++;
+        try {
 
-        final long delay = 3000; // delay for 1 sec.
+            slide.setImageBitmap(decodeBitmap(file));
 
-        final Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                if (position == paths.length) {
+            position++;
 
-                    Intent returnIntent = new Intent();
-                    returnIntent.putExtra("result", 1);
-                    setResult(RESULT_OK, returnIntent);
+            final long delay = 3000; // delay for 1 sec.
 
-                    ImageActivity.this.finish();
-                } else {
-                    playImage(paths[position]);
+            final Runnable r = new Runnable() {
+                @Override
+                public void run() {
+                    if (position == paths.length) {
+
+                        Intent returnIntent = new Intent();
+                        returnIntent.putExtra("result", MainActivity.RESULT_FINISH_PLAY);
+                        setResult(RESULT_OK, returnIntent);
+
+                        ImageActivity.this.finish();
+                    } else {
+                        playImage(paths[position]);
+                    }
                 }
-            }
-        };
+            };
 
-        slide.postDelayed(r, delay);
+            slide.postDelayed(r, delay);
 
+        } catch (Exception ex) {
+            Log.e("ImageActivity", ex.getMessage(), ex);
+        }
 
     }
 

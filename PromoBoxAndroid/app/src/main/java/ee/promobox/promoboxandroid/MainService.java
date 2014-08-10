@@ -75,7 +75,7 @@ public class MainService extends Service {
 
         checkAndDownloadCampaign();
 
-        if (!isActive()) {
+        if (!isActive() && false) {
             Intent mainActivity = new Intent(getBaseContext(), MainActivity.class);
 
             mainActivity.setAction(Intent.ACTION_MAIN);

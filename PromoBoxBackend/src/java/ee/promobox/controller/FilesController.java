@@ -181,6 +181,10 @@ public class FilesController {
                         campaignFile.setStatus(CampaignsFiles.STATUS_ACTIVE);
                         userService.addCampaignFile(campaignFile);
 
+
+                        campaign.setUpdateDate(new Date());
+                        userService.updateCampaign(campaign);
+
                         // move file to the users folder and rename it to its DB id
                         
                         File f = new File(userFilePath + databaseFile.getId());
@@ -227,6 +231,11 @@ public class FilesController {
                 campaignsFile.setStatus(CampaignsFiles.STATUS_ARCHIVED);
 
                 userService.updateCampaignFile(campaignsFile);
+
+                AdCampaigns campaign = userService.findCampaignByCampaignId(campaignsFile.getAdCampaignsId());
+                campaign.setUpdateDate(new Date());
+
+                userService.updateCampaign(campaign);
 
                 response.setStatus(HttpServletResponse.SC_OK);
                 RequestUtils.printResult(resp.toString(), response);

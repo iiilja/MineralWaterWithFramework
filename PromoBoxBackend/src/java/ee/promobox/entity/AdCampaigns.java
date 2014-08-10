@@ -65,6 +65,9 @@ public class AdCampaigns implements Serializable {
     private Date finish;
     @Column(name = "duration")
     private int duration;
+    @Column(name = "update_dt")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date updateDate;
 
     public AdCampaigns() {
     }
@@ -162,4 +165,11 @@ public class AdCampaigns implements Serializable {
         return "ee.promobox.entity.AdCampaigns[ id=" + id + " ]";
     }
 
+    public Date getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(Date updateDate) {
+        this.updateDate = updateDate;
+    }
 }

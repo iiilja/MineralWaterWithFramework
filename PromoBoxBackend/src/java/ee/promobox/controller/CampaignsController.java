@@ -148,6 +148,7 @@ public class CampaignsController {
             campaign.setStart(new Date());
             campaign.setFinish(new Date());
             campaign.setDuration(1);
+            campaign.setUpdateDate(new Date());
 
             userService.addCampaign(campaign);
 
@@ -221,6 +222,8 @@ public class CampaignsController {
                 campaign.setStart(new Date(objectGiven.getLong("start")));
                 campaign.setFinish(new Date(objectGiven.getLong("finish")));
                 campaign.setDuration(objectGiven.getInt("duration"));
+                campaign.setUpdateDate(new Date());
+
                 userService.updateCampaign(campaign);
 
                 response.setStatus(HttpServletResponse.SC_OK);

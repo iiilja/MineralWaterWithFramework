@@ -68,11 +68,11 @@ public class DevicesController {
                     campaign.put("campaignId", ad.getId());
                     campaign.put("campaignName", ad.getName());
                     campaign.put("campaignStatus", ad.getStatus());
-                    campaign.put("lastUpdate", dc.getUpdatedDt().getTime());
                     campaign.put("clientId", ad.getClientId());
                     campaign.put("startDate", ad.getStart().getTime());
                     campaign.put("endDate", ad.getFinish().getTime());
                     campaign.put("sequence", ad.getSequence());
+                    campaign.put("updateDate", ad.getUpdateDate().getTime());
 
                     List<Files> campaignFiles = userService.findUsersCampaignFiles(dc.getAdCampaignsId(), d.getClientId());
 

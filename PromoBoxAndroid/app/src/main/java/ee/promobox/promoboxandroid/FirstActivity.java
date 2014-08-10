@@ -27,7 +27,9 @@ public class FirstActivity extends Activity {
                 Intent returnIntent = new Intent();
 
                 returnIntent.putExtra("result", MainActivity.RESULT_FINISH_FIRST_START);
-                returnIntent.putExtra("id", Integer.parseInt(et.getText().toString()));
+
+                //Nado proverjat
+                returnIntent.putExtra("deviceUuid", et.getText().toString());
 
                 setResult(RESULT_OK, returnIntent);
 

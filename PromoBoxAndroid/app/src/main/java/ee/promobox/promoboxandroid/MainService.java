@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.Environment;
 import android.os.IBinder;
+import android.os.StatFs;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
@@ -16,9 +17,13 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -26,6 +31,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -34,9 +40,9 @@ public class MainService extends Service {
     private final static int TEST_CLIENT_ID = 1;
     private final String DEFAULT_SERVER = "http://api.dev.promobox.ee/";
     private final String DEFAULT_CDN = "http://dev.promobox.ee/";
-    private final String DEFAULT_SERVER_JSON = DEFAULT_CDN + "%s/data.json";
+    private final String DEFAULT_SERVER_JSON = DEFAULT_SERVER + "/service/device/%s/pull";
     private JSONObject settings;
-    private int deviceId;
+    private String uuid;
 
     File root = new File(Environment.getExternalStorageDirectory().getAbsoluteFile() + "/promobox/");
 
@@ -53,8 +59,8 @@ public class MainService extends Service {
                 settings = loadSettings();
 
                 if (settings != null) {
-                    deviceId = settings.getInt("deviceId");
-                    Log.i(this.getClass().getName(), "Device id: " + deviceId);
+                    uuid = settings.getString("deviceUuid");
+                    Log.i(this.getClass().getName(), "Device id: " + uuid);
                 }
             } catch (Exception ex) {
                 Log.e(this.getClass().getName(), ex.getMessage(), ex);
@@ -68,6 +74,18 @@ public class MainService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         checkAndDownloadCampaign();
+
+        if (!isActive()) {
+            Intent mainActivity = new Intent(getBaseContext(), MainActivity.class);
+
+            mainActivity.setAction(Intent.ACTION_MAIN);
+            mainActivity.addCategory(Intent.CATEGORY_LAUNCHER);
+            mainActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY);
+
+            getApplication().startActivity(mainActivity);
+
+            Log.i("MainService","Start main activity");
+        }
 
         return Service.START_NOT_STICKY;
     }
@@ -101,21 +119,21 @@ public class MainService extends Service {
             Log.e("MainService", ex.getMessage(), ex);
         }
 
-        if (dTask.getStatus() != AsyncTask.Status.RUNNING) {
+        if (dTask.getStatus() != AsyncTask.Status.RUNNING || uuid != null) {
             dTask = new DownloadFilesTask();
-            dTask.execute(String.format(DEFAULT_SERVER_JSON, TEST_CLIENT_ID));
+            dTask.execute(String.format(DEFAULT_SERVER_JSON, uuid));
         }
 
     }
 
-    public boolean isForeground(String myPackage){
+    public boolean isActive(){
         ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
 
         List< ActivityManager.RunningTaskInfo > runningTaskInfo = manager.getRunningTasks(1);
 
         ComponentName componentInfo = runningTaskInfo.get(0).topActivity;
 
-        if(componentInfo.getPackageName().startsWith(myPackage)) {
+        if(componentInfo.getPackageName().startsWith("ee.promobox.promoboxandroid")) {
             return true;
         }
 
@@ -153,6 +171,7 @@ public class MainService extends Service {
 
             try {
                 Campaign oldCamp = campaign;
+
                 Campaign newCamp = loadCampaign(urls[0]);
 
                 if (oldCamp == null || (newCamp.getUpdateId() > oldCamp.getUpdateId())) {
@@ -188,7 +207,7 @@ public class MainService extends Service {
 
                 if (!file.exists() || file.length() != f.getSize()) {
 
-                    downloadFile(String.format(DEFAULT_CDN + "%s/%s/%s", campaign.getClientId(), campaign.getCampaignId(),f.getName()), f.getName());
+                    downloadFile(String.format(DEFAULT_SERVER + "/service/files/%s",  f.getId()), f.getId() + "");
 
                 }
             }
@@ -235,27 +254,49 @@ public class MainService extends Service {
         }
 
         private Campaign loadCampaign(String url) throws Exception {
-            URL u = new URL(url);
 
-            HttpURLConnection c = (HttpURLConnection) u.openConnection();
+            HttpClient httpclient = new DefaultHttpClient();
 
-            if (c.getResponseCode() != 200)
-                throw new Exception("Failed to connect");
+            HttpPost httppost = new HttpPost(url);
 
-            root.mkdirs();
+            JSONObject json = new JSONObject();
 
-            File file = new File(root, FilenameUtils.getName(u.getFile()));
+            StatFs stat = new StatFs(Environment.getExternalStorageDirectory().getPath());
+            long bytesAvailable = (long)stat.getBlockSize() *(long)stat.getBlockCount();
 
-            FileOutputStream f = new FileOutputStream(file);
+            json.put("freeSpace", bytesAvailable);
 
-            InputStream in = c.getInputStream();
+            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+            nameValuePairs.add(new BasicNameValuePair("json", json.toString()));
+            httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 
-            IOUtils.copy(in, f);
+            Log.i("MainService", httppost.toString());
 
-            IOUtils.closeQuietly(f);
-            IOUtils.closeQuietly(in);
+            HttpResponse response = httpclient.execute(httppost);
 
-            return new Campaign(new JSONObject(FileUtils.readFileToString(file)));
+            if (response.getStatusLine().getStatusCode() == 200) {
+                HttpEntity entity = response.getEntity();
+
+                if (entity != null) {
+                    root.mkdirs();
+
+                    File file = new File(root, "data.json");
+
+                    FileOutputStream f = new FileOutputStream(file);
+
+                    InputStream in = entity.getContent();
+
+                    IOUtils.copy(in, f);
+
+                    IOUtils.closeQuietly(f);
+                    IOUtils.closeQuietly(in);
+
+                    return new Campaign(new JSONObject(FileUtils.readFileToString(file)));
+                }
+
+            }
+
+            return null;
         }
 
 

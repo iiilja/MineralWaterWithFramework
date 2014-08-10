@@ -11,7 +11,7 @@
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:inputType="number"
+        android:inputType="text"
         android:ems="10"
         android:id="@+id/first_start_device_id"
         android:layout_marginTop="38dp"
@@ -24,16 +24,16 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Device ID:"
         android:id="@+id/textView"
+        android:layout_marginTop="58dp"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="98dp" />
+        android:layout_centerHorizontal="true" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Start"
         android:id="@+id/first_start_button"
-        android:layout_centerVertical="true"
-        android:layout_alignRight="@+id/textView"
-        android:layout_alignLeft="@+id/textView" />
+        android:layout_marginTop="46dp"
+        android:layout_below="@+id/first_start_device_id"
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>

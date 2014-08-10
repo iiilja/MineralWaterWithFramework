@@ -141,7 +141,7 @@ public class MainActivity extends Activity {
         } else if (requestCode == RESULT_FINISH_FIRST_START) {
             try {
                 JSONObject settings = new JSONObject();
-                settings.put("deviceId", data.getIntExtra("id", 0));
+                settings.put("deviceUuid", data.getStringExtra("deviceUuid"));
 
                 mainService.setSettings(settings);
                 mainService.saveSettings(settings);

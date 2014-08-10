@@ -33,9 +33,10 @@ public class Campaign {
 
     public Campaign(JSONObject json) {
         try {
+
             setClientId(json.getInt("clientId"));
             setCampaignId(json.getInt("campaignId"));
-            setUpdateId(json.getInt("updateId"));
+            setUpdateId(json.getInt("lastUpdate"));
             setCampaignName(json.getString("campaignName"));
 
             JSONArray ar  = json.getJSONArray("files");
@@ -45,7 +46,7 @@ public class Campaign {
 
                 CampaignFile f = new CampaignFile();
 
-                f.setName(obj.getString("path"));
+                f.setId(obj.getInt("id"));
                 f.setType(CampaignFileType.valueOf(obj.getInt("type")));
                 f.setSize(obj.getInt("size"));
 

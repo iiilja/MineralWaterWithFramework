@@ -4,6 +4,7 @@ package ee.promobox.promoboxandroid;
  * Created by MaximDorofeev on 12.07.2014.
  */
 public class CampaignFile {
+    private int id;
     private String name;
     private CampaignFileType type;
     private int size;
@@ -30,5 +31,13 @@ public class CampaignFile {
 
     public void setSize(int size) {
         this.size = size;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

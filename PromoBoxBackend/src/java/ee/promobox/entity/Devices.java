@@ -43,6 +43,13 @@ public class Devices implements Serializable {
     public static final int RESOLUTION_1280X1024 = 3;
     public static final int RESOLUTION_1280X800 = 4;
     public static final int RESOLUTION_1024X768 = 5;
+    
+    
+    public static final int STATUS_CREATED = 0;
+    public static final int STATUS_PREPARED = 1;
+    public static final int STATUS_PUBLISHED = 2;
+    public static final int STATUS_UNPUBLISHED = 3;
+    public static final int STATUS_AHRCHIVED = 4;
 
 
     private static final long serialVersionUID = 1L;

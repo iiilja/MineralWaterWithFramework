@@ -182,6 +182,36 @@ public class DevicesController {
         }
 
     }
+    
+    @RequestMapping(value = "token/{token}/device/{id}", method = RequestMethod.DELETE)
+    public void deleteDevice(
+            @PathVariable("token") String token,
+            @PathVariable("id") int id,
+            HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+
+        JSONObject resp = new JSONObject();
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+        Session session = sessionService.findSession(token);
+
+        if (session != null) {
+
+            Devices device = userService.findDeviceByIdAndClientId(id, session.getClientId());
+            
+            device.setStatus(Devices.STATUS_AHRCHIVED);
+
+            userService.updateDevice(device);
+
+            response.setStatus(HttpServletResponse.SC_OK);
+            
+            RequestUtils.printResult(resp.toString(), response);
+
+        } else {
+            RequestUtils.sendUnauthorized(response);
+        }
+
+    }
 
     @RequestMapping(value = "token/{token}/device/{id}", method = RequestMethod.PUT)
     public void updateDevice(

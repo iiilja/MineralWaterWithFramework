@@ -94,13 +94,12 @@ app.config(function ($translateProvider) {
 
 });
 
-
-
-app.controller('Exit', ['$scope', '$location', '$http', 'token',
-    function ($scope, $location, $http, token) {
+app.controller('Exit', ['token',
+    function (token) {
         token.remove();
     }]);
 
+//Update When Create new Design
 app.controller('LoginController', ['$scope', '$location', '$http', 'token',
     function ($scope, $location, $http, token) {
 
@@ -126,9 +125,9 @@ app.controller('LoginController', ['$scope', '$location', '$http', 'token',
         }
     }]);
 
+//Update When Create new Design
 app.controller('RegistrationController', ['$scope', '$location', '$http', 'token',
     function ($scope, $location, $http, token) {
-        console.log(!token.check());
         if (!token.check()) {
 
         } else {
@@ -137,93 +136,7 @@ app.controller('RegistrationController', ['$scope', '$location', '$http', 'token
     }]);
 
 
-app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Campaign', '$upload', '$location', '$http', 'toaster', 'Showfiles',
-    function ($scope, $stateParams, token, Campaign, $upload, $location, $http, toaster, Showfiles) {
-
-        $scope.filesArray = [];
-
-        Campaign.get({id: $stateParams.cId, token: token.get()}, function (response) {
-            $scope.campaign = response;
-            $scope.campaign_form = {campaign_status: $scope.campaign.status, filesArray: $scope.campaign.files, campaign_name: $scope.campaign.name, campaign_time: $scope.campaign.duration, campaign_order: $scope.campaign.sequence, campaign_start: $scope.campaign.start, campaign_finish: $scope.campaign.finish};
-        });
-
-        $scope.inArchive = function (id) {
-            $http.put(apiEndpoint + "token/" + token.get() + "/files/archive/" + id + "/")
-                .success(function (data) {
-                      toaster.pop('success', "Delete", "File deleted");
-                      refreshFilesModel();
-                });
-        };
-
-        $scope.onFileSelect = function ($files) {
-
-            for (var i = 0; i < $files.length; i++) {
-                var file = $files[i];
-
-                $scope.upload = $upload.upload({
-                    url: apiEndpoint + 'token/' + token.get() + '/campaigns/' + $scope.campaign.id + '/files/', //upload.php script, node.js route, or servlet url
-                    method: 'POST',
-                    file: file
-                }).progress(function (evt) {
-                    console.log('percent: ' + parseInt(100.0 * evt.loaded / evt.total));
-                }).success(function (data, status, headers, config) {
-                    refreshFilesModel();
-                });
-
-            }
-
-        };
-
-        var refreshFilesModel = function () {
-            Showfiles.get({id: $stateParams.cId, token: token.get()}, function (response) {
-                $scope.files = response;
-                $scope.campaign_form.filesArray = $scope.files.campaignfiles;
-            });
-        };
-
-        var dataToTime = function(data) {
-            return new Date(data).getTime() + 15*60*1000;
-        };
-
-        $scope.edit_company = function () {
-            $http.put(apiEndpoint + "token/" + token.get() + "/campaigns/" + $scope.campaign.id,
-                {
-                    "status": $scope.campaign_form.campaign_status,
-                    "name": $scope.campaign_form.campaign_name,
-                    "sequence": $scope.campaign_form.campaign_order,
-                    "start": dataToTime($scope.campaign_form.campaign_start),
-                    "finish": dataToTime($scope.campaign_form.campaign_finish),
-                    "duration": $scope.campaign_form.campaign_time})
-                .success(function (data) {
-                    $location.path('/main');
-                });
-        };
-
-    }]);
-
-app.controller('CampaignNewController', ['$scope', '$routeParams', 'token', '$location', '$http',
-    function ($scope, $routeParams, token, $location, $http) {
-        $http.post(apiEndpoint + "token/" + token.get() + "/campaigns/")
-            .success(function (data) {
-                    $location.path('/main/campaign/edit/' + data.id);
-            });
-    }]);
-
-app.controller('DatepickerCtrl', ['$scope',
-    function ($scope) {
-        $scope.open = function ($event) {
-            $event.preventDefault();
-            $event.stopPropagation();
-
-            $scope.opened = true;
-        };
-
-        $scope.dateOptions = {
-            formatYear: 'yy',
-            startingDay: 1
-        };
-    }]);
-
+//Update When Create new Design
 app.controller('MainController', ['$scope', '$location', '$http', 'token', 'Campaign', 'toaster', 'Device', '$state','$rootScope',
     function ($scope, $location, $http, token, Campaign, toaster, Device, $state, $rootScope) {
         if (token.check()) {
@@ -252,54 +165,99 @@ app.controller('MainController', ['$scope', '$location', '$http', 'token', 'Camp
         }
     }]);
 
-app.controller('CampaignsController', ['$scope', '$location', '$http', 'token', 'Campaign', 'toaster', 'Device',
-    function ($scope, $location, $http, token, Campaign, toaster, Device) {
+app.controller('CampaignNewController', ['token', 'Campaign', 'sysLocation',
+    function (token, Campaign, sysLocation) {
+        Campaign.create_new_campaignts({token: token.get()}, function(response){
+            sysLocation.goLink('/main/campaign/edit/' + response.id)
+        });
+    }]);
+
+app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Campaign', '$upload', '$location', '$http', 'toaster', 'Files','sysMessage', 'sysLocation',
+    function ($scope, $stateParams, token, Campaign, $upload, $location, $http, toaster, Files, sysMessage, sysLocation) {
+        $scope.filesArray = [];
+        Campaign.get_campaigns({token: token.get(), id: $stateParams.cId}, function (response) {
+            $scope.campaign = response;
+            $scope.campaign_form = {campaign_status: $scope.campaign.status, filesArray: $scope.campaign.files, campaign_name: $scope.campaign.name, campaign_time: $scope.campaign.duration, campaign_order: $scope.campaign.sequence, campaign_start: $scope.campaign.start, campaign_finish: $scope.campaign.finish};
+        });
+        $scope.inArchive = function (id) {
+            Files.arhiveFiles({token: token.get(), id: id}, function(response){
+                sysMessage.delete_s('Файл удалён')
+                refreshFilesModel();
+            });
+        };
+        $scope.onFileSelect = function ($files) {
+            for (var i = 0; i < $files.length; i++) {
+                var file = $files[i];
+                $scope.upload = $upload.upload({
+                    url: apiEndpoint + 'token/' + token.get() + '/campaigns/' + $scope.campaign.id + '/files/', //upload.php script, node.js route, or servlet url
+                    method: 'POST',
+                    file: file
+                }).progress(function (evt) {
+                    console.log('percent: ' + parseInt(100.0 * evt.loaded / evt.total));
+                }).success(function (data, status, headers, config) {
+                    refreshFilesModel();
+                });
+            }
+        };
+        var refreshFilesModel = function () {
+            Files.getFiles({id: $stateParams.cId, token: token.get()}, function (response) {
+                $scope.files = response;
+                $scope.campaign_form.filesArray = $scope.files.campaignfiles;
+            });
+        };
+        var dataToTime = function(data) {
+            return new Date(data).getTime() + 15*60*1000;
+        };
+        $scope.edit_company = function () {
+            Campaign.edit_campaigns({token: token.get(), id: $scope.campaign.id, status: $scope.campaign_form.campaign_status, name: $scope.campaign_form.campaign_name, sequence: $scope.campaign_form.campaign_order, start: dataToTime($scope.campaign_form.campaign_start), finish: dataToTime($scope.campaign_form.campaign_finish), duration: $scope.campaign_form.campaign_time}, function(response){
+                sysLocation.goList();
+            });
+        };
+
+    }]);
+
+app.controller('DatepickerCtrl', ['$scope',
+    function ($scope) {
+        $scope.open = function ($event) {
+            $event.preventDefault();
+            $event.stopPropagation();
+
+            $scope.opened = true;
+        };
+
+        $scope.dateOptions = {
+            formatYear: 'yy',
+            startingDay: 1
+        };
+    }]);
+
+app.controller('CampaignsController', ['$scope', 'token', 'Campaign', 'sysMessage',
+    function ($scope, token, Campaign, sysMessage) {
         if (token.check()) {
-
-            $scope.token = token.get();
-
+            Campaign.get_all_campaigns({token: token.get()}, function (response) {
+                $scope.campaigns = response.campaigns;
+            });
             $scope.remove = function (campaign) {
                 $scope.campaigns.splice($scope.campaigns.indexOf(campaign), 1);
-                $http.delete(apiEndpoint + "token/" + token.get() + "/campaigns/" + campaign.id)
-                    .success(function (data) {
-                        toaster.pop('success', "Delete", campaign.name +  " deleted");
-                    });
+                Campaign.delete_campaigns({token: token.get(), id: campaign.id}, function (response) {
+                    $scope.campaigns = response.campaigns;
+                    console.log(response);
+                    sysMessage.delete_s('Кампания ' + campaign.name + ' удаленна');
+                });
             };
-
-            Campaign.all({token: token.get()}, function (response) {
-                $scope.campaigns = response.campaigns;
-
-            });
         }
     }]);
 
-app.controller('DevicesController', ['$scope', '$location', '$http', 'token', 'Campaign', 'toaster', 'Device',
-    function ($scope, $location, $http, token, Campaign, toaster, Device) {
+app.controller('DevicesController', ['$scope', 'token', 'Device', 'sysMessage',
+    function ($scope, token, Device, sysMessage) {
         if (token.check()) {
-
-            $scope.token = token.get();
-
-            Device.get({token: token.get()}, function (response) {
+            Device.get_data({token: token.get()}, function (response) {
                 $scope.devices = response.devices;
-                console.log(response.devices);
             });
-
             $scope.change_device = function(device) {
-                console.log(device);
-                console.log({
-                    orientation: parseInt(device.orientation),
-                    resolution: parseInt(device.resolution),
-                    campaignId: parseInt(device.campaignId)
+                Device.update({token: token.get(), id: device.id, orientation: parseInt(device.orientation), resolution: parseInt(device.resolution), campaignId: parseInt(device.campaignId) }, function (response) {
+                    sysMessage.update_s('Устройство ' + device.uuid + ' обновленно');
                 });
-                $http.put(apiEndpoint + "token/" + token.get() + "/device/" + device.id,
-                    {
-                        orientation: parseInt(device.orientation),
-                        resolution: parseInt(device.resolution),
-                        campaignId: parseInt(device.campaignId)
-                    })
-                    .success(function (data) {
-                        console.log(data);
-                    });
             }
         }
     }]);

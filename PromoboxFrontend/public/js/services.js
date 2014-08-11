@@ -6,23 +6,40 @@ var services = angular.module('promobox.services', ['ngResource', 'ngCookies']);
 
 services.factory('Campaign', ['$resource',
     function ($resource) {
-        return $resource(apiEndpoint + 'token/:token/campaigns/:id/',
-            {"token": '@token', id: '@id'},
-            {
-                all: {method: 'GET', url: apiEndpoint + 'token/:token/campaigns/'}
-            });
-    }]);
+        return $resource('',{},{
+                create_new_campaignts: {method: 'POST', url: apiEndpoint + 'token/:token/campaigns/', params: {token: '@token'}},
+                edit_campaigns: {method: 'PUT', url: apiEndpoint + 'token/:token/campaigns/:id', params: {token: '@token', id: '@id', status: '@status', name: '@name', sequence: '@sequence', start: '@start', finish: '@finish', duration: '@duration'}},
+                get_campaigns: {method: 'GET', url: apiEndpoint + 'token/:token/campaigns/:id/', params: {token: '@token', id: '@id'}},
+                get_all_campaigns: {method: 'GET', url: apiEndpoint + 'token/:token/campaigns/', params: {token: '@token'}},
+                delete_campaigns: {method: 'DELETE', url: apiEndpoint + 'token/:token/campaigns/:id/', params: {token: '@token', id: '@id'},
+                    interceptor: {
+                        response: function(response) {
+                            console.log(response);
+                            console.debug('Tags: ', response.data.tags);
+                            response.data = response.data.tags;
+                            return response;
+                        }}}
+            });}]);
 
 services.factory('Device', ['$resource',
     function ($resource) {
-        return $resource(apiEndpoint + 'token/:token/devices/',
-            {"token": '@token'});
-    }]);
+        return $resource('',{},{
+                get_data: {method: 'GET', url: apiEndpoint + 'token/:token/devices/', params: {token: '@token'}},
+                update: {method: 'PUT', url:apiEndpoint + "token/:token/device/:id", params: {token: '@token', id: '@id', orientation: '@orientation', resolution: '@resolution', campaignId: '@campaignId'}}
+            });}]);
 
-services.factory('Showfiles', ['$resource',
+services.factory('Files', ['$resource',
     function ($resource) {
-        return $resource(apiEndpoint + 'token/:token/campaigns/:id/files/',
-            {"token": '@token', id: '@id'});
+        return $resource('',{},{
+            getFiles: {method: 'GET', url: apiEndpoint + 'token/:token/campaigns/:id/files/', params: {token: '@token', id: '@id'},
+                interceptor: {
+                    response: function(response) {
+                        console.debug('Tags: ', response.data.tags);
+                        response.data = response.data.tags;
+                        return response;
+                    }}},
+            arhiveFiles: {method: 'PUT', url: apiEndpoint + 'token/:token/files/archive/:id/', params: {token: '@token', id: '@id'}}
+        });
     }]);
 
 
@@ -54,6 +71,34 @@ services.factory("token", ['$cookies', '$location', function ($cookies, $locatio
             token = undefined;
             delete $cookies["token"];
             $location.path('/');
+        }
+    }
+}]);
+
+services.factory("sysMessage", ['toaster', function (toaster) {
+    return {
+        add_s: function (message) {
+            toaster.pop('success', "Добовление", message);
+        },
+        update_s: function (message) {
+            toaster.pop('success', "Обновление", message);
+        },
+        delete_s: function (message) {
+            toaster.pop('success', "Удаление", message);
+        }
+    }
+}]);
+
+services.factory("sysLocation", ['$location', function ($location) {
+    return {
+        goHome: function () {
+            $location.path('/');
+        },
+        goList: function () {
+            $location.path('/main/list/');
+        },
+        goLink: function (link) {
+            $location.path(link);
         }
     }
 }]);

@@ -201,8 +201,10 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         };
         var refreshFilesModel = function () {
             Files.getFiles({id: $stateParams.cId, token: token.get()}, function (response) {
-                $scope.files = response;
-                $scope.campaign_form.filesArray = $scope.files.campaignfiles;
+                Campaign.get_campaigns({token: token.get(), id: $stateParams.cId}, function (response) {
+                    $scope.files = response;
+                    $scope.campaign_form.filesArray = $scope.files.files;
+                });
             });
         };
         var dataToTime = function(data) {
@@ -240,9 +242,10 @@ app.controller('CampaignsController', ['$scope', 'token', 'Campaign', 'sysMessag
             $scope.remove = function (campaign) {
                 $scope.campaigns.splice($scope.campaigns.indexOf(campaign), 1);
                 Campaign.delete_campaigns({token: token.get(), id: campaign.id}, function (response) {
-                    $scope.campaigns = response.campaigns;
-                    console.log(response);
-                    sysMessage.delete_s('Кампания ' + campaign.name + ' удаленна');
+                    Campaign.get_all_campaigns({token: token.get()}, function (response) {
+                        $scope.campaigns = response.campaigns;
+                        sysMessage.delete_s('Кампания ' + campaign.name + ' удаленна');
+                    });
                 });
             };
         }

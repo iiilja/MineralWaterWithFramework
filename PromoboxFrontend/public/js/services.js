@@ -8,7 +8,7 @@ services.factory('Campaign', ['$resource',
     function ($resource) {
         return $resource('',{},{
                 create_new_campaignts: {method: 'POST', url: apiEndpoint + 'token/:token/campaigns/', params: {token: '@token'}},
-                edit_campaigns: {method: 'PUT', url: apiEndpoint + 'token/:token/campaigns/:id', params: {token: '@token', id: '@id', status: '@status', name: '@name', sequence: '@sequence', start: '@start', finish: '@finish', duration: '@duration'}},
+                edit_campaigns: {method: 'PUT', url: apiEndpoint + 'token/:token/campaigns/:id', params: {token: '@token', id: '@id'}},
                 get_campaigns: {method: 'GET', url: apiEndpoint + 'token/:token/campaigns/:id/', params: {token: '@token', id: '@id'}},
                 get_all_campaigns: {method: 'GET', url: apiEndpoint + 'token/:token/campaigns/', params: {token: '@token'}},
                 delete_campaigns: {method: 'DELETE', url: apiEndpoint + 'token/:token/campaigns/:id/', params: {token: '@token', id: '@id'},
@@ -25,7 +25,7 @@ services.factory('Device', ['$resource',
     function ($resource) {
         return $resource('',{},{
                 get_data: {method: 'GET', url: apiEndpoint + 'token/:token/devices/', params: {token: '@token'}},
-                update: {method: 'PUT', url:apiEndpoint + "token/:token/device/:id", params: {token: '@token', id: '@id', orientation: '@orientation', resolution: '@resolution', campaignId: '@campaignId'}}
+                update: {method: 'PUT', url:apiEndpoint + "token/:token/device/:id", params: {token: '@token', id: '@id'}}
             });}]);
 
 services.factory('Files', ['$resource',

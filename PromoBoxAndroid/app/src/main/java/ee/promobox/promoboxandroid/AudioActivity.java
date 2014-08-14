@@ -19,7 +19,6 @@ import android.view.View;
 import com.pheelicks.visualizer.VisualizerView;
 import com.pheelicks.visualizer.renderer.CircleBarRenderer;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
 import java.io.FileInputStream;
@@ -104,10 +103,10 @@ public class AudioActivity extends Activity {
             mPlayer.setDataSource(inputStream.getFD());
             mPlayer.prepare();
 
-            mVisualizerView = (VisualizerView) findViewById(R.id.visualizerView);
-            mVisualizerView.link(mPlayer);
-
-            addCircleBarRenderer();
+//            mVisualizerView = (VisualizerView) findViewById(R.id.visualizerView);
+//            mVisualizerView.link(mPlayer);
+//
+//            addCircleBarRenderer();
 
             mPlayer.start();
 
@@ -153,7 +152,8 @@ public class AudioActivity extends Activity {
 
     private void cleanUp() {
         if (mPlayer != null) {
-            mVisualizerView.release();
+            mPlayer.setOnCompletionListener(null);
+//            mVisualizerView.release();
             mPlayer.stop();
             mPlayer.release();
             mPlayer = null;

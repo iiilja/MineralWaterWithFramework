@@ -18,31 +18,26 @@ app.config(['$routeProvider','$stateProvider','$urlRouterProvider', function ($r
                 "contentView": { controller: 'RegistrationController',templateUrl: '/views/register.html' }
             }
         })
-        .state('main', {
-            url: "/main",
+        .state('list', {
+            url: "/list",
             views: {
-                "contentView": { controller: 'MainController',templateUrl: '/views/main.html' }
+                "topView": { controller: 'TopMenuController',templateUrl: '/views/top_menu.html' },
+                "contentView": { controller: 'CampaignsController',templateUrl: '/views/list.html' }
             }
         })
-        .state('main.campaign_edit', {
+        .state('campaign_edit', {
             url: "/campaign/edit/:cId",
             views: {
                 "contentView": { controller: "CampaignEditController", templateUrl: '/views/campaign_edit.html' }
             }
         })
-        .state('main.list', {
-            url: "/list",
-            views: {
-                "contentView": { controller: 'CampaignsController',templateUrl: '/views/list.html' }
-            }
-        })
-        .state('main.device', {
+        .state('device', {
             url: "/device",
             views: {
                 "contentView": { controller: 'DevicesController',templateUrl: '/views/device.html' }
             }
         })
-        .state('main.campaign_new', {
+        .state('campaign_new', {
             url: "/campaign/new",
             views: {
                 "contentView": { controller: 'CampaignNewController', template: '' }
@@ -99,6 +94,13 @@ app.controller('Exit', ['token',
         token.remove();
     }]);
 
+app.controller('TopMenuController', ['$scope', '$location', '$http', 'token', '$rootScope',
+    function ($scope, $location, $http, token, $rootScope) {
+        $rootScope.bodyClass = 'content_bg';
+        $rootScope.top_link_active_list = '';
+        $rootScope.top_link_active_device = '';
+    }]);
+
 //Update When Create new Design
 app.controller('LoginController', ['$scope', '$location', '$http', 'token', '$rootScope',
     function ($scope, $location, $http, token, $rootScope) {
@@ -115,12 +117,12 @@ app.controller('LoginController', ['$scope', '$location', '$http', 'token', '$ro
                     .success(function (data) {
                         if (data.response == 'OK') {
                             token.put(data.token);
-                            $location.path('/main');
+                            $location.path('/list');
                         }
                     });
             };
         } else {
-            $location.path('/main');
+            $location.path('/list');
         }
     }]);
 
@@ -128,39 +130,6 @@ app.controller('LoginController', ['$scope', '$location', '$http', 'token', '$ro
 app.controller('RegistrationController', ['$scope', '$http', 'token', 'sysLocation', '$rootScope',
     function ($scope, $http, token, sysLocation, $rootScope) {
         $rootScope.bodyClass = 'main_bg';
-        $scope.go = function ( path ) {
-            sysLocation.goLink(path)
-        };
-    }]);
-
-
-//Update When Create new Design
-app.controller('MainController', ['$scope', '$location', '$http', 'token', 'Campaign', 'toaster', 'Device', '$state','$rootScope',
-    function ($scope, $location, $http, token, Campaign, toaster, Device, $state, $rootScope) {
-        if (token.check()) {
-            $scope.token = token.get();
-
-            $scope.go = function(route){
-                $state.go(route);
-            };
-
-            $scope.active = function(route){
-                return $state.is(route);
-            };
-
-            $scope.tabs = [
-                { heading: "Кампании", route:"main.list", active:false },
-                { heading: "Устройства", route:"main.device", active:false }
-            ];
-
-            $scope.$on("$stateChangeSuccess", function() {
-                $scope.tabs.forEach(function(tab) {
-                    tab.active = $scope.active(tab.route);
-                });
-            });
-
-
-        }
     }]);
 
 app.controller('CampaignNewController', ['token', 'Campaign', 'sysLocation',
@@ -231,9 +200,10 @@ app.controller('DatepickerCtrl', ['$scope',
         };
     }]);
 
-app.controller('CampaignsController', ['$scope', 'token', 'Campaign', 'sysMessage',
-    function ($scope, token, Campaign, sysMessage) {
+app.controller('CampaignsController', ['$scope', 'token', 'Campaign', 'sysMessage', '$rootScope',
+    function ($scope, token, Campaign, sysMessage, $rootScope) {
         if (token.check()) {
+            $rootScope.top_link_active_list = 'top_link_active';
             Campaign.get_all_campaigns({token: token.get()}, function (response) {
                 $scope.campaigns = response.campaigns;
             });
@@ -249,9 +219,10 @@ app.controller('CampaignsController', ['$scope', 'token', 'Campaign', 'sysMessag
         }
     }]);
 
-app.controller('DevicesController', ['$scope', 'token', 'Device', 'sysMessage',
-    function ($scope, token, Device, sysMessage) {
+app.controller('DevicesController', ['$scope', 'token', 'Device', 'sysMessage', '$rootScope',
+    function ($scope, token, Device, sysMessage, $rootScope) {
         if (token.check()) {
+            $rootScope.top_link_active_device = 'top_link_active';
             Device.get_data({token: token.get()}, function (response) {
                 $scope.devices = response.devices;
             });

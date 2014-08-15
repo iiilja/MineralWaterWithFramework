@@ -1,8 +1,17 @@
-<div style="width: 60%; margin-right: auto; margin-left: auto;">
-    <a ui-sref="main.campaign_new"><button class="btn btn-primary btn-lg btn-block" style="margin-bottom: 20px; margin-top: 20px;">Новая кампания</button></a>
-
-    <alert type="success" ng-repeat="campaign in campaigns" close="remove(campaign)" style="height: 50px;">
-        <span class="pull-left">{{campaign.name}}</span>
-        <span class="pull-right"><a href="/#/main/campaign/edit/{{campaign.id}}">Edit</a></span>
-    </alert>
+<div class="row">
+    <div class="col-md-10 center-block">
+        <button ui-sref="campaign_new" type="button" class="btn btn-primary" style="margin-left: -15px;">Новая кампания</button>
+    </div>
+</div>
+<div class="row" ng-repeat="campaign in campaigns">
+    <div class="col-md-10 center-block campaigns_block">
+        <span class="label label-success">Работает</span>
+        <span style="margin-left: 15px;">{{campaign.name}}</span>
+        <span style="margin-left: 15px; color: #bfbfbf; font-size: 12px;">10.08.2014-17.08.2014</span>
+                <span class="pull-right">
+                    <a class="campaigns_link" href="#" style="margin-right: 15px;"><i class="glyphicon glyphicon-signal"></i> Статистика</a>
+                    <a class="campaigns_link" href="/#/main/campaign/edit/{{campaign.id}}" style="margin-right: 15px;"><i class="glyphicon glyphicon-pencil"></i> Изменить</a>
+                    <a class="campaigns_link" ng-click="remove(campaign)"><i class="glyphicon glyphicon-remove"></i> Удалить</a>
+                </span>
+    </div>
 </div>

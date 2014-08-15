@@ -39,8 +39,10 @@
 
     </head>
     <body class="{{$root.bodyClass}}">
-         <toaster-container toaster-options="{'time-out': 3000}"></toaster-container>
-         <div ui-view="topView"></div>
-         <div ui-view="contentView"></div>
+        <div class="container-fluid">
+             <toaster-container toaster-options="{'time-out': 3000}"></toaster-container>
+             <div ui-view="topView"></div>
+             <div ui-view="contentView"></div>
+        </div>
     </body>
 </html>

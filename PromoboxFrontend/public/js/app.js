@@ -100,13 +100,14 @@ app.controller('Exit', ['token',
     }]);
 
 //Update When Create new Design
-app.controller('BgController', ['$scope', function ($scope) {
-    $scope.classes = 'main_bg';
+app.controller('BgController', ['$scope', '$rootScope', function ($scope,$rootScope) {
+    $rootScope.bodyClass = 'main_bg';
+
 }]);
 
-app.controller('LoginController', ['$scope', '$location', '$http', 'token',
-    function ($scope, $location, $http, token) {
-        $scope.classes = 'main_bg';
+app.controller('LoginController', ['$scope', '$location', '$http', 'token', '$rootScope',
+    function ($scope, $location, $http, token, $rootScope) {
+        $rootScope.bodyClass = 'main_bg';
         if (!token.check()) {
             $scope.login_form = {email: '', password: '', remember: false};
 
@@ -129,11 +130,11 @@ app.controller('LoginController', ['$scope', '$location', '$http', 'token',
     }]);
 
 //Update When Create new Design
-app.controller('RegistrationController', ['$scope', '$location', '$http', 'token',
-    function ($scope, $location, $http, token) {
-        $scope.classes = 'content_bg';
+app.controller('RegistrationController', ['$scope', '$http', 'token', 'sysLocation', '$rootScope',
+    function ($scope, $http, token, sysLocation, $rootScope) {
+        $rootScope.bodyClass = 'main_bg';
         $scope.go = function ( path ) {
-            $location.path( path );
+            sysLocation.goLink(path)
         };
     }]);
 

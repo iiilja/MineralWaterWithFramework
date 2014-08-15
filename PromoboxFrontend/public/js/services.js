@@ -42,7 +42,6 @@ services.factory('Files', ['$resource',
         });
     }]);
 
-
 services.factory("token", ['$cookies', '$location', function ($cookies, $location) {
     var token = '';
     token = $cookies.token;

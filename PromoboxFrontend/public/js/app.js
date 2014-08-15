@@ -28,6 +28,7 @@ app.config(['$routeProvider','$stateProvider','$urlRouterProvider', function ($r
         .state('campaign_edit', {
             url: "/campaign/edit/:cId",
             views: {
+                "topView": { controller: 'TopMenuController',templateUrl: '/views/top_menu.html' },
                 "contentView": { controller: "CampaignEditController", templateUrl: '/views/campaign_edit.html' }
             }
         })
@@ -207,6 +208,7 @@ app.controller('CampaignsController', ['$scope', 'token', 'Campaign', 'sysMessag
             $rootScope.top_link_active_list = 'top_link_active';
             Campaign.get_all_campaigns({token: token.get()}, function (response) {
                 $scope.campaigns = response.campaigns;
+                console.log(response.campaigns);
             });
             $scope.remove = function (campaign) {
                 $scope.campaigns.splice($scope.campaigns.indexOf(campaign), 1);

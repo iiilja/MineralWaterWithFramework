@@ -34,6 +34,7 @@ app.config(['$routeProvider','$stateProvider','$urlRouterProvider', function ($r
         .state('device', {
             url: "/device",
             views: {
+                "topView": { controller: 'TopMenuController',templateUrl: '/views/top_menu.html' },
                 "contentView": { controller: 'DevicesController',templateUrl: '/views/device.html' }
             }
         })
@@ -135,7 +136,7 @@ app.controller('RegistrationController', ['$scope', '$http', 'token', 'sysLocati
 app.controller('CampaignNewController', ['token', 'Campaign', 'sysLocation',
     function (token, Campaign, sysLocation) {
         Campaign.create_new_campaignts({token: token.get()}, function(response){
-            sysLocation.goLink('/main/campaign/edit/' + response.id)
+            sysLocation.goLink('/campaign/edit/' + response.id)
         });
     }]);
 

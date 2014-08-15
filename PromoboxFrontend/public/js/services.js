@@ -94,7 +94,7 @@ services.factory("sysLocation", ['$location', function ($location) {
             $location.path('/');
         },
         goList: function () {
-            $location.path('/main/list/');
+            $location.path('/list/');
         },
         goLink: function (link) {
             $location.path(link);

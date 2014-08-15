@@ -144,6 +144,7 @@ app.controller('CampaignNewController', ['token', 'Campaign', 'sysLocation',
 app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Campaign', '$upload', '$location', '$http', 'toaster', 'Files','sysMessage', 'sysLocation',
     function ($scope, $stateParams, token, Campaign, $upload, $location, $http, toaster, Files, sysMessage, sysLocation) {
         $scope.filesArray = [];
+        $scope.procent = 0;
         Campaign.get_campaigns({token: token.get(), id: $stateParams.cId}, function (response) {
             $scope.campaign = response;
             $scope.campaign_form = {campaign_status: $scope.campaign.status, filesArray: $scope.campaign.files, campaign_name: $scope.campaign.name, campaign_time: $scope.campaign.duration, campaign_order: $scope.campaign.sequence, campaign_start: $scope.campaign.start, campaign_finish: $scope.campaign.finish};
@@ -162,7 +163,7 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
                     method: 'POST',
                     file: file
                 }).progress(function (evt) {
-                    console.log('percent: ' + parseInt(100.0 * evt.loaded / evt.total));
+                    $scope.procent = parseInt(100.0 * evt.loaded / evt.total);
                 }).success(function (data, status, headers, config) {
                     refreshFilesModel();
                 });

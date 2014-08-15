@@ -1,3 +1,6 @@
+<div id="myDiv" style="margin-top:20px;"></div>
+<div id="myDiv2"></div>
+
 <div class="row">
     <div class="col-md-9 center-block">
         <form role="form" name="campaign_form" ng-submit="edit_company()">
@@ -11,13 +14,18 @@
             </div>
             <div class="row">
                 <div class="form-group">
-                    <!--  Playlist -->
-                    <ul id="playlist" onclick="FWDRL.show('playlist', 2);">
-                        <li ng-repeat="promofile in campaign_form.filesArray" data-url="http://api.dev.promobox.ee/service/files/{{ promofile.id }}"  data-thumbnail-path="http://api.dev.promobox.ee/service/files/thumb/{{ promofile.id }}" data-width="300">
-                            <div>
-                                <p>{{promofile.name}}</p>
+                    <div class="form-group">
+                        <div style="width: 350px; float: left;" ng-repeat="promofile in campaign_form.filesArray">
+                            <div class="thumbnail">
+                                <img onclick="FWDRL.show('playlist', 0);" style="width: 350px;" src="http://api.dev.promobox.ee/service/files/thumb/{{ promofile.id }}" alt="" />
                             </div>
-                        </li>
+                            <div class="caption">
+                                <h3>{{promofile.name}}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <ul id="playlist" style="list-style: none;">
+                        <li ng-repeat="promofile in campaign_form.filesArray" data-url="http://api.dev.promobox.ee/service/files/{{ promofile.id }}" data-thumbnail-path="http://api.dev.promobox.ee/service/files/thumb/{{ promofile.id }}"></li>
                     </ul>
                 </div>
             </div>

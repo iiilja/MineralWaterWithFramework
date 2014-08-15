@@ -166,15 +166,15 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
                     $scope.procent = parseInt(100.0 * evt.loaded / evt.total);
                 }).success(function (data, status, headers, config) {
                     refreshFilesModel();
+                    $scope.procent = 0;
                 });
             }
         };
         var refreshFilesModel = function () {
-            Files.getFiles({id: $stateParams.cId, token: token.get()}, function (response) {
-                Campaign.get_campaigns({token: token.get(), id: $stateParams.cId}, function (response) {
-                    $scope.files = response;
-                    $scope.campaign_form.filesArray = $scope.files.files;
-                });
+            Campaign.get_campaigns({token: token.get(), id: $stateParams.cId}, function (response) {
+                console.log(response);
+                $scope.files = response;
+                $scope.campaign_form.filesArray = $scope.files.files;
             });
         };
         var dataToTime = function(data) {

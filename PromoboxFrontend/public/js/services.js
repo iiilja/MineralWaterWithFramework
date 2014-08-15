@@ -31,13 +31,7 @@ services.factory('Device', ['$resource',
 services.factory('Files', ['$resource',
     function ($resource) {
         return $resource('',{},{
-            getFiles: {method: 'GET', url: apiEndpoint + 'token/:token/campaigns/:id/files/', params: {token: '@token', id: '@id'},
-                interceptor: {
-                    response: function(response) {
-                        console.debug('Tags: ', response.data.tags);
-                        response.data = response.data.tags;
-                        return response;
-                    }}},
+            getFiles: {method: 'GET', url: apiEndpoint + 'token/:token/campaigns/:id/files/', params: {token: '@token', id: '@id'}},
             arhiveFiles: {method: 'PUT', url: apiEndpoint + 'token/:token/files/archive/:id/', params: {token: '@token', id: '@id'}}
         });
     }]);

@@ -13,6 +13,8 @@
         <link href="css/lightbox.css" rel="stylesheet" />
         <link href="css/styles.css" rel="stylesheet" />
 
+        <link rel="stylesheet" type="text/css"  href="content/global.css"/>
+
         <!-- script references -->
         <!--[if lt IE 9]>
             <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -33,6 +35,216 @@
         <script src="js/libs/angular-ui-router.min.js"></script>
         <script src="js/libs/toaster.js"></script>
         <script src="js/libs/lightbox.min.js"></script>
+
+        <script type="text/javascript" src="js/libs/rl/FWDRLConsole.js"></script>
+        <script type="text/javascript" src="js/libs/rl/FWDRLDisplayObject.js"></script>
+        <script type="text/javascript" src="js/libs/rl/FWDRLTransformDisplayObject.js"></script>
+        <script type="text/javascript" src="js/libs/rl/FWDRL.js"></script>
+        <script type="text/javascript" src="js/libs/rl/FWDRLData.js"></script>
+        <script type="text/javascript" src="js/libs/rl/FWDRLDL.js"></script>
+        <script type="text/javascript" src="js/libs/rl/FWDRLInfo.js"></script>
+        <script type="text/javascript" src="js/libs/rl/FWDRLUtils.js"></script>
+        <script type="text/javascript" src="js/libs/rl/FWDRLTweenMax.js"></script>
+        <script type="text/javascript" src="js/libs/rl/FWDRLContextMenu.js"></script>
+        <script type="text/javascript" src="js/libs/rl/FWDRLEventDispatcher.js"></script>
+        <script type="text/javascript" src="js/libs/rl/FWDRLPreloader.js"></script>
+        <script type="text/javascript" src="js/libs/rl/FWDRLComplexButton.js"></script>
+        <script type="text/javascript" src="js/libs/rl/FWDRLSimpleButton.js"></script>
+        <script type="text/javascript" src="js/libs/rl/FWDRLHider.js"></script>
+        <script type="text/javascript" src="js/libs/rl/FWDRLThumbnailsManager.js"></script>
+        <script type="text/javascript" src="js/libs/rl/FWDRLThumb.js"></script>
+        <script type="text/javascript" src="js/libs/rl/FWDRLTimerManager.js"></script>
+        <script type="text/javascript" src="js/libs/rl/FWDRLSlideShowPreloader.js"></script>
+        <script type="text/javascript" src="js/libs/rl/FWDRLDescriptionWindow.js"></script>
+        <script type="text/javascript" src="js/libs/rl/FWDRLFacebookShare.js"></script>
+        <script type="text/javascript" src="js/libs/rl/FWDRLFlashTest.js"></script>
+        <script type="text/javascript" src="js/libs/rl/FWDRLEVPlayer.js"></script>
+        <script type="text/javascript" src="js/libs/rl/FWDRLEVPVideoScreen.js"></script>
+        <script type="text/javascript" src="js/libs/rl/FWDRLEVPVolumeButton.js"></script>
+        <script type="text/javascript" src="js/libs/rl/FWDRLEVPController.js"></script>
+        <script type="text/javascript" src="js/libs/rl/FWDRLEVPPoster.js"></script>
+        <script type="text/javascript" src="js/libs/rl/FWDRLEAP.js"></script>
+        <script type="text/javascript" src="js/libs/rl/FWDRLEAPAudioScreen.js"></script>
+        <script type="text/javascript" src="js/libs/rl/FWDRLEAPController.js"></script>
+
+        <!-- Setup audio player-->
+        <script type="text/javascript">
+
+        var props_obj = {
+            //main settings
+            buttonsAlignment:"in",
+            slideShowAutoPlay:"no",
+            useAsModal:"no",
+            addKeyboardSupport:"no",
+            showCloseButton:"no",
+            showFacebookButton:"no",
+            showZoomButton:"no",
+            showSlideShowButton:"yes",
+            showSlideShowAnimation:"yes",
+            showNextAndPrevButtons:"no",
+            showNextAndPrevButtonsOnMobile:"yes",
+            defaultItemWidth:640,
+            defaultItemHeight:480,
+            buttonsHideDelay:1,
+            slideShowDelay:1,
+            itemOffsetHeight:10,
+            spaceBetweenButtons:5,
+            buttonsOffsetIn:50,
+            buttonsOffsetOut:50,
+            itemBorderSize:20,
+            itemBorderRadius:20,
+            backgroundOpacity:.4,
+            itemBoxShadow:"-10px 0px 20px #000000",
+            itemBackgroundColor:"#FF0000",
+            itemBorderColor:"#00FF00",
+            backgroundColor:"#FF0000",
+            //thumbnails settings
+            showThumbnails:"yes",
+            showThumbnailsHideOrShowButton:"yes",
+            showThumbnailsByDefault:"yes",
+            showThumbnailsOverlay:"yes",
+            showThumbnailsSmallIcon:"no",
+            thumbnailsImageHeight:120,
+            thumbnailsBorderSize:20,
+            thumbnailsBorderRadius:20,
+            spaceBetweenThumbnailsAndItem:100,
+            spaceBetweenThumbnails:10,
+            thumbnailsOffsetBottom:80,
+            thumbnailsOverlayOpacity:.9,
+            thumbnailsOverlayColor:"#0000FF",
+            thumbnailsBorderNormalColor:"#00FFFF",
+            thumbnailsBorderSelectedColor:"#00FF00",
+            //description settings
+            descriptionWindowPosition:"top",
+            showDescriptionButton:"yes",
+            showDescriptionByDefault:"yes",
+            descriptionWindowAnimationType:"opacity",
+            descriptionWindowBackgroundColor:"#0FFFFF",
+            descriptionWindowBackgroundOpacity:.3,
+            //video & audio players settings
+            videoControllerBackgroundColor:"#FFFFFF",
+            videoPosterBackgroundColor:"#FF99FF",
+            audioControllerBackgroundColor:"#FF00FF",
+            nextVideoOrAudioAutoPlay:"yes",
+            videoAutoPlay:"no",
+            audioAutoPlay:"no"
+        }
+
+        FWDRLConsole.setPrototype();
+        //var logger = new FWDRLConsole();
+        FWDRLUtils.onReady(function(){
+            new FWDRL({
+                //main settings
+                mainFolderPath:"content",
+                skinPath:"modern_skin_dark",
+                facebookAppId:"213684265480896",//required only if the facebook share button is used
+                rightClickContextMenu:"default",
+                buttonsAlignment:"in",
+                useDeepLinking:"yes",
+                useAsModal:"no",
+                slideShowAutoPlay:"no",
+                addKeyboardSupport:"yes",
+                showCloseButton:"yes",
+                showFacebookButton:"yes",
+                showZoomButton:"yes",
+                showSlideShowButton:"yes",
+                showSlideShowAnimation:"yes",
+                showNextAndPrevButtons:"yes",
+                showNextAndPrevButtonsOnMobile:"yes",
+                buttonsHideDelay:10,
+                slideShowDelay:4,
+                defaultItemWidth:640,
+                defaultItemHeight:480,
+                itemOffsetHeight:50,
+                spaceBetweenButtons:8,
+                buttonsOffsetIn:5,
+                buttonsOffsetOut:5,
+                itemBorderSize:4,
+                itemBorderRadius:2,
+                backgroundOpacity:.7,
+                itemBoxShadow:"none",
+                itemBackgroundColor:"#333333",
+                itemBorderColor:"#FFFFFF",
+                backgroundColor:"#000000",
+                //thumbnails settings
+                showThumbnails:"yes",
+                showThumbnailsHideOrShowButton:"yes",
+                showThumbnailsByDefault:"yes",
+                showThumbnailsOverlay:"yes",
+                showThumbnailsSmallIcon:"yes",
+                thumbnailsHoverEffect:"scale",
+                thumbnailsImageHeight:80,
+                thumbnailsBorderSize:4,
+                thumbnailsBorderRadius:5,
+                spaceBetweenThumbnailsAndItem:0,
+                thumbnailsOffsetBottom:0,
+                spaceBetweenThumbnails:2,
+                thumbnailsOverlayOpacity:.6,
+                thumbnailsOverlayColor:"#000000",
+                thumbnailsBorderNormalColor:"#FFFFFF",
+                thumbnailsBorderSelectedColor:"#FFFFFF",
+                //description settings
+                descriptionWindowPosition:"bottom",
+                showDescriptionButton:"yes",
+                showDescriptionByDefault:"no",
+                descriptionWindowAnimationType:"motion",
+                descriptionWindowBackgroundColor:"#FFFFFF",
+                descriptionWindowBackgroundOpacity:.9,
+                //video & audio players settings
+                useVideo:"yes",
+                useAudio:"yes",
+                videoShowFullScreenButton:"yes",
+                addVideoKeyboardSupport:"yes",
+                nextVideoOrAudioAutoPlay:"yes",
+                videoAutoPlay:"no",
+                videoLoop:"no",
+                audioAutoPlay:"no",
+                audioLoop:"no",
+                videoControllerHideDelay:3,
+                videoControllerHeight:41,
+                audioControllerHeight:44,
+                startSpaceBetweenButtons:7,
+                vdSpaceBetweenButtons:9,
+                mainScrubberOffestTop:14,
+                scrubbersOffsetWidth:1,
+                audioScrubbersOffestTotalWidth:4,
+                timeOffsetLeftWidth:5,
+                timeOffsetRightWidth:3,
+                volumeScrubberWidth:80,
+                volumeScrubberOffsetRightWidth:0,
+                videoControllerBackgroundColor:"#FFFFFF",
+                videoPosterBackgroundColor:"#0099FF",
+                audioControllerBackgroundColor:"#FFFFFF",
+                timeColor:"#000000"
+            });
+
+            FWDRL.addListener(FWDRL.SHOW_START, showStartHandler);
+            FWDRL.addListener(FWDRL.SHOW_COMPLETE, showCompleteHandler);
+            FWDRL.addListener(FWDRL.HIDE_START, hideStartHandler);
+            FWDRL.addListener(FWDRL.HIDE_COMPLETE, hideCompleteHandler);
+            FWDRL.addListener(FWDRL.UPDATE, updateHandler);
+        });
+
+        function showStartHandler(){
+            //if(console) console.log("show start");
+        }
+
+        function showCompleteHandler(){
+            //if(console) console.log("show complete");
+        }
+
+        function hideStartHandler(){
+            //if(console) console.log("hide start");
+        }
+
+        function hideCompleteHandler(){
+            //if(console) console.log("hide complete");
+        }
+
+        function updateHandler(e){
+            //if(console) console.log("update to current item with id - " + e.curId);
+        }
+        </script>
 
         <script src="js/services.js"></script>
         <script src="js/app.js"></script>

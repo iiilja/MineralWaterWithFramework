@@ -6,7 +6,7 @@
 <div class="row" ng-repeat="campaign in campaigns">
     <div class="col-md-10 center-block campaigns_block">
         <span ng-if="campaign.status == 1" class="label label-success">Работает</span>
-        <span ng-if="campaign.status == 1" class="label label-warning">Ожидание</span>
+        <span ng-if="campaign.status == 2" class="label label-warning">Ожидание</span>
         <span style="margin-left: 15px;">{{campaign.name}}</span>
         <span style="margin-left: 15px; color: #bfbfbf; font-size: 12px;">10.08.2014-17.08.2014</span>
                 <span class="pull-right">

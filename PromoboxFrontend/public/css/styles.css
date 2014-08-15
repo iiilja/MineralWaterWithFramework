@@ -1,1 +1,134 @@
 .modal-footer {   border-top: 0px; }
+
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/*
+    Created on : Aug 14, 2014, 10:43:44 AM
+    Author     : AlDrac
+*/
+
+.main_bg {
+    background: url(../img/logo.png) center 8px no-repeat,
+    url(../img/main_bg.png) left top repeat-x;
+}
+
+.content_bg {
+    background: url(../img/content_bg.png) left top repeat-x;
+}
+
+/* enable absolute positioning */
+.inner-addon {
+    position: relative;
+}
+
+/* style icon */
+.inner-addon .glyphicon {
+    position: absolute;
+    padding: 10px;
+    pointer-events: none;
+}
+
+/* align icon */
+.left-addon .glyphicon  { left:  0px;}
+.right-addon .glyphicon { right: 0px;}
+
+/* add padding  */
+.left-addon input  { padding-left:  30px; }
+.right-addon input { padding-right: 30px; }
+
+.form_border {
+    border: 1px solid #dcdcdc;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    border-radius: 3px;
+}
+
+.form_link {
+    color: black;
+    margin-top: 5px;
+    text-decoration: underline;
+}
+
+.text_link {
+    color: black;
+    text-decoration: underline;
+}
+
+.top_link {
+    padding-top: 30px;
+    padding-bottom: 21px;
+    text-decoration: none;
+    margin-left: 40px;
+    color: #c2c2c2;
+}
+.top_link:hover {
+    text-decoration: none;
+    color: #dda808;
+    background: url(../img/top_link_bg.png) bottom repeat-x;
+}
+
+.top_link_active {
+    color: #dda808;
+    background: url(../img/top_link_bg.png) bottom repeat-x;
+}
+
+.btn-custom-lighten.active {
+    color: #C2C2C2;
+}
+.btn-custom-lighten {
+    margin-right: 15px;
+    outline: 0 !important;
+    color: #C2C2C2;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+    background-color: #414649;
+    background-image: -moz-linear-gradient(top, #414649, #414649);
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#414649), to(#414649));
+    background-image: -webkit-linear-gradient(top, #414649, #414649);
+    background-image: -o-linear-gradient(top, #414649, #414649);
+    background-image: linear-gradient(to bottom, #414649, #414649);
+    background-repeat: repeat-x;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff414649', endColorstr='#ff414649', GradientType=0);
+    border-color: #596064 #596064 #35393c;
+    border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+    /* Darken IE7 buttons by default so they stand out more given they won't have borders */
+
+    filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+}
+.btn-custom-lighten:hover,
+.btn-custom-lighten:focus,
+.btn-custom-lighten:active,
+.btn-custom-lighten.active,
+.btn-custom-lighten.disabled,
+.btn-custom-lighten[disabled] {
+    color: #C2C2C2;
+    background-color: #313537;
+}
+.btn-custom-lighten:active,
+.btn-custom-lighten.active {
+    background-color: #313537 ;
+}
+
+.center-block {
+    margin-top: 15px;
+    display: table;
+    margin-left: auto;
+    margin-right: auto;
+    float:none;
+}
+
+.campaigns_block {
+    border: 1px solid #dcdcdc;
+    border-radius: 3px;
+    padding: 15px;
+}
+
+.campaigns_link {
+    color: black;
+}
+
+.campaigns_link:hover {
+    text-decoration: none;
+}

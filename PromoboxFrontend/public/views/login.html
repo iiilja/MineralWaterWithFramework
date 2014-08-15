@@ -1,43 +1,35 @@
-<!--login modal-->
-<div id="loginModal" class="modal show" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="text-center">{{ 'login_form_header' | translate}}</h1>
+<div class="container">
+    <div class="row" style="width: 300px; margin-left: auto; margin-right: auto; margin-top: 120px;">
+        <div class="well-sm" style="text-align: center;"><strong>Sign in</strong></div>
+    </div>
+    <div class="row form_border" style="width: 300px; margin-left: auto; margin-right: auto;">
+        <form role="form" name="login_form" ng-submit="login()">
+            <div class="col-lg-12">
+                <div class="form-group">
+                    <div class="inner-addon left-addon">
+                        <i class="glyphicon glyphicon-envelope"></i>
+                        <input ng-model="login_form.email" type="email" class="form-control" name="InputEmail" id="InputEmail" placeholder="E-mail" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="inner-addon left-addon">
+                        <i class="glyphicon glyphicon-lock"></i>
+                        <input ng-model="login_form.password" type="password" class="form-control" id="InputPassword" name="InputPassword" placeholder="Password" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="checkbox">
+                        <label>
+                            <input ng-model="login_form.remember" type="checkbox"> Remember
+                        </label>
+                    </div>
+                </div>
+                <input type="submit" name="signin" id="signin" value="Sign in" class="btn btn-block btn-success">
+
+                <a class="pull-left form_link" href="#">Forgotten password?</a>
+                <a class="pull-right form_link" href="/#/registration">Register</a>
             </div>
-            <div class="modal-body">
-                <form class="form col-md-12 center-block" name="login_form" ng-submit="login()" novalidate>
-                    <div class="form-group"
-                         ng-class="{ 'has-error' : loginForm.email.$invalid && !loginForm.email.$pristine }">
-                        <input type="email" name="email" class="form-control input-lg"
-                               placeholder="{{ 'login_form_email' | translate}}" ng-model="login_form.email" required>
-                    </div>
-                    <div class="form-group"
-                         ng-class="{ 'has-error' : loginForm.password.$invalid && !loginForm.password.$pristine }">
-                        <input type="password" name="password" class="form-control input-lg"
-                               placeholder="{{ 'login_form_password' | translate}}" ng-minlength="4" ng-maxlength="12"
-                               ng-model="login_form.password" required>
-                    </div>
-                    <div class="form-group">
-                        <div class="checkbox">
-                            <label>
-                                <input type="checkbox" name="remember" ng-model="login_form.remember"> {{
-                                'login_form_remember' | translate}}
-                            </label>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <button type="submit" class="btn btn-primary btn-lg btn-block" ng-disabled="loginForm.$invalid">
-                            {{ 'login_form_sign_in' | translate}}
-                        </button>
-                        <span class="pull-right"><a href="/#/registration">{{ 'login_form_register' | translate}}</a></span>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-            </div>
-        </div>
+        </form>
+
     </div>
 </div>
-
-

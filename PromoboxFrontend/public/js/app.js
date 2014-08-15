@@ -9,49 +9,49 @@ app.config(['$routeProvider','$stateProvider','$urlRouterProvider', function ($r
         .state('login', {
             url: "/",
             views: {
-                "rootView": { controller: 'LoginController',templateUrl: '/views/login.html' }
+                "contentView": { controller: 'LoginController',templateUrl: '/views/login.html' }
             }
         })
         .state('registration', {
             url: "/registration",
             views: {
-                "rootView": { controller: 'RegistrationController',templateUrl: '/views/register.html' }
+                "contentView": { controller: 'RegistrationController',templateUrl: '/views/register.html' }
             }
         })
         .state('main', {
             url: "/main",
             views: {
-                "rootView": { controller: 'MainController',templateUrl: '/views/main.html' }
+                "contentView": { controller: 'MainController',templateUrl: '/views/main.html' }
             }
         })
         .state('main.campaign_edit', {
             url: "/campaign/edit/:cId",
             views: {
-                "mainView": { controller: "CampaignEditController", templateUrl: '/views/campaign_edit.html' }
+                "contentView": { controller: "CampaignEditController", templateUrl: '/views/campaign_edit.html' }
             }
         })
         .state('main.list', {
             url: "/list",
             views: {
-                "mainView": { controller: 'CampaignsController',templateUrl: '/views/list.html' }
+                "contentView": { controller: 'CampaignsController',templateUrl: '/views/list.html' }
             }
         })
         .state('main.device', {
             url: "/device",
             views: {
-                "mainView": { controller: 'DevicesController',templateUrl: '/views/device.html' }
+                "contentView": { controller: 'DevicesController',templateUrl: '/views/device.html' }
             }
         })
         .state('main.campaign_new', {
             url: "/campaign/new",
             views: {
-                "mainView": { controller: 'CampaignNewController', template: '' }
+                "contentView": { controller: 'CampaignNewController', template: '' }
             }
         })
         .state('exit', {
             url: "/exit",
             views: {
-                "rootView": { controller: 'Exit', template: '' }
+                "contentView": { controller: 'Exit', template: '' }
             }
         });
 }]);
@@ -100,11 +100,14 @@ app.controller('Exit', ['token',
     }]);
 
 //Update When Create new Design
+app.controller('BgController', ['$scope', function ($scope) {
+    $scope.classes = 'main_bg';
+}]);
+
 app.controller('LoginController', ['$scope', '$location', '$http', 'token',
     function ($scope, $location, $http, token) {
-
+        $scope.classes = 'main_bg';
         if (!token.check()) {
-
             $scope.login_form = {email: '', password: '', remember: false};
 
             $scope.login = function () {
@@ -128,11 +131,10 @@ app.controller('LoginController', ['$scope', '$location', '$http', 'token',
 //Update When Create new Design
 app.controller('RegistrationController', ['$scope', '$location', '$http', 'token',
     function ($scope, $location, $http, token) {
-        if (!token.check()) {
-
-        } else {
-            $location.path('/');
-        }
+        $scope.classes = 'content_bg';
+        $scope.go = function ( path ) {
+            $location.path( path );
+        };
     }]);
 
 

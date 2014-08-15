@@ -100,11 +100,6 @@ app.controller('Exit', ['token',
     }]);
 
 //Update When Create new Design
-app.controller('BgController', ['$scope', '$rootScope', function ($scope,$rootScope) {
-    $rootScope.bodyClass = 'main_bg';
-
-}]);
-
 app.controller('LoginController', ['$scope', '$location', '$http', 'token', '$rootScope',
     function ($scope, $location, $http, token, $rootScope) {
         $rootScope.bodyClass = 'main_bg';

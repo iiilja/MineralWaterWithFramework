@@ -6,18 +6,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
-
-import com.pheelicks.visualizer.VisualizerView;
-import com.pheelicks.visualizer.renderer.CircleBarRenderer;
 
 import org.apache.commons.io.IOUtils;
 
@@ -27,7 +20,6 @@ import java.io.FileInputStream;
 public class AudioActivity extends Activity {
 
     private MediaPlayer mPlayer;
-    private VisualizerView mVisualizerView;
     private LocalBroadcastManager bManager;
     private String[] paths;
     private int position = 0;
@@ -68,14 +60,9 @@ public class AudioActivity extends Activity {
         super.onResume();
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-
         hideSystemUI();
+        playAudio();
 
-        try {
-            playAudio();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
     }
 
 
@@ -102,12 +89,6 @@ public class AudioActivity extends Activity {
 
             mPlayer.setDataSource(inputStream.getFD());
             mPlayer.prepare();
-
-//            mVisualizerView = (VisualizerView) findViewById(R.id.visualizerView);
-//            mVisualizerView.link(mPlayer);
-//
-//            addCircleBarRenderer();
-
             mPlayer.start();
 
             mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
@@ -153,7 +134,6 @@ public class AudioActivity extends Activity {
     private void cleanUp() {
         if (mPlayer != null) {
             mPlayer.setOnCompletionListener(null);
-//            mVisualizerView.release();
             mPlayer.stop();
             mPlayer.release();
             mPlayer = null;
@@ -163,15 +143,6 @@ public class AudioActivity extends Activity {
 
     }
 
-    private void addCircleBarRenderer() {
-        Paint paint = new Paint();
-        paint.setStrokeWidth(8f);
-        paint.setAntiAlias(true);
-        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.LIGHTEN));
-        paint.setColor(Color.argb(255, 222, 92, 143));
-        CircleBarRenderer circleBarRenderer = new CircleBarRenderer(paint, 32, true);
-        mVisualizerView.addRenderer(circleBarRenderer);
-    }
 
     private BroadcastReceiver bReceiver = new BroadcastReceiver() {
         @Override

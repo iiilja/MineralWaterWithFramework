@@ -141,8 +141,8 @@ app.controller('CampaignNewController', ['token', 'Campaign', 'sysLocation',
         });
     }]);
 
-app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Campaign', '$upload', '$location', '$http', 'toaster', 'Files','sysMessage', 'sysLocation', 'FileUploader',
-    function ($scope, $stateParams, token, Campaign, $upload, $location, $http, toaster, Files, sysMessage, sysLocation, FileUploader) {
+app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Campaign', '$location', '$http', 'toaster', 'Files','sysMessage', 'sysLocation', 'FileUploader', '$rootScope',
+    function ($scope, $stateParams, token, Campaign, $location, $http, toaster, Files, sysMessage, sysLocation, FileUploader, $rootScope) {
         $rootScope.top_link_active_list = 'top_link_active';
         $scope.filesArray = [];
         Campaign.get_campaigns({token: token.get(), id: $stateParams.cId}, function (response) {

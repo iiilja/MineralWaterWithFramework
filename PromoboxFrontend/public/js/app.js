@@ -141,42 +141,14 @@ app.controller('CampaignNewController', ['token', 'Campaign', 'sysLocation',
         });
     }]);
 
-app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Campaign', '$upload', '$location', '$http', 'toaster', 'Files','sysMessage', 'sysLocation',
-    function ($scope, $stateParams, token, Campaign, $upload, $location, $http, toaster, Files, sysMessage, sysLocation) {
+app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Campaign', '$upload', '$location', '$http', 'toaster', 'Files','sysMessage', 'sysLocation', 'FileUploader',
+    function ($scope, $stateParams, token, Campaign, $upload, $location, $http, toaster, Files, sysMessage, sysLocation, FileUploader) {
+        $rootScope.top_link_active_list = 'top_link_active';
         $scope.filesArray = [];
-        $scope.procent = 0;
         Campaign.get_campaigns({token: token.get(), id: $stateParams.cId}, function (response) {
             $scope.campaign = response;
             $scope.campaign_form = {campaign_status: $scope.campaign.status, filesArray: $scope.campaign.files, campaign_name: $scope.campaign.name, campaign_time: $scope.campaign.duration, campaign_order: $scope.campaign.sequence, campaign_start: $scope.campaign.start, campaign_finish: $scope.campaign.finish};
         });
-        $scope.inArchive = function (id) {
-            Files.arhiveFiles({token: token.get(), id: id}, function(response){
-                sysMessage.delete_s('Файл удалён')
-                refreshFilesModel();
-            });
-        };
-        $scope.onFileSelect = function ($files) {
-            for (var i = 0; i < $files.length; i++) {
-                var file = $files[i];
-                $scope.upload = $upload.upload({
-                    url: apiEndpoint + 'token/' + token.get() + '/campaigns/' + $scope.campaign.id + '/files/', //upload.php script, node.js route, or servlet url
-                    method: 'POST',
-                    file: file
-                }).progress(function (evt) {
-                    $scope.procent = parseInt(100.0 * evt.loaded / evt.total);
-                }).success(function (data, status, headers, config) {
-                    refreshFilesModel();
-                    $scope.procent = 0;
-                });
-            }
-        };
-        var refreshFilesModel = function () {
-            Campaign.get_campaigns({token: token.get(), id: $stateParams.cId}, function (response) {
-                console.log(response);
-                $scope.files = response;
-                $scope.campaign_form.filesArray = $scope.files.files;
-            });
-        };
         var dataToTime = function(data) {
             return new Date(data).getTime() + 15*60*1000;
         };
@@ -185,6 +157,92 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
                 sysLocation.goList();
             });
         };
+
+        var uploader = $scope.uploader = new FileUploader({
+            url: apiEndpoint + 'token/' + token.get() + '/campaigns/' + $scope.campaign.id + '/files/'
+        });
+
+        // FILTERS
+
+        uploader.filters.push({
+            name: 'customFilter',
+            fn: function(item /*{File|FileLikeObject}*/, options) {
+                return this.queue.length < 10;
+            }
+        });
+
+        // CALLBACKS
+
+        uploader.onWhenAddingFileFailed = function(item /*{File|FileLikeObject}*/, filter, options) {
+            console.info('onWhenAddingFileFailed', item, filter, options);
+        };
+        uploader.onAfterAddingFile = function(fileItem) {
+            console.info('onAfterAddingFile', fileItem);
+        };
+        uploader.onAfterAddingAll = function(addedFileItems) {
+            console.info('onAfterAddingAll', addedFileItems);
+        };
+        uploader.onBeforeUploadItem = function(item) {
+            console.info('onBeforeUploadItem', item);
+        };
+        uploader.onProgressItem = function(fileItem, progress) {
+            console.info('onProgressItem', fileItem, progress);
+        };
+        uploader.onProgressAll = function(progress) {
+            console.info('onProgressAll', progress);
+        };
+        uploader.onSuccessItem = function(fileItem, response, status, headers) {
+            console.info('onSuccessItem', fileItem, response, status, headers);
+        };
+        uploader.onErrorItem = function(fileItem, response, status, headers) {
+            console.info('onErrorItem', fileItem, response, status, headers);
+        };
+        uploader.onCancelItem = function(fileItem, response, status, headers) {
+            console.info('onCancelItem', fileItem, response, status, headers);
+        };
+        uploader.onCompleteItem = function(fileItem, response, status, headers) {
+            console.info('onCompleteItem', fileItem, response, status, headers);
+        };
+        uploader.onCompleteAll = function() {
+            console.info('onCompleteAll');
+        };
+
+        console.info('uploader', uploader);
+
+
+
+//        $scope.inArchive = function (id) {
+//            Files.arhiveFiles({token: token.get(), id: id}, function(response){
+//                sysMessage.delete_s('Файл удалён')
+//                refreshFilesModel();
+//            });
+//        };
+//        $scope.onFileSelect = function ($files) {
+//            for (var i = 0; i < $files.length; i++) {
+//                var file = $files[i];
+//                $scope.upload = $upload.upload({
+//                    url: apiEndpoint + 'token/' + token.get() + '/campaigns/' + $scope.campaign.id + '/files/', //upload.php script, node.js route, or servlet url
+//                    method: 'POST',
+//                    file: file
+//                }).progress(function (evt) {
+//                    $scope.procent = parseInt(100.0 * evt.loaded / evt.total);
+//                }).success(function (data, status, headers, config) {
+//                    refreshFilesModel();
+//                    $scope.procent = 0;
+//                });
+//            }
+//        };
+//        var refreshFilesModel = function () {
+//            Campaign.get_campaigns({token: token.get(), id: $stateParams.cId}, function (response) {
+//                console.log(response);
+//                $scope.files = response;
+//                $scope.campaign_form.filesArray = $scope.files.files;
+//            });
+//        };
+
+
+
+
 
     }]);
 

@@ -20,11 +20,8 @@ import ee.promobox.service.UserService;
 import ee.promobox.util.FileUtils;
 import ee.promobox.util.ImageOP;
 import ee.promobox.util.RequestUtils;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
+
+import java.io.*;
 import java.util.Date;
 import java.util.List;
 import javax.jms.Destination;
@@ -259,6 +256,14 @@ public class FilesController {
 
         // if this file exists
         if (dbFile != null) {
+            response.setStatus(HttpServletResponse.SC_OK);
+
+            if (dbFile.getFileType() == FileUtils.FILE_TYPE_VIDEO) {
+                response.setContentType("video/mp4");
+            } else if (dbFile.getFileType() == FileUtils.FILE_TYPE_AUDIO) {
+                response.setContentType("audio/mpeg");
+            }
+
             File file = new File(config.getDataDir() + dbFile.getClientId() + File.separator + dbFile.getId());
 
             FileInputStream fileInputStream = new FileInputStream(file);
@@ -269,7 +274,6 @@ public class FilesController {
             IOUtils.closeQuietly(fileInputStream);
             IOUtils.closeQuietly(outputStream);
 
-            response.setStatus(HttpServletResponse.SC_OK);
         } else {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
         }
@@ -288,15 +292,25 @@ public class FilesController {
 
         // if this file exists
         if (dbFile != null) {
-
-            File file = new File(config.getDataDir() + dbFile.getClientId() + File.separator + dbFile.getId() + "_thumb");
-
-            FileInputStream fileInputStream = new FileInputStream(file);
+            File file = null;
             OutputStream outputStream = response.getOutputStream();
 
-            IOUtils.copy(fileInputStream, outputStream);
+            if (dbFile.getFileType() == FileUtils.FILE_TYPE_IMAGE) {
+                file = new File(config.getDataDir() + dbFile.getClientId() + File.separator + dbFile.getId() + "_thumb");
 
-            IOUtils.closeQuietly(fileInputStream);
+                if (!file.exists()) {
+                    file = new File(config.getDataDir() + dbFile.getClientId() + File.separator + dbFile.getId());
+                }
+
+                FileInputStream fileInputStream = new FileInputStream(file);
+                IOUtils.copy(fileInputStream, outputStream);
+                IOUtils.closeQuietly(fileInputStream);
+            } else {
+                InputStream is = getClass().getClassLoader().getResourceAsStream("ee/promobox/assets/play.png");
+                IOUtils.copy(is, outputStream);
+                IOUtils.closeQuietly(is);
+            }
+
             IOUtils.closeQuietly(outputStream);
 
             response.setStatus(HttpServletResponse.SC_OK);

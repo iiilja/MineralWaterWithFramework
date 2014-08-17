@@ -147,6 +147,7 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         $scope.filesArray = [];
         Campaign.get_campaigns({token: token.get(), id: $stateParams.cId}, function (response) {
             $scope.campaign = response;
+            console.log($scope.campaign);
             $scope.campaign_form = {campaign_status: $scope.campaign.status, filesArray: $scope.campaign.files, campaign_name: $scope.campaign.name, campaign_time: $scope.campaign.duration, campaign_order: $scope.campaign.sequence, campaign_start: $scope.campaign.start, campaign_finish: $scope.campaign.finish};
         });
         var dataToTime = function(data) {
@@ -158,8 +159,26 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
             });
         };
 
+        $scope.inArchive = function (id) {
+            Files.arhiveFiles({token: token.get(), id: id}, function(response){
+                sysMessage.delete_s('Файл удалён')
+                refreshFilesModel();
+            });
+        };
+
+        var refreshFilesModel = function () {
+            Campaign.get_campaigns({token: token.get(), id: $stateParams.cId}, function (response) {
+                console.log(response);
+                $scope.files = response;
+                $scope.campaign_form.filesArray = $scope.files.files;
+            });
+        };
+
+        var file_upload_url = apiEndpoint + 'token/' + token.get() + '/campaigns/' + $stateParams.cId + '/files/';
+        console.log(file_upload_url);
+
         var uploader = $scope.uploader = new FileUploader({
-            url: apiEndpoint + 'token/' + token.get() + '/campaigns/' + $scope.campaign.id + '/files/'
+            url: file_upload_url
         });
 
         // FILTERS
@@ -202,48 +221,14 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         };
         uploader.onCompleteItem = function(fileItem, response, status, headers) {
             console.info('onCompleteItem', fileItem, response, status, headers);
+            refreshFilesModel();
         };
         uploader.onCompleteAll = function() {
             console.info('onCompleteAll');
+            refreshFilesModel();
         };
 
         console.info('uploader', uploader);
-
-
-
-//        $scope.inArchive = function (id) {
-//            Files.arhiveFiles({token: token.get(), id: id}, function(response){
-//                sysMessage.delete_s('Файл удалён')
-//                refreshFilesModel();
-//            });
-//        };
-//        $scope.onFileSelect = function ($files) {
-//            for (var i = 0; i < $files.length; i++) {
-//                var file = $files[i];
-//                $scope.upload = $upload.upload({
-//                    url: apiEndpoint + 'token/' + token.get() + '/campaigns/' + $scope.campaign.id + '/files/', //upload.php script, node.js route, or servlet url
-//                    method: 'POST',
-//                    file: file
-//                }).progress(function (evt) {
-//                    $scope.procent = parseInt(100.0 * evt.loaded / evt.total);
-//                }).success(function (data, status, headers, config) {
-//                    refreshFilesModel();
-//                    $scope.procent = 0;
-//                });
-//            }
-//        };
-//        var refreshFilesModel = function () {
-//            Campaign.get_campaigns({token: token.get(), id: $stateParams.cId}, function (response) {
-//                console.log(response);
-//                $scope.files = response;
-//                $scope.campaign_form.filesArray = $scope.files.files;
-//            });
-//        };
-
-
-
-
-
     }]);
 
 app.controller('DatepickerCtrl', ['$scope',

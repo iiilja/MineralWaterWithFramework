@@ -13,7 +13,6 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -29,18 +28,16 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class MainService extends Service {
 
-    private final static int TEST_CLIENT_ID = 1;
+
     private final String DEFAULT_SERVER = "http://api.dev.promobox.ee/";
-    private final String DEFAULT_CDN = "http://dev.promobox.ee/";
     private final String DEFAULT_SERVER_JSON = DEFAULT_SERVER + "/service/device/%s/pull";
+
     private JSONObject settings;
     private String uuid;
 
@@ -174,7 +171,7 @@ public class MainService extends Service {
 
                 Campaign newCamp = loadCampaign(urls[0]);
 
-                if (oldCamp == null || (newCamp.getUpdateDate() > oldCamp.getUpdateDate())) {
+                if (oldCamp == null || oldCamp.getCampaignId() != newCamp.getCampaignId() || (newCamp.getUpdateDate() > oldCamp.getUpdateDate())) {
                     campaign = newCamp;
 
                     downloadFiles();

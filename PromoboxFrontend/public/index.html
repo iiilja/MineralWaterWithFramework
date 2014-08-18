@@ -10,7 +10,6 @@
         <link href="css/bootstrap.min.css" rel="stylesheet" />
         <link href="css/datepicker.css" rel="stylesheet" />
         <link href="css/toaster.css" rel="stylesheet" />
-        <link href="css/lightbox.css" rel="stylesheet" />
         <link href="css/styles.css" rel="stylesheet" />
 
         <link rel="stylesheet" type="text/css"  href="content/global.css"/>
@@ -45,32 +44,32 @@
                 new FWDRL({
                     //main settings
                     mainFolderPath:"content",
-                    skinPath:"minimal_skin_dark",
-                    facebookAppId:"",//required only if the facebook share button is used
+                    skinPath:"modern_skin_dark",
+                    facebookAppId:"213684265480896",//required only if the facebook share button is used
                     rightClickContextMenu:"default",
                     buttonsAlignment:"in",
                     useDeepLinking:"no",
                     useAsModal:"no",
                     slideShowAutoPlay:"no",
-                    addKeyboardSupport:"no",
+                    addKeyboardSupport:"yes",
                     showCloseButton:"yes",
-                    showFacebookButton:"no",
+                    showFacebookButton:"yes",
                     showZoomButton:"yes",
                     showSlideShowButton:"yes",
                     showSlideShowAnimation:"yes",
                     showNextAndPrevButtons:"yes",
                     showNextAndPrevButtonsOnMobile:"yes",
-                    buttonsHideDelay:3,
+                    buttonsHideDelay:10,
                     slideShowDelay:4,
-                    defaultItemWidth:800,
-                    defaultItemHeight:500,
+                    defaultItemWidth:640,
+                    defaultItemHeight:480,
                     itemOffsetHeight:50,
-                    spaceBetweenButtons:1,
-                    buttonsOffsetIn:2,
+                    spaceBetweenButtons:8,
+                    buttonsOffsetIn:5,
                     buttonsOffsetOut:5,
                     itemBorderSize:4,
-                    itemBorderRadius:0,
-                    backgroundOpacity:.8,
+                    itemBorderRadius:2,
+                    backgroundOpacity:.7,
                     itemBoxShadow:"none",
                     itemBackgroundColor:"#333333",
                     itemBorderColor:"#FFFFFF",
@@ -93,12 +92,12 @@
                     thumbnailsBorderNormalColor:"#FFFFFF",
                     thumbnailsBorderSelectedColor:"#FFFFFF",
                     //description settings
-                    showDescriptionButton:"yes",
-                    showDescriptionByDefault:"yes",
-                    descriptionWindowAnimationType:"motion",
                     descriptionWindowPosition:"bottom",
+                    showDescriptionButton:"yes",
+                    showDescriptionByDefault:"no",
+                    descriptionWindowAnimationType:"motion",
                     descriptionWindowBackgroundColor:"#FFFFFF",
-                    descriptionWindowBackgroundOpacity:.95,
+                    descriptionWindowBackgroundOpacity:.9,
                     //video & audio players settings
                     useVideo:"yes",
                     useAudio:"yes",
@@ -126,33 +125,97 @@
                     audioControllerBackgroundColor:"#FFFFFF",
                     timeColor:"#000000"
                 });
-
-                FWDRL.addListener(FWDRL.SHOW_START, showStartHandler);
-                FWDRL.addListener(FWDRL.SHOW_COMPLETE, showCompleteHandler);
-                FWDRL.addListener(FWDRL.HIDE_START, hideStartHandler);
-                FWDRL.addListener(FWDRL.HIDE_COMPLETE, hideCompleteHandler);
-                FWDRL.addListener(FWDRL.UPDATE, updateHandler);
             });
+        </script>
 
-
-            function showStartHandler(e){
-                console.log(e);
+        <script>
+            //Change settings object
+            var props_obj = {
+                backgroundColor:"#0099FF",
+                backgroundOpacity:1,
+                buttonsAlignment:"out"
             }
 
-            function showCompleteHandler(e){
-                console.log(e);
+            //JSON playlist object
+            var rlobj_mixedPlaylist = {
+                playlistItems:[
+                    {
+                        url:"content/media/images/1.jpg",
+                        thumbnailPath:"content/media/thumbnails/image.jpg",
+                        description:"<p>Item description here.</p>"
+                    },
+                    {
+                        url:"content/media/videos/desktop.mp4,content/media/videos/mobile.mp4",
+                        posterPath:"content/media/posters/poster.jpg,content/media/posters/poster-mobile.jpg",
+                        thumbnailPath:"content/media/thumbnails/video2.jpg",
+                        width:600,
+                        height:300,
+                        description:"<p>Item description here</p>"
+                    },
+                    {
+                        url:"content/media/audio/01.mp3",
+                        thumbnailPath:"content/media/thumbnails/audio1.jpg",
+                        width:600,
+                        description:"<p>Item description here</p>"
+                    },
+                    {
+                        url:"https://www.youtube.com/watch?v=QdITKPWozF0",
+                        thumbnailPath:"content/media/thumbnails/youtube.jpg",
+                        width:800,
+                        height:600,
+                        description:"<p>Item description here</p>"
+                    },
+                    {
+                        url:"http://vimeo.com/34635906",
+                        thumbnailPath:"content/media/thumbnails/vimeo.jpg",
+                        width:400,
+                        height:600,
+                        description:"<p>Item description here</p>"
+                    },
+                    {
+                        url:"content/media/flash/fwd.swf",
+                        thumbnailPath:"content/media/thumbnails/flash.jpg",
+                        width:800,
+                        height:600,
+                        description:"<p>Item description here</p>"
+                    },
+                    {
+                        url:"https://www.google.com/maps/embed/v1/place?q=Bulevardul+Dacia,+Bucharest,+Romania&key=...",
+                        thumbnailPath:"content/media/thumbnails/maps.jpg",
+                        width:800,
+                        height:600,
+                        description:"<p>Item description here</p>"
+                    },
+                    {
+                        url:"RL_HTML",
+                        thumbnailPath:"content/media/thumbnails/html.jpg",
+                        width:800,
+                        height:600,
+                        html:"<p class='white'>HTML content here</p>"
+                    },
+                    {
+                        url:"RL_AJAX:content/test.html",
+                        thumbnailPath:"content/media/thumbnails/ajax.jpg",
+                        width:800,
+                        height:600,
+                    },
+                    {
+                        url:"http://www.webdesign-flash.ro/iframe.html",
+                        thumbnailPath:"content/media/thumbnails/iframe.jpg",
+                        width:800,
+                        height:600,
+                        description:"<p>Item description here</p>"
+                    }]
             }
 
-            function hideStartHandler(e){
-                console.log(e);
-            }
-
-            function hideCompleteHandler(e){
-                console.log(e);
-            }
-
-            function updateHandler(e){
-                console.log(e);
+            //JSON single item object
+            var rlobj_singleItem = {
+                playlistItems:[
+                    {
+                        url:"content/media/images/1.jpg",
+                        thumbnailPath:"content/media/thumbnails/image.jpg"
+                    }
+                ]
             }
         </script>
 

@@ -225,6 +225,7 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         };
         uploader.onCompleteAll = function() {
             console.info('onCompleteAll');
+            uploader.clearQueue();
             refreshFilesModel();
         };
 

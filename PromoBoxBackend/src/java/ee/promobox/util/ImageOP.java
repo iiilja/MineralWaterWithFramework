@@ -270,6 +270,28 @@ public class ImageOP {
         return this;
     }
 
+    public ImageOP backgraund(String backgraund) {
+        args.add("-backgraund");
+        args.add(backgraund);
+
+        return this;
+    }
+
+    public ImageOP gravity(String gravity) {
+        args.add("-gravity");
+        args.add(gravity);
+
+        return this;
+    }
+
+
+    public ImageOP extent(String extent) {
+        args.add("-extent");
+        args.add(extent);
+
+        return this;
+    }
+
     public ImageOP pointsize(int pointsize) {
         args.add("-pointsize");
         args.add(Integer.toString(pointsize));

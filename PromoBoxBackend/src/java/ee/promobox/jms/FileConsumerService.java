@@ -42,42 +42,29 @@ public class FileConsumerService extends MessageListenerAdapter {
         VideoOP videoConvert = null;
         switch (type.toUpperCase()) {
             case "JPG":
+                convertImage(f);
+                break;
             case "JPEG":
+                convertImage(f);
+                break;
             case "PNG":
-                imageConvert = new ImageOP(config.getImageMagick());
- 
-                imageConvert.input(f.getFile());
-                imageConvert.resize(1920, 1080);
-
-                imageConvert.processToFile(new File(f.getFile().getAbsolutePath() + "_output"));
-                
-                imageConvert = new ImageOP(config.getImageMagick());
-
-                imageConvert.input(f.getFile());
-                imageConvert.resize(320, 320);
-
-                imageConvert.processToFile(new File(f.getFile().getAbsolutePath() + "_thumb"));
+                convertImage(f);
                 break;
             case "MP3":
                 break;
             case "MP4":
+                convertVideo(f);
+                break;
+            case "m2ts":
+                convertVideo(f);
                 break;
             case "AAC":
                 break;
             case "AVI":
+                convertVideo(f);
+                break;
             case "MOV":
-                videoConvert = new VideoOP(config.getAvconv());
-                videoConvert.input(f.getFile())
-                        .codecVideo("libx264")
-                        .scale("-1:720")
-                        .preset("slow")
-                        .crf(19)
-                        .codecAudio("libvo_aacenc")
-                        .bitrateAudio("128k");
-                
-                videoConvert.processToFile(new File(f.getFile().getAbsolutePath() + "_output"));
-                        
-                
+                convertVideo(f);
                 break;
             case "PDF":
                 imageConvert = new ImageOP(config.getImageMagick());
@@ -88,10 +75,57 @@ public class FileConsumerService extends MessageListenerAdapter {
                 imageConvert.resize(25, null, true);
 
                 imageConvert.processToFile(new File(f.getFile().getAbsolutePath() + "_output"));
+
+                imageConvert = new ImageOP(config.getImageMagick());
+
+                imageConvert.input(new File(f.getFile().getAbsolutePath() + "_output"));
+
+                imageConvert.resize(250, 250);
+
+                imageConvert.backgraund("black");
+                imageConvert.gravity("center");
+                imageConvert.extent("250x250");
+
+                imageConvert.processToFile(new File(f.getFile().getAbsolutePath() + "_thumb"));
                 break;
             default:
                 break;
         }
+    }
+
+    private void convertImage(FileDto f) {
+        ImageOP imageConvert = new ImageOP(config.getImageMagick());
+
+        imageConvert.input(f.getFile());
+        imageConvert.resize(1920, 1080);
+
+        imageConvert.processToFile(new File(f.getFile().getAbsolutePath() + "_output"));
+
+        imageConvert = new ImageOP(config.getImageMagick());
+
+        imageConvert.input(f.getFile());
+
+        imageConvert.resize(250, 250);
+
+        imageConvert.backgraund("black");
+        imageConvert.gravity("center");
+        imageConvert.extent("250x250");
+
+        imageConvert.processToFile(new File(f.getFile().getAbsolutePath() + "_thumb"));
+    }
+
+    private void convertVideo(FileDto f) {
+        VideoOP videoConvert = new VideoOP(config.getAvconv());
+
+        videoConvert.input(f.getFile())
+                .codecVideo("libx264")
+                .scale("-1:720")
+                .preset("slow")
+                .crf(19)
+                .codecAudio("libvo_aacenc")
+                .bitrateAudio("128k");
+
+        videoConvert.processToFile(new File(f.getFile().getAbsolutePath() + "_output"));
     }
     
 }

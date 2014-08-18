@@ -180,17 +180,14 @@ public class FilesController {
 
 
                         campaign.setUpdateDate(new Date());
-                        userService.updateCampaign(campaign);
 
-                        // move file to the users folder and rename it to its DB id
+                        userService.updateCampaign(campaign);
                         
                         File f = new File(userFilePath + databaseFile.getId());
                         
-                        physicalFile.renameTo(f);
-                        
-                        // assign new name for file in database
-                        // databaseFile.setFilename(databaseFile.getId() + "." + fileType);
-                        //userService.updateFile(databaseFile);
+                        if (!physicalFile.renameTo(f)) {
+                            log.error("Error rename file");
+                        }
                         
 
                         FileDto fileDto = new FileDto(databaseFile.getId(), f, fileType);
@@ -200,6 +197,8 @@ public class FilesController {
                         response.setStatus(HttpServletResponse.SC_OK);
                         
                         RequestUtils.printResult(resp.toString(), response);
+                    } else {
+                        log.error("Invalid file type: " + fileType);
                     }
                 }
             }
@@ -292,6 +291,8 @@ public class FilesController {
 
         // if this file exists
         if (dbFile != null) {
+            response.setStatus(HttpServletResponse.SC_OK);
+
             File file = null;
             OutputStream outputStream = response.getOutputStream();
 
@@ -313,7 +314,6 @@ public class FilesController {
 
             IOUtils.closeQuietly(outputStream);
 
-            response.setStatus(HttpServletResponse.SC_OK);
         } else {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
         }

@@ -150,6 +150,10 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
             console.log($scope.campaign);
             $scope.campaign_form = {campaign_status: $scope.campaign.status, filesArray: $scope.campaign.files, campaign_name: $scope.campaign.name, campaign_time: $scope.campaign.duration, campaign_order: $scope.campaign.sequence, campaign_start: $scope.campaign.start, campaign_finish: $scope.campaign.finish};
         });
+
+        $($scope.timestart).datetimepicker();
+        $($scope.#timefinish).datetimepicker();
+
         var dataToTime = function(data) {
             return new Date(data).getTime() + 15*60*1000;
         };

@@ -2,41 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9b44007b-a825-43ba-8a60-51fd2b364aed" name="Default" comment="">
-      <change type="DELETED" beforePath="C:\aHmmProject\Web\GitProject\monitor-sites\PromoboxFrontend\public\content\media\audio\audio1.mp3" afterPath="" />
-      <change type="DELETED" beforePath="C:\aHmmProject\Web\GitProject\monitor-sites\PromoboxFrontend\public\content\media\flash\fwd.swf" afterPath="" />
-      <change type="DELETED" beforePath="C:\aHmmProject\Web\GitProject\monitor-sites\PromoboxFrontend\public\content\media\images\1.jpg" afterPath="" />
-      <change type="DELETED" beforePath="C:\aHmmProject\Web\GitProject\monitor-sites\PromoboxFrontend\public\content\media\images\2.jpg" afterPath="" />
-      <change type="DELETED" beforePath="C:\aHmmProject\Web\GitProject\monitor-sites\PromoboxFrontend\public\content\media\images\3.jpg" afterPath="" />
-      <change type="DELETED" beforePath="C:\aHmmProject\Web\GitProject\monitor-sites\PromoboxFrontend\public\content\media\images\4.jpg" afterPath="" />
-      <change type="DELETED" beforePath="C:\aHmmProject\Web\GitProject\monitor-sites\PromoboxFrontend\public\content\media\images\5.jpg" afterPath="" />
-      <change type="DELETED" beforePath="C:\aHmmProject\Web\GitProject\monitor-sites\PromoboxFrontend\public\content\media\images\6.jpg" afterPath="" />
-      <change type="DELETED" beforePath="C:\aHmmProject\Web\GitProject\monitor-sites\PromoboxFrontend\public\content\media\images\7.jpg" afterPath="" />
-      <change type="DELETED" beforePath="C:\aHmmProject\Web\GitProject\monitor-sites\PromoboxFrontend\public\content\media\images\8.jpg" afterPath="" />
-      <change type="DELETED" beforePath="C:\aHmmProject\Web\GitProject\monitor-sites\PromoboxFrontend\public\content\media\posters\video-mobile.jpg" afterPath="" />
-      <change type="DELETED" beforePath="C:\aHmmProject\Web\GitProject\monitor-sites\PromoboxFrontend\public\content\media\posters\video.jpg" afterPath="" />
-      <change type="DELETED" beforePath="C:\aHmmProject\Web\GitProject\monitor-sites\PromoboxFrontend\public\content\media\thumbnails\1.jpg" afterPath="" />
-      <change type="DELETED" beforePath="C:\aHmmProject\Web\GitProject\monitor-sites\PromoboxFrontend\public\content\media\thumbnails\2.jpg" afterPath="" />
-      <change type="DELETED" beforePath="C:\aHmmProject\Web\GitProject\monitor-sites\PromoboxFrontend\public\content\media\thumbnails\3.jpg" afterPath="" />
-      <change type="DELETED" beforePath="C:\aHmmProject\Web\GitProject\monitor-sites\PromoboxFrontend\public\content\media\thumbnails\4.jpg" afterPath="" />
-      <change type="DELETED" beforePath="C:\aHmmProject\Web\GitProject\monitor-sites\PromoboxFrontend\public\content\media\thumbnails\5.jpg" afterPath="" />
-      <change type="DELETED" beforePath="C:\aHmmProject\Web\GitProject\monitor-sites\PromoboxFrontend\public\content\media\thumbnails\6.jpg" afterPath="" />
-      <change type="DELETED" beforePath="C:\aHmmProject\Web\GitProject\monitor-sites\PromoboxFrontend\public\content\media\thumbnails\7.jpg" afterPath="" />
-      <change type="DELETED" beforePath="C:\aHmmProject\Web\GitProject\monitor-sites\PromoboxFrontend\public\content\media\thumbnails\8.jpg" afterPath="" />
-      <change type="DELETED" beforePath="C:\aHmmProject\Web\GitProject\monitor-sites\PromoboxFrontend\public\content\media\thumbnails\ajax.jpg" afterPath="" />
-      <change type="DELETED" beforePath="C:\aHmmProject\Web\GitProject\monitor-sites\PromoboxFrontend\public\content\media\thumbnails\audio1.jpg" afterPath="" />
-      <change type="DELETED" beforePath="C:\aHmmProject\Web\GitProject\monitor-sites\PromoboxFrontend\public\content\media\thumbnails\flash.jpg" afterPath="" />
-      <change type="DELETED" beforePath="C:\aHmmProject\Web\GitProject\monitor-sites\PromoboxFrontend\public\content\media\thumbnails\html.jpg" afterPath="" />
-      <change type="DELETED" beforePath="C:\aHmmProject\Web\GitProject\monitor-sites\PromoboxFrontend\public\content\media\thumbnails\iframe.jpg" afterPath="" />
-      <change type="DELETED" beforePath="C:\aHmmProject\Web\GitProject\monitor-sites\PromoboxFrontend\public\content\media\thumbnails\image.jpg" afterPath="" />
-      <change type="DELETED" beforePath="C:\aHmmProject\Web\GitProject\monitor-sites\PromoboxFrontend\public\content\media\thumbnails\maps.jpg" afterPath="" />
-      <change type="DELETED" beforePath="C:\aHmmProject\Web\GitProject\monitor-sites\PromoboxFrontend\public\content\media\thumbnails\video2.jpg" afterPath="" />
-      <change type="DELETED" beforePath="C:\aHmmProject\Web\GitProject\monitor-sites\PromoboxFrontend\public\content\media\thumbnails\vimeo.jpg" afterPath="" />
-      <change type="DELETED" beforePath="C:\aHmmProject\Web\GitProject\monitor-sites\PromoboxFrontend\public\content\media\thumbnails\youtube.jpg" afterPath="" />
-      <change type="DELETED" beforePath="C:\aHmmProject\Web\GitProject\monitor-sites\PromoboxFrontend\public\content\media\videos\desktop.mp4" afterPath="" />
-      <change type="DELETED" beforePath="C:\aHmmProject\Web\GitProject\monitor-sites\PromoboxFrontend\public\content\media\videos\mobile.mp4" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/PromoboxFrontend.iml" afterPath="$PROJECT_DIR$/PromoboxFrontend.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/js/app.js" afterPath="$PROJECT_DIR$/public/js/app.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/views/campaign_edit.html" afterPath="$PROJECT_DIR$/public/views/campaign_edit.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/index.html" afterPath="$PROJECT_DIR$/public/index.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
@@ -71,27 +39,28 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="app.js" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="app.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/public/js/app.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.64888126" vertical-offset="3482" max-vertical-offset="4896">
+            <state vertical-scroll-proportion="0.0" vertical-offset="3737" max-vertical-offset="4896">
               <caret line="227" column="34" selection-start-line="227" selection-start-column="34" selection-end-line="227" selection-end-column="34" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="campaign_edit.html" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="campaign_edit.html" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/public/views/campaign_edit.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-43.807693" vertical-offset="408" max-vertical-offset="2941">
-              <caret line="91" column="97" selection-start-line="91" selection-start-column="89" selection-end-line="91" selection-end-column="110" />
+            <state vertical-scroll-proportion="0.55135137" vertical-offset="0" max-vertical-offset="2941">
+              <caret line="18" column="77" selection-start-line="18" selection-start-column="77" selection-end-line="18" selection-end-column="77" />
               <folding>
                 <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#input#0;n#div#1;n#div#0;n#form#0;n#div#0;n#div#2;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#div#0;n#div#0;n#div#1;n#form#0;n#div#0;n#div#2;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#div#0;n#div#0;n#div#0;n#div#1;n#form#0;n#div#0;n#div#2;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#img#0;n#div#0;n#div#0;n#div#0;n#div#1;n#form#0;n#div#0;n#div#2;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#i#0;n#h6#0;n#div#0;n#div#0;n#div#0;n#div#1;n#form#0;n#div#0;n#div#2;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#ul#0;n#div#0;n#div#1;n#form#0;n#div#0;n#div#2;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#div#0;n#div#2;n#form#0;n#div#0;n#div#2;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#div#0;n#td#2;n#tr#0;n#tbody#0;n#table#0;n#div#1;n#div#0;n#div#2;n#form#0;n#div#0;n#div#2;n#!!top" expanded="true" />
@@ -107,8 +76,8 @@
       <file leaf-file-name="index.html" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/public/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-3.3461537" vertical-offset="763" max-vertical-offset="4012">
-              <caret line="50" column="40" selection-start-line="50" selection-start-column="40" selection-end-line="50" selection-end-column="40" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="1897" max-vertical-offset="2465">
+              <caret line="128" column="17" selection-start-line="128" selection-start-column="17" selection-end-line="128" selection-end-column="17" />
               <folding />
             </state>
           </provider>
@@ -152,9 +121,9 @@
         <option value="$PROJECT_DIR$/public/views/list.html" />
         <option value="$PROJECT_DIR$/public/js/services.js" />
         <option value="$PROJECT_DIR$/public/css/styles.css" />
+        <option value="$PROJECT_DIR$/public/js/app.js" />
         <option value="$PROJECT_DIR$/public/index.html" />
         <option value="$PROJECT_DIR$/public/views/campaign_edit.html" />
-        <option value="$PROJECT_DIR$/public/js/app.js" />
       </list>
     </option>
   </component>
@@ -210,6 +179,7 @@
       <sortByType />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -302,7 +272,6 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
       <pane id="PackagesPane" />
     </panes>
   </component>
@@ -351,14 +320,6 @@
     </key>
   </component>
   <component name="RunManager">
-    <configuration default="true" type="DartUnitRunConfigurationType" factoryName="DartUnit">
-      <option name="VMOptions" />
-      <option name="arguments" />
-      <option name="filePath" />
-      <option name="scope" value="ALL" />
-      <option name="testName" />
-      <method />
-    </configuration>
     <configuration default="true" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application">
       <option name="VMOptions" />
       <option name="arguments" />
@@ -369,14 +330,12 @@
       <option name="showConsoleOnStdOut" value="false" />
       <method />
     </configuration>
-    <configuration default="true" type="CucumberJavaScriptRunConfigurationType" factoryName="Cucumber.js">
-      <option name="cucumberJsArguments" />
-      <option name="executablePath" />
+    <configuration default="true" type="DartUnitRunConfigurationType" factoryName="DartUnit">
+      <option name="VMOptions" />
+      <option name="arguments" />
       <option name="filePath" />
-      <method />
-    </configuration>
-    <configuration default="true" type="JavaScriptTestRunnerKarma" factoryName="Karma" config-file="">
-      <envs />
+      <option name="scope" value="ALL" />
+      <option name="testName" />
       <method />
     </configuration>
     <configuration default="true" type="JSTestDriver:ConfigurationType" factoryName="JsTestDriver">
@@ -386,14 +345,27 @@
       <setting name="preferredDebugBrowser" value="Chrome" />
       <method />
     </configuration>
+    <configuration default="true" type="JavaScriptTestRunnerKarma" factoryName="Karma" config-file="">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="CucumberJavaScriptRunConfigurationType" factoryName="Cucumber.js">
+      <option name="cucumberJsArguments" />
+      <option name="executablePath" />
+      <option name="filePath" />
+      <method />
+    </configuration>
     <configuration default="true" type="JavaScriptTraceType" factoryName="Spy-js" node="" config="" has-config="false" system-proxy="true" proxy-port="3546">
+      <method />
+    </configuration>
+    <configuration default="true" type="JavascriptDebugType" factoryName="JavaScript Debug">
       <method />
     </configuration>
     <configuration default="true" type="NodeWebKit" factoryName="Node-webkit">
       <option name="name" value="" />
       <method />
     </configuration>
-    <configuration default="true" type="JavascriptDebugType" factoryName="JavaScript Debug">
+    <configuration default="true" type="NodeJSConfigurationType" factoryName="Node.js" working-dir="">
       <method />
     </configuration>
     <configuration default="true" type="XSLT" factoryName="XSLT">
@@ -410,9 +382,6 @@
       <OutputType value="CONSOLE" save-to-file="false" />
       <FileType name="XML" />
       <JdkChoice value="FROM_MODULE" />
-      <method />
-    </configuration>
-    <configuration default="true" type="NodeJSConfigurationType" factoryName="Node.js" working-dir="">
       <method />
     </configuration>
     <list size="0" />
@@ -525,7 +494,7 @@
     <option name="totallyTimeSpent" value="51159000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1382" height="754" extended-state="7" />
+    <frame x="-8" y="-8" width="1382" height="754" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.23151125" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -558,10 +527,10 @@
     <layout-to-restore>
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.23151125" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.16051364" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" />
+      <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.056962024" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -579,8 +548,8 @@
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.329582" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2742616" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout-to-restore>
   </component>
@@ -657,6 +626,7 @@
             <element signature="n#style#0;n#div#0;n#div#0;n#div#1;n#form#0;n#div#0;n#div#2;n#!!top" expanded="true" />
             <element signature="n#style#0;n#div#0;n#div#0;n#div#0;n#div#1;n#form#0;n#div#0;n#div#2;n#!!top" expanded="true" />
             <element signature="n#style#0;n#img#0;n#div#0;n#div#0;n#div#0;n#div#1;n#form#0;n#div#0;n#div#2;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#i#0;n#h6#0;n#div#0;n#div#0;n#div#0;n#div#1;n#form#0;n#div#0;n#div#2;n#!!top" expanded="true" />
             <element signature="n#style#0;n#ul#0;n#div#0;n#div#1;n#form#0;n#div#0;n#div#2;n#!!top" expanded="true" />
             <element signature="n#style#0;n#div#0;n#div#2;n#form#0;n#div#0;n#div#2;n#!!top" expanded="true" />
             <element signature="n#style#0;n#div#0;n#td#2;n#tr#0;n#tbody#0;n#table#0;n#div#1;n#div#0;n#div#2;n#form#0;n#div#0;n#div#2;n#!!top" expanded="true" />
@@ -951,7 +921,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.9414802" vertical-offset="104955" max-vertical-offset="105604">
           <caret line="6206" column="0" selection-start-line="6206" selection-start-column="0" selection-end-line="6206" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1009,16 +978,33 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/public/js/app.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="3737" max-vertical-offset="4896">
+          <caret line="227" column="34" selection-start-line="227" selection-start-column="34" selection-end-line="227" selection-end-column="34" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="1897" max-vertical-offset="2465">
+          <caret line="128" column="17" selection-start-line="128" selection-start-column="17" selection-end-line="128" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/public/views/campaign_edit.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-43.807693" vertical-offset="408" max-vertical-offset="2941">
-          <caret line="91" column="97" selection-start-line="91" selection-start-column="89" selection-end-line="91" selection-end-column="110" />
+        <state vertical-scroll-proportion="0.55135137" vertical-offset="0" max-vertical-offset="2941">
+          <caret line="18" column="77" selection-start-line="18" selection-start-column="77" selection-end-line="18" selection-end-column="77" />
           <folding>
             <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#input#0;n#div#1;n#div#0;n#form#0;n#div#0;n#div#2;n#!!top" expanded="true" />
             <element signature="n#style#0;n#div#0;n#div#0;n#div#1;n#form#0;n#div#0;n#div#2;n#!!top" expanded="true" />
             <element signature="n#style#0;n#div#0;n#div#0;n#div#0;n#div#1;n#form#0;n#div#0;n#div#2;n#!!top" expanded="true" />
             <element signature="n#style#0;n#img#0;n#div#0;n#div#0;n#div#0;n#div#1;n#form#0;n#div#0;n#div#2;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#i#0;n#h6#0;n#div#0;n#div#0;n#div#0;n#div#1;n#form#0;n#div#0;n#div#2;n#!!top" expanded="true" />
             <element signature="n#style#0;n#ul#0;n#div#0;n#div#1;n#form#0;n#div#0;n#div#2;n#!!top" expanded="true" />
             <element signature="n#style#0;n#div#0;n#div#2;n#form#0;n#div#0;n#div#2;n#!!top" expanded="true" />
             <element signature="n#style#0;n#div#0;n#td#2;n#tr#0;n#tbody#0;n#table#0;n#div#1;n#div#0;n#div#2;n#form#0;n#div#0;n#div#2;n#!!top" expanded="true" />
@@ -1027,22 +1013,6 @@
             <element signature="n#style#0;n#div#3;n#div#0;n#div#3;n#form#0;n#div#0;n#div#2;n#!!top" expanded="true" />
             <element signature="n#style#0;n#button#1;n#div#0;n#div#4;n#form#0;n#div#0;n#div#2;n#!!top" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-3.3461537" vertical-offset="763" max-vertical-offset="4012">
-          <caret line="50" column="40" selection-start-line="50" selection-start-column="40" selection-end-line="50" selection-end-column="40" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/js/app.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.64888126" vertical-offset="3482" max-vertical-offset="4896">
-          <caret line="227" column="34" selection-start-line="227" selection-start-column="34" selection-end-line="227" selection-end-column="34" />
-          <folding />
         </state>
       </provider>
     </entry>

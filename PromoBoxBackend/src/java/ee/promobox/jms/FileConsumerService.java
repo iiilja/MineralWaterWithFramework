@@ -107,7 +107,7 @@ public class FileConsumerService extends MessageListenerAdapter {
 
         imageConvert.resize(250, 250);
 
-        imageConvert.background("black");
+        imageConvert.background("white");
         imageConvert.gravity("center");
         imageConvert.extent("250x250");
 

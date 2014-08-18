@@ -159,6 +159,10 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
             });
         };
 
+        $scope.openPlayer = function(key) {
+            FWDRL.show('playlist', key);
+        }
+
         $scope.inArchive = function (id) {
             Files.arhiveFiles({token: token.get(), id: id}, function(response){
                 sysMessage.delete_s('Файл удалён')

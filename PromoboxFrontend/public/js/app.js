@@ -236,21 +236,6 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         console.info('uploader', uploader);
     }]);
 
-app.controller('DatepickerCtrl', ['$scope',
-    function ($scope) {
-        $scope.open = function ($event) {
-            $event.preventDefault();
-            $event.stopPropagation();
-
-            $scope.opened = true;
-        };
-
-        $scope.dateOptions = {
-            formatYear: 'yy',
-            startingDay: 1
-        };
-    }]);
-
 app.controller('CampaignsController', ['$scope', 'token', 'Campaign', 'sysMessage', '$rootScope',
     function ($scope, token, Campaign, sysMessage, $rootScope) {
         if (token.check()) {

@@ -134,27 +134,32 @@
                     <div class="row" style="margin-top: 10px;">
                         <div class="col-md-5 col-xs-3 col-sm-4"><label>Дата начала</label></div>
                         <div class="col-md-7 col-xs-9 col-sm-8">
-                            <p class="input-group" ng-controller="DatepickerCtrl">
-                                <input type="text" class="form-control" datepicker-popup="dd-MMMM-yyyy" ng-model="campaign_form.campaign_start" is-open="opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" />
-                                      <span class="input-group-btn">
-                                        <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
-                                      </span>
-                            </p>
+                            <div class='input-group date' id='start'>
+                                <input type='text' class="form-control" ng-model="campaign_form.campaign_start" />
+                                <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
+                                </span>
+                            </div>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-5 col-xs-3 col-sm-4"><label>Дата окончания</label></div>
                         <div class="col-md-7 col-xs-9 col-sm-8">
-                            <p class="input-group" ng-controller="DatepickerCtrl">
-                                <input type="text" class="form-control" datepicker-popup="dd-MMMM-yyyy" ng-model="campaign_form.campaign_finish" is-open="opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" />
-                                      <span class="input-group-btn">
-                                        <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
-                                      </span>
-                            </p>
+                            <div class='input-group date' id='finish'>
+                                <input type='text' class="form-control" ng-model="campaign_form.campaign_finish" />
+                                <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <script type="text/javascript">
+                $(function () {
+                    $('#start').datetimepicker();
+                    $('#finish').datetimepicker();
+                });
+            </script>
 
             <div class="row">
                 <div class="form-group">

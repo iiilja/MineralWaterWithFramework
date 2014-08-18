@@ -5,12 +5,18 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ImageOP {
     //private static final Log log = LogFactory.getLog(ImageOP.class);
+
+    private final static Logger log = LoggerFactory.getLogger(
+            ImageOP.class);
 
     private List<String> args = new ArrayList<String>();
     private byte[] inputData;
@@ -270,9 +276,9 @@ public class ImageOP {
         return this;
     }
 
-    public ImageOP backgraund(String backgraund) {
-        args.add("-backgraund");
-        args.add(backgraund);
+    public ImageOP background(String background) {
+        args.add("-background");
+        args.add(background);
 
         return this;
     }
@@ -391,7 +397,8 @@ public class ImageOP {
         List<String> arguments = new ArrayList<String>(args);
         arguments.add(out);
 
-        System.out.println(arguments);
+        log.info(toString());
+
         try {
             Process process = new ProcessBuilder(arguments).start();
 
@@ -410,18 +417,18 @@ public class ImageOP {
             try {
                 errorStream = process.getErrorStream();
                 error = IOUtils.toString(errorStream);
+
             } finally {
                 IOUtils.closeQuietly(errorStream);
             }
 
             if (process.waitFor() != 0) {
-                System.err.print(error);
+                log.error(error);
             } else {
                 return true;
             }
         } catch (Exception ex) {
-            System.err.print(ex);
-            ex.printStackTrace();
+            log.error(ex.getMessage(), ex);
         }
 
         return false;

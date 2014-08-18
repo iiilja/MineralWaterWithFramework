@@ -263,7 +263,11 @@ public class FilesController {
                 response.setContentType("audio/mpeg");
             }
 
-            File file = new File(config.getDataDir() + dbFile.getClientId() + File.separator + dbFile.getId());
+            File file = new File(config.getDataDir() + dbFile.getClientId() + File.separator + dbFile.getId() + "_output");
+
+            if (!file.exists()) {
+                file = new File(config.getDataDir() + dbFile.getClientId() + File.separator + dbFile.getId());
+            }
 
             FileInputStream fileInputStream = new FileInputStream(file);
             OutputStream outputStream = response.getOutputStream();

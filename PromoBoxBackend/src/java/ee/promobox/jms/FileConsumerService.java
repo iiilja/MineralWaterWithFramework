@@ -39,7 +39,7 @@ public class FileConsumerService extends MessageListenerAdapter {
         String type = f.getExtention();
         
         ImageOP imageConvert = null;  
-        VideoOP videoConvert = null;
+
         switch (type.toUpperCase()) {
             case "JPG":
                 convertImage(f);
@@ -82,7 +82,7 @@ public class FileConsumerService extends MessageListenerAdapter {
 
                 imageConvert.resize(250, 250);
 
-                imageConvert.backgraund("black");
+                imageConvert.background("white");
                 imageConvert.gravity("center");
                 imageConvert.extent("250x250");
 
@@ -107,7 +107,7 @@ public class FileConsumerService extends MessageListenerAdapter {
 
         imageConvert.resize(250, 250);
 
-        imageConvert.backgraund("black");
+        imageConvert.background("black");
         imageConvert.gravity("center");
         imageConvert.extent("250x250");
 

@@ -134,23 +134,19 @@
                     <div class="row" style="margin-top: 10px;">
                         <div class="col-md-5 col-xs-3 col-sm-4"><label>Дата начала</label></div>
                         <div class="col-md-7 col-xs-9 col-sm-8">
-                            <div class='input-group date' id='timestart'>
-                                <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
-                                <input ng-model="campaign_form.campaign_start" type='text' class="form-control" />
+                            <div class="inner-addon left-addon" id='timestart'>
+                                <i class="glyphicon glyphicon-calendar"></i>
+                                <input type='text' class="form-control" ng-model="campaign_form.campaign_start" />
                             </div>
                         </div>
                     </div>
-                    <div class="row">
+                    <div class="row" style="margin-top: 10px;">
                         <div class="col-md-5 col-xs-3 col-sm-4"><label>Дата окончания</label></div>
                         <div class="col-md-7 col-xs-9 col-sm-8">
-                            <p class="input-group">
-                                <div class="form-group">
-                                    <div class='input-group date' id='timefinish'>
-                                        <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
-                                        <input ng-model="campaign_form.campaign_finish" type='text' class="form-control" />
-                                    </div>
-                                </div>
-                            </p>
+                            <div class="inner-addon left-addon" id='timefinish'>
+                                <i class="glyphicon glyphicon-calendar"></i>
+                                <input type='text' class="form-control" ng-model="campaign_form.campaign_finish" />
+                            </div>
                         </div>
                     </div>
                 </div>

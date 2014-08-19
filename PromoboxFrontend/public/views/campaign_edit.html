@@ -134,22 +134,23 @@
                     <div class="row" style="margin-top: 10px;">
                         <div class="col-md-5 col-xs-3 col-sm-4"><label>Дата начала</label></div>
                         <div class="col-md-7 col-xs-9 col-sm-8">
-                            <div class="input-group inner-addon left-addon" id='timestart'>
-                                <i class="glyphicon glyphicon-calendar"></i>
-                                <input type='text' class="form-control" />
+                            <div class='input-group date' id='timestart'>
+                                <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                                <input ng-model="campaign_form.campaign_start" type='text' class="form-control" />
                             </div>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-5 col-xs-3 col-sm-4"><label>Дата окончания</label></div>
                         <div class="col-md-7 col-xs-9 col-sm-8">
-                            <div class="form-group">
-                                <div class='input-group date' id='datetimepicker1'>
-                                    <input type='text' class="form-control" />
-                                        <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
-                                        </span>
+                            <p class="input-group">
+                                <div class="form-group">
+                                    <div class='input-group date' id='timefinish'>
+                                        <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                                        <input ng-model="campaign_form.campaign_finish" type='text' class="form-control" />
                                     </div>
-                            </div>
+                                </div>
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -158,22 +159,9 @@
 
             <script type="text/javascript">
                 jQuery(function () {
-                    jQuery('#datetimepicker1').datetimepicker();
+                    jQuery('#timestart').datetimepicker();
+                    jQuery('#timefinish').datetimepicker();
                 });
-
-
-//                jQuery(function () {
-//                    ng-model="campaign_form.campaign_start"
-//                    ng-model="campaign_form.campaign_finish"
-//                    <p class="input-group" ng-controller="DatepickerCtrl">
-//                            <input type="text" class="form-control" datepicker-popup="dd-MMMM-yyyy" ng-model="campaign_form.campaign_finish" is-open="opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" />
-//                            <span class="input-group-btn">
-//                            <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
-//                    </span>
-//                    </p>
-//                    jQuery('#timestart').datetimepicker();
-//                    jQuery('#timefinish').datetimepicker();
-//                });
             </script>
 
             <div class="row">

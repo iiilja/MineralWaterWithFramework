@@ -143,9 +143,12 @@
                     <div class="row">
                         <div class="col-md-5 col-xs-3 col-sm-4"><label>Дата окончания</label></div>
                         <div class="col-md-7 col-xs-9 col-sm-8">
-                            <div class="input-group inner-addon left-addon" id='timefinish'>
-                                <i class="glyphicon glyphicon-calendar"></i>
-                                <input type='text' class="form-control" />
+                            <div class="form-group">
+                                <div class='input-group date' id='datetimepicker1'>
+                                    <input type='text' class="form-control" />
+                                        <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
+                                        </span>
+                                    </div>
                             </div>
                         </div>
                     </div>
@@ -154,7 +157,12 @@
 
 
             <script type="text/javascript">
-                jQuery(function () {
+                JQuery(function () {
+                    JQuery('#datetimepicker1').datetimepicker();
+                });
+
+
+//                jQuery(function () {
 //                    ng-model="campaign_form.campaign_start"
 //                    ng-model="campaign_form.campaign_finish"
 //                    <p class="input-group" ng-controller="DatepickerCtrl">
@@ -163,9 +171,9 @@
 //                            <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
 //                    </span>
 //                    </p>
-                    jQuery('#timestart').datetimepicker();
-                    jQuery('#timefinish').datetimepicker();
-                });
+//                    jQuery('#timestart').datetimepicker();
+//                    jQuery('#timefinish').datetimepicker();
+//                });
             </script>
 
             <div class="row">

@@ -7,6 +7,7 @@
 package ee.promobox.entity;
 
 import java.io.Serializable;
+import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,6 +17,8 @@ import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -35,8 +38,10 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "CampaignsFiles.findByOrderId", query = "SELECT c FROM CampaignsFiles c WHERE c.orderId = :orderId")})
 public class CampaignsFiles implements Serializable {
     
-    public static final int STATUS_ACTIVE = 0;
-    public static final int STATUS_ARCHIVED = 1;
+    public static final int STATUS_UPLOADED = 0;
+    public static final int STATUS_CONVERTED = 1;
+    public static final int STATUS_ACTIVE = 2;
+    public static final int STATUS_ARCHIVED = 3;
     
     private static final long serialVersionUID = 1L;
     @Id
@@ -56,6 +61,16 @@ public class CampaignsFiles implements Serializable {
     private Integer orderId;
     @Column(name = "status")
     private Integer status;
+    
+    @Column(name = "size")
+    private Integer size;
+    
+    @Column(name = "filename")
+    private String filename;
+    
+    @Column(name = "created_dt")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdDt;
 
     public CampaignsFiles() {
     }
@@ -143,6 +158,48 @@ public class CampaignsFiles implements Serializable {
     @Override
     public String toString() {
         return "ee.promobox.entity.CampaignsFiles[ id=" + id + " ]";
+    }
+
+    /**
+     * @return the size
+     */
+    public Integer getSize() {
+        return size;
+    }
+
+    /**
+     * @param size the size to set
+     */
+    public void setSize(Integer size) {
+        this.size = size;
+    }
+
+    /**
+     * @return the createdDt
+     */
+    public Date getCreatedDt() {
+        return createdDt;
+    }
+
+    /**
+     * @param createdDt the createdDt to set
+     */
+    public void setCreatedDt(Date createdDt) {
+        this.createdDt = createdDt;
+    }
+
+    /**
+     * @return the filename
+     */
+    public String getFilename() {
+        return filename;
+    }
+
+    /**
+     * @param filename the filename to set
+     */
+    public void setFilename(String filename) {
+        this.filename = filename;
     }
     
 }

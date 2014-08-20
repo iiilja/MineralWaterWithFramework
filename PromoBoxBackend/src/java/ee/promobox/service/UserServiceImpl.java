@@ -65,12 +65,22 @@ public class UserServiceImpl implements UserService {
         return q.list();
     }
 
-    public CampaignsFiles findCampaignFile(int fileId, int clientId) {
+    public CampaignsFiles findCampaignFile(int id, int clientId) {
         Session session = sessionFactory.getCurrentSession();
 
-        Query q = session.createQuery("from CampaignsFiles where fileId  = :fileId and clientId = :clientId");
-        q.setParameter("fileId", fileId);
+        Query q = session.createQuery("from CampaignsFiles where id  = :id and clientId = :clientId");
+        q.setParameter("id", id);
         q.setParameter("clientId", clientId);
+
+        return (CampaignsFiles) q.uniqueResult();
+
+    }
+    
+    public CampaignsFiles findCampaignFileById(int id) {
+        Session session = sessionFactory.getCurrentSession();
+
+        Query q = session.createQuery("from CampaignsFiles where id  = :id");
+        q.setParameter("id", id);
 
         return (CampaignsFiles) q.uniqueResult();
 
@@ -85,12 +95,14 @@ public class UserServiceImpl implements UserService {
         return q.list();
     }
 
-    public List<Files> findUsersCampaignFiles(int campaignId, int clientId) {
+    public List<CampaignsFiles> findUsersCampaignFiles(int campaignId, int clientId) {
         Session session = sessionFactory.getCurrentSession();
 
-        Query q = session.createQuery("SELECT f FROM Files f, CampaignsFiles cf "
-                + "WHERE cf.clientId = :clientId AND cf.adCampaignsId = :campaignId AND cf.status = 0 AND f.id = cf.fileId");
+        Query q = session.createQuery("SELECT cf FROM CampaignsFiles cf "
+                + "WHERE cf.clientId = :clientId AND cf.adCampaignsId = :campaignId AND cf.status != :status");
+        
         q.setParameter("clientId", clientId);
+        q.setParameter("status", CampaignsFiles.STATUS_ARCHIVED);
         q.setParameter("campaignId", campaignId);
 
         return q.list();

@@ -6,6 +6,7 @@
 package ee.promobox.controller;
 
 import ee.promobox.entity.AdCampaigns;
+import ee.promobox.entity.CampaignsFiles;
 import ee.promobox.entity.Devices;
 import ee.promobox.entity.DevicesCampaigns;
 import ee.promobox.entity.Files;
@@ -74,19 +75,21 @@ public class DevicesController {
                     campaign.put("sequence", ad.getSequence());
                     campaign.put("updateDate", ad.getUpdateDate().getTime());
 
-                    List<Files> campaignFiles = userService.findUsersCampaignFiles(dc.getAdCampaignsId(), d.getClientId());
+                    List<CampaignsFiles> campaignFiles = userService.findUsersCampaignFiles(dc.getAdCampaignsId(), d.getClientId());
 
                     if (!campaignFiles.isEmpty()) {
                         JSONArray jsonCampaignFiles = new JSONArray();
 
-                        for (Files file : campaignFiles) {
-                            JSONObject jsonCampaignFile = new JSONObject();
+                        for (CampaignsFiles file : campaignFiles) {
+                            if (file.getStatus() == CampaignsFiles.STATUS_ACTIVE) {
+                                JSONObject jsonCampaignFile = new JSONObject();
 
-                            jsonCampaignFile.put("id", file.getId());
-                            jsonCampaignFile.put("type", file.getFileType().intValue());
-                            jsonCampaignFile.put("size", file.getSize());
+                                jsonCampaignFile.put("id", file.getId());
+                                jsonCampaignFile.put("type", file.getFileType().intValue());
+                                jsonCampaignFile.put("size", file.getSize());
 
-                            jsonCampaignFiles.put(jsonCampaignFile);
+                                jsonCampaignFiles.put(jsonCampaignFile);
+                            }
                         }
 
                         campaign.put("files", jsonCampaignFiles);

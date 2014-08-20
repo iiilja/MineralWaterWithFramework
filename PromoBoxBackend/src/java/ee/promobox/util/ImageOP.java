@@ -38,6 +38,11 @@ public class ImageOP {
 
         return this;
     }
+    
+    public ImageOP page(int page) {
+        args.set(args.size()-1, args.get(args.size()-1) + "[" + page + "]");
+        return this;
+    }
 
     public ImageOP strip() {
         args.add("-strip");
@@ -310,10 +315,18 @@ public class ImageOP {
 
         return this;
     }
+    
 
     public ImageOP density(int density) {
         args.add("-density");
         args.add(Integer.toString(density));
+
+        return this;
+    }
+    
+    public ImageOP geometry(int geometry) {
+        args.add("-geometry");
+        args.add(Integer.toString(geometry));
 
         return this;
     }

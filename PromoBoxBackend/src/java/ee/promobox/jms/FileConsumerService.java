@@ -99,11 +99,12 @@ public class FileConsumerService extends MessageListenerAdapter {
     private boolean convertPdf(FileDto f) {
         ImageOP imageConvert = new ImageOP(config.getImageMagick());
 
-        imageConvert.input(f.getFile());
-
         imageConvert.density(300);
-        imageConvert.resize(25, null, true);
-
+        imageConvert.input(f.getFile());
+        imageConvert.page(0);
+                
+        imageConvert.outputFormat("png");
+        
         if (imageConvert.processToFile(new File(f.getFile().getParent() + File.separator + f.getId() + "_output"))) {
 
             imageConvert = new ImageOP(config.getImageMagick());
@@ -142,6 +143,7 @@ public class FileConsumerService extends MessageListenerAdapter {
         ImageOP imageConvert = new ImageOP(config.getImageMagick());
 
         imageConvert.input(f.getFile());
+        imageConvert.outputFormat("png");
         imageConvert.resize(1920, 1080);
 
         imageConvert.processToFile(new File(f.getFile().getParent() + File.separator + f.getId() + "_output"));
@@ -149,7 +151,7 @@ public class FileConsumerService extends MessageListenerAdapter {
         imageConvert = new ImageOP(config.getImageMagick());
 
         imageConvert.input(f.getFile());
-
+        imageConvert.outputFormat("png");
         imageConvert.resize(250, 250);
 
         imageConvert.background("white");
@@ -161,7 +163,28 @@ public class FileConsumerService extends MessageListenerAdapter {
 
     private boolean convertVideo(FileDto f) {
         VideoOP videoConvert = new VideoOP(config.getAvconv());
+        
+        videoConvert.input(f.getFile());
+        videoConvert.thumbnail();
+        videoConvert.scale("500:-1");
+        videoConvert.format("image2");
+        
+        videoConvert.processToFile(new File(f.getFile().getParent() + File.separator + f.getId() + "_thumb"));
+        
+        
+        ImageOP imageConvert = new ImageOP(config.getImageMagick());
 
+        imageConvert.input(new File(f.getFile().getParent() + File.separator + f.getId() + "_thumb"));
+        imageConvert.outputFormat("png");
+        imageConvert.resize(250, 250);
+
+        imageConvert.background("white");
+        imageConvert.gravity("center");
+        imageConvert.extent("250x250");
+
+        imageConvert.processToFile(new File(f.getFile().getParent() + File.separator + f.getId() + "_thumb"));
+        
+        videoConvert = new VideoOP(config.getAvconv());
         videoConvert.input(f.getFile())
                 .codecVideo("libx264")
                 .scale("-1:720")

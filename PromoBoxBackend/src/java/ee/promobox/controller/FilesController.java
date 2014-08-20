@@ -306,7 +306,7 @@ public class FilesController {
             File file = null;
             OutputStream outputStream = response.getOutputStream();
 
-            if (dbFile.getFileType() == FileTypeUtils.FILE_TYPE_IMAGE && !(dbFile.getStatus() == CampaignsFiles.STATUS_UPLOADED)) {
+            if (dbFile.getFileType() != FileTypeUtils.FILE_TYPE_AUDIO && !(dbFile.getStatus() == CampaignsFiles.STATUS_UPLOADED)) {
                 file = new File(config.getDataDir() + dbFile.getClientId() + File.separator + dbFile.getId() + "_thumb");
 
                 FileInputStream fileInputStream = new FileInputStream(file);

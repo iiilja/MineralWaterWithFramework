@@ -84,6 +84,15 @@ public class VideoOP {
 
         return this;
     }
+    
+     public VideoOP thumbnail() {
+        args.add("-ss");
+        args.add(String.valueOf(2));
+        args.add("-vframes");
+        args.add(String.valueOf(1));
+
+        return this;
+    }
 
     public boolean processToFile(File outputFile) {
         String out = outputFile.getAbsolutePath();

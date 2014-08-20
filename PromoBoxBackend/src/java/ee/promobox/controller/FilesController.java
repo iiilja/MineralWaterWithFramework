@@ -270,6 +270,8 @@ public class FilesController {
             } else if (dbFile.getFileType() == FileTypeUtils.FILE_TYPE_AUDIO) {
                 response.setContentType("audio/mpeg");
             }
+            
+            response.setContentLength(dbFile.getSize());
 
             File file = new File(config.getDataDir() + dbFile.getClientId() + File.separator + dbFile.getId() + "_output");
 

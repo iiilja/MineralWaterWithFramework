@@ -73,7 +73,7 @@ public class FileConsumerService extends MessageListenerAdapter {
             case "MP4":
                 result = convertVideo(f);
                 break;
-            case "m2ts":
+            case "M2TS":
                 result = convertVideo(f);
                 break;
             case "AAC":
@@ -83,6 +83,9 @@ public class FileConsumerService extends MessageListenerAdapter {
                 result = convertVideo(f);
                 break;
             case "MOV":
+                result = convertVideo(f);
+                break;
+            case "WMV":
                 result = convertVideo(f);
                 break;
             case "PDF":

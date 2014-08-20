@@ -136,28 +136,27 @@
                         <div class="col-md-7 col-xs-9 col-sm-8">
                             <div class="inner-addon left-addon" id='timestart'>
                                 <i class="glyphicon glyphicon-calendar"></i>
-                                <input type='text' class="form-control" />
+                                <input type='text' class="form-control" ng-model="campaign_form.campaign_start" />
                             </div>
                         </div>
                     </div>
-                    <div class="row">
+                    <div class="row" style="margin-top: 10px;">
                         <div class="col-md-5 col-xs-3 col-sm-4"><label>Дата окончания</label></div>
                         <div class="col-md-7 col-xs-9 col-sm-8">
                             <div class="inner-addon left-addon" id='timefinish'>
                                 <i class="glyphicon glyphicon-calendar"></i>
-                                <input type='text' class="form-control" />
+                                <input type='text' class="form-control" ng-model="campaign_form.campaign_finish" />
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
+
             <script type="text/javascript">
-                $(function () {
-//                    ng-model="campaign_form.campaign_start"
-//                    ng-model="campaign_form.campaign_finish"
-                    $('#timestart').datetimepicker();
-                    $('#timefinish').datetimepicker();
+                jQuery(function () {
+                    jQuery('#timestart').datetimepicker();
+                    jQuery('#timefinish').datetimepicker();
                 });
             </script>
 

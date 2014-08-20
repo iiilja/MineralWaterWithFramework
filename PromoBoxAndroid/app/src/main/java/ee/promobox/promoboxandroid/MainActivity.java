@@ -12,8 +12,6 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -46,29 +44,13 @@ public class MainActivity extends Activity {
                         | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
         );
 
-        getActionBar().hide();
-
-        getActionBar().setDisplayShowTitleEnabled(false);
-        getActionBar().setDisplayShowHomeEnabled(false);
 
         View view = findViewById(R.id.main_view);
 
         view.setOnLongClickListener(new View.OnLongClickListener() {
 
             public boolean onLongClick(View view) {
-                if (getActionBar().isShowing()) {
-                    getActionBar().hide();
-
-                    view.setSystemUiVisibility(
-                            View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
-                                    | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
-                    );
-                } else {
-                    getActionBar().show();
-                }
+                Toast.makeText(view.getContext(), "Just a test", Toast.LENGTH_SHORT).show();
 
                 return true;
             }
@@ -98,24 +80,7 @@ public class MainActivity extends Activity {
 
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
 
-        getMenuInflater().inflate(R.menu.menu, menu);
-
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        Toast.makeText(this, "Just a test", Toast.LENGTH_SHORT).show();
-
-        switch (item.getItemId()) {
-
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
 
     private void startNextFile() {
         if (campaign != null && campaign.getFiles() != null && campaign.getFiles().size() > 0) {
@@ -153,6 +118,8 @@ public class MainActivity extends Activity {
                 Intent i = new Intent(this, ImageActivity.class);
 
                 i.putExtra("paths", filePack.toArray(new String[filePack.size()]));
+                i.putExtra("delay", campaign.getDelay());
+                //i.putExtra("orintation", campaign.get)
 
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 

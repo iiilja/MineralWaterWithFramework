@@ -196,6 +196,8 @@ public class MainService extends Service {
         }
 
         public void downloadFiles() {
+            Log.i("MainService", "Download files");
+
             for (CampaignFile f : campaign.getFiles()) {
                 File dir = new File(root.getAbsolutePath() + String.format("/%s/", campaign.getCampaignId()));
                 dir.mkdirs();
@@ -213,7 +215,7 @@ public class MainService extends Service {
         private File downloadFile(String fileURL, String fileName) {
             try {
 
-                Log.i("Downloader", fileURL);
+                Log.i("MainService", fileURL);
 
                 HttpClient httpclient = new DefaultHttpClient();
 
@@ -237,13 +239,13 @@ public class MainService extends Service {
                     IOUtils.closeQuietly(in);
                     IOUtils.closeQuietly(f);
 
-                    Log.i("test", "Size " + file.getAbsolutePath() + " = " + file.length());
+                    Log.i("MainService", "Size " + file.getAbsolutePath() + " = " + file.length());
 
                     return file;
                 }
 
             } catch (Exception e) {
-                Log.d("Downloader", e.getMessage(), e);
+                Log.d("MainService", e.getMessage(), e);
             }
 
             return null;
@@ -269,7 +271,7 @@ public class MainService extends Service {
             nameValuePairs.add(new BasicNameValuePair("json", json.toString()));
             httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 
-            Log.i("MainService", httppost.toString());
+            Log.i("MainService", httppost.getRequestLine().toString());
 
             HttpResponse response = httpclient.execute(httppost);
 

@@ -12,9 +12,9 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-import android.view.Menu;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -59,14 +59,22 @@ public class ImageActivity extends Activity {
                         | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
                         | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
         );
+
+
+
+        View view = findViewById(R.id.image_view);
+
+        view.setOnLongClickListener(new View.OnLongClickListener() {
+
+            public boolean onLongClick(View view) {
+
+                Toast.makeText(view.getContext(), "Just a test", Toast.LENGTH_SHORT).show();
+                return true;
+            }
+        });
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu, menu);
 
-        return true;
-    }
 
     @Override
     protected void onResume() {
@@ -75,6 +83,10 @@ public class ImageActivity extends Activity {
         hideSystemUI();
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+
+        if (position > paths.length - 1) {
+            position = 0;
+        }
 
         playImage(paths[position]);
 
@@ -100,8 +112,6 @@ public class ImageActivity extends Activity {
         Bundle extras = getIntent().getExtras();
 
         paths = extras.getStringArray("paths");
-
-
 
     }
 

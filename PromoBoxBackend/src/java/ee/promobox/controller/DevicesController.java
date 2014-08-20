@@ -55,6 +55,7 @@ public class DevicesController {
             d.setFreeSpace(objectGiven.getLong("freeSpace"));
 
             resp.put("lastUpdate", d.getLastDeviceRequestDt().getTime());
+            resp.put("orientation", d.getOrientation());
 
             JSONObject campaign = new JSONObject();
 

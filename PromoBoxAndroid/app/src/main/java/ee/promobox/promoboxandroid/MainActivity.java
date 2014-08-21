@@ -26,9 +26,14 @@ public class MainActivity extends Activity {
 
     public final static String CAMPAIGN_UPDATE = "ee.promobox.promoboxandroid.UPDATE";
     public final static String ACTIVITY_FINISH = "ee.promobox.promoboxandroid.FINISH";
+
     public final static String APP_START = "ee.promobox.promoboxandroid.START";
+
     public final static int RESULT_FINISH_PLAY = 1;
     public final static int RESULT_FINISH_FIRST_START = 2;
+
+    public static final int ORIENTATION_LANDSCAPE = 1;
+    public static final int ORIENTATION_PORTRAIT = 2;
 
     private MainService mainService;
     private int position;
@@ -119,7 +124,7 @@ public class MainActivity extends Activity {
 
                 i.putExtra("paths", filePack.toArray(new String[filePack.size()]));
                 i.putExtra("delay", campaign.getDelay());
-                //i.putExtra("orintation", campaign.get)
+                i.putExtra("orintation", mainService.getOrientation());
 
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
@@ -131,6 +136,7 @@ public class MainActivity extends Activity {
                 Intent i = new Intent(this, AudioActivity.class);
 
                 i.putExtra("paths", filePack.toArray(new String[filePack.size()]));
+                i.putExtra("orintation", mainService.getOrientation());
 
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
@@ -141,6 +147,7 @@ public class MainActivity extends Activity {
                 Intent i = new Intent(this, VideoActivity.class);
 
                 i.putExtra("paths", filePack.toArray(new String[filePack.size()]));
+                i.putExtra("orintation", mainService.getOrientation());
 
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
@@ -178,7 +185,11 @@ public class MainActivity extends Activity {
 
         hideSystemUI();
 
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        if (mainService.getOrientation() == MainActivity.ORIENTATION_LANDSCAPE) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        } else {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
 
         Intent intent = new Intent(this, MainService.class);
 
@@ -209,10 +220,6 @@ public class MainActivity extends Activity {
             if (mainService.getSettings() == null) {
                 startActivityForResult(new Intent(MainActivity.this, FirstActivity.class), 2);
             } else {
-
-                Toast.makeText(MainActivity.this, "Connected", Toast.LENGTH_SHORT)
-                        .show();
-
                 startNextFile();
             }
 

@@ -40,6 +40,7 @@ public class MainService extends Service {
 
     private JSONObject settings;
     private String uuid;
+    private int orientation;
 
     File root = new File(Environment.getExternalStorageDirectory().getAbsoluteFile() + "/promobox/");
 
@@ -56,7 +57,10 @@ public class MainService extends Service {
                 settings = loadSettings();
 
                 if (settings != null) {
+
                     uuid = settings.getString("deviceUuid");
+                    orientation = settings.optInt("orientation", MainActivity.ORIENTATION_LANDSCAPE);
+
                     Log.i(this.getClass().getName(), "Device id: " + uuid);
                 }
             } catch (Exception ex) {
@@ -155,6 +159,14 @@ public class MainService extends Service {
         return settings;
     }
 
+    public int getOrientation() {
+        return orientation;
+    }
+
+    public void setOrientation(int orientation) {
+        this.orientation = orientation;
+    }
+
     public class MainServiceBinder extends Binder {
         MainService getService() {
             return MainService.this;
@@ -169,10 +181,18 @@ public class MainService extends Service {
             try {
                 Campaign oldCamp = campaign;
 
-                Campaign newCamp = loadCampaign(urls[0]);
+                JSONObject data = loadData(urls[0]);
+
+                Campaign newCamp = new Campaign(data.getJSONObject("campaign"));
 
                 if (oldCamp == null || oldCamp.getCampaignId() != newCamp.getCampaignId() || (newCamp.getUpdateDate() > oldCamp.getUpdateDate())) {
                     campaign = newCamp;
+
+                    setOrientation(data.optInt("orientation", MainActivity.ORIENTATION_LANDSCAPE));
+
+                    settings.put("orientation", getOrientation());
+
+                    saveSettings(settings);
 
                     downloadFiles();
 
@@ -252,7 +272,7 @@ public class MainService extends Service {
 
         }
 
-        private Campaign loadCampaign(String url) throws Exception {
+        private JSONObject loadData(String url) throws Exception {
 
             HttpClient httpclient = new DefaultHttpClient();
 
@@ -292,7 +312,7 @@ public class MainService extends Service {
                     IOUtils.closeQuietly(f);
                     IOUtils.closeQuietly(in);
 
-                    return new Campaign(new JSONObject(FileUtils.readFileToString(file)).getJSONObject("campaign"));
+                    return new JSONObject(FileUtils.readFileToString(file));
                 }
 
             }

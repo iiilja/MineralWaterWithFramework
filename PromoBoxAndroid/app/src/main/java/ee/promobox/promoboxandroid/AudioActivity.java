@@ -73,8 +73,18 @@ public class AudioActivity extends Activity {
     protected void onResume() {
         super.onResume();
 
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         hideSystemUI();
+
+        if (getIntent().getExtras().getInt("orintation") == MainActivity.ORIENTATION_LANDSCAPE) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        } else {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
+
+        if (position > paths.length - 1) {
+            position = 0;
+        }
+
         playAudio();
 
     }

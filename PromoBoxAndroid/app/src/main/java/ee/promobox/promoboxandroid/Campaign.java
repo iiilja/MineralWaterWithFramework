@@ -39,6 +39,7 @@ public class Campaign {
             setCampaignId(json.getInt("campaignId"));
             setCampaignName(json.getString("campaignName"));
             setUpdateDate(json.getLong("updateDate"));
+            setDelay(json.getInt("duration"));
 
             JSONArray ar  = json.getJSONArray("files");
 

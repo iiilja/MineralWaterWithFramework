@@ -59,7 +59,7 @@ public class UserServiceImpl implements UserService {
     public List<Devices> findUserDevieces(int clientId) {
         Session session = sessionFactory.getCurrentSession();
 
-        Query q = session.createQuery("from Devices where clientId = :clientId AND status > 0 AND status < 4");
+        Query q = session.createQuery("from Devices where clientId = :clientId AND status < 4");
         q.setParameter("clientId", clientId);
 
         return q.list();

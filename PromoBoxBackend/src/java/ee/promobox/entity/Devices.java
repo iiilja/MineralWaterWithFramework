@@ -46,9 +46,9 @@ public class Devices implements Serializable {
     
     
     public static final int STATUS_CREATED = 0;
-    public static final int STATUS_PREPARED = 1;
-    public static final int STATUS_PUBLISHED = 2;
-    public static final int STATUS_UNPUBLISHED = 3;
+    public static final int STATUS_USED = 1;
+    public static final int STATUS_ONLINE = 2;
+    public static final int STATUS_OFFLINE = 3;
     public static final int STATUS_AHRCHIVED = 4;
 
 

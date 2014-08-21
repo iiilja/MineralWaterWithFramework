@@ -9,7 +9,6 @@ import ee.promobox.entity.AdCampaigns;
 import ee.promobox.entity.CampaignsFiles;
 import ee.promobox.entity.Devices;
 import ee.promobox.entity.DevicesCampaigns;
-import ee.promobox.entity.Files;
 import ee.promobox.service.Session;
 import ee.promobox.service.SessionService;
 import ee.promobox.service.UserService;
@@ -74,6 +73,7 @@ public class DevicesController {
                     campaign.put("startDate", ad.getStart().getTime());
                     campaign.put("endDate", ad.getFinish().getTime());
                     campaign.put("sequence", ad.getSequence());
+                    campaign.put("duration", ad.getDuration());
                     campaign.put("updateDate", ad.getUpdateDate().getTime());
 
                     List<CampaignsFiles> campaignFiles = userService.findUsersCampaignFiles(dc.getAdCampaignsId(), d.getClientId());
@@ -101,6 +101,7 @@ public class DevicesController {
                 }
 
                 d.setLastDeviceRequestDt(new Date());
+                d.setStatus(Devices.STATUS_ONLINE);
 
                 userService.updateDevice(d);
 
@@ -138,7 +139,13 @@ public class DevicesController {
 
                     jsonD.put("id", d.getId());
                     jsonD.put("uuid", d.getUuid());
-                    jsonD.put("status", d.getStatus());
+                    
+                    if ((System.currentTimeMillis() - d.getLastDeviceRequestDt().getTime()) > 5 * 60 * 1000) {
+                        jsonD.put("status", Devices.STATUS_OFFLINE);
+                    } else {
+                        jsonD.put("status", d.getStatus());
+                    }
+
                     jsonD.put("space", d.getFreeSpace());
                     jsonD.put("orientation", d.getOrientation());
                     jsonD.put("resolution", d.getResolution());

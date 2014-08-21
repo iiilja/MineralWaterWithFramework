@@ -7,11 +7,13 @@
 package ee.promobox.jms;
 
 import ee.promobox.KioskConfig;
+import ee.promobox.entity.AdCampaigns;
 import ee.promobox.entity.CampaignsFiles;
 import ee.promobox.service.UserService;
 import ee.promobox.util.ImageOP;
 import ee.promobox.util.VideoOP;
 import java.io.File;
+import java.util.Date;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -49,6 +51,11 @@ public class FileConsumerService extends MessageListenerAdapter {
             cFile.setSize((int)file.length());
             
             userService.updateCampaignFile(cFile);
+            
+            AdCampaigns camp = userService.findCampaignByCampaignId(cFile.getAdCampaignsId());
+            camp.setUpdateDate(new Date());
+            
+            userService.updateCampaign(camp);
         }
     }
     

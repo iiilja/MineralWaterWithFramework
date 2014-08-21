@@ -148,11 +148,20 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         Campaign.get_campaigns({token: token.get(), id: $stateParams.cId}, function (response) {
             $scope.campaign = response;
             console.log($scope.campaign);
-            $scope.campaign_form = {campaign_status: $scope.campaign.status, filesArray: $scope.campaign.files, campaign_name: $scope.campaign.name, campaign_time: $scope.campaign.duration, campaign_order: $scope.campaign.sequence, campaign_start: $scope.campaign.start, campaign_finish: $scope.campaign.finish};
+            $scope.campaign_form = {campaign_status: $scope.campaign.status, filesArray: $scope.campaign.files, campaign_name: $scope.campaign.name, campaign_time: $scope.campaign.duration, campaign_order: $scope.campaign.sequence, campaign_start: timeToData($scope.campaign.start), campaign_finish: timeToData($scope.campaign.finish)};
         });
 
+        var timeToData = function(time) {
+            var day = moment.unix(time);
+            var timeConvert = moment(jQuery(time, 'X').format('MM/DD/YYYY h:mm a'));
+            console.log(timeConvert);
+            return timeConvert;
+        };
+
         var dataToTime = function(data) {
-            return new Date(data).getTime() + 15*60*1000;
+            var dateConvert = new Date(data).getTime()
+            console.log(dateConvert);
+            return dateConvert;
         };
         $scope.edit_company = function () {
             Campaign.edit_campaigns({token: token.get(), id: $scope.campaign.id, status: $scope.campaign_form.campaign_status, name: $scope.campaign_form.campaign_name, sequence: $scope.campaign_form.campaign_order, start: dataToTime($scope.campaign_form.campaign_start), finish: dataToTime($scope.campaign_form.campaign_finish), duration: $scope.campaign_form.campaign_time}, function(response){

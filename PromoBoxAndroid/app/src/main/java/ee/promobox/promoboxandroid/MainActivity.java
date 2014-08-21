@@ -117,6 +117,10 @@ public class MainActivity extends Activity {
                 }
             }
 
+            if (campaign.getFiles().size() == 1) {
+                campaign.setDelay(60 * 60 * 12);
+            }
+
 
             if (fileType == CampaignFileType.IMAGE) {
 
@@ -185,18 +189,22 @@ public class MainActivity extends Activity {
 
         hideSystemUI();
 
-        if (mainService.getOrientation() == MainActivity.ORIENTATION_LANDSCAPE) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        } else {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        }
-
         Intent intent = new Intent(this, MainService.class);
 
         bindService(intent, mConnection,
                 Context.BIND_AUTO_CREATE);
 
         startService(intent);
+
+        if (mainService != null) {
+            if (mainService.getOrientation() == MainActivity.ORIENTATION_LANDSCAPE) {
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            } else {
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            }
+        } else {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        }
 
     }
 

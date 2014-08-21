@@ -85,7 +85,9 @@ public class AudioActivity extends Activity {
             position = 0;
         }
 
-        playAudio();
+        if (paths.length > 0) {
+            playAudio();
+        }
 
     }
 
@@ -173,6 +175,12 @@ public class AudioActivity extends Activity {
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(MainActivity.ACTIVITY_FINISH)) {
                 cleanUp();
+                Intent returnIntent = new Intent();
+
+                returnIntent.putExtra("result", MainActivity.RESULT_FINISH_PLAY);
+
+                AudioActivity.this.setResult(RESULT_OK, returnIntent);
+
                 AudioActivity.this.finish();
             }
         }

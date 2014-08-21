@@ -169,6 +169,12 @@ public class VideoActivity extends Activity implements MediaPlayer.OnCompletionL
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(MainActivity.ACTIVITY_FINISH)) {
+                Intent returnIntent = new Intent();
+
+                returnIntent.putExtra("result", MainActivity.RESULT_FINISH_PLAY);
+
+                VideoActivity.this.setResult(RESULT_OK, returnIntent);
+
                 VideoActivity.this.finish();
             }
         }

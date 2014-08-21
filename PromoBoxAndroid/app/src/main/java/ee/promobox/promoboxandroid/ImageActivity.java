@@ -92,7 +92,9 @@ public class ImageActivity extends Activity {
             position = 0;
         }
 
-        playImage(paths[position]);
+        if (paths.length > 0) {
+            playImage(paths[position]);
+        }
 
     }
 
@@ -130,7 +132,7 @@ public class ImageActivity extends Activity {
 
             position++;
 
-            final long delay = 3000; // delay for 1 sec.
+            final long delay = getIntent().getExtras().getInt("delay") * 1000;
 
             final Runnable r = new Runnable() {
                 @Override
@@ -180,6 +182,11 @@ public class ImageActivity extends Activity {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(MainActivity.ACTIVITY_FINISH)) {
+                Intent returnIntent = new Intent();
+
+                returnIntent.putExtra("result", MainActivity.RESULT_FINISH_PLAY);
+                ImageActivity.this.setResult(RESULT_OK, returnIntent);
+
                 ImageActivity.this.finish();
             }
         }

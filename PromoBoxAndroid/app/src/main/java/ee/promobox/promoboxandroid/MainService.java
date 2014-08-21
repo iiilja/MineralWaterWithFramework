@@ -185,14 +185,14 @@ public class MainService extends Service {
 
                 Campaign newCamp = new Campaign(data.getJSONObject("campaign"));
 
+                setOrientation(data.optInt("orientation", MainActivity.ORIENTATION_LANDSCAPE));
+
+                settings.put("orientation", getOrientation());
+
+                saveSettings(settings);
+
                 if (oldCamp == null || oldCamp.getCampaignId() != newCamp.getCampaignId() || (newCamp.getUpdateDate() > oldCamp.getUpdateDate())) {
                     campaign = newCamp;
-
-                    setOrientation(data.optInt("orientation", MainActivity.ORIENTATION_LANDSCAPE));
-
-                    settings.put("orientation", getOrientation());
-
-                    saveSettings(settings);
 
                     downloadFiles();
 

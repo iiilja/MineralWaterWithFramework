@@ -152,7 +152,7 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         });
 
         var timeToData = function(time) {
-            var timeConvert = moment.unix(time);
+            var timeConvert = moment(time, 'X').format('MM/DD/YYYY h:mm a');
             return timeConvert;
         };
 

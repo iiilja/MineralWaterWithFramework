@@ -153,8 +153,9 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
 
         var timeToData = function(time) {
             var day = moment.unix(time);
-            var timeConvert = moment(jQuery(time, 'X').format('MM/DD/YYYY h:mm a'));
+            var timeConvert = moment(time, 'X').format('MM/DD/YYYY h:mm a'));
             console.log(timeConvert);
+            console.log(day);
             return timeConvert;
         };
 

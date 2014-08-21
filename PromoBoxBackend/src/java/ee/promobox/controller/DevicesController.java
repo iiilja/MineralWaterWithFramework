@@ -48,7 +48,7 @@ public class DevicesController {
 
         Devices d = userService.findDeviceByUuid(uuid);
 
-        if (d != null && d.getStatus() == 1) {
+        if (d != null) {
             JSONObject objectGiven = new JSONObject(json);
 
             d.setFreeSpace(objectGiven.getLong("freeSpace"));

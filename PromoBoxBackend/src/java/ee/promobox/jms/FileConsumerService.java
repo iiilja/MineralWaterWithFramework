@@ -112,6 +112,8 @@ public class FileConsumerService extends MessageListenerAdapter {
         imageConvert.density(300);
         imageConvert.input(f.getFile());
         imageConvert.page(0);
+        imageConvert.resize(1920, 1920);
+        
                 
         imageConvert.outputFormat("png");
         
@@ -154,7 +156,7 @@ public class FileConsumerService extends MessageListenerAdapter {
 
         imageConvert.input(f.getFile());
         imageConvert.outputFormat("png");
-        imageConvert.resize(1920, 1080);
+        imageConvert.resize(1920, 1920);
 
         imageConvert.processToFile(new File(f.getFile().getParent() + File.separator + f.getId() + "_output"));
 

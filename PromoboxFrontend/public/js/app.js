@@ -253,6 +253,11 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
 app.controller('CampaignsController', ['$scope', 'token', 'Campaign', 'sysMessage', '$rootScope',
     function ($scope, token, Campaign, sysMessage, $rootScope) {
         if (token.check()) {
+            $scope.timeconvert = function(time) {
+                var timeConvert = moment(time, 'X').format('DD.MM.YYYY');
+                return timeConvert;
+            };
+
             $rootScope.top_link_active_list = 'top_link_active';
             Campaign.get_all_campaigns({token: token.get()}, function (response) {
                 $scope.campaigns = response.campaigns;

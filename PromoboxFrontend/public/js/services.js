@@ -25,9 +25,9 @@ services.factory('Device', ['$resource',
     function ($resource) {
         return $resource('',{},{
                 get_data: {method: 'GET', url: apiEndpoint + 'token/:token/devices/', params: {token: '@token'}},
-                update: {method: 'PUT', url:apiEndpoint + 'token/:token/device/:id', params: {token: '@token', id: '@id'}},
-                delete: {method: 'DELETE', url:apiEndpoint + 'token/:token/device/:id', params: {token: '@token', id: '@id'}},
-                add: {method: 'POST', url:apiEndpoint + 'token/:token/device/', params: {token: '@token'}}
+                update: {method: 'PUT', url:apiEndpoint + 'token/:token/devices/:id', params: {token: '@token', id: '@id'}},
+                delete: {method: 'DELETE', url:apiEndpoint + 'token/:token/devices/:id', params: {token: '@token', id: '@id'}},
+                add: {method: 'POST', url:apiEndpoint + 'token/:token/devices/', params: {token: '@token'}}
             });}]);
 
 services.factory('Files', ['$resource',

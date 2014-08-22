@@ -35,6 +35,8 @@ public interface UserService {
     
     public AdCampaigns findCampaignByIdAndClientId(int id, int clientId);
     
+    public void addDevice(Devices devices);
+    
     // public AdCampaigns findCampaignByUuid(String uuid);
     
     public Devices findDeviceByUuid(String uuid);

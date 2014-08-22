@@ -340,6 +340,7 @@ public class FilesController {
             jsonCampaignFile.put("name", file.getFilename());
             jsonCampaignFile.put("created", file.getCreatedDt());
             jsonCampaignFile.put("status", file.getStatus());
+            jsonCampaignFile.put("ext", "." + FilenameUtils.getExtension(file.getFilename()));
 
             fileInformation.put(jsonCampaignFile);
         }

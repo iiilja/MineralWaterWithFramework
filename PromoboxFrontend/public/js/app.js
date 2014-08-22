@@ -1,6 +1,6 @@
 var apiEndpoint = "http://api.dev.promobox.ee/service/";
 
-var app = angular.module('promobox', ['ngRoute', 'ui.bootstrap', 'pascalprecht.translate', 'promobox.services', 'angularFileUpload', 'toaster', 'ui.router']);
+var app = angular.module('promobox', ['ngRoute', 'ui.bootstrap', 'pascalprecht.translate', 'promobox.services', 'angularFileUpload', 'toaster', 'ui.router', 'angularMoment']);
 
 
 app.config(['$routeProvider','$stateProvider','$urlRouterProvider', function ($routeProvider, $stateProvider, $urlRouterProvider) {
@@ -152,16 +152,22 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         });
 
         var timeToData = function(time) {
+            console.log(time);
             var timeConvert = moment(time, 'X').format('MM/DD/YYYY h:mm a');
+            console.log(timeConvert);
             return timeConvert;
         };
 
         var dataToTime = function(data) {
+            console.log(data);
             var dateConvert = moment(data, 'MM/DD/YYYY h:mm a').format('X');
             console.log(dateConvert);
             return dateConvert;
         };
-        $scope.edit_company = function () {
+        $scope.edit_company = function (this_data) {
+            console.log(this_data);
+            console.log($scope.campaign_form);
+
             Campaign.edit_campaigns({token: token.get(), id: $scope.campaign.id, status: $scope.campaign_form.campaign_status, name: $scope.campaign_form.campaign_name, sequence: $scope.campaign_form.campaign_order, start: dataToTime($scope.campaign_form.campaign_start), finish: dataToTime($scope.campaign_form.campaign_finish), duration: $scope.campaign_form.campaign_time}, function(response){
                 sysLocation.goList();
             });
@@ -267,6 +273,15 @@ app.controller('CampaignsController', ['$scope', 'token', 'Campaign', 'sysMessag
 app.controller('DevicesController', ['$scope', 'token', 'Device', 'sysMessage', '$rootScope',
     function ($scope, token, Device, sysMessage, $rootScope) {
         if (token.check()) {
+            $scope.byteToBig = function(bytes, precision) {
+                if (isNaN(parseFloat(bytes)) || !isFinite(bytes)) return '-';
+                if (typeof precision === 'undefined') precision = 1;
+                var units = ['bytes', 'kB', 'MB', 'GB', 'TB', 'PB'],
+                    number = Math.floor(Math.log(bytes) / Math.log(1024));
+                return (bytes / Math.pow(1024, Math.floor(number))).toFixed(precision) + ' ' + units[number];
+            };
+
+
             $rootScope.top_link_active_device = 'top_link_active';
             Device.get_data({token: token.get()}, function (response) {
                 $scope.devices = response.devices;

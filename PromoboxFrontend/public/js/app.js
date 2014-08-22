@@ -281,7 +281,6 @@ app.controller('DevicesController', ['$scope', 'token', 'Device', 'sysMessage', 
                 return (bytes / Math.pow(1024, Math.floor(number))).toFixed(precision) + ' ' + units[number];
             };
 
-
             $rootScope.top_link_active_device = 'top_link_active';
             Device.get_data({token: token.get()}, function (response) {
                 $scope.devices = response.devices;
@@ -290,6 +289,22 @@ app.controller('DevicesController', ['$scope', 'token', 'Device', 'sysMessage', 
                 Device.update({token: token.get(), id: device.id, orientation: parseInt(device.orientation), resolution: parseInt(device.resolution), campaignId: parseInt(device.campaignId) }, function (response) {
                     sysMessage.update_s('Устройство ' + device.uuid + ' обновленно');
                 });
-            }
-        }
+            };
+            $scope.delete_device = function(device) {
+                Device.delete({token: token.get(), id: device.id}, function (response){
+                    Device.get_data({token: token.get()}, function (response) {
+                        $scope.devices = response.devices;
+                        sysMessage.update_s('Устройство ' + device.uuid + ' Удалено');
+                    });
+                });
+            };
+            $scope.add_device = function() {
+                Device.add({token: token.get()}, function (response){
+                    Device.get_data({token: token.get()}, function (response) {
+                        $scope.devices = response.devices;
+                        sysMessage.update_s('Устройство добавлено');
+                    });
+                });
+            };
+        };
     }]);

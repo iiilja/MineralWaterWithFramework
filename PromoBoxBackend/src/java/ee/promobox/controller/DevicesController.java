@@ -15,6 +15,7 @@ import ee.promobox.service.UserService;
 import ee.promobox.util.RequestUtils;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.json.JSONArray;
@@ -139,7 +140,7 @@ public class DevicesController {
 
                     jsonD.put("id", d.getId());
                     jsonD.put("uuid", d.getUuid());
-                    
+
                     if ((System.currentTimeMillis() - d.getLastDeviceRequestDt().getTime()) > 5 * 60 * 1000) {
                         jsonD.put("status", Devices.STATUS_OFFLINE);
                     } else {
@@ -149,10 +150,10 @@ public class DevicesController {
                     jsonD.put("space", d.getFreeSpace());
                     jsonD.put("orientation", d.getOrientation());
                     jsonD.put("resolution", d.getResolution());
-                    
+
                     AdCampaigns ac = userService.findCampaignByDeviceId(d.getId());
-                    
-                    if (ac!=null) {
+
+                    if (ac != null) {
                         jsonD.put("campaignId", ac.getId());
                     } else {
                         jsonD.put("campaignId", -1);
@@ -193,7 +194,7 @@ public class DevicesController {
         }
 
     }
-    
+
     @RequestMapping(value = "token/{token}/device/{id}", method = RequestMethod.DELETE)
     public void deleteDevice(
             @PathVariable("token") String token,
@@ -209,13 +210,13 @@ public class DevicesController {
         if (session != null) {
 
             Devices device = userService.findDeviceByIdAndClientId(id, session.getClientId());
-            
+
             device.setStatus(Devices.STATUS_AHRCHIVED);
 
             userService.updateDevice(device);
 
             response.setStatus(HttpServletResponse.SC_OK);
-            
+
             RequestUtils.printResult(resp.toString(), response);
 
         } else {
@@ -250,11 +251,11 @@ public class DevicesController {
                 device.setResolution(deviceUpdate.getInt("resolution"));
 
                 DevicesCampaigns devicesCampaigns = userService.findDeviceCampaignByDeviceId(device.getId());
-                
+
                 if (devicesCampaigns == null) {
-                    
+
                     devicesCampaigns = new DevicesCampaigns();
-                    
+
                     devicesCampaigns.setDeviceId(device.getId());
                     devicesCampaigns.setAdCampaignsId(deviceUpdate.getInt("campaignId"));
                     devicesCampaigns.setUpdatedDt(new Date());
@@ -263,19 +264,64 @@ public class DevicesController {
                 } else {
                     devicesCampaigns.setAdCampaignsId(deviceUpdate.getInt("campaignId"));
                     devicesCampaigns.setUpdatedDt(new Date());
-                    
+
                     userService.updateDeviceAdCampaign(devicesCampaigns);
                 }
 
                 userService.updateDevice(device);
 
                 response.setStatus(HttpServletResponse.SC_OK);
-                
+
                 RequestUtils.printResult(resp.toString(), response);
 
             } else {
                 RequestUtils.sendUnauthorized(response);
             }
+        }
+
+    }
+
+    @RequestMapping(value = "token/{token}/device/", method = RequestMethod.POST)
+    public void createDevice(
+            @PathVariable("token") String token,
+            @RequestBody String json,
+            HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+
+        JSONObject resp = new JSONObject();
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+        Session session = sessionService.findSession(token);
+
+        if (session != null) {
+
+            Devices device = new Devices();
+
+            device.setClientId(session.getClientId());
+
+            device.setOrientation(Devices.ORIENTATION_LANDSCAPE);
+            device.setResolution(Devices.RESOLUTION_1920X1080);
+            device.setFreeSpace(0);
+            device.setLastDeviceRequestDt(new Date());
+            device.setStatus(Devices.STATUS_USED);
+            device.setUuid(UUID.randomUUID().toString().substring(0, 4));
+            device.setDescription("");
+
+            userService.addDevice(device);
+
+            resp.put("id", device.getId());
+            resp.put("uuid", device.getUuid());
+            resp.put("status", device.getStatus());
+            resp.put("freeSpace", device.getFreeSpace());
+            resp.put("orientation", device.getOrientation());
+            resp.put("resolution", device.getResolution());
+
+            response.setStatus(HttpServletResponse.SC_OK);
+
+            RequestUtils.printResult(resp.toString(), response);
+
+        } else {
+            RequestUtils.sendUnauthorized(response);
         }
 
     }

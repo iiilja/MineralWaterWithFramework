@@ -171,6 +171,12 @@ public class UserServiceImpl implements UserService {
         session.save(campaign);
         session.flush();
     }
+    
+    public void addDevice(Devices devices) {
+        Session session = sessionFactory.getCurrentSession();
+        session.save(devices);
+        session.flush();
+    }
 
     public void updateCampaign(AdCampaigns campaign) {
         Session session = sessionFactory.getCurrentSession();

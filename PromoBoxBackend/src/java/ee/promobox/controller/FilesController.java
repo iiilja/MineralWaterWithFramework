@@ -86,6 +86,8 @@ public class FilesController {
                     
                     jsonCampaignFile.put("id", file.getId());
                     jsonCampaignFile.put("name", file.getFilename());
+                    jsonCampaignFile.put("ext", "." + FilenameUtils.getExtension(file.getFilename()));
+                    jsonCampaignFile.put("status", file.getStatus());
                     jsonCampaignFile.put("created", file.getCreatedDt());
 
                     jsonCampaignFiles.put(jsonCampaignFile);
@@ -266,7 +268,7 @@ public class FilesController {
             response.setStatus(HttpServletResponse.SC_OK);
 
             if (dbFile.getFileType() == FileTypeUtils.FILE_TYPE_VIDEO) {
-                response.setContentType("video/mp4");
+                response.setContentType("video/webm");
             } else if (dbFile.getFileType() == FileTypeUtils.FILE_TYPE_AUDIO) {
                 response.setContentType("audio/mpeg");
             }

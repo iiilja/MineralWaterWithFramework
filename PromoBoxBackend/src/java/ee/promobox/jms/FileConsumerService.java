@@ -198,13 +198,11 @@ public class FileConsumerService extends MessageListenerAdapter {
         
         videoConvert = new VideoOP(config.getAvconv());
         videoConvert.input(f.getFile())
-                .codecVideo("libx264")
+                .codecVideo("libvpx")
                 .scale("-1:720")
-                .preset("slow")
-                .crf(19)
-                .codecAudio("mp3")
-                .format("mp4")
-                .bitrateAudio("128k");
+                .bitrateVideo("1M")
+                .maxrate("1M")
+                .format("webm");
 
         return videoConvert.processToFile(new File(f.getFile().getParent() + File.separator + f.getId() + "_output"));
     }

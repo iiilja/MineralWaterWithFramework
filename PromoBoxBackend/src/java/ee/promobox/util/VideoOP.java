@@ -70,6 +70,20 @@ public class VideoOP {
 
         return this;
     }
+    
+    public VideoOP bitrateVideo(String bitrateVideo) {
+        args.add("-b:v");
+        args.add(bitrateVideo);
+
+        return this;
+    }
+    
+    public VideoOP maxrate(String maxrate) {
+        args.add("-maxrate");
+        args.add(maxrate);
+
+        return this;
+    }
 
     public VideoOP scale(String scale) {
         args.add("-vf");

@@ -91,6 +91,16 @@ app.config(function ($translateProvider) {
 
 });
 
+app.filter('bytes', function() {
+    return function(bytes, precision) {
+        if (isNaN(parseFloat(bytes)) || !isFinite(bytes)) return '-';
+        if (typeof precision === 'undefined') precision = 1;
+        var units = ['bytes', 'kB', 'MB', 'GB', 'TB', 'PB'],
+            number = Math.floor(Math.log(bytes) / Math.log(1024));
+        return (bytes / Math.pow(1024, Math.floor(number))).toFixed(precision) + ' ' + units[number];
+    }
+});
+
 app.controller('Exit', ['token',
     function (token) {
         token.remove();
@@ -278,13 +288,6 @@ app.controller('CampaignsController', ['$scope', 'token', 'Campaign', 'sysMessag
 app.controller('DevicesController', ['$scope', 'token', 'Device', 'sysMessage', '$rootScope',
     function ($scope, token, Device, sysMessage, $rootScope) {
         if (token.check()) {
-            $scope.byteToBig = function(bytes, precision) {
-                if (isNaN(parseFloat(bytes)) || !isFinite(bytes)) return '-';
-                if (typeof precision === 'undefined') precision = 1;
-                var units = ['bytes', 'kB', 'MB', 'GB', 'TB', 'PB'],
-                    number = Math.floor(Math.log(bytes) / Math.log(1024));
-                return (bytes / Math.pow(1024, Math.floor(number))).toFixed(precision) + ' ' + units[number];
-            };
 
             $rootScope.top_link_active_device = 'top_link_active';
             Device.get_data({token: token.get()}, function (response) {

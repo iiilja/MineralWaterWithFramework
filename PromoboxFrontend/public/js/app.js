@@ -172,7 +172,7 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
 
         var dataToTime = function(data) {
             console.log(data);
-            var dateConvert = moment(data, 'MM/DD/YYYY h:mm a').format('X');
+            var dateConvert = moment(data, 'MM/DD/YYYY h:mm a').format('X').unix();
             console.log(dateConvert);
             return dateConvert;
         };
@@ -266,7 +266,8 @@ app.controller('CampaignsController', ['$scope', 'token', 'Campaign', 'sysMessag
     function ($scope, token, Campaign, sysMessage, $rootScope) {
         if (token.check()) {
             $scope.timeconvert = function(time) {
-                var timeConvert = moment(time, 'X').format('DD.MM.YYYY');
+                var timeConvert = moment(time).unix();
+                timeConvert = moment(timeConvert, 'X').format('MM/DD/YYYY h:mm a');
                 return timeConvert;
             };
 

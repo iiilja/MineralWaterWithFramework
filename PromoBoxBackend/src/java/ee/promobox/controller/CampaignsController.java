@@ -108,9 +108,12 @@ public class CampaignsController {
                 // iterate trough the list of campaigns that belong to the client
                 for (AdCampaigns campaign : campaigns) {
                     JSONObject jsonCampaign = new JSONObject();
+                    
                     jsonCampaign.put("id", campaign.getId());
                     jsonCampaign.put("name", campaign.getName());
                     jsonCampaign.put("status", campaign.getStatus());
+                    jsonCampaign.put("finish", campaign.getFinish() == null ? null : campaign.getFinish().getTime());
+                    jsonCampaign.put("start", campaign.getStart() == null ? null : campaign.getStart().getTime());
 
                     campaignsArray.put(jsonCampaign);
                 }

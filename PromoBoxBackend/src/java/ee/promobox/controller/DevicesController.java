@@ -195,7 +195,7 @@ public class DevicesController {
 
     }
 
-    @RequestMapping(value = "token/{token}/device/{id}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "token/{token}/devices/{id}", method = RequestMethod.DELETE)
     public void deleteDevice(
             @PathVariable("token") String token,
             @PathVariable("id") int id,
@@ -225,7 +225,7 @@ public class DevicesController {
 
     }
 
-    @RequestMapping(value = "token/{token}/device/{id}", method = RequestMethod.PUT)
+    @RequestMapping(value = "token/{token}/devices/{id}", method = RequestMethod.PUT)
     public void updateDevice(
             @PathVariable("token") String token,
             @PathVariable("id") int id,
@@ -281,10 +281,9 @@ public class DevicesController {
 
     }
 
-    @RequestMapping(value = "token/{token}/device/", method = RequestMethod.POST)
+    @RequestMapping(value = "token/{token}/devices", method = RequestMethod.POST)
     public void createDevice(
             @PathVariable("token") String token,
-            @RequestBody String json,
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 

@@ -174,13 +174,9 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
             return dateConvert*1000;
         };
         $scope.edit_company = function (this_data) {
-
-                console.log(dataToTime($scope.campaign_form.campaign_start));
-                console.log(dataToTime($scope.campaign_form.campaign_finish));
-
-//            Campaign.edit_campaigns({token: token.get(), id: $scope.campaign.id, status: $scope.campaign_form.campaign_status, name: $scope.campaign_form.campaign_name, sequence: $scope.campaign_form.campaign_order, start: dataToTime($scope.campaign_form.campaign_start), finish: dataToTime($scope.campaign_form.campaign_finish), duration: $scope.campaign_form.campaign_time}, function(response){
-//                sysLocation.goList();
-//            });
+            Campaign.edit_campaigns({token: token.get(), id: $scope.campaign.id, status: $scope.campaign_form.campaign_status, name: $scope.campaign_form.campaign_name, sequence: $scope.campaign_form.campaign_order, start: dataToTime($scope.campaign_form.campaign_start), finish: dataToTime($scope.campaign_form.campaign_finish), duration: $scope.campaign_form.campaign_time}, function(response){
+                sysLocation.goList();
+            });
         };
 
         $scope.openPlayer = function(key) {

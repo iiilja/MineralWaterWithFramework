@@ -162,27 +162,25 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         });
 
         var timeToData = function(time) {
-            console.log(time);
             var timeConvert = moment(time).unix();
-            console.log(timeConvert);
             timeConvert = moment(timeConvert, 'X').format('MM/DD/YYYY h:mm a');
-            console.log(timeConvert);
             return timeConvert;
         };
 
         var dataToTime = function(data) {
             console.log(data);
-            var dateConvert = moment(data, 'MM/DD/YYYY h:mm a').format('X').unix();
-            console.log(dateConvert);
-            return dateConvert;
+            var dateConvert = moment(data, 'MM/DD/YYYY h:mm a').format('X');
+            console.log(dateConvert*1000);
+            return dateConvert*1000;
         };
         $scope.edit_company = function (this_data) {
-            console.log(this_data);
-            console.log($scope.campaign_form);
 
-            Campaign.edit_campaigns({token: token.get(), id: $scope.campaign.id, status: $scope.campaign_form.campaign_status, name: $scope.campaign_form.campaign_name, sequence: $scope.campaign_form.campaign_order, start: dataToTime($scope.campaign_form.campaign_start), finish: dataToTime($scope.campaign_form.campaign_finish), duration: $scope.campaign_form.campaign_time}, function(response){
-                sysLocation.goList();
-            });
+                console.log(dataToTime($scope.campaign_form.campaign_start));
+                console.log(dataToTime($scope.campaign_form.campaign_finish));
+
+//            Campaign.edit_campaigns({token: token.get(), id: $scope.campaign.id, status: $scope.campaign_form.campaign_status, name: $scope.campaign_form.campaign_name, sequence: $scope.campaign_form.campaign_order, start: dataToTime($scope.campaign_form.campaign_start), finish: dataToTime($scope.campaign_form.campaign_finish), duration: $scope.campaign_form.campaign_time}, function(response){
+//                sysLocation.goList();
+//            });
         };
 
         $scope.openPlayer = function(key) {
@@ -267,7 +265,7 @@ app.controller('CampaignsController', ['$scope', 'token', 'Campaign', 'sysMessag
         if (token.check()) {
             $scope.timeconvert = function(time) {
                 var timeConvert = moment(time).unix();
-                timeConvert = moment(timeConvert, 'X').format('MM/DD/YYYY h:mm a');
+                timeConvert = moment(timeConvert, 'X').format('DD.MM.YYYY');
                 return timeConvert;
             };
 

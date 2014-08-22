@@ -1,3 +1,9 @@
+<div class="row">
+    <div class="col-md-10 center-block">
+        <button ng-click="add_device()" type="button" class="btn btn-primary" style="margin-left: -15px;">Новое устройство</button>
+    </div>
+</div>
+
 <div class="row" ng-repeat="device in devices">
     <div class="col-md-7 center-block campaigns_block">
         <div class="row">
@@ -43,13 +49,16 @@
 
             <div class="col-md-4">
                 <div class="form-group pull-right">
-                    <span style="font-weight: bolder;">Свободное место: {{byteToBig(device.space)}}</span>
+                    <span style="font-weight: bolder;">Свободное место: {{ device.space |  bytes }}</span>
                 </div>
                 <!--<div class="form-group pull-right">-->
                     <!--<button type="button" class="btn btn-warning">Очистить кэш</button>-->
                 <!--</div>-->
                 <div class="form-group pull-right">
                     <button ng-click="change_device(device)" type="button" class="btn btn-success" style="margin-right: 5px;">Сохранить</button>
+                </div>
+                <div class="form-group pull-right">
+                    <button ng-click="delete_device(device)" type="button" class="btn btn-success" style="margin-right: 5px;">Удалить</button>
                 </div>
             </div>
         </div>

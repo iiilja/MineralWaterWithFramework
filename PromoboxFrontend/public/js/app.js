@@ -91,6 +91,16 @@ app.config(function ($translateProvider) {
 
 });
 
+app.filter('bytes', function() {
+    return function(bytes, precision) {
+        if (isNaN(parseFloat(bytes)) || !isFinite(bytes)) return '-';
+        if (typeof precision === 'undefined') precision = 1;
+        var units = ['bytes', 'kB', 'MB', 'GB', 'TB', 'PB'],
+            number = Math.floor(Math.log(bytes) / Math.log(1024));
+        return (bytes / Math.pow(1024, Math.floor(number))).toFixed(precision) + ' ' + units[number];
+    }
+});
+
 app.controller('Exit', ['token',
     function (token) {
         token.remove();
@@ -153,14 +163,16 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
 
         var timeToData = function(time) {
             console.log(time);
-            var timeConvert = moment(time, 'X').format('MM/DD/YYYY h:mm a');
+            var timeConvert = moment(time).unix();
+            console.log(timeConvert);
+            timeConvert = moment(timeConvert, 'X').format('MM/DD/YYYY h:mm a');
             console.log(timeConvert);
             return timeConvert;
         };
 
         var dataToTime = function(data) {
             console.log(data);
-            var dateConvert = moment(data, 'MM/DD/YYYY h:mm a').format('X');
+            var dateConvert = moment(data, 'MM/DD/YYYY h:mm a').format('X').unix();
             console.log(dateConvert);
             return dateConvert;
         };
@@ -253,6 +265,12 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
 app.controller('CampaignsController', ['$scope', 'token', 'Campaign', 'sysMessage', '$rootScope',
     function ($scope, token, Campaign, sysMessage, $rootScope) {
         if (token.check()) {
+            $scope.timeconvert = function(time) {
+                var timeConvert = moment(time).unix();
+                timeConvert = moment(timeConvert, 'X').format('MM/DD/YYYY h:mm a');
+                return timeConvert;
+            };
+
             $rootScope.top_link_active_list = 'top_link_active';
             Campaign.get_all_campaigns({token: token.get()}, function (response) {
                 $scope.campaigns = response.campaigns;
@@ -273,15 +291,6 @@ app.controller('CampaignsController', ['$scope', 'token', 'Campaign', 'sysMessag
 app.controller('DevicesController', ['$scope', 'token', 'Device', 'sysMessage', '$rootScope',
     function ($scope, token, Device, sysMessage, $rootScope) {
         if (token.check()) {
-            $scope.byteToBig = function(bytes, precision) {
-                if (isNaN(parseFloat(bytes)) || !isFinite(bytes)) return '-';
-                if (typeof precision === 'undefined') precision = 1;
-                var units = ['bytes', 'kB', 'MB', 'GB', 'TB', 'PB'],
-                    number = Math.floor(Math.log(bytes) / Math.log(1024));
-                return (bytes / Math.pow(1024, Math.floor(number))).toFixed(precision) + ' ' + units[number];
-            };
-
-
             $rootScope.top_link_active_device = 'top_link_active';
             Device.get_data({token: token.get()}, function (response) {
                 $scope.devices = response.devices;
@@ -290,6 +299,22 @@ app.controller('DevicesController', ['$scope', 'token', 'Device', 'sysMessage', 
                 Device.update({token: token.get(), id: device.id, orientation: parseInt(device.orientation), resolution: parseInt(device.resolution), campaignId: parseInt(device.campaignId) }, function (response) {
                     sysMessage.update_s('Устройство ' + device.uuid + ' обновленно');
                 });
-            }
-        }
+            };
+            $scope.delete_device = function(device) {
+                Device.delete({token: token.get(), id: device.id}, function (response){
+                    Device.get_data({token: token.get()}, function (response) {
+                        $scope.devices = response.devices;
+                        sysMessage.update_s('Устройство ' + device.uuid + ' Удалено');
+                    });
+                });
+            };
+            $scope.add_device = function() {
+                Device.add({token: token.get()}, function (response){
+                    Device.get_data({token: token.get()}, function (response) {
+                        $scope.devices = response.devices;
+                        sysMessage.update_s('Устройство добавлено');
+                    });
+                });
+            };
+        };
     }]);

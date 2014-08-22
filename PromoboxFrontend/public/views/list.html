@@ -8,7 +8,7 @@
         <span ng-if="campaign.status == 1" class="label label-success">Работает</span>
         <span ng-if="campaign.status == 2" class="label label-warning">Ожидание</span>
         <span style="margin-left: 15px;">{{campaign.name}}</span>
-        <span style="margin-left: 15px; color: #bfbfbf; font-size: 12px;">10.08.2014-17.08.2014</span>
+        <span style="margin-left: 15px; color: #bfbfbf; font-size: 12px;">{{timeconvert(campaign.start)}}-{{timeconvert(campaign.finish)}}</span>
                 <span class="pull-right">
                     <a class="campaigns_link" href="#" style="margin-right: 15px;"><i class="glyphicon glyphicon-signal"></i> Статистика</a>
                     <a class="campaigns_link" href="/#/campaign/edit/{{campaign.id}}" style="margin-right: 15px;"><i class="glyphicon glyphicon-pencil"></i> Изменить</a>

@@ -163,7 +163,9 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
 
         var timeToData = function(time) {
             console.log(time);
-            var timeConvert = moment(time, 'X').format('MM/DD/YYYY h:mm a');
+            var timeConvert = moment(time).unix();
+            console.log(timeConvert);
+            timeConvert = moment(timeConvert, 'X').format('MM/DD/YYYY h:mm a');
             console.log(timeConvert);
             return timeConvert;
         };
@@ -288,7 +290,6 @@ app.controller('CampaignsController', ['$scope', 'token', 'Campaign', 'sysMessag
 app.controller('DevicesController', ['$scope', 'token', 'Device', 'sysMessage', '$rootScope',
     function ($scope, token, Device, sysMessage, $rootScope) {
         if (token.check()) {
-
             $rootScope.top_link_active_device = 'top_link_active';
             Device.get_data({token: token.get()}, function (response) {
                 $scope.devices = response.devices;

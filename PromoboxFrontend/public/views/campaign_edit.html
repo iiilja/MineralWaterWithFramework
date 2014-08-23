@@ -6,10 +6,10 @@
         <form role="form" name="campaign_form" ng-submit="edit_company(this)">
             <div class="row">
                 <div class="form-group">
-                    <h4>{{ 'campaign_edit_redaktirovatkampaniju' | translate }}</h4>
+                    <h4>{{ 'campaign_edit_editcompany' | translate }}</h4>
                 </div>
                 <div class="form-group">
-                    <input type="text" class="form-control" style="width: 30%;" placeholder="{{ 'campaign_edit_nazvaniekampanii' | translate }}" ng-model="campaign_form.campaign_name" required>
+                    <input type="text" class="form-control" style="width: 30%;" placeholder="{{ 'campaign_edit_companyname' | translate }}" ng-model="campaign_form.campaign_name" required>
                 </div>
             </div>
             <div class="row">
@@ -102,21 +102,21 @@
             <div class="row">
                 <div class="form-group campaigns_block col-sm-6">
                     <div class="row">
-                        <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'campaign_edit_aktivnostkampanii' | translate }}</label></div>
+                        <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'campaign_edit_activityofthecompany' | translate }}</label></div>
                         <div class="col-md-7 col-xs-9 col-sm-8">
                             <select class="form-control" ng-model="campaign_form.campaign_status">
-                                <option value="0">{{ 'campaign_edit_priostanovlena' | translate }}</option>
-                                <option value="1">{{ 'campaign_edit_zapushen' | translate }}</option>
+                                <option value="0">{{ 'campaign_edit_suspended' | translate }}</option>
+                                <option value="1">{{ 'campaign_edit_launched' | translate }}</option>
                             </select>
                         </div>
                     </div>
                     <div class="row" style="margin-top: 10px;">
-                        <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'campaign_edit_vremjasmenq' | translate }}</label></div>
+                        <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'campaign_edit_changetime' | translate }}</label></div>
                         <div class="col-md-7 col-xs-9 col-sm-8">
                             <select class="form-control" ng-model="campaign_form.campaign_time">
-                                <option value="5">5 {{ 'campaign_edit_sek' | translate }}</option>
-                                <option value="15">15 {{ 'campaign_edit_sek' | translate }}</option>
-                                <option value="30">30 {{ 'campaign_edit_sek' | translate }}</option>
+                                <option value="5">5 {{ 'campaign_edit_sec' | translate }}</option>
+                                <option value="15">15 {{ 'campaign_edit_sec' | translate }}</option>
+                                <option value="30">30 {{ 'campaign_edit_sec' | translate }}</option>
                                 <option value="60">1 {{ 'campaign_edit_min' | translate }}</option>
                                 <option value="300">5 {{ 'campaign_edit_min' | translate }}</option>
                                 <option value="500">10 {{ 'campaign_edit_min' | translate }}</option>
@@ -124,16 +124,16 @@
                         </div>
                     </div>
                     <div class="row" style="margin-top: 10px;">
-                        <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'campaign_edit_porjadok' | translate }}</label></div>
+                        <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'campaign_edit_theorder' | translate }}</label></div>
                         <div class="col-md-7 col-xs-9 col-sm-8">
                             <select class="form-control" ng-model="campaign_form.campaign_order">
-                                <option value="1">{{ 'campaign_edit_sluchaino' | translate }}</option>
-                                <option value="2">{{ 'campaign_edit_podrjad' | translate }}</option>
+                                <option value="1">{{ 'campaign_edit_accident' | translate }}</option>
+                                <option value="2">{{ 'campaign_edit_streak' | translate }}</option>
                             </select>
                         </div>
                     </div>
                     <div class="row" style="margin-top: 10px;">
-                        <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'campaign_edit_datanachala' | translate }}</label></div>
+                        <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'campaign_edit_dateofstart' | translate }}</label></div>
                         <div class="col-md-7 col-xs-9 col-sm-8">
                             <div class="inner-addon left-addon" id='timestart'>
                                 <i class="glyphicon glyphicon-calendar"></i>
@@ -142,7 +142,7 @@
                         </div>
                     </div>
                     <div class="row" style="margin-top: 10px;">
-                        <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'campaign_edit_dataokonchanija' | translate }}</label></div>
+                        <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'campaign_edit_dateofclosure' | translate }}</label></div>
                         <div class="col-md-7 col-xs-9 col-sm-8">
                             <div class="inner-addon left-addon" id='timefinish'>
                                 <i class="glyphicon glyphicon-calendar"></i>
@@ -163,8 +163,8 @@
 
             <div class="row">
                 <div class="form-group">
-                    <button type="submit" class="btn btn-primary">{{ 'campaign_edit_sohranitkampaniju' | translate }}</button>
-                    <button ui-sref="list" type="button" class="btn btn-default" style="margin-left: 15px;">{{ 'campaign_edit_otmenja' | translate }}</button>
+                    <button type="submit" class="btn btn-primary">{{ 'campaign_edit_savethecompany' | translate }}</button>
+                    <button ui-sref="list" type="button" class="btn btn-default" style="margin-left: 15px;">{{ 'campaign_edit_cancel' | translate }}</button>
                 </div>
             </div>
         </form>

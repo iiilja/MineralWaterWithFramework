@@ -1,6 +1,6 @@
 <div class="row">
     <div class="col-md-10 center-block">
-        <button ng-click="add_device()" type="button" class="btn btn-primary" style="margin-left: -15px;">{{ 'device_novoeustroistvo' | translate }}</button>
+        <button ng-click="add_device()" type="button" class="btn btn-primary" style="margin-left: -15px;">{{ 'device_newdevice' | translate }}</button>
     </div>
 </div>
 
@@ -10,19 +10,19 @@
             <div class="col-md-3"><img src="img/device_zaglushka.png" alt="" /></div>
             <div class="col-md-5">
                 <div class="form-group">
-                    <label class="control-label">{{ 'device_nomerustroistva' | translate }}: {{device.uuid}}</label>
+                    <label class="control-label">{{ 'device_devicenumber' | translate }}: {{device.uuid}}</label>
                     <span ng-if="device.status == 1" class="label label-success pull-right">{{ 'device_status' | translate }}</span>
                     <span ng-if="device.status == 2" class="label label-danger pull-right">{{ 'device_status' | translate }}</span>
                 </div>
                 <div class="form-group">
                     <select class="form-control" ng-model="device.campaignId" data-ng-options="campaign.id as campaign.name for campaign in device.campaigns">
-                        <option value="">{{ 'device_vqberitekampaniju' | translate }}</option>
+                        <option value="">{{ 'device_selectcompany' | translate }}</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <select class="form-control" ng-model="device.orientation">
-                        <option value="1">{{ 'device_gorizontalnajaorintacija' | translate }}</option>
-                        <option value="2">{{ 'device_vertikalnajaorintacija' | translate }}</option>
+                        <option value="1">{{ 'device_horizontalorientation' | translate }}</option>
+                        <option value="2">{{ 'device_verticalorientation' | translate }}</option>
                     </select>
                 </div>
                 <div class="form-group" style="margin-bottom: 0px;">
@@ -39,7 +39,7 @@
                         <!--<div class="form-group" style="margin-left: 15px;">-->
                             <!--<div class="checkbox">-->
                                 <!--<label>-->
-                                    <!--<input type="checkbox"> {{ 'device_zvuk' | translate }}-->
+                                    <!--<input type="checkbox"> {{ 'device_sound' | translate }}-->
                                 <!--</label>-->
                             <!--</div>-->
                         <!--</div>-->
@@ -49,16 +49,16 @@
 
             <div class="col-md-4">
                 <div class="form-group pull-right">
-                    <span style="font-weight: bolder;">{{ 'device_svobodnoemesto' | translate }}: {{ device.space |  bytes }}</span>
+                    <span style="font-weight: bolder;">{{ 'device_space' | translate }}: {{ device.space |  bytes }}</span>
                 </div>
                 <!--<div class="form-group pull-right">-->
-                    <!--<button type="button" class="btn btn-warning">{{ 'device_ochistitkesh' | translate }}</button>-->
+                    <!--<button type="button" class="btn btn-warning">{{ 'device_clearthecache' | translate }}</button>-->
                 <!--</div>-->
                 <div class="form-group pull-right">
-                    <button ng-click="change_device(device)" type="button" class="btn btn-success" style="margin-right: 5px;">{{ 'device_sohranit' | translate }}</button>
+                    <button ng-click="change_device(device)" type="button" class="btn btn-success" style="margin-right: 5px;">{{ 'device_save' | translate }}</button>
                 </div>
                 <div class="form-group pull-right">
-                    <button ng-click="delete_device(device)" type="button" class="btn btn-success" style="margin-right: 5px;">{{ 'device_udalit' | translate }}</button>
+                    <button ng-click="delete_device(device)" type="button" class="btn btn-success" style="margin-right: 5px;">{{ 'device_remove' | translate }}</button>
                 </div>
             </div>
         </div>

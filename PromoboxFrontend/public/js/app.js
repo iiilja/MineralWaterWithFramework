@@ -87,7 +87,7 @@ app.config(function ($translateProvider) {
         suffix: '.json'
     });
 
-    $translateProvider.preferredLanguage('en');
+    $translateProvider.preferredLanguage('et');
 
 });
 

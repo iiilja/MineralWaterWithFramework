@@ -15,9 +15,6 @@ public class FirstActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ActionBar actionBar = getActionBar();
-        actionBar.hide();
-
         setContentView(R.layout.activity_first);
 
         Button b = (Button)findViewById(R.id.first_start_button);

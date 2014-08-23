@@ -59,27 +59,29 @@ public class VideoActivity extends Activity implements MediaPlayer.OnCompletionL
 
 
     public void playVideo() {
-        try {
+        if (paths.length > 0) {
+            try {
 
-            mediaPlayer = new MediaPlayer();
+                mediaPlayer = new MediaPlayer();
 
-            mediaPlayer.setDisplay(surfaceHolder);
+                mediaPlayer.setDisplay(surfaceHolder);
 
-            streamMediaPlayer = new FileInputStream(paths[position]);
+                streamMediaPlayer = new FileInputStream(paths[position]);
 
-            mediaPlayer.setDataSource(streamMediaPlayer.getFD());
+                mediaPlayer.setDataSource(streamMediaPlayer.getFD());
 
-            mediaPlayer.prepareAsync();
+                mediaPlayer.prepareAsync();
 
-            mediaPlayer.setOnPreparedListener(this);
+                mediaPlayer.setOnPreparedListener(this);
 
-            position++;
+                position++;
 
-            mediaPlayer.setOnCompletionListener(this);
+                mediaPlayer.setOnCompletionListener(this);
 
-        } catch (Exception ex) {
-            Log.e("VideoActivity", ex.getMessage(), ex);
-            IOUtils.closeQuietly(streamMediaPlayer);
+            } catch (Exception ex) {
+                Log.e("VideoActivity", ex.getMessage(), ex);
+                IOUtils.closeQuietly(streamMediaPlayer);
+            }
         }
     }
 
@@ -122,6 +124,15 @@ public class VideoActivity extends Activity implements MediaPlayer.OnCompletionL
             position = 0;
         }
 
+        playVideo();
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        cleanUp();
+
     }
 
     @Override
@@ -147,8 +158,7 @@ public class VideoActivity extends Activity implements MediaPlayer.OnCompletionL
     }
 
 
-    @Override
-    protected void onDestroy() {
+    private void cleanUp() {
         videoView.destroyDrawingCache();
 
         if (mediaPlayer != null) {
@@ -158,6 +168,11 @@ public class VideoActivity extends Activity implements MediaPlayer.OnCompletionL
         }
 
         IOUtils.closeQuietly(streamMediaPlayer);
+    }
+
+    @Override
+    protected void onDestroy() {
+        cleanUp();
 
         bManager.unregisterReceiver(bReceiver);
 

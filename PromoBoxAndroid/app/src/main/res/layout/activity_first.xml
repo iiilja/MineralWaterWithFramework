@@ -34,9 +34,9 @@
         android:layout_height="wrap_content"
         android:text="Start"
         android:id="@+id/first_start_button"
-        android:layout_marginTop="66dp"
-        android:layout_below="@+id/first_start_device_id"
-        android:layout_centerHorizontal="true" />
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="35dp" />
 
     <ImageView
         android:layout_width="wrap_content"

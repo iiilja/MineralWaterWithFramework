@@ -23,12 +23,16 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 
 
@@ -296,8 +300,38 @@ public class MainService extends Service {
             StatFs stat = new StatFs(Environment.getExternalStorageDirectory().getPath());
             long bytesAvailable = (long)stat.getBlockSize() *(long)stat.getBlockCount();
 
+            final Enumeration<NetworkInterface> listNetworks =  NetworkInterface.getNetworkInterfaces();
+
+            JSONArray listInterface = new JSONArray();
+
+            while (listNetworks.hasMoreElements()) {
+                final NetworkInterface networkInterface = listNetworks.nextElement();
+
+                JSONObject obj = new JSONObject();
+
+                obj.put("name", networkInterface.getDisplayName());
+
+                JSONArray ipArray = new JSONArray();
+
+                Enumeration<InetAddress> listAddresses = networkInterface.getInetAddresses();
+
+                while (listAddresses.hasMoreElements()) {
+                    ipArray.put(listAddresses.nextElement().getHostAddress());
+                }
+
+                obj.put("ip", ipArray);
+
+                listInterface.put(obj);
+
+            }
+
+
+            json.put("ip", listInterface);
             json.put("freeSpace", bytesAvailable);
             json.put("force" , 1);
+
+
+            Log.i("MainService", "Pull info:" + json.toString());
 
 
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();

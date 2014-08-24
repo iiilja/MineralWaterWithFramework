@@ -1,6 +1,6 @@
 var apiEndpoint = "http://api.dev.promobox.ee/service/";
 
-var app = angular.module('promobox', ['ngRoute', 'ui.bootstrap', 'pascalprecht.translate', 'promobox.services', 'angularFileUpload', 'toaster', 'ui.router', 'angularMoment']);
+var app = angular.module('promobox', ['ngRoute', 'ui.bootstrap', 'pascalprecht.translate', 'promobox.services', 'angularFileUpload', 'toaster', 'ui.router', 'angularMoment', 'ui.bootstrap.datetimepicker']);
 
 
 app.config(['$routeProvider','$stateProvider','$urlRouterProvider', function ($routeProvider, $stateProvider, $urlRouterProvider) {
@@ -101,6 +101,7 @@ app.filter('bytes', function() {
     }
 });
 
+
 app.controller('Exit', ['token',
     function (token) {
         token.remove();
@@ -168,10 +169,7 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         };
 
         var dataToTime = function(data) {
-            console.log(data);
-            var dateConvert = moment(data, 'MM/DD/YYYY h:mm a').format('X');
-            console.log(dateConvert*1000);
-            return dateConvert*1000;
+            return data.getTime();
         };
         $scope.edit_company = function (this_data) {
             Campaign.edit_campaigns({token: token.get(), id: $scope.campaign.id, status: $scope.campaign_form.campaign_status, name: $scope.campaign_form.campaign_name, sequence: $scope.campaign_form.campaign_order, start: dataToTime($scope.campaign_form.campaign_start), finish: dataToTime($scope.campaign_form.campaign_finish), duration: $scope.campaign_form.campaign_time}, function(response){

@@ -135,31 +135,50 @@
                     <div class="row" style="margin-top: 10px;">
                         <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'campaign_edit_dateofstart' | translate }}</label></div>
                         <div class="col-md-7 col-xs-9 col-sm-8">
-                            <div class="inner-addon left-addon" id='timestart'>
-                                <i class="glyphicon glyphicon-calendar"></i>
-                                <input type='text' class="form-control" ng-model="campaign_form.campaign_start" />
-                            </div>
+                                <div class="dropdown">
+                                    <a class="dropdown-toggle" id="timestart" role="button" data-toggle="dropdown"
+                                       data-target="" href="">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control"
+                                                   value="{{ campaign_form.campaign_start | date:'medium'}}"/>
+                                            <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                                        </div>
+                                    </a>
+
+                                    <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                                        <datetimepicker class="form-control"
+                                                        data-ng-model="campaign_form.campaign_start"
+                                                        data-datetimepicker-config="{ dropdownSelector: '#timestart', startView:'day', minView:'minute' }"/>
+                                    </ul>
+
+                                </div>
                         </div>
                     </div>
                     <div class="row" style="margin-top: 10px;">
                         <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'campaign_edit_dateofclosure' | translate }}</label></div>
                         <div class="col-md-7 col-xs-9 col-sm-8">
-                            <div class="inner-addon left-addon" id='timefinish'>
-                                <i class="glyphicon glyphicon-calendar"></i>
-                                <input type='text' class="form-control" ng-model="campaign_form.campaign_finish" />
+                            <div class="dropdown">
+                                <a class="dropdown-toggle" id="timefinish" role="button" data-toggle="dropdown"
+                                   data-target="" href="">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control"
+                                               value="{{ campaign_form.campaign_finish | date:'medium'}}"/>
+                                        <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                                    </div>
+                                </a>
+
+                                <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                                    <datetimepicker class="form-control"
+                                                    data-ng-model="campaign_form.campaign_finish"
+                                                    data-datetimepicker-config="{ dropdownSelector: '#timefinish', startView:'day', minView:'minute' }"/>
+                                </ul>
+
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-
-            <script type="text/javascript">
-                jQuery(function () {
-                    jQuery('#timestart').datetimepicker();
-                    jQuery('#timefinish').datetimepicker();
-                });
-            </script>
 
             <div class="row">
                 <div class="form-group">

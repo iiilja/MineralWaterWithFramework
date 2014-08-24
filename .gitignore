@@ -1,4 +1,10 @@
-/KioskBackend/nbproject/private/
 /PromoBoxBackend/nbproject/private/
 /PromoBoxBackend/dist/
 /PromoBoxBackend/build/
+/PromoBoxBackend/.gradle
+/PromoBoxBackend/.idea/workspace.xml
+/PromoBoxFrontend/.gradle
+/PromoBoxFrontend/local.properties
+/PromoBoxFrontend/.idea/workspace.xml
+/PromoBoxFrontend/.DS_Store
+/PromoBoxFrontend/build

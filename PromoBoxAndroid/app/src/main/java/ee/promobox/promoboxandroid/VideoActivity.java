@@ -20,7 +20,7 @@ import org.apache.commons.io.IOUtils;
 import java.io.FileInputStream;
 
 //http://cadabracorp.com/blog/2013/04/24/playing-a-full-screen-video-the-easy-way/
-public class VideoActivity extends Activity implements MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener, SurfaceHolder.Callback {
+public class VideoActivity extends Activity implements MediaPlayer.OnCompletionListener, SurfaceHolder.Callback {
 
 
     private SurfaceView videoView;
@@ -51,10 +51,6 @@ public class VideoActivity extends Activity implements MediaPlayer.OnCompletionL
 
         videoView = (SurfaceView) findViewById(R.id.videoview);
 
-        surfaceHolder = videoView.getHolder();
-
-        surfaceHolder.addCallback(this);
-
     }
 
 
@@ -70,9 +66,9 @@ public class VideoActivity extends Activity implements MediaPlayer.OnCompletionL
 
                 mediaPlayer.setDataSource(streamMediaPlayer.getFD());
 
-                mediaPlayer.prepareAsync();
+                mediaPlayer.prepare();
 
-                mediaPlayer.setOnPreparedListener(this);
+                mediaPlayer.start();
 
                 position++;
 
@@ -124,7 +120,9 @@ public class VideoActivity extends Activity implements MediaPlayer.OnCompletionL
             position = 0;
         }
 
-        playVideo();
+        surfaceHolder = videoView.getHolder();
+
+        surfaceHolder.addCallback(this);
 
     }
 
@@ -161,8 +159,13 @@ public class VideoActivity extends Activity implements MediaPlayer.OnCompletionL
     private void cleanUp() {
         videoView.destroyDrawingCache();
 
+        surfaceHolder = videoView.getHolder();
+
+        surfaceHolder.removeCallback(this);
+
         if (mediaPlayer != null) {
             mediaPlayer.stop();
+            mediaPlayer.setOnCompletionListener(null);
             mediaPlayer.release();
             mediaPlayer = null;
         }
@@ -203,16 +206,10 @@ public class VideoActivity extends Activity implements MediaPlayer.OnCompletionL
 
     @Override
     public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i2, int i3) {
-
     }
 
     @Override
     public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
-
     }
 
-    @Override
-    public void onPrepared(MediaPlayer mediaPlayer) {
-        mediaPlayer.start();
-    }
 }

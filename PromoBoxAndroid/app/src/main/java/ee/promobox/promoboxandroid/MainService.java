@@ -58,10 +58,10 @@ public class MainService extends Service {
 
                 if (settings != null) {
 
-                    uuid = settings.getString("deviceUuid");
+                    setUuid(settings.getString("deviceUuid"));
                     orientation = settings.optInt("orientation", MainActivity.ORIENTATION_LANDSCAPE);
 
-                    Log.i(this.getClass().getName(), "Device id: " + uuid);
+                    Log.i(this.getClass().getName(), "Device id: " + getUuid());
                 }
             } catch (Exception ex) {
                 Log.e(this.getClass().getName(), ex.getMessage(), ex);
@@ -74,6 +74,8 @@ public class MainService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
+        Log.i("MainService","Start command");
+
         checkAndDownloadCampaign();
 
         if (!isActive() && false) {
@@ -85,7 +87,6 @@ public class MainService extends Service {
 
             getApplication().startActivity(mainActivity);
 
-            Log.i("MainService","Start main activity");
         }
 
         return Service.START_NOT_STICKY;
@@ -120,9 +121,9 @@ public class MainService extends Service {
             Log.e("MainService", ex.getMessage(), ex);
         }
 
-        if (dTask.getStatus() != AsyncTask.Status.RUNNING && uuid != null) {
+        if (dTask.getStatus() != AsyncTask.Status.RUNNING && getUuid() != null) {
             dTask = new DownloadFilesTask();
-            dTask.execute(String.format(DEFAULT_SERVER_JSON, uuid));
+            dTask.execute(String.format(DEFAULT_SERVER_JSON, getUuid()));
         }
 
     }
@@ -165,6 +166,14 @@ public class MainService extends Service {
 
     public void setOrientation(int orientation) {
         this.orientation = orientation;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
     public class MainServiceBinder extends Binder {

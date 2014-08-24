@@ -174,6 +174,8 @@ public class MainActivity extends Activity {
 
                 mainService.setSettings(settings);
                 mainService.saveSettings(settings);
+                mainService.setUuid(data.getStringExtra("deviceUuid"));
+                mainService.checkAndDownloadCampaign();
 
                 startNextFile();
 

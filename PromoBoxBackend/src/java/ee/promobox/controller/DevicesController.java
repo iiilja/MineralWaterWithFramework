@@ -157,6 +157,7 @@ public class DevicesController {
                     jsonD.put("space", d.getFreeSpace());
                     jsonD.put("orientation", d.getOrientation());
                     jsonD.put("resolution", d.getResolution());
+                    jsonD.put("lastRequestDate", d.getLastDeviceRequestDt().getTime());
 
                     AdCampaigns ac = userService.findCampaignByDeviceId(d.getId());
 

@@ -11,8 +11,8 @@
             <div class="col-md-5">
                 <div class="form-group">
                     <label class="control-label">{{ 'device_devicenumber' | translate }}: {{device.uuid}}</label>
-                    <span ng-if="device.status == 1" class="label label-success pull-right">{{ 'device_status' | translate }}</span>
-                    <span ng-if="device.status == 2" class="label label-danger pull-right">{{ 'device_status' | translate }}</span>
+                    <span ng-if="device.status == 2" class="label label-success pull-right">{{ 'device_status' | translate }}</span>
+                    <span ng-if="device.status == 3" class="label label-danger pull-right">{{ 'device_status' | translate }}</span>
                 </div>
                 <div class="form-group">
                     <select class="form-control" ng-model="device.campaignId" data-ng-options="campaign.id as campaign.name for campaign in device.campaigns">

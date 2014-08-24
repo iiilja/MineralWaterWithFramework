@@ -221,7 +221,7 @@ public class CampaignsController {
                 // fill all the fields with data provided by the client
                 campaign.setName(objectGiven.getString("name"));
                 campaign.setClientId(clientId);
-                campaign.setStatus(AdCampaigns.STATUS_PREPARED);
+                campaign.setStatus(objectGiven.getInt("status"));
                 campaign.setSequence(objectGiven.getInt("sequence"));
                 campaign.setStart(new Date(objectGiven.getLong("start")));
                 campaign.setFinish(new Date(objectGiven.getLong("finish")));

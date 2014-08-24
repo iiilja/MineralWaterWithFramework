@@ -112,6 +112,13 @@ public class DevicesController {
 
             }
 
+        } else {
+             resp.put("status", "error");
+             resp.put("error", "not_found_device");
+             
+             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+             
+             RequestUtils.printResult(resp.toString(), response);
         }
     }
 

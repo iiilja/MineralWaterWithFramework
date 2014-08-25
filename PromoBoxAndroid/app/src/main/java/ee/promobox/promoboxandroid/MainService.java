@@ -198,29 +198,32 @@ public class MainService extends Service {
 
                 if (data!=null) {
 
-                    Campaign newCamp = new Campaign(data.getJSONObject("campaign"));
+                    if (data.has("campaign")) {
 
-                    setOrientation(data.optInt("orientation", MainActivity.ORIENTATION_LANDSCAPE));
+                        Campaign newCamp = new Campaign(data.getJSONObject("campaign"));
 
-                    settings.put("orientation", getOrientation());
+                        setOrientation(data.optInt("orientation", MainActivity.ORIENTATION_LANDSCAPE));
 
-                    saveSettings(settings);
+                        settings.put("orientation", getOrientation());
 
-                    if (oldCamp == null || oldCamp.getCampaignId() != newCamp.getCampaignId() || (newCamp.getUpdateDate() > oldCamp.getUpdateDate())) {
-                        campaign = newCamp;
+                        saveSettings(settings);
 
-                        downloadFiles();
+                        if (oldCamp == null || oldCamp.getCampaignId() != newCamp.getCampaignId() || (newCamp.getUpdateDate() > oldCamp.getUpdateDate())) {
+                            campaign = newCamp;
 
-                        Intent finish = new Intent(MainActivity.ACTIVITY_FINISH);
+                            downloadFiles();
 
-                        LocalBroadcastManager.getInstance(MainService.this).sendBroadcast(finish);
+                            Intent finish = new Intent(MainActivity.ACTIVITY_FINISH);
 
-                        Intent update = new Intent(MainActivity.CAMPAIGN_UPDATE);
+                            LocalBroadcastManager.getInstance(MainService.this).sendBroadcast(finish);
 
-                        LocalBroadcastManager.getInstance(MainService.this).sendBroadcast(update);
+                            Intent update = new Intent(MainActivity.CAMPAIGN_UPDATE);
 
-                    } else {
-                        downloadFiles();
+                            LocalBroadcastManager.getInstance(MainService.this).sendBroadcast(update);
+
+                        } else {
+                            downloadFiles();
+                        }
                     }
                 }
 

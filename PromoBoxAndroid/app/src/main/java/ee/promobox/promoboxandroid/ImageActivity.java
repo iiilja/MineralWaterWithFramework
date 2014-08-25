@@ -67,6 +67,8 @@ public class ImageActivity extends Activity {
         view.setOnLongClickListener(new View.OnLongClickListener() {
 
             public boolean onLongClick(View view) {
+                Intent i = new Intent(ImageActivity.this, SettingsActivity.class);
+                startActivity(i);
 
                 Toast.makeText(view.getContext(), "Just a test", Toast.LENGTH_SHORT).show();
                 return true;
@@ -154,6 +156,12 @@ public class ImageActivity extends Activity {
 
         } catch (Exception ex) {
             Log.e("ImageActivity", ex.getMessage(), ex);
+
+            Intent returnIntent = new Intent();
+            returnIntent.putExtra("result", MainActivity.RESULT_FINISH_PLAY);
+            setResult(RESULT_OK, returnIntent);
+
+            ImageActivity.this.finish();
         }
 
     }

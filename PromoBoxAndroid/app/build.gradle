@@ -24,5 +24,6 @@ dependencies {
     // You must install or update the Support Repository through the SDK manager to use this dependency.
     compile group: 'commons-io', name: 'commons-io', version: '2.0.1'
     // You must install or update the Support Repository through the SDK manager to use this dependency.
+    // You must install or update the Support Repository through the SDK manager to use this dependency.
     compile 'com.android.support:support-v4:19.+'
 }

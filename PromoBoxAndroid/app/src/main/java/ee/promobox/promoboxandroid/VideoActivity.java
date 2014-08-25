@@ -76,7 +76,14 @@ public class VideoActivity extends Activity implements MediaPlayer.OnCompletionL
 
             } catch (Exception ex) {
                 Log.e("VideoActivity", ex.getMessage(), ex);
-                IOUtils.closeQuietly(streamMediaPlayer);
+
+                Intent returnIntent = new Intent();
+
+                returnIntent.putExtra("result", MainActivity.RESULT_FINISH_PLAY);
+
+                VideoActivity.this.setResult(RESULT_OK, returnIntent);
+
+                VideoActivity.this.finish();
             }
         }
     }
@@ -96,6 +103,10 @@ public class VideoActivity extends Activity implements MediaPlayer.OnCompletionL
         view.setOnLongClickListener(new View.OnLongClickListener() {
 
             public boolean onLongClick(View view) {
+
+                Intent i = new Intent(VideoActivity.this, SettingsActivity.class);
+                startActivity(i);
+
                 Toast.makeText(view.getContext(), "Just a test", Toast.LENGTH_SHORT).show();
 
                 return true;

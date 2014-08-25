@@ -43,6 +43,9 @@ public class AudioActivity extends Activity {
         view.setOnLongClickListener(new View.OnLongClickListener() {
 
             public boolean onLongClick(View view) {
+                Intent i = new Intent(AudioActivity.this, SettingsActivity.class);
+                startActivity(i);
+
                 Toast.makeText(view.getContext(), "Just a test", Toast.LENGTH_SHORT).show();
 
                 return true;

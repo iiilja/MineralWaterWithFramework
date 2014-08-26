@@ -82,13 +82,15 @@ public class ImageActivity extends Activity {
     protected void onResume() {
         super.onResume();
 
-        hideSystemUI();
+        Log.i("ImageActivity", "Orientation: " + getIntent().getExtras().getInt("orientation"));
 
-        if (getIntent().getExtras().getInt("orintation") == MainActivity.ORIENTATION_LANDSCAPE) {
+        if (getIntent().getExtras().getInt("orientation") == MainActivity.ORIENTATION_LANDSCAPE) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         } else {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
+
+        hideSystemUI();
 
         if (position > paths.length - 1) {
             position = 0;
@@ -127,6 +129,7 @@ public class ImageActivity extends Activity {
         File file = new File(path);
 
         Log.d("ImageActivity", "Play file: " + path);
+        Log.d("ImageActivity", "Play orientation: " + getRequestedOrientation());
 
         try {
 

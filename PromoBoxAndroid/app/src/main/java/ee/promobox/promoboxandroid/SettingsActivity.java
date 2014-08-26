@@ -104,6 +104,16 @@ public class SettingsActivity extends PreferenceActivity {
                 }
             });
 
+            findPreference("close").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object o) {
+
+                    getParentFragment().getActivity().finish();
+
+                    return true;
+                }
+            });
+
             bindPreferenceSummaryToValue(findPreference("sync_frequency"));
             bindPreferenceSummaryToValue(findPreference("uuid"));
         }

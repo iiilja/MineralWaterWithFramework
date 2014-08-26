@@ -128,7 +128,7 @@ public class MainActivity extends Activity {
 
                 i.putExtra("paths", filePack.toArray(new String[filePack.size()]));
                 i.putExtra("delay", campaign.getDelay());
-                i.putExtra("orintation", mainService.getOrientation());
+                i.putExtra("orientation", mainService.getOrientation());
 
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
@@ -140,7 +140,7 @@ public class MainActivity extends Activity {
                 Intent i = new Intent(this, AudioActivity.class);
 
                 i.putExtra("paths", filePack.toArray(new String[filePack.size()]));
-                i.putExtra("orintation", mainService.getOrientation());
+                i.putExtra("orientation", mainService.getOrientation());
 
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
@@ -151,7 +151,7 @@ public class MainActivity extends Activity {
                 Intent i = new Intent(this, VideoActivity.class);
 
                 i.putExtra("paths", filePack.toArray(new String[filePack.size()]));
-                i.putExtra("orintation", mainService.getOrientation());
+                i.putExtra("orientation", mainService.getOrientation());
 
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 

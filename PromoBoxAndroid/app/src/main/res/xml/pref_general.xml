@@ -27,4 +27,8 @@
         android:title="Version"
         android:summary="@string/version"/>
 
+    <Preference android:title="Close app"
+        android:key="close"
+        android:summary="close"/>
+
 </PreferenceScreen>

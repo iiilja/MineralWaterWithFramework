@@ -121,7 +121,7 @@ public class VideoActivity extends Activity implements MediaPlayer.OnCompletionL
 
         hideSystemUI();
 
-        if (getIntent().getExtras().getInt("orintation") == MainActivity.ORIENTATION_LANDSCAPE) {
+        if (getIntent().getExtras().getInt("orientation") == MainActivity.ORIENTATION_LANDSCAPE) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         } else {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);

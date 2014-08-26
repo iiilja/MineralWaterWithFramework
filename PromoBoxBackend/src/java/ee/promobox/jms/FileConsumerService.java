@@ -118,6 +118,16 @@ public class FileConsumerService extends MessageListenerAdapter {
         imageConvert.outputFormat("png");
         
         if (imageConvert.processToFile(new File(f.getFile().getParent() + File.separator + f.getId() + "_output"))) {
+            
+            imageConvert = new ImageOP(config.getImageMagick());
+
+            imageConvert.input(new File(f.getFile().getParent() + File.separator + f.getId() + "_output"));            
+            
+            imageConvert.rotate(270);
+            
+            imageConvert.outputFormat("png");
+
+            imageConvert.processToFile(new File(f.getFile().getParent() + File.separator + f.getId() + "_output_port"));
 
             imageConvert = new ImageOP(config.getImageMagick());
 
@@ -159,6 +169,14 @@ public class FileConsumerService extends MessageListenerAdapter {
         imageConvert.resize(1920, 1920);
 
         imageConvert.processToFile(new File(f.getFile().getParent() + File.separator + f.getId() + "_output"));
+        
+        imageConvert = new ImageOP(config.getImageMagick());
+
+        imageConvert.input(f.getFile());
+        imageConvert.outputFormat("png");
+        imageConvert.rotate(270);
+
+        imageConvert.processToFile(new File(f.getFile().getParent() + File.separator + f.getId() + "_output_port"));
 
         imageConvert = new ImageOP(config.getImageMagick());
 

@@ -12,6 +12,7 @@ package ee.promobox.controller;
 import ee.promobox.KioskConfig;
 import ee.promobox.entity.AdCampaigns;
 import ee.promobox.entity.CampaignsFiles;
+import ee.promobox.entity.Devices;
 import ee.promobox.entity.Files;
 import ee.promobox.jms.FileDto;
 import ee.promobox.service.Session;
@@ -40,6 +41,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 @Controller
@@ -257,6 +259,7 @@ public class FilesController {
     @RequestMapping("files/{id}")
     public void getFile(
             @PathVariable("id") int id,
+            @RequestParam(required = false) Integer orient,
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
@@ -271,11 +274,22 @@ public class FilesController {
                 response.setContentType("video/webm");
             } else if (dbFile.getFileType() == FileTypeUtils.FILE_TYPE_AUDIO) {
                 response.setContentType("audio/mpeg");
+            } else if (dbFile.getFileType() == FileTypeUtils.FILE_TYPE_IMAGE) {
+                response.setContentType("image/png");
+            }
+                        
+            
+            File file = new File(config.getDataDir() + dbFile.getClientId() + File.separator + dbFile.getId() + "_output");
+                                    
+            if (orient!=null && orient == Devices.ORIENTATION_PORTRAIT_EMULATION) {
+                File filePort = new File(config.getDataDir() + dbFile.getClientId() + File.separator + dbFile.getId() + "_output_port");
+                
+                if (filePort.exists()) {
+                    file = filePort;
+                }
             }
             
-            response.setContentLength(dbFile.getSize());
-
-            File file = new File(config.getDataDir() + dbFile.getClientId() + File.separator + dbFile.getId() + "_output");
+            response.setContentLength((int)file.length());
 
             FileInputStream fileInputStream = new FileInputStream(file);
             OutputStream outputStream = response.getOutputStream();

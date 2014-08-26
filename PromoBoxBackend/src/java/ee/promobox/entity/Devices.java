@@ -37,6 +37,7 @@ public class Devices implements Serializable {
 
     public static final int ORIENTATION_LANDSCAPE = 1;
     public static final int ORIENTATION_PORTRAIT = 2;
+    public static final int ORIENTATION_PORTRAIT_EMULATION = 3;
 
     public static final int RESOLUTION_1920X1080 = 1;
     public static final int RESOLUTION_1366X768 = 2;

@@ -34,6 +34,7 @@ public class MainActivity extends Activity {
 
     public static final int ORIENTATION_LANDSCAPE = 1;
     public static final int ORIENTATION_PORTRAIT = 2;
+    public static final int ORIENTATION_PORTRAIT_EMULATION = 3;
 
     private MainService mainService;
     private int position;
@@ -106,7 +107,13 @@ public class MainActivity extends Activity {
                 }
 
                 if (cFile.getType() == fileType) {
-                    File f = new File(campaign.getRoot(), cFile.getId() + "");
+                    String portSufix = "";
+
+                    if (mainService.getOrientation() == MainActivity.ORIENTATION_PORTRAIT_EMULATION) {
+                        portSufix = "_port";
+                    }
+                    File f = new File(campaign.getRoot(), cFile.getId() + portSufix);
+
                     if (f.exists()) {
                         filePack.add(f.getAbsolutePath());
                         fileType = cFile.getType();
@@ -199,10 +206,10 @@ public class MainActivity extends Activity {
         startService(intent);
 
         if (mainService != null) {
-            if (mainService.getOrientation() == MainActivity.ORIENTATION_LANDSCAPE) {
-                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-            } else {
+            if (mainService.getOrientation() == MainActivity.ORIENTATION_PORTRAIT) {
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            } else {
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
             }
         } else {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);

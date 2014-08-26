@@ -12,7 +12,9 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+import android.view.Display;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -84,11 +86,16 @@ public class ImageActivity extends Activity {
 
         Log.i("ImageActivity", "Orientation: " + getIntent().getExtras().getInt("orientation"));
 
-        if (getIntent().getExtras().getInt("orientation") == MainActivity.ORIENTATION_LANDSCAPE) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        } else {
+        if (getIntent().getExtras().getInt("orientation") == MainActivity.ORIENTATION_PORTRAIT) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        } else {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
+
+        Display d = ((WindowManager)getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+
+        Log.i("ImageActivity", "Image activity width: " + d.getWidth());
+        Log.i("ImageActivity", "Image activity height: " + d.getHeight());
 
         hideSystemUI();
 
@@ -127,9 +134,6 @@ public class ImageActivity extends Activity {
 
     private void playImage(String path) {
         File file = new File(path);
-
-        Log.d("ImageActivity", "Play file: " + path);
-        Log.d("ImageActivity", "Play orientation: " + getRequestedOrientation());
 
         try {
 

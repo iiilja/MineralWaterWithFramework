@@ -236,17 +236,27 @@ public class MainService extends Service {
         }
 
         public void downloadFiles() {
+
             Log.i("MainService", "Download files");
 
             for (CampaignFile f : campaign.getFiles()) {
                 File dir = new File(root.getAbsolutePath() + String.format("/%s/", campaign.getCampaignId()));
+
                 dir.mkdirs();
 
                 File file = new File(dir, f.getId() + "");
 
                 if (!file.exists() || file.length() != f.getSize()) {
+                    if (orientation!=MainActivity.ORIENTATION_PORTRAIT_EMULATION) {
+                        downloadFile(String.format(DEFAULT_SERVER + "/service/files/%s", f.getId()), f.getId() + "");
+                    } else {
 
-                    downloadFile(String.format(DEFAULT_SERVER + "/service/files/%s",  f.getId()), f.getId() + "");
+                        File filePort = new File(dir, f.getId() + "_port");
+
+                        if (!filePort.exists()) {
+                            downloadFile(String.format(DEFAULT_SERVER + "/service/files/%s?orient=3", f.getId()), f.getId() + "_port");
+                        }
+                    }
 
                 }
             }

@@ -110,8 +110,10 @@ public class FileConsumerService extends MessageListenerAdapter {
         ImageOP imageConvert = new ImageOP(config.getImageMagick());
 
         imageConvert.density(300);
+        imageConvert.flatten();
         imageConvert.input(f.getFile());
         imageConvert.page(0);
+        imageConvert.background("white");
         imageConvert.resize(1920, 1920);
         
                 

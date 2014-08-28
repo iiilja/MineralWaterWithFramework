@@ -286,6 +286,21 @@ public class ImageOP {
 
         return this;
     }
+    
+     public ImageOP flatten() {
+        args.add("-flatten");
+
+        return this;
+    }
+    
+    
+    
+    public ImageOP opaque(String opaque) {
+        args.add("-opaque");
+        args.add(opaque);
+
+        return this;
+    }
 
     public ImageOP gravity(String gravity) {
         args.add("-gravity");

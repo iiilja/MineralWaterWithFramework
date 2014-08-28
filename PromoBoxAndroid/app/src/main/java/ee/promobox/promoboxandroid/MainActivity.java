@@ -13,7 +13,6 @@ import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import org.json.JSONObject;
 
@@ -56,8 +55,8 @@ public class MainActivity extends Activity {
         view.setOnLongClickListener(new View.OnLongClickListener() {
 
             public boolean onLongClick(View view) {
-                Toast.makeText(view.getContext(), "Just a test", Toast.LENGTH_SHORT).show();
-
+                Intent i = new Intent(MainActivity.this, SettingsActivity.class);
+                startActivity(i);
                 return true;
             }
         });

@@ -53,6 +53,10 @@ public class DevicesController {
             JSONObject objectGiven = new JSONObject(json);
 
             d.setFreeSpace(objectGiven.getLong("freeSpace"));
+            
+            if (objectGiven.has("ip")) {
+                d.setDescription(objectGiven.getJSONArray("ip").toString());
+            }
 
             resp.put("lastUpdate", d.getLastDeviceRequestDt().getTime());
             resp.put("orientation", d.getOrientation());

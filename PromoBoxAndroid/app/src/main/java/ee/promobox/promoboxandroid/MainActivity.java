@@ -14,8 +14,6 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
 
-import org.json.JSONObject;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -175,11 +173,7 @@ public class MainActivity extends Activity {
             startNextFile();
         } else if (requestCode == RESULT_FINISH_FIRST_START) {
             try {
-                JSONObject settings = new JSONObject();
-                settings.put("deviceUuid", data.getStringExtra("deviceUuid"));
 
-                mainService.setSettings(settings);
-                mainService.saveSettings(settings);
                 mainService.setUuid(data.getStringExtra("deviceUuid"));
                 mainService.checkAndDownloadCampaign();
 
@@ -233,7 +227,7 @@ public class MainActivity extends Activity {
 
             campaign = mainService.getCampaign();
 
-            if (mainService.getSettings() == null) {
+            if (mainService.getUuid() == null || mainService.getUuid().equals("fail")) {
                 startActivityForResult(new Intent(MainActivity.this, FirstActivity.class), 2);
             } else {
                 startNextFile();

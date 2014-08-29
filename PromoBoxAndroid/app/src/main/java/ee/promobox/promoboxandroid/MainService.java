@@ -4,11 +4,13 @@ import android.app.ActivityManager;
 import android.app.Service;
 import android.content.ComponentName;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.Environment;
 import android.os.IBinder;
 import android.os.StatFs;
+import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
@@ -42,9 +44,11 @@ public class MainService extends Service {
     private final String DEFAULT_SERVER = "http://api.dev.promobox.ee/";
     private final String DEFAULT_SERVER_JSON = DEFAULT_SERVER + "/service/device/%s/pull";
 
-    private JSONObject settings;
+    private SharedPreferences sharedPref;
+
     private String uuid;
     private int orientation;
+    private boolean alwaysOnTop = false;
 
     File root = new File(Environment.getExternalStorageDirectory().getAbsoluteFile() + "/promobox/");
 
@@ -56,22 +60,7 @@ public class MainService extends Service {
 
     @Override
     public void onCreate() {
-        if (getSettings() == null) {
-            try {
-                settings = loadSettings();
-
-                if (settings != null) {
-
-                    setUuid(settings.getString("deviceUuid"));
-                    orientation = settings.optInt("orientation", MainActivity.ORIENTATION_LANDSCAPE);
-
-                    Log.i(this.getClass().getName(), "Device id: " + getUuid());
-                }
-            } catch (Exception ex) {
-                Log.e(this.getClass().getName(), ex.getMessage(), ex);
-            }
-
-        }
+        sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
     }
 
 
@@ -80,9 +69,13 @@ public class MainService extends Service {
 
         Log.i("MainService","Start command");
 
+        setUuid(sharedPref.getString("uuid", "fail"));
+        setOrientation(sharedPref.getInt("orientation", MainActivity.ORIENTATION_LANDSCAPE));
+        alwaysOnTop = sharedPref.getBoolean("always_on_top", false);
+
         checkAndDownloadCampaign();
 
-        if (!isActive() && false) {
+        if (!isActive() && alwaysOnTop) {
             Intent mainActivity = new Intent(getBaseContext(), MainActivity.class);
 
             mainActivity.setAction(Intent.ACTION_MAIN);
@@ -94,24 +87,6 @@ public class MainService extends Service {
         }
 
         return Service.START_NOT_STICKY;
-    }
-
-    public JSONObject loadSettings() throws Exception {
-        File settings = new File(root, "settings.json");
-
-        JSONObject obj = null;
-
-        if (settings.exists()) {
-            obj = new JSONObject(FileUtils.readFileToString(settings));
-        }
-
-        return obj;
-    }
-
-    public void saveSettings(JSONObject obj) throws  Exception {
-        File settings = new File(root, "settings.json");
-        FileUtils.writeStringToFile(settings, obj.toString());
-
     }
 
     public void checkAndDownloadCampaign() {
@@ -156,14 +131,6 @@ public class MainService extends Service {
         return mBinder;
     }
 
-    public void setSettings(JSONObject settings) {
-        this.settings = settings;
-    }
-
-    public JSONObject getSettings() {
-        return settings;
-    }
-
     public int getOrientation() {
         return orientation;
     }
@@ -177,6 +144,7 @@ public class MainService extends Service {
     }
 
     public void setUuid(String uuid) {
+        sharedPref.edit().putString("uuid", uuid).commit();
         this.uuid = uuid;
     }
 
@@ -204,9 +172,7 @@ public class MainService extends Service {
 
                         setOrientation(data.optInt("orientation", MainActivity.ORIENTATION_LANDSCAPE));
 
-                        settings.put("orientation", getOrientation());
-
-                        saveSettings(settings);
+                        sharedPref.edit().putInt("orientation", orientation).commit();
 
                         if (oldCamp == null || oldCamp.getCampaignId() != newCamp.getCampaignId() || (newCamp.getUpdateDate() > oldCamp.getUpdateDate())) {
                             campaign = newCamp;

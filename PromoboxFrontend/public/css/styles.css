@@ -164,4 +164,5 @@ input[readonly] {
     line-height: 1.42857143;
     vertical-align: middle;
     cursor: pointer;
+    margin-right: 15px;
 }

@@ -9,12 +9,14 @@ app.config(['$routeProvider','$stateProvider','$urlRouterProvider', function ($r
         .state('login', {
             url: "/",
             views: {
+                "topView": { controller: 'TopMenuController',templateUrl: '/views/top_clean_menu.html' },
                 "contentView": { controller: 'LoginController',templateUrl: '/views/login.html' }
             }
         })
         .state('registration', {
             url: "/registration",
             views: {
+                "topView": { controller: 'TopMenuController',templateUrl: '/views/top_clean_menu.html' },
                 "contentView": { controller: 'RegistrationController',templateUrl: '/views/register.html' }
             }
         })

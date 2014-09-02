@@ -3507,8 +3507,8 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
     color: #555;
     text-align: center;
     /*background-color: #eee;*/
-    /*border: 1px solid #ccc;*/
-    /* border-top: 1px solid #ccc; */
+    border: 1px solid #ccc;
+     border-top: 1px solid #ccc;
     border-left: 1px solid #ccc;
     border-bottom: 1px solid #ccc;
     border-radius: 4px;

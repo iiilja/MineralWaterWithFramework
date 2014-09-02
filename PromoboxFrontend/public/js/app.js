@@ -120,8 +120,8 @@ app.controller('TopMenuController', ['$scope', '$location', '$http', 'token', '$
     }]);
 
 //Update When Create new Design
-app.controller('LoginController', ['$scope', '$location', '$http', 'token', '$rootScope',
-    function ($scope, $location, $http, token, $rootScope) {
+app.controller('LoginController', ['$scope', '$location', '$http', 'token', '$rootScope', 'sysMessage',
+    function ($scope, $location, $http, token, $rootScope, sysMessage) {
         $rootScope.bodyClass = 'main_bg';
         if (!token.check()) {
             $scope.login_form = {email: '', password: '', remember: false};
@@ -136,6 +136,8 @@ app.controller('LoginController', ['$scope', '$location', '$http', 'token', '$ro
                         if (data.response == 'OK') {
                             token.put(data.token);
                             $location.path('/list');
+                        } else {
+                            sysMessage.login_failed('Имя или пароль не совпадают')
                         }
                     });
             };

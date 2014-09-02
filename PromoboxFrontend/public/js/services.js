@@ -80,6 +80,9 @@ services.factory("sysMessage", ['toaster', function (toaster) {
         },
         delete_s: function (message) {
             toaster.pop('success', "Удаление", message);
+        },
+        login_failed: function (message) {
+            toaster.pop('error', "Ошибка", message);
         }
     }
 }]);

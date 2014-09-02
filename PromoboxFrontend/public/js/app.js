@@ -120,8 +120,8 @@ app.controller('TopMenuController', ['$scope', '$location', '$http', 'token', '$
     }]);
 
 //Update When Create new Design
-app.controller('LoginController', ['$scope', '$location', '$http', 'token', '$rootScope', 'sysMessage',
-    function ($scope, $location, $http, token, $rootScope, sysMessage) {
+app.controller('LoginController', ['$scope', '$location', '$http', 'token', '$rootScope', 'sysMessage', '$filter',
+    function ($scope, $location, $http, token, $rootScope, sysMessage, $filter) {
         $rootScope.bodyClass = 'main_bg';
         if (!token.check()) {
             $scope.login_form = {email: '', password: '', remember: false};
@@ -159,8 +159,8 @@ app.controller('CampaignNewController', ['token', 'Campaign', 'sysLocation',
         });
     }]);
 
-app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Campaign', '$location', '$http', 'toaster', 'Files','sysMessage', 'sysLocation', 'FileUploader', '$rootScope',
-    function ($scope, $stateParams, token, Campaign, $location, $http, toaster, Files, sysMessage, sysLocation, FileUploader, $rootScope) {
+app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Campaign', '$location', '$http', 'toaster', 'Files','sysMessage', 'sysLocation', 'FileUploader', '$rootScope', '$filter',
+    function ($scope, $stateParams, token, Campaign, $location, $http, toaster, Files, sysMessage, sysLocation, FileUploader, $rootScope, $filter) {
         $rootScope.top_link_active_list = 'top_link_active';
         $scope.filesArray = [];
         Campaign.get_campaigns({token: token.get(), id: $stateParams.cId}, function (response) {
@@ -259,8 +259,8 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         console.info('uploader', uploader);
     }]);
 
-app.controller('CampaignsController', ['$scope', 'token', 'Campaign', 'sysMessage', '$rootScope',
-    function ($scope, token, Campaign, sysMessage, $rootScope) {
+app.controller('CampaignsController', ['$scope', 'token', 'Campaign', 'sysMessage', '$rootScope', '$filter',
+    function ($scope, token, Campaign, sysMessage, $rootScope, $filter) {
         if (token.check()) {
             $scope.timeconvert = function(time) {
                 var timeConvert = moment(time).unix();

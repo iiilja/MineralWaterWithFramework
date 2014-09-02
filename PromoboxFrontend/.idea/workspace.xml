@@ -3,10 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="9b44007b-a825-43ba-8a60-51fd2b364aed" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/js/app.js" afterPath="$PROJECT_DIR$/public/js/app.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/json/en.json" afterPath="$PROJECT_DIR$/public/json/en.json" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/json/et.json" afterPath="$PROJECT_DIR$/public/json/et.json" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/json/ru.json" afterPath="$PROJECT_DIR$/public/json/ru.json" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/js/services.js" afterPath="$PROJECT_DIR$/public/js/services.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="PromoboxFrontEnd.iws" />
@@ -33,8 +29,8 @@
       <file leaf-file-name="app.js" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/public/js/app.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.70740104" vertical-offset="1952" max-vertical-offset="5491">
-              <caret line="139" column="108" selection-start-line="139" selection-start-column="108" selection-end-line="139" selection-end-column="108" />
+            <state vertical-scroll-proportion="-0.52151465" vertical-offset="4757" max-vertical-offset="5491">
+              <caret line="262" column="70" selection-start-line="262" selection-start-column="70" selection-end-line="262" selection-end-column="70" />
               <folding />
             </state>
           </provider>
@@ -1037,8 +1033,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/public/js/app.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.70740104" vertical-offset="1952" max-vertical-offset="5491">
-          <caret line="139" column="108" selection-start-line="139" selection-start-column="108" selection-end-line="139" selection-end-column="108" />
+        <state vertical-scroll-proportion="-0.52151465" vertical-offset="4757" max-vertical-offset="5491">
+          <caret line="262" column="70" selection-start-line="262" selection-start-column="70" selection-end-line="262" selection-end-column="70" />
           <folding />
         </state>
       </provider>

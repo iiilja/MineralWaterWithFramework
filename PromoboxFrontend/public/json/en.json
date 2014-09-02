@@ -63,6 +63,8 @@
     "campaign_edit_dateofclosure": "Date of closure",
     "campaign_edit_savethecompany": "Save the company",
     "campaign_edit_cancel": "Cancel",
+    "campaign_edit_workdays": "Дни работы",
+    "campaign_edit_openinghours": "Часы работы",
     "system_adding": "Adding",
     "system_update": "Update",
     "system_deleting": "Deleting",

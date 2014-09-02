@@ -63,6 +63,8 @@
     "campaign_edit_dateofclosure": "Lõpetamise kuupäev",
     "campaign_edit_savethecompany": "Salvesta kampaania",
     "campaign_edit_cancel": "Tühista",
+    "campaign_edit_workdays": "Дни работы",
+    "campaign_edit_openinghours": "Часы работы",
     "system_adding": "Lisada",
     "system_update": "Uuenda",
     "system_deleting": "Kustutamine",

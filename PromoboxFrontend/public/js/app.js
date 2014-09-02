@@ -165,6 +165,31 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
     function ($scope, $stateParams, token, Campaign, $location, $http, toaster, Files, sysMessage, sysLocation, FileUploader, $rootScope, $filter) {
         $rootScope.top_link_active_list = 'top_link_active';
         $scope.filesArray = [];
+
+        $scope.workdays = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+        $scope.checkedDays = [];
+        $scope.toggleCheckDays = function (day) {
+            if ($scope.checkedDays.indexOf(day) === -1) {
+                $scope.checkedDays.push(day);
+            } else {
+                $scope.checkedDays.splice($scope.checkedDays.indexOf(day), 1);
+            }
+        };
+
+        $scope.workhours = ['7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '0'];
+        $scope.checkedHours = [];
+        $scope.toggleCheckHours = function (hour) {
+            if ($scope.checkedHours.indexOf(hour) === -1) {
+                $scope.checkedHours.push(hour);
+            } else {
+                $scope.checkedHours.splice($scope.checkedHours.indexOf(hour), 1);
+            }
+        };
+
+
+
+
+
         Campaign.get_campaigns({token: token.get(), id: $stateParams.cId}, function (response) {
             $scope.campaign = response;
             console.log($scope.campaign);

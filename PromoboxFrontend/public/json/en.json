@@ -72,5 +72,6 @@
     "system_device": "Device",
     "system_updated": "updated",
     "system_removed": "Removed",
-    "system_deviceadded": "Device added"
+    "system_deviceadded": "Device added",
+    "system_error": "Error"
 }

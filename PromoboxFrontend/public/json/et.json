@@ -72,5 +72,6 @@
     "system_device": "Seade",
     "system_updated": "Uuendatud",
     "system_removed": "Eemaldatud",
-    "system_deviceadded": "Seade lisatud"
+    "system_deviceadded": "Seade lisatud",
+    "system_error": "Ошибка"
 }

@@ -33,7 +33,7 @@
     "device_space": "Свободное место",
     "device_clearthecache": "Очистить кэш",
     "device_save": "Сохранить",
-    "device_remove": "Удалить",
+    "device_remove": "В архив",
     "campaign_edit_editcompany": "Редактировать кампанию",
     "campaign_edit_companyname": "Название кампании",
     "campaign_edit_browse": "Добабить фаил",
@@ -72,5 +72,6 @@
     "system_device": "Устройство",
     "system_updated": "Обновленно",
     "system_removed": "Удалено",
-    "system_deviceadded": "Устройство добавлено"
+    "system_deviceadded": "Устройство добавлено",
+    "system_error": "Ошибка"
 }

@@ -70,7 +70,7 @@ services.factory("token", ['$cookies', '$location', function ($cookies, $locatio
     }
 }]);
 
-services.factory("sysMessage", ['toaster', function (toaster) {
+services.factory("sysMessage", ['toaster','$filter', function (toaster, $filter) {
     return {
         add_s: function (message) {
             toaster.pop('success', "Добовление", message);
@@ -82,7 +82,7 @@ services.factory("sysMessage", ['toaster', function (toaster) {
             toaster.pop('success', "Удаление", message);
         },
         login_failed: function (message) {
-            toaster.pop('error', "Ошибка", message);
+            toaster.pop('error', $filter('translate')('system_error'), message);
         }
     }
 }]);

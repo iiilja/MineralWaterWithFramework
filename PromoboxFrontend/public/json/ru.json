@@ -73,5 +73,6 @@
     "system_updated": "Обновленно",
     "system_removed": "Удалено",
     "system_deviceadded": "Устройство добавлено",
-    "system_error": "Ошибка"
+    "system_error": "Ошибка",
+    "system_thenameorpassworddonotmatch": "Имя или пароль не совпадают"
 }

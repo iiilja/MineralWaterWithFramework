@@ -73,13 +73,13 @@ services.factory("token", ['$cookies', '$location', function ($cookies, $locatio
 services.factory("sysMessage", ['toaster','$filter', function (toaster, $filter) {
     return {
         add_s: function (message) {
-            toaster.pop('success', "Добовление", message);
+            toaster.pop('success', $filter('translate')('system_adding'), message);
         },
         update_s: function (message) {
-            toaster.pop('success', "Обновление", message);
+            toaster.pop('success', $filter('translate')('system_update'), message);
         },
         delete_s: function (message) {
-            toaster.pop('success', "Удаление", message);
+            toaster.pop('success', $filter('translate')('system_deleting'), message);
         },
         login_failed: function (message) {
             toaster.pop('error', $filter('translate')('system_error'), message);

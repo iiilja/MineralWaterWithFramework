@@ -73,5 +73,7 @@
     "system_updated": "updated",
     "system_removed": "Removed",
     "system_deviceadded": "Device added",
-    "system_error": "Error"
+    "system_error": "Error",
+    "system_thenameorpassworddonotmatch": "The name or password do not match"
+
 }

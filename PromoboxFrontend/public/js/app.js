@@ -137,7 +137,7 @@ app.controller('LoginController', ['$scope', '$location', '$http', 'token', '$ro
                             token.put(data.token);
                             $location.path('/list');
                         } else {
-                            sysMessage.login_failed('Имя или пароль не совпадают')
+                            sysMessage.login_failed($filter('translate')('system_thenameorpassworddonotmatch'))
                         }
                     });
             };
@@ -188,7 +188,7 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
 
         $scope.inArchive = function (id) {
             Files.arhiveFiles({token: token.get(), id: id}, function(response){
-                sysMessage.delete_s('Файл удалён')
+                sysMessage.delete_s($filter('translate')('system_filewasdeleted'))
                 refreshFilesModel();
             });
         };
@@ -278,15 +278,15 @@ app.controller('CampaignsController', ['$scope', 'token', 'Campaign', 'sysMessag
                 Campaign.delete_campaigns({token: token.get(), id: campaign.id}, function (response) {
                     Campaign.get_all_campaigns({token: token.get()}, function (response) {
                         $scope.campaigns = response.campaigns;
-                        sysMessage.delete_s('Кампания ' + campaign.name + ' удаленна');
+                        sysMessage.delete_s($filter('translate')('system_campaign') + ' ' + campaign.name + ' ' + $filter('translate')('system_theremoved'));
                     });
                 });
             };
         }
     }]);
 
-app.controller('DevicesController', ['$scope', 'token', 'Device', 'sysMessage', '$rootScope',
-    function ($scope, token, Device, sysMessage, $rootScope) {
+app.controller('DevicesController', ['$scope', 'token', 'Device', 'sysMessage', '$rootScope', '$filter',
+    function ($scope, token, Device, sysMessage, $rootScope, $filter) {
         if (token.check()) {
             $rootScope.top_link_active_device = 'top_link_active';
             Device.get_data({token: token.get()}, function (response) {
@@ -294,14 +294,14 @@ app.controller('DevicesController', ['$scope', 'token', 'Device', 'sysMessage', 
             });
             $scope.change_device = function(device) {
                 Device.update({token: token.get(), id: device.id, orientation: parseInt(device.orientation), resolution: parseInt(device.resolution), campaignId: parseInt(device.campaignId) }, function (response) {
-                    sysMessage.update_s('Устройство ' + device.uuid + ' обновленно');
+                    sysMessage.update_s($filter('translate')('system_device') + ' ' + $filter('translate')('system_updated'));
                 });
             };
             $scope.delete_device = function(device) {
                 Device.delete({token: token.get(), id: device.id}, function (response){
                     Device.get_data({token: token.get()}, function (response) {
                         $scope.devices = response.devices;
-                        sysMessage.update_s('Устройство ' + device.uuid + ' Удалено');
+                        sysMessage.update_s($filter('translate')('system_device') + ' ' + device.uuid + ' ' + $filter('translate')('system_removed'));
                     });
                 });
             };
@@ -309,7 +309,8 @@ app.controller('DevicesController', ['$scope', 'token', 'Device', 'sysMessage', 
                 Device.add({token: token.get()}, function (response){
                     Device.get_data({token: token.get()}, function (response) {
                         $scope.devices = response.devices;
-                        sysMessage.update_s('Устройство добавлено');
+                        sysMessage.update_s($filter('translate')('system_deviceadded'));
+
                     });
                 });
             };

@@ -73,5 +73,6 @@
     "system_updated": "Uuendatud",
     "system_removed": "Eemaldatud",
     "system_deviceadded": "Seade lisatud",
-    "system_error": "Ошибка"
+    "system_error": "Ошибка",
+    "system_thenameorpassworddonotmatch": "Имя или пароль не совпадают"
 }

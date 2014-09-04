@@ -67,6 +67,9 @@ public class Devices implements Serializable {
     private Integer status;
     @Column(name = "description")
     private String description;
+    
+    @Column(name = "network_data")
+    private String networkData;
 
     @Column(name = "orientation")
     private Integer orientation;
@@ -182,5 +185,19 @@ public class Devices implements Serializable {
 
     public void setResolution(Integer resolution) {
         this.resolution = resolution;
+    }
+
+    /**
+     * @return the networkData
+     */
+    public String getNetworkData() {
+        return networkData;
+    }
+
+    /**
+     * @param networkData the networkData to set
+     */
+    public void setNetworkData(String networkData) {
+        this.networkData = networkData;
     }
 }

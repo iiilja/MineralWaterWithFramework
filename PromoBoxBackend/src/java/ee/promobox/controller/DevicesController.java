@@ -55,7 +55,7 @@ public class DevicesController {
             d.setFreeSpace(objectGiven.getLong("freeSpace"));
             
             if (objectGiven.has("ip")) {
-                d.setDescription(objectGiven.getJSONArray("ip").toString());
+                d.setNetworkData(objectGiven.getJSONArray("ip").toString());
             }
 
             resp.put("lastUpdate", d.getLastDeviceRequestDt().getTime());
@@ -317,6 +317,7 @@ public class DevicesController {
             device.setStatus(Devices.STATUS_USED);
             device.setUuid(UUID.randomUUID().toString().substring(0, 4));
             device.setDescription("");
+            device.setNetworkData("");
 
             userService.addDevice(device);
 

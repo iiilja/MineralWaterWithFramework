@@ -68,6 +68,8 @@ public class AdCampaigns implements Serializable {
     @Column(name = "update_dt")
     @Temporal(TemporalType.TIMESTAMP)
     private Date updateDate;
+    @Column(name = "work_time_data")
+    private String workTimeData;
 
     public AdCampaigns() {
     }
@@ -171,5 +173,19 @@ public class AdCampaigns implements Serializable {
 
     public void setUpdateDate(Date updateDate) {
         this.updateDate = updateDate;
+    }
+
+    /**
+     * @return the workTimeData
+     */
+    public String getWorkTimeData() {
+        return workTimeData;
+    }
+
+    /**
+     * @param workTimeData the workTimeData to set
+     */
+    public void setWorkTimeData(String workTimeData) {
+        this.workTimeData = workTimeData;
     }
 }

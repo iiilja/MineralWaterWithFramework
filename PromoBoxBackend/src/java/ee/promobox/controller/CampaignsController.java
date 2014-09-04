@@ -147,12 +147,13 @@ public class CampaignsController {
 
             campaign.setName("New campaign");
             campaign.setClientId(session.getClientId());
-            campaign.setStatus(AdCampaigns.STATUS_CREATED);
+            campaign.setStatus(AdCampaigns.STATUS_PUBLISHED);
             campaign.setSequence(1);
             campaign.setStart(new Date());
             campaign.setFinish(new Date());
-            campaign.setDuration(1);
+            campaign.setDuration(30);
             campaign.setUpdateDate(new Date());
+            campaign.setWorkTimeData("");
 
             userService.addCampaign(campaign);
 

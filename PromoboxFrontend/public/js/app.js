@@ -315,9 +315,16 @@ app.controller('CampaignsController', ['$scope', 'token', 'Campaign', 'sysMessag
 app.controller('DevicesController', ['$scope', 'token', 'Device', 'sysMessage', '$rootScope', '$filter',
     function ($scope, token, Device, sysMessage, $rootScope, $filter) {
         if (token.check()) {
+            $scope.timeconvert = function(time) {
+                var timeConvert = moment(time).unix();
+                timeConvert = moment(timeConvert, 'X').format('DD.MM.YYYY');
+                return timeConvert;
+            };
+
             $rootScope.top_link_active_device = 'top_link_active';
             Device.get_data({token: token.get()}, function (response) {
                 $scope.devices = response.devices;
+                console.log($scope.devices);
             });
             $scope.change_device = function(device) {
                 Device.update({token: token.get(), id: device.id, orientation: parseInt(device.orientation), resolution: parseInt(device.resolution), campaignId: parseInt(device.campaignId) }, function (response) {

@@ -176,9 +176,9 @@
                     <div class="row" style="margin-top: 10px;">
                         <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'campaign_edit_workdays' | translate }}</label></div>
                         <div class="col-md-7 col-xs-9 col-sm-8">
-                            <label ng-repeat="day in workdays" style="margin-left: 5px; border: 1px solid #dcdcdc;">
-                                {{day}}
+                            <label ng-repeat="day in workdays" style="margin-left: 5px; padding: 3px;">
                                 <input type='checkbox' ng-checked="checkedDays.indexOf(day) != -1" ng-click="toggleCheckDays(day)">
+                                {{day}}
                             </label>
                         </div>
                     </div>
@@ -186,9 +186,9 @@
                     <div class="row" style="margin-top: 10px;">
                         <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'campaign_edit_openinghours' | translate }}</label></div>
                         <div class="col-md-7 col-xs-9 col-sm-8">
-                            <label ng-repeat="hour in workhours" style="margin-left: 5px; border: 1px solid #dcdcdc;">
+                            <label ng-repeat="hour in workhours" style="margin-left: 5px; padding: 3px;">
+                                <input type='checkbox' ng-checked="checkedHours.indexOf(hour) != -1" ng-click="toggleCheckHours(hour)">
                                 {{hour}}
-                                <input type='checkbox' ng-checked="checkedHours.indexOf(hour) != -1" ng-click="checkedHours(hour)">
                             </label>
                         </div>
                     </div>

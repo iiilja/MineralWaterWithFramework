@@ -186,10 +186,6 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
             }
         };
 
-
-
-
-
         Campaign.get_campaigns({token: token.get(), id: $stateParams.cId}, function (response) {
             $scope.campaign = response;
             console.log($scope.campaign);
@@ -203,8 +199,12 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         var dataToTime = function(data) {
             return data.getTime();
         };
-        $scope.edit_company = function (this_data) {
-            Campaign.edit_campaigns({token: token.get(), id: $scope.campaign.id, status: $scope.campaign_form.campaign_status, name: $scope.campaign_form.campaign_name, sequence: $scope.campaign_form.campaign_order, start: dataToTime($scope.campaign_form.campaign_start), finish: dataToTime($scope.campaign_form.campaign_finish), duration: $scope.campaign_form.campaign_time}, function(response){
+        $scope.edit_company = function () {
+            console.log($scope.checkedHours);
+            console.log($scope.checkedDays);
+            console.log($scope.campaign_form);
+
+            Campaign.edit_campaigns({token: token.get(), id: $scope.campaign.id, status: $scope.campaign_form.campaign_status, name: $scope.campaign_form.campaign_name, sequence: $scope.campaign_form.campaign_order, start: dataToTime($scope.campaign_form.campaign_start), finish: dataToTime($scope.campaign_form.campaign_finish), duration: $scope.campaign_form.campaign_time, days: $scope.checkedDays, hours: $scope.checkedHours}, function(response){
                 sysLocation.goList();
             });
         };

@@ -1,4 +1,11 @@
 ﻿{
+    "mo": "Пн",
+    "tu": "Вт",
+    "we": "Ср",
+    "th": "Чт",
+    "fr": "Пт",
+    "sa": "Сб",
+    "su": "Вс",
     "login_form_sign_in": "Вход",
     "login_form_email": "E-mail",
     "login_form_password": "Пароль",

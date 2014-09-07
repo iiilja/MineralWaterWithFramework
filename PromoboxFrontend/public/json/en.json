@@ -41,6 +41,7 @@
     "device_clearthecache": "Clear the cache",
     "device_save": "Save",
     "device_remove": "Remove",
+    "device_description": "Description",
     "campaign_edit_editcompany": "Edit company",
     "campaign_edit_companyname": "Company name",
     "campaign_edit_browse": "Browse",

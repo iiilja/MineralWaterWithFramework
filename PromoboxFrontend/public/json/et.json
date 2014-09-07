@@ -41,6 +41,7 @@
     "device_clearthecache": "Puhasta mälu",
     "device_save": "Salvesta",
     "device_remove": "Kustuta seade",
+    "device_description": "Description",
     "campaign_edit_editcompany": "Muuda kampaania nimi",
     "campaign_edit_companyname": "Kampaania nimi",
     "campaign_edit_browse": "Sikuta failid siia",

@@ -41,6 +41,7 @@
     "device_clearthecache": "Очистить кэш",
     "device_save": "Сохранить",
     "device_remove": "В архив",
+    "device_description": "Описание",
     "campaign_edit_editcompany": "Редактировать кампанию",
     "campaign_edit_companyname": "Название кампании",
     "campaign_edit_browse": "Добабить фаил",

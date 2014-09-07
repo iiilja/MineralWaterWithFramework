@@ -1,4 +1,11 @@
 ﻿{
+    "mo": "Mo",
+    "tu": "Tu",
+    "we": "We",
+    "th": "Th",
+    "fr": "Fr",
+    "sa": "Sa",
+    "su": "Su",
     "login_form_sign_in": "Sisene",
     "login_form_email": "E-post",
     "login_form_password": "Salasõna",

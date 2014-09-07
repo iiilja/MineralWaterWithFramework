@@ -178,7 +178,7 @@
                         <div class="col-md-7 col-xs-9 col-sm-8">
                             <label ng-repeat="day in workdays" style="margin-left: 5px; padding: 3px;">
                                 <input type='checkbox' ng-checked="checkedDays.indexOf(day) != -1" ng-click="toggleCheckDays(day)">
-                                {{ day | translate }}
+                                {{day}}
                             </label>
                         </div>
                     </div>

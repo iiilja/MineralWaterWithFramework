@@ -166,7 +166,7 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         $rootScope.top_link_active_list = 'top_link_active';
         $scope.filesArray = [];
 
-        $scope.workdays = ['mo', 'tu', 'we', 'th', 'fr', 'sa', 'su'];
+        $scope.workdays = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
         $scope.checkedDays = [];
         $scope.toggleCheckDays = function (day) {
             if ($scope.checkedDays.indexOf(day) === -1) {

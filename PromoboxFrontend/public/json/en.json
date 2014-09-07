@@ -1,11 +1,4 @@
 {
-    "mo": "Mo",
-    "tu": "Tu",
-    "we": "We",
-    "th": "Th",
-    "fr": "Fr",
-    "sa": "Sa",
-    "su": "Su",
     "login_form_sign_in": "Sign In",
     "login_form_email": "E-mail",
     "login_form_password": "Password",

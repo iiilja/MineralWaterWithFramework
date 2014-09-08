@@ -187,6 +187,7 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         };
 
         Campaign.get_campaigns({token: token.get(), id: $stateParams.cId}, function (response) {
+            console.log(response);
             $scope.campaign = response;
             $scope.campaign_form = {campaign_status: $scope.campaign.status, filesArray: $scope.campaign.files, campaign_name: $scope.campaign.name, campaign_time: $scope.campaign.duration, campaign_order: $scope.campaign.sequence, campaign_start: timeToData($scope.campaign.start), campaign_finish: timeToData($scope.campaign.finish)};
         });
@@ -321,10 +322,11 @@ app.controller('DevicesController', ['$scope', 'token', 'Device', 'sysMessage', 
 
             $rootScope.top_link_active_device = 'top_link_active';
             Device.get_data({token: token.get()}, function (response) {
+                console.log(response);
                 $scope.devices = response.devices;
             });
             $scope.change_device = function(device) {
-                Device.update({token: token.get(), id: device.id, orientation: parseInt(device.orientation), resolution: parseInt(device.resolution), campaignId: parseInt(device.campaignId) }, function (response) {
+                Device.update({token: token.get(), id: device.id, orientation: parseInt(device.orientation), resolution: parseInt(device.resolution), campaignId: parseInt(device.campaignId), description: device.description }, function (response) {
                     sysMessage.update_s($filter('translate')('system_device') + ' ' + $filter('translate')('system_updated'));
                 });
             };

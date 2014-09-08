@@ -188,7 +188,6 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
 
         Campaign.get_campaigns({token: token.get(), id: $stateParams.cId}, function (response) {
             $scope.campaign = response;
-            console.log($scope.campaign);
             $scope.campaign_form = {campaign_status: $scope.campaign.status, filesArray: $scope.campaign.files, campaign_name: $scope.campaign.name, campaign_time: $scope.campaign.duration, campaign_order: $scope.campaign.sequence, campaign_start: timeToData($scope.campaign.start), campaign_finish: timeToData($scope.campaign.finish)};
         });
 
@@ -298,7 +297,6 @@ app.controller('CampaignsController', ['$scope', 'token', 'Campaign', 'sysMessag
             $rootScope.top_link_active_list = 'top_link_active';
             Campaign.get_all_campaigns({token: token.get()}, function (response) {
                 $scope.campaigns = response.campaigns;
-                console.log(response.campaigns);
             });
             $scope.remove = function (campaign) {
                 $scope.campaigns.splice($scope.campaigns.indexOf(campaign), 1);
@@ -324,7 +322,6 @@ app.controller('DevicesController', ['$scope', 'token', 'Device', 'sysMessage', 
             $rootScope.top_link_active_device = 'top_link_active';
             Device.get_data({token: token.get()}, function (response) {
                 $scope.devices = response.devices;
-                console.log($scope.devices);
             });
             $scope.change_device = function(device) {
                 Device.update({token: token.get(), id: device.id, orientation: parseInt(device.orientation), resolution: parseInt(device.resolution), campaignId: parseInt(device.campaignId) }, function (response) {

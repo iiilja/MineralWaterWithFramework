@@ -165,9 +165,18 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
     function ($scope, $stateParams, token, Campaign, $location, $http, toaster, Files, sysMessage, sysLocation, FileUploader, $rootScope, $filter) {
         $rootScope.top_link_active_list = 'top_link_active';
         $scope.filesArray = [];
+        $scope.checkedDays = [];
+        $scope.checkedHours = [];
+
+        Campaign.get_campaigns({token: token.get(), id: $stateParams.cId}, function (response) {
+            console.log(response);
+            $scope.campaign = response;
+            $scope.checkedDays = $scope.campaign.days;
+            $scope.checkedHours = $scope.campaign.hours;
+            $scope.campaign_form = {campaign_status: $scope.campaign.status, filesArray: $scope.campaign.files, campaign_name: $scope.campaign.name, campaign_time: $scope.campaign.duration, campaign_order: $scope.campaign.sequence, campaign_start: timeToData($scope.campaign.start), campaign_finish: timeToData($scope.campaign.finish)};
+        });
 
         $scope.workdays = ['mo', 'tu', 'we', 'th', 'fr', 'sa', 'su'];
-        $scope.checkedDays = [];
         $scope.toggleCheckDays = function (day) {
             if ($scope.checkedDays.indexOf(day) === -1) {
                 $scope.checkedDays.push(day);
@@ -177,7 +186,6 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         };
 
         $scope.workhours = ['7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '0'];
-        $scope.checkedHours = [];
         $scope.toggleCheckHours = function (hour) {
             if ($scope.checkedHours.indexOf(hour) === -1) {
                 $scope.checkedHours.push(hour);
@@ -185,12 +193,6 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
                 $scope.checkedHours.splice($scope.checkedHours.indexOf(hour), 1);
             }
         };
-
-        Campaign.get_campaigns({token: token.get(), id: $stateParams.cId}, function (response) {
-            console.log(response);
-            $scope.campaign = response;
-            $scope.campaign_form = {campaign_status: $scope.campaign.status, filesArray: $scope.campaign.files, campaign_name: $scope.campaign.name, campaign_time: $scope.campaign.duration, campaign_order: $scope.campaign.sequence, campaign_start: timeToData($scope.campaign.start), campaign_finish: timeToData($scope.campaign.finish)};
-        });
 
         var timeToData = function(time) {
             return new Date(time);

@@ -72,6 +72,18 @@ public class CampaignsController {
                 resp.put("finish", campaign.getFinish() == null ? null : campaign.getFinish().getTime());
                 resp.put("sequence", campaign.getSequence());
                 resp.put("start", campaign.getStart() == null ? null : campaign.getStart().getTime());
+                
+                
+                try {
+                    JSONObject workTimeData = new JSONObject(campaign.getWorkTimeData());
+
+                    resp.put("days", workTimeData.getJSONArray("days"));
+                    resp.put("hours", workTimeData.getJSONArray("hours"));
+                    
+                } catch (Exception ex) {
+                    log.error(ex.getMessage(), ex);
+                }
+                
 
                 // put information about files associated with campaign
                 List<CampaignsFiles> campaignFiles = userService.findUsersCampaignFiles(campaignId, clientId);
@@ -153,7 +165,23 @@ public class CampaignsController {
             campaign.setFinish(new Date());
             campaign.setDuration(30);
             campaign.setUpdateDate(new Date());
-            campaign.setWorkTimeData("");
+            
+            JSONObject workTimeJson = new JSONObject();
+            
+            JSONArray days = new JSONArray();
+            
+            days.put("mo").put("tu").put("we").put("th").put("fr").put("sa").put("su");
+            
+            JSONArray hours = new JSONArray();
+            
+            for (int i=0; i<24; i++) {
+                hours.put("" + i);
+            }
+            
+            workTimeJson.put("days", days);
+            workTimeJson.put("hours", hours);
+            
+            campaign.setWorkTimeData(workTimeJson.toString());
 
             userService.addCampaign(campaign);
 
@@ -227,6 +255,14 @@ public class CampaignsController {
                 campaign.setStart(new Date(objectGiven.getLong("start")));
                 campaign.setFinish(new Date(objectGiven.getLong("finish")));
                 campaign.setDuration(objectGiven.getInt("duration"));
+                
+                JSONObject workTimeData = new JSONObject();
+                
+                workTimeData.put("days", objectGiven.getJSONArray("days"));
+                workTimeData.put("hours", objectGiven.getJSONArray("hours"));
+                
+                campaign.setWorkTimeData(workTimeData.toString());
+                
                 campaign.setUpdateDate(new Date());
 
                 userService.updateCampaign(campaign);

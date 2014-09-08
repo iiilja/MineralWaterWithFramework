@@ -20,6 +20,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +32,9 @@ import org.springframework.web.bind.annotation.*;
  */
 @Controller
 public class DevicesController {
+    
+    private final static Logger log = LoggerFactory.getLogger(
+            DevicesController.class);
 
     @Autowired
     private UserService userService;
@@ -80,6 +85,16 @@ public class DevicesController {
                     campaign.put("sequence", ad.getSequence());
                     campaign.put("duration", ad.getDuration());
                     campaign.put("updateDate", ad.getUpdateDate().getTime());
+                    
+                    try {
+                        JSONObject workTimeData = new JSONObject(ad.getWorkTimeData());
+
+                        resp.put("days", workTimeData.getJSONArray("days"));
+                        resp.put("hours", workTimeData.getJSONArray("hours"));
+
+                    } catch (Exception ex) {
+                        log.error(ex.getMessage(), ex);
+                    }
 
                     List<CampaignsFiles> campaignFiles = userService.findUsersCampaignFiles(dc.getAdCampaignsId(), d.getClientId());
 
@@ -161,6 +176,7 @@ public class DevicesController {
                     jsonD.put("space", d.getFreeSpace());
                     jsonD.put("orientation", d.getOrientation());
                     jsonD.put("resolution", d.getResolution());
+                    jsonD.put("description", d.getDescription());
                     jsonD.put("lastRequestDate", d.getLastDeviceRequestDt().getTime());
 
                     AdCampaigns ac = userService.findCampaignByDeviceId(d.getId());
@@ -261,6 +277,7 @@ public class DevicesController {
 
                 device.setOrientation(deviceUpdate.getInt("orientation"));
                 device.setResolution(deviceUpdate.getInt("resolution"));
+                device.setDescription(deviceUpdate.getString("description"));
 
                 DevicesCampaigns devicesCampaigns = userService.findDeviceCampaignByDeviceId(device.getId());
 
@@ -327,6 +344,7 @@ public class DevicesController {
             resp.put("freeSpace", device.getFreeSpace());
             resp.put("orientation", device.getOrientation());
             resp.put("resolution", device.getResolution());
+            resp.put("description", device.getDescription());
 
             response.setStatus(HttpServletResponse.SC_OK);
 

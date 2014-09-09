@@ -12,11 +12,10 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-import android.view.Display;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.ImageView;
-import android.widget.Toast;
+
+import org.apache.commons.io.IOUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -43,7 +42,10 @@ public class ImageActivity extends Activity {
 
             bm = BitmapFactory.decodeFileDescriptor(fs.getFD(), null, options);
 
-            fs.close();
+            fs.getFD().sync();
+
+            IOUtils.closeQuietly(fs);
+
 
         } catch (Exception ex) {
             Log.e("ImageActivity", ex.getMessage(), ex);
@@ -72,7 +74,6 @@ public class ImageActivity extends Activity {
                 Intent i = new Intent(ImageActivity.this, SettingsActivity.class);
                 startActivity(i);
 
-                Toast.makeText(view.getContext(), "Just a test", Toast.LENGTH_SHORT).show();
                 return true;
             }
         });
@@ -91,11 +92,6 @@ public class ImageActivity extends Activity {
         } else {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
-
-        Display d = ((WindowManager)getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-
-        Log.i("ImageActivity", "Image activity width: " + d.getWidth());
-        Log.i("ImageActivity", "Image activity height: " + d.getHeight());
 
         hideSystemUI();
 
@@ -132,6 +128,22 @@ public class ImageActivity extends Activity {
 
     }
 
+    final Runnable r = new Runnable() {
+        @Override
+        public void run() {
+            if (position == paths.length) {
+
+                Intent returnIntent = new Intent();
+                returnIntent.putExtra("result", MainActivity.RESULT_FINISH_PLAY);
+                setResult(RESULT_OK, returnIntent);
+
+                ImageActivity.this.finish();
+            } else {
+                playImage(paths[position]);
+            }
+        }
+    };
+
     private void playImage(String path) {
         File file = new File(path);
 
@@ -142,22 +154,6 @@ public class ImageActivity extends Activity {
             position++;
 
             final long delay = getIntent().getExtras().getInt("delay") * 1000;
-
-            final Runnable r = new Runnable() {
-                @Override
-                public void run() {
-                    if (position == paths.length) {
-
-                        Intent returnIntent = new Intent();
-                        returnIntent.putExtra("result", MainActivity.RESULT_FINISH_PLAY);
-                        setResult(RESULT_OK, returnIntent);
-
-                        ImageActivity.this.finish();
-                    } else {
-                        playImage(paths[position]);
-                    }
-                }
-            };
 
             slide.postDelayed(r, delay);
 

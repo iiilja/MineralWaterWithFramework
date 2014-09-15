@@ -1,0 +1,268 @@
+@-webkit-keyframes bg_slide {
+  0% {
+    background-image: url(../img/main_bg_1.png);
+  }
+  20% {
+    background-image: url(../img/main_bg_1.png);
+  }
+  40% {
+    background-image: url(../img/main_bg_2.png);
+  }
+  60% {
+    background-image: url(../img/main_bg_2.png);
+  }
+  80% {
+    background-image: url(../img/main_bg_2.png);
+  }
+  100% {
+    background-image: url(../img/main_bg_1.png);
+  }
+}
+
+html.main { 
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    
+      -webkit-animation: bg_slide 30s linear infinite;
+}
+
+html.pricing { 
+    background: url(../img/pricing.png);
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    
+    
+}
+
+.content_bg {
+     background: url(../img/top_bg.png) left top repeat-x; 
+}
+
+.text_link {
+    color: black;
+    text-decoration: underline;
+}
+
+.top_link {
+    padding-bottom: 17px;
+    text-decoration: none;
+    margin-left: 40px;
+    color: #c2c2c2;
+}
+.top_link:hover {
+    text-decoration: none;
+    color: #dda808;
+    background: url(../img/top_link_bg.png) bottom repeat-x;
+}
+
+.top_link_active {
+    color: #dda808;
+    background: url(../img/top_link_bg.png) bottom repeat-x;
+}
+
+.btn-custom-lighten.active {
+    color: #C2C2C2;
+}
+.btn-custom-lighten {
+    margin-right: 15px;
+    outline: 0 !important;
+    color: #C2C2C2;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+    background-color: #414649;
+    background-image: -moz-linear-gradient(top, #414649, #414649);
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#414649), to(#414649));
+    background-image: -webkit-linear-gradient(top, #414649, #414649);
+    background-image: -o-linear-gradient(top, #414649, #414649);
+    background-image: linear-gradient(to bottom, #414649, #414649);
+    background-repeat: repeat-x;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff414649', endColorstr='#ff414649', GradientType=0);
+    border-color: #596064 #596064 #35393c;
+    border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+    /* Darken IE7 buttons by default so they stand out more given they won't have borders */
+
+    filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+}
+.btn-custom-lighten:hover,
+.btn-custom-lighten:focus,
+.btn-custom-lighten:active,
+.btn-custom-lighten.active,
+.btn-custom-lighten.disabled,
+.btn-custom-lighten[disabled] {
+    color: #C2C2C2;
+    background-color: #313537;
+}
+.btn-custom-lighten:active,
+.btn-custom-lighten.active {
+    background-color: #313537 ;
+}
+
+footer {
+    background: url(../img/bottom_bg.png) left bottom repeat-x;
+    bottom:0;
+    display:block;
+    height:57px;
+    line-height: 57px;
+    left:0;
+    position:fixed;
+    width:100%;
+    /* z-index:100; */
+    
+    color: #c2c2c2;
+    text-align: center;
+}
+
+footer span.coperate {
+    color: #e4e5e5;
+    margin-left: 30px;
+}
+
+footer span.bottom_nav {
+   
+}
+
+footer span.bottom_nav a {
+    padding: 5px;
+    text-decoration: none;
+    color: #c2c2c2;
+}
+footer span.bottom_nav a:hover {
+    text-decoration: none;
+    color: #dda808;
+}
+
+footer span.bottom_nav span {
+    padding: 5px;
+}
+
+footer span.languag {
+    margin-right: 30px;
+    margin-top: 15px;
+}
+
+.languag * { 
+    padding:0; 
+    margin: 0; 
+    font: 12px georgia; 
+    list-style-type:none;}
+.languag .arrow { 
+    float: right;
+    margin-right: 5px;
+    margin-top: 5px;
+}
+.languag { 
+    line-height: 10px; 
+}
+.languag a { 
+    display: block; 
+    text-decoration: none; 
+    color: #c2c2c2;}
+.languag a:hover { background: #313436;}
+.languag ul li ul li a:hover { 
+    background: #313436; 
+    padding-left:9px;
+}
+.languag ul li ul li {
+    width: 140px; 
+    border: none; 
+    color: #c2c2c2;  
+    padding-top: 3px; 
+    padding-bottom:3px; 
+    padding-left: 3px; 
+    padding-right: 3px; 
+    background: #313436;
+    z-index:1;
+}
+.languag ul li ul li a { 
+    font: 11px arial; 
+    font-weight:normal; 
+    font-variant: small-caps; 
+    padding-top:3px; 
+    padding-bottom:3px;}
+.languag ul li {
+    float: left; 
+    width: 146px; 
+    font-weight: bold; 
+    background: #313436;}
+.languag ul li a { 
+    font-weight: bold;
+    padding: 5px;
+    text-align: left;
+}
+.languag li{ 
+    position:relative; 
+    float:left;}
+.languag ul li ul, .languag:hover ul li ul, .languag:hover ul li:hover ul li ul{ 
+    display:none;
+    list-style-type:none; 
+    width: 140px;}
+.languag:hover ul, .languag:hover ul li:hover ul, .languag:hover ul li:hover ul li:hover ul { 
+    display:block;}
+.languag:hover ul li:hover ul li:hover ul { 
+    position: absolute;
+    margin-left: 145px;
+    margin-top: -22px;
+    font: 10px;}
+.languag:hover ul li:hover ul { 
+    position: absolute;
+    margin-top: 1px;
+    font: 10px;
+}
+.languag>ul>li:hover>ul { 
+    bottom:100%;
+    border-bottom: 1px solid transparent
+}
+
+.main_content {
+    width: 1026px;
+    height: 275px;
+    
+    /* padding: 15px; */
+    padding-right: 45px;
+    color: white;
+    
+    text-align: right;
+    
+    margin-left: -15px;
+    margin-top: 100px;
+    margin-bottom: 100px;
+    
+    background: url(../img/main_content.png) left center no-repeat;
+}
+
+.main_content hr {
+    margin: 0px;
+    border-top: 5px solid #e7b635;
+}
+
+.button_main_content a {
+    display: table-cell;  height: 52px; line-height: 52px;  text-align: center;  text-decoration: none; color: white; font-size: 20px;
+}
+
+a.question {
+    background: url(../img/btn_question_normal.png);
+    margin-right: 30px; 
+    width: 301px; 
+}
+a.question:hover {
+    background: url(../img/btn_question_hover.png) center no-repeat;
+}
+
+a.question:active {
+background: url(../img/btn_question_active.png) center no-repeat;
+}
+a.enter {
+    background: url(../img/btn_enter_normal.png) center no-repeat;
+    width: 177px;
+}
+
+a.enter:hover {
+    background: url(../img/btn_enter_hover.png) center no-repeat;
+}
+
+a.enter:active {
+    background: url(../img/btn_enter_active.png) center no-repeat;
+}

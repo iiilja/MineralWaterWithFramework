@@ -258,11 +258,15 @@ public class CampaignsController {
                 campaign.setDuration(objectGiven.getInt("duration"));
                 
                 JSONObject workTimeData = new JSONObject();
+
                 
-                workTimeData.put("days", objectGiven.getJSONArray("days"));
-                workTimeData.put("hours", objectGiven.getJSONArray("hours"));
-                
-                campaign.setWorkTimeData(workTimeData.toString());
+                if (objectGiven.has("days") && objectGiven.has("hours")) {
+                    
+                    workTimeData.put("days", objectGiven.getJSONArray("days"));
+                    workTimeData.put("hours", objectGiven.getJSONArray("hours"));
+                    
+                    campaign.setWorkTimeData(workTimeData.toString());
+                }
                 
                 campaign.setUpdateDate(new Date());
 

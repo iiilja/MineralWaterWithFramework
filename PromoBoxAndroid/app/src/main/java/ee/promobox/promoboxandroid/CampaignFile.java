@@ -3,7 +3,7 @@ package ee.promobox.promoboxandroid;
 /**
  * Created by MaximDorofeev on 12.07.2014.
  */
-public class CampaignFile {
+public class CampaignFile implements Comparable<CampaignFile>{
     private int id;
     private String name;
     private CampaignFileType type;
@@ -39,5 +39,16 @@ public class CampaignFile {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    @Override
+    public int compareTo(CampaignFile campaignFile) {
+        if (this.getId() > campaignFile.getId()) {
+            return 1;
+        } else if (this.getId() < campaignFile.getId()){
+            return -1;
+        }
+
+        return 0;
     }
 }

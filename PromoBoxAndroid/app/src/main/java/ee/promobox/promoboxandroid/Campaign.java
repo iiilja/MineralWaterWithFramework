@@ -7,6 +7,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +16,9 @@ import java.util.List;
  * Created by MaximDorofeev on 12.07.2014.
  */
 public class Campaign {
+
+    public final static int ORDER_ASC = 1;
+    public final static int ORDER_RANDOM = 2;
 
     private int clientId;
     private int campaignId;
@@ -25,6 +29,7 @@ public class Campaign {
     private Date startDate;
     private Date endDate;
     private int delay;
+    private int sequence;
 
     private List<CampaignFile> files = new ArrayList<CampaignFile>();
 
@@ -40,6 +45,7 @@ public class Campaign {
             setCampaignName(json.getString("campaignName"));
             setUpdateDate(json.getLong("updateDate"));
             setDelay(json.getInt("duration"));
+            setSequence(json.getInt("sequence"));
 
             JSONArray ar  = json.getJSONArray("files");
 
@@ -55,6 +61,13 @@ public class Campaign {
                 files.add(f);
 
             }
+
+            Collections.shuffle(files);
+
+            if (getSequence() == ORDER_ASC) {
+                Collections.sort(files);
+            }
+
 
         } catch (Exception ex) {
             Log.e("Campgaign", ex.getMessage(), ex);
@@ -136,5 +149,13 @@ public class Campaign {
 
     public void setUpdateDate(long updateDate) {
         this.updateDate = updateDate;
+    }
+
+    public int getSequence() {
+        return sequence;
+    }
+
+    public void setSequence(int sequence) {
+        this.sequence = sequence;
     }
 }

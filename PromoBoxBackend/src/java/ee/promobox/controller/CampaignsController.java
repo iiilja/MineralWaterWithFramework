@@ -7,7 +7,6 @@ package ee.promobox.controller;
 
 import ee.promobox.entity.AdCampaigns;
 import ee.promobox.entity.CampaignsFiles;
-import ee.promobox.entity.Files;
 import ee.promobox.service.Session;
 import ee.promobox.service.SessionService;
 import ee.promobox.service.UserService;
@@ -22,10 +21,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
 
 /**
  *
@@ -273,6 +274,15 @@ public class CampaignsController {
         } else {
             RequestUtils.sendUnauthorized(response);
         }
+
+    }
+    
+    
+    @ExceptionHandler(Exception.class)
+    public void handleAllException(Exception ex) {
+        
+        log.error(ex.getMessage(), ex);
+        
 
     }
 

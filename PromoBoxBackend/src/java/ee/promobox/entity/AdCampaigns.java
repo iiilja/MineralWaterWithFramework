@@ -42,6 +42,9 @@ public class AdCampaigns implements Serializable {
     public static final int STATUS_PUBLISHED = 2;
     public static final int STATUS_UNPUBLISHED = 3;
     public static final int STATUS_AHRCHIVED = 4;
+    
+    public final static int ORDER_ASC = 1;
+    public final static int ORDER_RANDOM = 2;
 
     private static final long serialVersionUID = 1L;
     @Id

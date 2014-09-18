@@ -355,4 +355,10 @@ public class DevicesController {
         }
 
     }
+    
+    
+    @ExceptionHandler(Exception.class)
+    public void handleAllException(Exception ex) {
+        log.error(ex.getMessage(), ex);
+    }
 }

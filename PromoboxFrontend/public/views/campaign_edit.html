@@ -15,8 +15,8 @@
             <div class="row">
                 <div class="form-group">
                         <div style="float: left; margin-right: 5px;" ng-repeat="promofile in campaign_form.filesArray">
-                            <div class="thumbnail" style="width: 250px; height: 290px;">
-                                <img ng-click="openPlayer($index)" style="width: 250px; height: 250px; cursor: pointer;" src="http://api.dev.promobox.ee/service/files/thumb/{{promofile.id}}" alt="" />
+                            <div class="thumbnail" style="width: 125px; height: 146px;">
+                                <img ng-click="openPlayer($index)" style="width: 125px; height: 106px; cursor: pointer;" src="http://api.dev.promobox.ee/service/files/thumb/{{promofile.id}}" alt="" />
                                 <h6>{{promofile.name| limitTo: 25}} <i style="cursor: pointer;" ng-click="inArchive(promofile.id)" class="glyphicon glyphicon-remove"></i></h6>
                             </div>
                         </div>
@@ -127,8 +127,8 @@
                         <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'campaign_edit_theorder' | translate }}</label></div>
                         <div class="col-md-7 col-xs-9 col-sm-8">
                             <select class="form-control" ng-model="campaign_form.campaign_order">
-                                <option value="1">{{ 'campaign_edit_accident' | translate }}</option>
-                                <option value="2">{{ 'campaign_edit_streak' | translate }}</option>
+                                <option value="1">{{ 'campaign_edit_streak' | translate }}</option>
+                                <option value="2">{{ 'campaign_edit_accident' | translate }}</option>
                             </select>
                         </div>
                     </div>

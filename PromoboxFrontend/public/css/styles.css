@@ -166,3 +166,21 @@ input[readonly] {
     cursor: pointer;
     margin-right: 15px;
 }
+
+#thumbnail_group {
+    padding: 0px;
+}
+
+#thumbnail_group > .thumbnail {
+    float: left;
+    margin-right: 10px;
+    width: 125px;
+}
+
+#thumbnail_group > .thumbnail > div {
+    text-align: center;
+ }
+
+#thumbnail_group > .thumbnail > div > img {
+    height: 60px;
+}

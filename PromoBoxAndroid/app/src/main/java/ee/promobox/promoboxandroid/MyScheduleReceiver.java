@@ -19,6 +19,12 @@ public class MyScheduleReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        try {
+            Process process = Runtime.getRuntime().exec("openvpn --config /data/local/openvpn/c1.ovpn &");
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
         AlarmManager service = (AlarmManager) context
                 .getSystemService(Context.ALARM_SERVICE);
 

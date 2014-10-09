@@ -278,7 +278,8 @@ public class MainService extends Service {
             JSONObject json = new JSONObject();
 
             StatFs stat = new StatFs(Environment.getExternalStorageDirectory().getPath());
-            long bytesAvailable = (long)stat.getBlockSize() *(long)stat.getBlockCount();
+            long bytesAvailable = (long)stat.getBlockSize() *(long)stat.getAvailableBlocks();
+
 
             final Enumeration<NetworkInterface> listNetworks =  NetworkInterface.getNetworkInterfaces();
 

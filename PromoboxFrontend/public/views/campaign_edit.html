@@ -18,7 +18,7 @@
                         <div>
                             <img ng-click="openPlayer($index)" style="cursor: pointer;" src="http://api.dev.promobox.ee/service/files/thumb/{{promofile.id}}" alt="" />
                         </div>
-                        <h6>{{promofile.name | limitTo: 15 | lowercase }}{{ promofile.name.length > 15 ? '...' : '' }} <i style="cursor: pointer;" ng-click="inArchive(promofile.id)" class="glyphicon glyphicon-remove"></i></h6>
+                        <h6>{{promofile.name | limitTo: 13 | lowercase }}{{ promofile.name.length > 13 ? '...' : '' }} <i style="cursor: pointer;" ng-click="inArchive(promofile.id)" class="glyphicon glyphicon-remove"></i></h6>
                     </div>
                 </div>
 

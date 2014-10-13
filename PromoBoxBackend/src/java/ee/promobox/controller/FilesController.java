@@ -330,8 +330,14 @@ public class FilesController {
                 IOUtils.copy(fileInputStream, outputStream);
                 
                 IOUtils.closeQuietly(fileInputStream);
-            } else {
+            } else if (dbFile.getFileType() == FileTypeUtils.FILE_TYPE_AUDIO && !(dbFile.getStatus() == CampaignsFiles.STATUS_UPLOADED)) {
                 InputStream is = getClass().getClassLoader().getResourceAsStream("ee/promobox/assets/play.png");
+                IOUtils.copy(is, outputStream);
+                IOUtils.closeQuietly(is);
+            } else {
+                response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+                
+                InputStream is = getClass().getClassLoader().getResourceAsStream("ee/promobox/assets/converting.png");
                 IOUtils.copy(is, outputStream);
                 IOUtils.closeQuietly(is);
             }

@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
@@ -79,6 +80,11 @@ public class MainActivity extends Activity {
         sendBroadcast(start);
 
         bManager.registerReceiver(bReceiver, intentFilter);
+
+        AudioManager am = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
+
+        //am.setParameters("audio_devices_out=AUDIO_CODEC,AUDIO_HDMI,AUDIO_SPDIF");
+        am.setParameters("audio_devices_out_active=AUDIO_CODEC");
 
 
     }

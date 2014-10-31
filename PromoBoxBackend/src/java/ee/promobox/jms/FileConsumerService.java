@@ -74,6 +74,9 @@ public class FileConsumerService extends MessageListenerAdapter {
             case "PNG":
                 result = convertImage(f);
                 break;
+            case "BMP":
+                result = convertImage(f);
+                break;
             case "MP3":
                 result = copyFile(f);
                 break;

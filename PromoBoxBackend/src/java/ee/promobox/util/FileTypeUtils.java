@@ -29,6 +29,8 @@ public class FileTypeUtils {
                 return FILE_TYPE_IMAGE;
             case "PNG":
                 return FILE_TYPE_IMAGE;
+            case "BMP":
+                return FILE_TYPE_IMAGE;
             case "MP3":
                 return FILE_TYPE_AUDIO;
             case "MP4":

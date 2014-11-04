@@ -23,6 +23,6 @@
 
     <string name="alwyas_on_top">Always on top</string>
     <string name="device_uuid">Device uuid</string>
-    <string name="version">0.0.9</string>
+    <string name="version">0.1.0</string>
 
 </resources>

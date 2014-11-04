@@ -41,7 +41,7 @@ import java.util.List;
 public class MainService extends Service {
 
 
-    private final String DEFAULT_SERVER = "http://api.dev.promobox.ee/";
+    private final String DEFAULT_SERVER = "http://api.promobox.ee/";
     private final String DEFAULT_SERVER_JSON = DEFAULT_SERVER + "/service/device/%s/pull";
 
     private SharedPreferences sharedPref;

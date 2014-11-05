@@ -278,6 +278,7 @@ public class DevicesController {
                 device.setOrientation(deviceUpdate.getInt("orientation"));
                 device.setResolution(deviceUpdate.getInt("resolution"));
                 device.setDescription(deviceUpdate.getString("description"));
+                device.setAudioOut(deviceUpdate.getInt("audioOut"));
 
                 DevicesCampaigns devicesCampaigns = userService.findDeviceCampaignByDeviceId(device.getId());
 
@@ -332,6 +333,7 @@ public class DevicesController {
             device.setFreeSpace(0);
             device.setLastDeviceRequestDt(new Date());
             device.setStatus(Devices.STATUS_USED);
+            device.setAudioOut(Devices.AUDIO_OUT_HDMI);
             device.setUuid(UUID.randomUUID().toString().substring(0, 4));
             device.setDescription("");
             device.setNetworkData("");
@@ -345,6 +347,7 @@ public class DevicesController {
             resp.put("orientation", device.getOrientation());
             resp.put("resolution", device.getResolution());
             resp.put("description", device.getDescription());
+            resp.put("audioOut", device.getAudioOut());
 
             response.setStatus(HttpServletResponse.SC_OK);
 

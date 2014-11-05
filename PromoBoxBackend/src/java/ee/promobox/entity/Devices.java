@@ -51,7 +51,8 @@ public class Devices implements Serializable {
     public static final int STATUS_ONLINE = 2;
     public static final int STATUS_OFFLINE = 3;
     public static final int STATUS_AHRCHIVED = 4;
-
+    
+    public static final int AUDIO_OUT_HDMI = 1;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -76,6 +77,9 @@ public class Devices implements Serializable {
 
     @Column(name = "resolution")
     private Integer resolution;
+    
+    @Column(name = "audio_out")
+    private Integer audioOut;
 
     @Column(name = "last_device_request_dt")
     @Temporal(TemporalType.TIMESTAMP)
@@ -146,6 +150,14 @@ public class Devices implements Serializable {
         this.lastDeviceRequestDt = lastDeviceRequestDt;
     }
 
+    public Integer getAudioOut() {
+        return audioOut;
+    }
+
+    public void setAudioOut(Integer audioOut) {
+        this.audioOut = audioOut;
+    }
+    
     @Override
     public int hashCode() {
         int hash = 0;

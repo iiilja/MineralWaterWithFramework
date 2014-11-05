@@ -13,7 +13,10 @@ import ee.promobox.service.Session;
 import ee.promobox.service.SessionService;
 import ee.promobox.service.UserService;
 import ee.promobox.util.RequestUtils;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
@@ -35,6 +38,8 @@ public class DevicesController {
     
     private final static Logger log = LoggerFactory.getLogger(
             DevicesController.class);
+    
+    private final static  SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm");
 
     @Autowired
     private UserService userService;
@@ -176,6 +181,19 @@ public class DevicesController {
                     jsonD.put("space", d.getFreeSpace());
                     jsonD.put("orientation", d.getOrientation());
                     jsonD.put("resolution", d.getResolution());
+                    jsonD.put("audioAut", d.getAudioOut());
+                    
+                    jsonD.put("workStartAt", formatTimeString(d.getWorkEndAt()));
+                    jsonD.put("workEndAt", formatTimeString(d.getWorkEndAt()));
+                    
+                    jsonD.put("mon", d.isMon());
+                    jsonD.put("tue", d.isTue());
+                    jsonD.put("wed", d.isWed());
+                    jsonD.put("thu", d.isThu());
+                    jsonD.put("fir", d.isFri());
+                    jsonD.put("sat", d.isSat());
+                    jsonD.put("sun", d.isSun());
+                    
                     jsonD.put("description", d.getDescription());
                     jsonD.put("lastRequestDate", d.getLastDeviceRequestDt().getTime());
 
@@ -279,6 +297,17 @@ public class DevicesController {
                 device.setResolution(deviceUpdate.getInt("resolution"));
                 device.setDescription(deviceUpdate.getString("description"));
                 device.setAudioOut(deviceUpdate.getInt("audioOut"));
+                
+                device.setWorkStartAt(parseTimeString(deviceUpdate.getString("workStartAt")));
+                device.setWorkEndAt(parseTimeString(deviceUpdate.getString("workEndAt")));
+                
+                device.setMon(deviceUpdate.getBoolean("mon"));
+                device.setTue(deviceUpdate.getBoolean("tue"));
+                device.setWed(deviceUpdate.getBoolean("wed"));
+                device.setThu(deviceUpdate.getBoolean("thu"));
+                device.setFri(deviceUpdate.getBoolean("fri"));
+                device.setSat(deviceUpdate.getBoolean("sat"));
+                device.setSun(deviceUpdate.getBoolean("sun"));
 
                 DevicesCampaigns devicesCampaigns = userService.findDeviceCampaignByDeviceId(device.getId());
 
@@ -308,7 +337,25 @@ public class DevicesController {
                 RequestUtils.sendUnauthorized(response);
             }
         }
-
+    }
+    
+    private Date parseTimeString(String timeString) {
+        Calendar cal = GregorianCalendar.getInstance();
+        
+        try {
+            String[] timeParts = timeString.split(":");
+            int hour = Integer.parseInt(timeParts[0]);
+            int min = Integer.parseInt(timeParts[1]);
+            cal.set(0, 0, 0, hour, min, 0);
+        } catch (Exception ex) {
+            log.error(ex.getMessage(), ex);
+        }
+        
+        return cal.getTime();
+    }
+    
+    private String formatTimeString(Date time) {
+        return timeFormat.format(time);
     }
 
     @RequestMapping(value = "token/{token}/devices", method = RequestMethod.POST)
@@ -337,6 +384,17 @@ public class DevicesController {
             device.setUuid(UUID.randomUUID().toString().substring(0, 4));
             device.setDescription("");
             device.setNetworkData("");
+            
+            device.setWorkStartAt(parseTimeString("9:00"));
+            device.setWorkEndAt(parseTimeString("20:00"));
+
+            device.setMon(true);
+            device.setTue(true);
+            device.setWed(true);
+            device.setThu(true);
+            device.setFri(true);
+            device.setSat(false);
+            device.setSun(false);
 
             userService.addDevice(device);
 
@@ -348,6 +406,17 @@ public class DevicesController {
             resp.put("resolution", device.getResolution());
             resp.put("description", device.getDescription());
             resp.put("audioOut", device.getAudioOut());
+            
+            resp.put("workStartAt", formatTimeString(device.getWorkEndAt()));
+            resp.put("workEndAt", formatTimeString(device.getWorkEndAt()));
+
+            resp.put("mon", device.isMon());
+            resp.put("tue", device.isTue());
+            resp.put("wed", device.isWed());
+            resp.put("thu", device.isThu());
+            resp.put("fir", device.isFri());
+            resp.put("sat", device.isSat());
+            resp.put("sun", device.isSun());
 
             response.setStatus(HttpServletResponse.SC_OK);
 

@@ -80,6 +80,35 @@ public class Devices implements Serializable {
     
     @Column(name = "audio_out")
     private Integer audioOut;
+    
+    @Column(name = "work_start_at")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date workStartAt;
+    
+    @Column(name = "work_end_at")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date workEndAt;
+    
+    @Column(name = "mon")
+    private boolean mon;
+    
+    @Column(name = "tue")
+    private boolean tue;
+    
+    @Column(name = "wed")
+    private boolean wed;
+    
+    @Column(name = "thu")
+    private boolean thu;
+    
+    @Column(name = "fri")
+    private boolean fri;
+    
+    @Column(name = "sat")
+    private boolean sat;
+    
+    @Column(name = "sun")
+    private boolean sun;
 
     @Column(name = "last_device_request_dt")
     @Temporal(TemporalType.TIMESTAMP)
@@ -157,6 +186,79 @@ public class Devices implements Serializable {
     public void setAudioOut(Integer audioOut) {
         this.audioOut = audioOut;
     }
+
+    public Date getWorkStartAt() {
+        return workStartAt;
+    }
+
+    public void setWorkStartAt(Date workStartAt) {
+        this.workStartAt = workStartAt;
+    }
+
+    public Date getWorkEndAt() {
+        return workEndAt;
+    }
+
+    public void setWorkEndAt(Date workEndAt) {
+        this.workEndAt = workEndAt;
+    }
+
+    public boolean isMon() {
+        return mon;
+    }
+
+    public void setMon(boolean mon) {
+        this.mon = mon;
+    }
+
+    public boolean isTue() {
+        return tue;
+    }
+
+    public void setTue(boolean tue) {
+        this.tue = tue;
+    }
+
+    public boolean isWed() {
+        return wed;
+    }
+
+    public void setWed(boolean wed) {
+        this.wed = wed;
+    }
+
+    public boolean isThu() {
+        return thu;
+    }
+
+    public void setThu(boolean thu) {
+        this.thu = thu;
+    }
+
+    public boolean isFri() {
+        return fri;
+    }
+
+    public void setFri(boolean fri) {
+        this.fri = fri;
+    }
+
+    public boolean isSat() {
+        return sat;
+    }
+
+    public void setSat(boolean sat) {
+        this.sat = sat;
+    }
+
+    public boolean isSun() {
+        return sun;
+    }
+
+    public void setSun(boolean sun) {
+        this.sun = sun;
+    }
+    
     
     @Override
     public int hashCode() {

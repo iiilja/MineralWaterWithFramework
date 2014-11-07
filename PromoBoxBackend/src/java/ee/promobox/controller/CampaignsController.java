@@ -73,6 +73,10 @@ public class CampaignsController {
                 resp.put("finish", campaign.getFinish() == null ? null : campaign.getFinish().getTime());
                 resp.put("sequence", campaign.getSequence());
                 resp.put("start", campaign.getStart() == null ? null : campaign.getStart().getTime());
+                resp.put("countFiles", campaign.getCountFiles());
+                resp.put("countImages", campaign.getCountImages());
+                resp.put("countAudios", campaign.getCountAudios());
+                resp.put("countVideos", campaign.getCountVideos());
                 
                 
                 try {

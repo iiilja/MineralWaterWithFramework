@@ -73,6 +73,18 @@ public class AdCampaigns implements Serializable {
     private Date updateDate;
     @Column(name = "work_time_data")
     private String workTimeData;
+    
+    @Column(name = "count_files", nullable = false)
+    private int countFiles;
+    
+    @Column(name = "count_images", nullable = false)
+    private int countImages;
+    
+    @Column(name = "count_audios", nullable = false)
+    private int countAudios;
+    
+    @Column(name = "count_videos", nullable = false)
+    private int countVideos;
 
     public AdCampaigns() {
     }
@@ -145,6 +157,38 @@ public class AdCampaigns implements Serializable {
         this.duration = duration;
     }
 
+    public int getCountFiles() {
+        return countFiles;
+    }
+
+    public void setCountFiles(int countFiles) {
+        this.countFiles = countFiles;
+    }
+
+    public int getCountImages() {
+        return countImages;
+    }
+
+    public void setCountImages(int countImages) {
+        this.countImages = countImages;
+    }
+
+    public int getCountAudios() {
+        return countAudios;
+    }
+
+    public void setCountAudios(int countAudios) {
+        this.countAudios = countAudios;
+    }
+
+    public int getCountVideos() {
+        return countVideos;
+    }
+
+    public void setCountVideos(int countVideos) {
+        this.countVideos = countVideos;
+    }
+    
     @Override
     public int hashCode() {
         int hash = 0;

@@ -47,7 +47,7 @@ public class DevicesCampaigns implements Serializable {
     @Column(name = "updated_dt")
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedDt;
-
+    
     public DevicesCampaigns() {
     }
 

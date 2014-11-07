@@ -16,12 +16,14 @@ import java.io.Serializable;
 public class FileDto implements Serializable {
     
     private int id;
+    private int fileType;
     private File file;
     private String extention;
 
-    public FileDto(int id, File file, String extention) {
+    public FileDto(int id, int fileType, File file, String extention) {
         this.id = id;
         this.file = file;
+        this.fileType = fileType;
         this.extention = extention;
     }
     
@@ -41,6 +43,14 @@ public class FileDto implements Serializable {
         this.file = file;
     }
 
+    public int getFileType() {
+        return fileType;
+    }
+
+    public void setFileType(int fileType) {
+        this.fileType = fileType;
+    }
+    
     /**
      * @return the extention
      */

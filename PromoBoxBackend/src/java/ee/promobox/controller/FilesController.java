@@ -201,7 +201,7 @@ public class FilesController {
                                 log.error("Error rename file");
                             }
 
-                            FileDto fileDto = new FileDto(campaignFile.getId(), f, fileType);
+                            FileDto fileDto = new FileDto(campaignFile.getId(), fileTypeNumber, f, fileType);
 
                             jmsTemplate.convertAndSend(fileDestination, fileDto);
 
@@ -235,14 +235,24 @@ public class FilesController {
 
         if (session != null) {
             CampaignsFiles campaignsFile = userService.findCampaignFile(fileId, session.getClientId());
-
-            if (campaignsFile != null) {
+            Files dbFile = userService.findFileById(fileId);
+            
+            if (campaignsFile != null && dbFile != null) {
+                
                 campaignsFile.setStatus(CampaignsFiles.STATUS_ARCHIVED);
 
                 userService.updateCampaignFile(campaignsFile);
 
                 AdCampaigns campaign = userService.findCampaignByCampaignId(campaignsFile.getAdCampaignsId());
                 campaign.setUpdateDate(new Date());
+                campaign.setCountFiles(campaign.getCountFiles() - 1);
+                if (dbFile.getFileType() == FileTypeUtils.FILE_TYPE_AUDIO) {
+                    campaign.setCountAudios(campaign.getCountAudios() - 1);
+                } else if (dbFile.getFileType() == FileTypeUtils.FILE_TYPE_IMAGE) {
+                    campaign.setCountImages(campaign.getCountImages() - 1);
+                } else if (dbFile.getFileType() == FileTypeUtils.FILE_TYPE_VIDEO) {
+                    campaign.setCountVideos(campaign.getCountVideos() - 1);
+                }
 
                 userService.updateCampaign(campaign);
 

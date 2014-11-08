@@ -117,6 +117,9 @@ public class Devices implements Serializable {
     @Column(name = "free_space")
     private long freeSpace;
     
+    @Column(name = "clear_cache")
+    private boolean clearCache;
+    
     @Column(name = "current_file_id")
     private Integer currentFileId;
     
@@ -291,6 +294,14 @@ public class Devices implements Serializable {
 
     public void setLoadingCampaingProgress(Integer loadingCampaingProgress) {
         this.loadingCampaingProgress = loadingCampaingProgress;
+    }
+
+    public boolean isClearCache() {
+        return clearCache;
+    }
+
+    public void setClearCache(boolean clearCache) {
+        this.clearCache = clearCache;
     }
     
     @Override

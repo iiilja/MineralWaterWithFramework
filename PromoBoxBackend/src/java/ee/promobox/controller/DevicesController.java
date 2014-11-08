@@ -73,6 +73,9 @@ public class DevicesController {
 
             resp.put("lastUpdate", d.getLastDeviceRequestDt().getTime());
             resp.put("orientation", d.getOrientation());
+            resp.put("clearCache", d.isClearCache());
+            
+            d.setClearCache(false);
 
             JSONObject campaign = new JSONObject();
 
@@ -333,6 +336,39 @@ public class DevicesController {
                     userService.updateDeviceAdCampaign(devicesCampaigns);
                 }
 
+                userService.updateDevice(device);
+
+                response.setStatus(HttpServletResponse.SC_OK);
+
+                RequestUtils.printResult(resp.toString(), response);
+
+            } else {
+                RequestUtils.sendUnauthorized(response);
+            }
+        }
+    }
+    
+    @RequestMapping(value = "token/{token}/devices/{id}/clearcache", method = RequestMethod.PUT)
+    public void clearDeviceCache(
+            @PathVariable("token") String token,
+            @PathVariable("id") int id,
+            HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+
+        JSONObject resp = new JSONObject();
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+        Session session = sessionService.findSession(token);
+
+        if (session != null) {
+            int clientId = session.getClientId();
+
+            Devices device = userService.findDeviceByIdAndClientId(id, clientId);
+
+            if (device != null) {
+
+                device.setClearCache(true);
+                
                 userService.updateDevice(device);
 
                 response.setStatus(HttpServletResponse.SC_OK);

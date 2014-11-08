@@ -39,6 +39,7 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -64,6 +65,43 @@ public class FilesController {
 
     private final static Logger log = LoggerFactory.getLogger(
             FilesController.class);
+    
+    @RequestMapping(value = "token/{token}/campaigns/{id}/files/order", method = RequestMethod.PUT)
+    public void saveFilesOrder(
+            @PathVariable("token") String token,
+            @PathVariable("id") int campaignId,
+            @RequestBody String json,
+            HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+        
+        JSONObject resp = new JSONObject();
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+        Session session = sessionService.findSession(token);
+
+        if (session != null) {
+            AdCampaigns campaign = userService.findCampaignByIdAndClientId(campaignId, session.getClientId());
+
+            // if this campaign belongs to user
+            if (campaign != null) {
+                JSONObject objectGiven = new JSONObject(json);
+                
+                JSONArray filesOrderArray = objectGiven.getJSONArray("filesOrder");
+                for (int i = 0; i < filesOrderArray.length(); i++) {
+                    int fileId = filesOrderArray.getJSONObject(i).getInt("fileId");
+                    int orderId = filesOrderArray.getJSONObject(i).getInt("orderId");
+                    
+                    userService.updateCampaignFileOrder(fileId, orderId, campaignId, session.getClientId());
+                }
+                
+                response.setStatus(HttpServletResponse.SC_OK);
+                RequestUtils.printResult(resp.toString(), response);
+            }
+        } else {
+            RequestUtils.sendUnauthorized(response);
+        }
+    }
+    
 
     @RequestMapping(value = "token/{token}/campaigns/{id}/files", method = RequestMethod.GET)
     public void showCampaignFiles(
@@ -190,6 +228,8 @@ public class FilesController {
                             campaignFile.setFilename(fileName);
 
                             userService.addCampaignFile(campaignFile);
+                            
+                            campaignFile.setOrderId(campaignFile.getId());
 
                             campaign.setUpdateDate(new Date());
 

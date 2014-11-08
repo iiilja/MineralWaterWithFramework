@@ -202,6 +202,20 @@ public class UserServiceImpl implements UserService {
         session.flush();
     }
     
+    public void updateCampaignFileOrder(int fileId, int orderId, int campaignId, int clientId) {
+        Session session = sessionFactory.getCurrentSession();
+
+        Query q = session.createQuery("UPDATE CampaignsFiles SET orderId = :orderId "
+                + "WHERE id = :id AND adCampaignsId = :campaignId AND clientId = :clientId");
+
+        q.setParameter("id", fileId);
+        q.setParameter("orderId", orderId);
+        q.setParameter("campaignId", campaignId);
+        q.setParameter("clientId", clientId);
+        
+        q.executeUpdate();
+    }
+    
     public void updateDevice(Devices d) {
         Session session = sessionFactory.getCurrentSession();
         session.update(d);

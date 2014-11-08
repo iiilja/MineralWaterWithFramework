@@ -58,6 +58,7 @@ public interface UserService {
     public void addCampaignFile(CampaignsFiles file);
 
     public void updateCampaignFile(CampaignsFiles file);
+    public void updateCampaignFileOrder(int fileId, int orderId, int campaignId, int clientId);
     
     public void updateDevice(Devices d);
     

@@ -1,11 +1,15 @@
 package ee.promobox.jms;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.PreDestroy;
+import javax.jms.Destination;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.jms.listener.AbstractJmsListeningContainer;
+import org.springframework.jms.listener.DefaultMessageListenerContainer;
 
 public class JmsConsumerManager {
     private static final JmsConsumerManager instance = new JmsConsumerManager();
@@ -13,7 +17,7 @@ public class JmsConsumerManager {
 
     private final List<Thread> threads = new ArrayList<Thread>();
     private List<AbstractJmsListeningContainer> listeningContainers = new ArrayList<AbstractJmsListeningContainer>();
-
+    
     public static JmsConsumerManager getInstance() {
         return instance;
     }
@@ -72,5 +76,7 @@ public class JmsConsumerManager {
     public void setListeningContainers(List<AbstractJmsListeningContainer> listeningContainers) {
         this.listeningContainers = listeningContainers;
     }
+    
+    
 }
 

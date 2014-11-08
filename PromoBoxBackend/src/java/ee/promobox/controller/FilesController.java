@@ -15,6 +15,7 @@ import ee.promobox.entity.CampaignsFiles;
 import ee.promobox.entity.Devices;
 import ee.promobox.entity.Files;
 import ee.promobox.jms.FileDto;
+import ee.promobox.jms.JmsClientsContainer;
 import ee.promobox.service.Session;
 import ee.promobox.service.SessionService;
 import ee.promobox.service.UserService;
@@ -58,8 +59,7 @@ public class FilesController {
     private KioskConfig config;
 
     @Autowired
-    @Qualifier("fileDestination")
-    private Destination fileDestination;
+    private JmsClientsContainer clientsContainer;
     @Autowired
     private JmsTemplate jmsTemplate;
 
@@ -243,7 +243,7 @@ public class FilesController {
 
                             FileDto fileDto = new FileDto(campaignFile.getId(), fileTypeNumber, f, fileType);
 
-                            jmsTemplate.convertAndSend(fileDestination, fileDto);
+                            jmsTemplate.convertAndSend(clientsContainer.getOrCreateClientDest(session.getClientId()), fileDto);
 
                             response.setStatus(HttpServletResponse.SC_OK);
                             

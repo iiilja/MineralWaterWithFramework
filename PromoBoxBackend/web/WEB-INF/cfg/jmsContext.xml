@@ -37,7 +37,7 @@
 
     <bean id="fileConsumerListener" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
         <property name="connectionFactory" ref="jmsFactory"/>
-        <property name="maxConcurrentConsumers" value="1"/>
+        <property name="maxConcurrentConsumers" value="3"/>
         <property name="sessionTransacted" value="true"/>
         <property name="destination" ref="fileDestination"/>
         <property name="messageListener" ref="fileConsumerService"/>
@@ -52,5 +52,10 @@
                 </property>
             </bean>
         </property>
+    </bean>
+    
+    <bean id="jmsClientsContainer" class="ee.promobox.jms.JmsClientsContainer">
+        <property name="connectionFactory" ref="jmsFactory"/>
+        <property name="consumerManager" ref="jmsConsumerManager">   
     </bean>
 </beans>

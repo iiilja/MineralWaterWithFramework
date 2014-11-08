@@ -113,8 +113,18 @@ public class Devices implements Serializable {
     @Column(name = "last_device_request_dt")
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastDeviceRequestDt;
+    
     @Column(name = "free_space")
     private long freeSpace;
+    
+    @Column(name = "current_file_id")
+    private Integer currentFileId;
+    
+    @Column(name = "loading_campaing_id")
+    private Integer loadingCampaingId;
+    
+    @Column(name = "loading_compaing_progress")
+    private Integer loadingCampaingProgress; 
 
     public Devices() {
     }
@@ -258,7 +268,30 @@ public class Devices implements Serializable {
     public void setSun(boolean sun) {
         this.sun = sun;
     }
-    
+
+    public Integer getCurrentFileId() {
+        return currentFileId;
+    }
+
+    public void setCurrentFileId(Integer currentFileId) {
+        this.currentFileId = currentFileId;
+    }
+
+    public Integer getLoadingCampaingId() {
+        return loadingCampaingId;
+    }
+
+    public void setLoadingCampaingId(Integer loadingCampaingId) {
+        this.loadingCampaingId = loadingCampaingId;
+    }
+
+    public Integer getLoadingCampaingProgress() {
+        return loadingCampaingProgress;
+    }
+
+    public void setLoadingCampaingProgress(Integer loadingCampaingProgress) {
+        this.loadingCampaingProgress = loadingCampaingProgress;
+    }
     
     @Override
     public int hashCode() {

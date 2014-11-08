@@ -63,6 +63,9 @@ public class DevicesController {
             JSONObject objectGiven = new JSONObject(json);
 
             d.setFreeSpace(objectGiven.getLong("freeSpace"));
+            d.setCurrentFileId(objectGiven.has("currentFileId") ? objectGiven.getInt("currentFileId") : null);
+            d.setLoadingCampaingId(objectGiven.has("loadingCampaingId") ? objectGiven.getInt("loadingCampaingId") : null);
+            d.setLoadingCampaingProgress(objectGiven.has("loadingCampaingProgress") ? objectGiven.getInt("loadingCampaingProgress") : null);
             
             if (objectGiven.has("ip")) {
                 d.setNetworkData(objectGiven.getJSONArray("ip").toString());
@@ -179,6 +182,9 @@ public class DevicesController {
                     }
 
                     jsonD.put("space", d.getFreeSpace());
+                    jsonD.put("currentFileId", d.getCurrentFileId());
+                    jsonD.put("loadingCampaingId", d.getLoadingCampaingId());
+                    jsonD.put("loadingCampaingProgress", d.getLoadingCampaingProgress());
                     jsonD.put("orientation", d.getOrientation());
                     jsonD.put("resolution", d.getResolution());
                     jsonD.put("audioAut", d.getAudioOut());

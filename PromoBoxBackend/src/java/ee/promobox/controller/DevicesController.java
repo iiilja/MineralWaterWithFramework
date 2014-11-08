@@ -14,6 +14,7 @@ import ee.promobox.service.SessionService;
 import ee.promobox.service.UserService;
 import ee.promobox.util.RequestUtils;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -64,8 +65,9 @@ public class DevicesController {
 
             d.setFreeSpace(objectGiven.getLong("freeSpace"));
             d.setCurrentFileId(objectGiven.has("currentFileId") ? objectGiven.getInt("currentFileId") : null);
-            d.setLoadingCampaingId(objectGiven.has("loadingCampaingId") ? objectGiven.getInt("loadingCampaingId") : null);
-            d.setLoadingCampaingProgress(objectGiven.has("loadingCampaingProgress") ? objectGiven.getInt("loadingCampaingProgress") : null);
+            d.setCurrentCampaignId(objectGiven.has("currentCampaignId") ? objectGiven.getInt("currentCampaignId") : null);
+            d.setLoadingCampaignId(objectGiven.has("loadingCampaingId") ? objectGiven.getInt("loadingCampaingId") : null);
+            d.setLoadingCampaignProgress(objectGiven.has("loadingCampaingProgress") ? objectGiven.getInt("loadingCampaingProgress") : null);
             
             if (objectGiven.has("ip")) {
                 d.setNetworkData(objectGiven.getJSONArray("ip").toString());
@@ -77,58 +79,62 @@ public class DevicesController {
             
             d.setClearCache(false);
 
-            JSONObject campaign = new JSONObject();
+            JSONArray campaigns = new JSONArray();
+            
 
-            DevicesCampaigns dc = userService.findDeviceCampaignByDeviceId(d.getId());
+            DevicesCampaigns dc = userService.findLastUpdatedDeviceCampaign(d.getId());
 
             if (dc != null) {
 
                 if (dc.getUpdatedDt().after(d.getLastDeviceRequestDt()) || objectGiven.has("force")) {
 
-                    AdCampaigns ad = userService.findCampaignByCampaignId(dc.getAdCampaignsId());
+                    for (AdCampaigns ad: userService.findCampaignByDeviceId(d.getId())) {
+                        JSONObject campaign = new JSONObject();
+                        
+                        campaign.put("campaignId", ad.getId());
+                        campaign.put("campaignName", ad.getName());
+                        campaign.put("campaignStatus", ad.getStatus());
+                        campaign.put("clientId", ad.getClientId());
+                        campaign.put("startDate", ad.getStart().getTime());
+                        campaign.put("endDate", ad.getFinish().getTime());
+                        campaign.put("sequence", ad.getSequence());
+                        campaign.put("duration", ad.getDuration());
+                        campaign.put("updateDate", ad.getUpdateDate().getTime());
+                        
+                        try {
+                            JSONObject workTimeData = new JSONObject(ad.getWorkTimeData());
 
-                    campaign.put("campaignId", ad.getId());
-                    campaign.put("campaignName", ad.getName());
-                    campaign.put("campaignStatus", ad.getStatus());
-                    campaign.put("clientId", ad.getClientId());
-                    campaign.put("startDate", ad.getStart().getTime());
-                    campaign.put("endDate", ad.getFinish().getTime());
-                    campaign.put("sequence", ad.getSequence());
-                    campaign.put("duration", ad.getDuration());
-                    campaign.put("updateDate", ad.getUpdateDate().getTime());
-                    
-                    try {
-                        JSONObject workTimeData = new JSONObject(ad.getWorkTimeData());
+                            campaign.put("days", workTimeData.getJSONArray("days"));
+                            campaign.put("hours", workTimeData.getJSONArray("hours"));
 
-                        resp.put("days", workTimeData.getJSONArray("days"));
-                        resp.put("hours", workTimeData.getJSONArray("hours"));
-
-                    } catch (Exception ex) {
-                        log.error(ex.getMessage(), ex);
-                    }
-
-                    List<CampaignsFiles> campaignFiles = userService.findUsersCampaignFiles(dc.getAdCampaignsId(), d.getClientId());
-
-                    if (!campaignFiles.isEmpty()) {
-                        JSONArray jsonCampaignFiles = new JSONArray();
-
-                        for (CampaignsFiles file : campaignFiles) {
-                            if (file.getStatus() == CampaignsFiles.STATUS_ACTIVE) {
-                                JSONObject jsonCampaignFile = new JSONObject();
-
-                                jsonCampaignFile.put("id", file.getId());
-                                jsonCampaignFile.put("type", file.getFileType().intValue());
-                                jsonCampaignFile.put("size", file.getSize());
-
-                                jsonCampaignFiles.put(jsonCampaignFile);
-                            }
+                        } catch (Exception ex) {
+                            log.error(ex.getMessage(), ex);
                         }
+                        
+                        List<CampaignsFiles> campaignFiles = userService.findUsersCampaignFiles(dc.getAdCampaignsId(), d.getClientId());
 
-                        campaign.put("files", jsonCampaignFiles);
+                        if (!campaignFiles.isEmpty()) {
+                            JSONArray jsonCampaignFiles = new JSONArray();
+
+                            for (CampaignsFiles file : campaignFiles) {
+                                if (file.getStatus() == CampaignsFiles.STATUS_ACTIVE) {
+                                    JSONObject jsonCampaignFile = new JSONObject();
+
+                                    jsonCampaignFile.put("id", file.getId());
+                                    jsonCampaignFile.put("type", file.getFileType().intValue());
+                                    jsonCampaignFile.put("size", file.getSize());
+
+                                    jsonCampaignFiles.put(jsonCampaignFile);
+                                }
+                            }
+
+                            campaign.put("files", jsonCampaignFiles);
+                        }
+                        
+                        campaigns.put(campaign);
                     }
-
-                    resp.put("campaign", campaign);
-
+                    
+                    resp.put("campaigns", campaigns);
                 }
 
                 d.setLastDeviceRequestDt(new Date());
@@ -186,8 +192,8 @@ public class DevicesController {
 
                     jsonD.put("space", d.getFreeSpace());
                     jsonD.put("currentFileId", d.getCurrentFileId());
-                    jsonD.put("loadingCampaingId", d.getLoadingCampaingId());
-                    jsonD.put("loadingCampaingProgress", d.getLoadingCampaingProgress());
+                    jsonD.put("loadingCampaingId", d.getLoadingCampaignId());
+                    jsonD.put("loadingCampaingProgress", d.getLoadingCampaignProgress());
                     jsonD.put("orientation", d.getOrientation());
                     jsonD.put("resolution", d.getResolution());
                     jsonD.put("audioAut", d.getAudioOut());
@@ -206,10 +212,14 @@ public class DevicesController {
                     jsonD.put("description", d.getDescription());
                     jsonD.put("lastRequestDate", d.getLastDeviceRequestDt().getTime());
 
-                    AdCampaigns ac = userService.findCampaignByDeviceId(d.getId());
+                    List<AdCampaigns> acs = userService.findCampaignByDeviceId(d.getId());
 
-                    if (ac != null) {
-                        jsonD.put("campaignId", ac.getId());
+                    if (acs != null) {
+                        JSONArray campaignIds = new JSONArray();
+                        for (AdCampaigns ac : acs) {
+                            campaignIds.put(ac.getId());
+                        }
+                        jsonD.put("campaignId", campaignIds);
                     } else {
                         jsonD.put("campaignId", -1);
                     }
@@ -224,8 +234,8 @@ public class DevicesController {
                         aObj.put("id", a.getId());
                         aObj.put("name", a.getName());
 
-                        if (ac != null) {
-                            aObj.put("playing", a.getId() == ac.getId());
+                        if (acs != null) {
+                            aObj.put("playing", d.getCurrentCampaignId());
                         } else {
                             aObj.put("playing", false);
                         }
@@ -318,25 +328,43 @@ public class DevicesController {
                 device.setSat(deviceUpdate.getBoolean("sat"));
                 device.setSun(deviceUpdate.getBoolean("sun"));
 
-                DevicesCampaigns devicesCampaigns = userService.findDeviceCampaignByDeviceId(device.getId());
+                int campaignId = deviceUpdate.getInt("campaignId");
+                DevicesCampaigns devicesCampaigns = userService.findDeviceCampaignByCampaignId(device.getId(), campaignId);
 
-                if (devicesCampaigns == null) {
+                if (devicesCampaigns == null ) {
+                    
+                    AdCampaigns newAd = userService.findCampaignByCampaignId(campaignId);
+                    
+                    boolean timeIntersection = false;
+                    for (AdCampaigns ad: userService.findCampaignByDeviceId(device.getId())) {
+                        if (checkTimeIntersection(newAd, ad)) {
+                            timeIntersection = true;
+                            
+                            break;
+                        }
+                    }
+                    
+                    if (!timeIntersection) {
+                        devicesCampaigns = new DevicesCampaigns();
 
-                    devicesCampaigns = new DevicesCampaigns();
+                        devicesCampaigns.setDeviceId(device.getId());
+                        devicesCampaigns.setAdCampaignsId(campaignId);
+                        devicesCampaigns.setUpdatedDt(new Date());
 
-                    devicesCampaigns.setDeviceId(device.getId());
-                    devicesCampaigns.setAdCampaignsId(deviceUpdate.getInt("campaignId"));
-                    devicesCampaigns.setUpdatedDt(new Date());
-
-                    userService.addDeviceAdCampaign(devicesCampaigns);
+                        userService.addDeviceAdCampaign(devicesCampaigns);
+                        
+                        userService.updateDevice(device);
+                    } else {
+                        resp.put("ERROR", "time_intersection");
+                    }
                 } else {
-                    devicesCampaigns.setAdCampaignsId(deviceUpdate.getInt("campaignId"));
+                    devicesCampaigns.setAdCampaignsId(campaignId);
                     devicesCampaigns.setUpdatedDt(new Date());
 
                     userService.updateDeviceAdCampaign(devicesCampaigns);
+                    
+                    userService.updateDevice(device);
                 }
-
-                userService.updateDevice(device);
 
                 response.setStatus(HttpServletResponse.SC_OK);
 
@@ -346,6 +374,45 @@ public class DevicesController {
                 RequestUtils.sendUnauthorized(response);
             }
         }
+    }
+    
+    
+    private boolean checkTimeIntersection(AdCampaigns campaign1, AdCampaigns campaign2) {
+        try {
+            JSONObject workTime1 = new JSONObject(campaign1.getWorkTimeData());
+            JSONObject workTime2 = new JSONObject(campaign2.getWorkTimeData());
+
+            boolean daysMatch = false;
+            List<String> workDays1 = new ArrayList<>();
+            for (int i = 0; i < workTime1.getJSONArray("days").length(); i++) {
+                workDays1.add(workTime1.getJSONArray("days").getString(i));
+            }
+
+            for (int i = 0; i < workTime2.getJSONArray("days").length(); i++) {
+                if (workDays1.contains(workTime2.getJSONArray("days").getString(i))) {
+                    daysMatch = true;
+
+                    break;
+                }
+            }
+
+            if (daysMatch) {
+                List<String> workHours1 = new ArrayList<>();
+                for (int i = 0; i < workTime1.getJSONArray("hours").length(); i++) {
+                    workHours1.add(workTime1.getJSONArray("hours").getString(i));
+                }
+
+                for (int i = 0; i < workTime2.getJSONArray("hours").length(); i++) {
+                    if (workHours1.contains(workTime2.getJSONArray("hours").getString(i))) {
+                        return true;
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            log.error(ex.getMessage(), ex);
+        }
+
+        return false;
     }
     
     @RequestMapping(value = "token/{token}/devices/{id}/clearcache", method = RequestMethod.PUT)

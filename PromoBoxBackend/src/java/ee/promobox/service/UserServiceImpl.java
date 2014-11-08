@@ -135,25 +135,48 @@ public class UserServiceImpl implements UserService {
         return (Devices) q.uniqueResult();
     }
 
-    public DevicesCampaigns findDeviceCampaignByDeviceId(int deviceId) {
+    public DevicesCampaigns findDeviceCampaignByCampaignId(int deviceId, int campaignId) {
         Session session = sessionFactory.getCurrentSession();
 
-        Query q = session.getNamedQuery("DevicesCampaigns.findByDeviceId").setInteger("deviceId", deviceId);
+        Query q = session.getNamedQuery("DevicesCampaigns.findByAdCampaignsIdAndDeviceId")
+                .setInteger("deviceId", deviceId)
+                .setInteger("adCampaignsId", campaignId);
         return (DevicesCampaigns) q.uniqueResult();
     }
-
-    public AdCampaigns findCampaignByDeviceId(int deviceId) {
+    
+    public DevicesCampaigns findLastUpdatedDeviceCampaign(int deviceId) {
         Session session = sessionFactory.getCurrentSession();
 
-        Query q = session.createQuery("select ad from AdCampaigns ad, DevicesCampaigns d where d.deviceId = :deviceId and ad.id = d.adCampaignsId").setInteger("deviceId", deviceId);
+        Query q = session.createQuery("FROM DevicesCampaigns WHERE deviceId = :deviceId ORDER BY updatedDt DESC")
+                .setInteger("deviceId", deviceId)
+                .setMaxResults(1);
+        
+        return (DevicesCampaigns) q.uniqueResult();
+    }
+    
+    
+    public List<DevicesCampaigns> findDeviceCampaignsByDeviceId(int deviceId) {
+        Session session = sessionFactory.getCurrentSession();
 
-        return (AdCampaigns) q.uniqueResult();
+        Query q = session.getNamedQuery("DevicesCampaigns.findByDeviceId")
+                .setInteger("deviceId", deviceId);
+        return  q.list();
+    }
+
+    public List<AdCampaigns> findCampaignByDeviceId(int deviceId) {
+        Session session = sessionFactory.getCurrentSession();
+
+        Query q = session.createQuery("select ad from AdCampaigns ad, DevicesCampaigns d where d.deviceId = :deviceId and ad.id = d.adCampaignsId")
+                .setInteger("deviceId", deviceId);
+
+        return q.list();
     }
 
     public AdCampaigns findCampaignByCampaignId(int campaignId) {
         Session session = sessionFactory.getCurrentSession();
         
-        Query q = session.getNamedQuery("AdCampaigns.findById").setInteger("id", campaignId);
+        Query q = session.getNamedQuery("AdCampaigns.findById")
+                .setInteger("id", campaignId);
         
         return (AdCampaigns) q.uniqueResult();
     }
@@ -161,7 +184,8 @@ public class UserServiceImpl implements UserService {
     public Files findFileById(int id) {
         Session session = sessionFactory.getCurrentSession();
         
-        Query q = session.getNamedQuery("Files.findById").setInteger("id", id);
+        Query q = session.getNamedQuery("Files.findById")
+                .setInteger("id", id);
         
         return (Files) q.uniqueResult();
     }

@@ -9,6 +9,7 @@ package ee.promobox.jms;
 import ee.promobox.KioskConfig;
 import ee.promobox.entity.AdCampaigns;
 import ee.promobox.entity.CampaignsFiles;
+import ee.promobox.entity.Files;
 import ee.promobox.service.UserService;
 import ee.promobox.util.FileTypeUtils;
 import ee.promobox.util.ImageOP;
@@ -51,6 +52,8 @@ public class FileConsumerService extends MessageListenerAdapter {
             File file = new File(fileDto.getFile().getParent() + File.separator + fileDto.getId() + "_output");
             cFile.setSize((int)file.length());
             
+            Files dbFile = userService.findFileById(fileDto.getId());
+            
             userService.updateCampaignFile(cFile);
             
             AdCampaigns camp = userService.findCampaignByCampaignId(cFile.getAdCampaignsId());
@@ -61,8 +64,10 @@ public class FileConsumerService extends MessageListenerAdapter {
                 camp.setCountImages(camp.getCountImages());
             } else if (fileDto.getFileType() == FileTypeUtils.FILE_TYPE_AUDIO) {
                 camp.setCountAudios(camp.getCountAudios() + 1);
+                camp.setAudioLength(camp.getAudioLength() + dbFile.getContentLength());
             } else if (fileDto.getFileType() == FileTypeUtils.FILE_TYPE_VIDEO) {
                 camp.setCountVideos(camp.getCountVideos() + 1);
+                camp.setVideoLength(camp.getVideoLength() + dbFile.getContentLength());
             }
             
             userService.updateCampaign(camp);

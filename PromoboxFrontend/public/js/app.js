@@ -1,4 +1,4 @@
-var apiEndpoint = "http://api.dev.promobox.ee/service/";
+var apiEndpoint = "http://46.182.31.101:8080/service/";
 
 var app = angular.module('promobox', ['ngRoute', 'ui.bootstrap', 'pascalprecht.translate', 'promobox.services', 'angularFileUpload', 'toaster', 'ui.router', 'angularMoment', 'ui.bootstrap.datetimepicker', 'checklist-model']);
 

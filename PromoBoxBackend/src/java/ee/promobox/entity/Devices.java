@@ -123,11 +123,14 @@ public class Devices implements Serializable {
     @Column(name = "current_file_id")
     private Integer currentFileId;
     
-    @Column(name = "loading_campaing_id")
-    private Integer loadingCampaingId;
+    @Column(name = "current_campaign_id")
+    private Integer currentCampaignId;
     
-    @Column(name = "loading_compaing_progress")
-    private Integer loadingCampaingProgress; 
+    @Column(name = "loading_campaign_id")
+    private Integer loadingCampaignId;
+    
+    @Column(name = "loading_compaign_progress")
+    private Integer loadingCampaignProgress; 
 
     public Devices() {
     }
@@ -280,21 +283,30 @@ public class Devices implements Serializable {
         this.currentFileId = currentFileId;
     }
 
-    public Integer getLoadingCampaingId() {
-        return loadingCampaingId;
+    public Integer getCurrentCampaignId() {
+        return currentCampaignId;
     }
 
-    public void setLoadingCampaingId(Integer loadingCampaingId) {
-        this.loadingCampaingId = loadingCampaingId;
+    public void setCurrentCampaignId(Integer currentCampaignId) {
+        this.currentCampaignId = currentCampaignId;
     }
 
-    public Integer getLoadingCampaingProgress() {
-        return loadingCampaingProgress;
+    public Integer getLoadingCampaignId() {
+        return loadingCampaignId;
     }
 
-    public void setLoadingCampaingProgress(Integer loadingCampaingProgress) {
-        this.loadingCampaingProgress = loadingCampaingProgress;
+    public void setLoadingCampaignId(Integer loadingCampaignId) {
+        this.loadingCampaignId = loadingCampaignId;
     }
+
+    public Integer getLoadingCampaignProgress() {
+        return loadingCampaignProgress;
+    }
+
+    public void setLoadingCampaignProgress(Integer loadingCampaignProgress) {
+        this.loadingCampaignProgress = loadingCampaignProgress;
+    }
+    
 
     public boolean isClearCache() {
         return clearCache;

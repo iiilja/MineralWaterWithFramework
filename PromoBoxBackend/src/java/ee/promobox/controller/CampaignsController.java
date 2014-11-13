@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.ModelAndView;
 
 /**
  *
@@ -77,18 +76,18 @@ public class CampaignsController {
                 resp.put("countImages", campaign.getCountImages());
                 resp.put("countAudios", campaign.getCountAudios());
                 resp.put("countVideos", campaign.getCountVideos());
-                
-                
+                resp.put("audioLength", campaign.getAudioLength());
+                resp.put("vidioLength", campaign.getVideoLength());
+
                 try {
                     JSONObject workTimeData = new JSONObject(campaign.getWorkTimeData());
 
                     resp.put("days", workTimeData.getJSONArray("days"));
                     resp.put("hours", workTimeData.getJSONArray("hours"));
-                    
+
                 } catch (Exception ex) {
                     log.error(ex.getMessage(), ex);
                 }
-                
 
                 // put information about files associated with campaign
                 List<CampaignsFiles> campaignFiles = userService.findUsersCampaignFiles(campaignId, clientId);
@@ -125,7 +124,7 @@ public class CampaignsController {
                 // iterate trough the list of campaigns that belong to the client
                 for (AdCampaigns campaign : campaigns) {
                     JSONObject jsonCampaign = new JSONObject();
-                    
+
                     jsonCampaign.put("id", campaign.getId());
                     jsonCampaign.put("name", campaign.getName());
                     jsonCampaign.put("status", campaign.getStatus());
@@ -170,22 +169,22 @@ public class CampaignsController {
             campaign.setFinish(new Date());
             campaign.setDuration(30);
             campaign.setUpdateDate(new Date());
-            
+
             JSONObject workTimeJson = new JSONObject();
-            
+
             JSONArray days = new JSONArray();
-            
+
             days.put("mo").put("tu").put("we").put("th").put("fr").put("sa").put("su");
-            
+
             JSONArray hours = new JSONArray();
-            
-            for (int i=0; i<24; i++) {
+
+            for (int i = 0; i < 24; i++) {
                 hours.put("" + i);
             }
-            
+
             workTimeJson.put("days", days);
             workTimeJson.put("hours", hours);
-            
+
             campaign.setWorkTimeData(workTimeJson.toString());
 
             userService.addCampaign(campaign);
@@ -260,18 +259,17 @@ public class CampaignsController {
                 campaign.setStart(new Date(objectGiven.getLong("start")));
                 campaign.setFinish(new Date(objectGiven.getLong("finish")));
                 campaign.setDuration(objectGiven.getInt("duration"));
-                
+
                 JSONObject workTimeData = new JSONObject();
 
-                
                 if (objectGiven.has("days") && objectGiven.has("hours")) {
-                    
+
                     workTimeData.put("days", objectGiven.getJSONArray("days"));
                     workTimeData.put("hours", objectGiven.getJSONArray("hours"));
-                    
+
                     campaign.setWorkTimeData(workTimeData.toString());
                 }
-                
+
                 campaign.setUpdateDate(new Date());
 
                 userService.updateCampaign(campaign);
@@ -284,13 +282,11 @@ public class CampaignsController {
         }
 
     }
-    
-    
+
     @ExceptionHandler(Exception.class)
     public void handleAllException(Exception ex) {
-        
+
         log.error(ex.getMessage(), ex);
-        
 
     }
 

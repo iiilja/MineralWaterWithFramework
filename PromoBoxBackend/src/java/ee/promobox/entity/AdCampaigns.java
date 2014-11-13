@@ -85,6 +85,12 @@ public class AdCampaigns implements Serializable {
     
     @Column(name = "count_videos", nullable = false)
     private int countVideos;
+    
+    @Column(name = "audio_length", nullable = false)
+    private long audioLength;
+    
+    @Column(name = "video_length", nullable = false)
+    private long videoLength;
 
     public AdCampaigns() {
     }
@@ -187,6 +193,22 @@ public class AdCampaigns implements Serializable {
 
     public void setCountVideos(int countVideos) {
         this.countVideos = countVideos;
+    }
+
+    public long getAudioLength() {
+        return audioLength;
+    }
+
+    public void setAudioLength(long audioLength) {
+        this.audioLength = audioLength;
+    }
+
+    public long getVideoLength() {
+        return videoLength;
+    }
+
+    public void setVideoLength(long videoLength) {
+        this.videoLength = videoLength;
     }
     
     @Override

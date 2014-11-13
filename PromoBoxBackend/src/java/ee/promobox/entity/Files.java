@@ -50,6 +50,8 @@ public class Files implements Serializable {
     private Integer fileType;
     @Column(name = "size")
     private Long size;
+    @Column(name = "content_length")
+    private Long contentLength;
     @Column(name = "created_dt")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDt;
@@ -101,6 +103,14 @@ public class Files implements Serializable {
 
     public void setCreatedDt(Date createdDt) {
         this.createdDt = createdDt;
+    }
+
+    public Long getContentLength() {
+        return contentLength;
+    }
+
+    public void setContentLength(Long contentLength) {
+        this.contentLength = contentLength;
     }
 
     @Override

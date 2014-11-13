@@ -62,6 +62,9 @@ public class FilesController {
     private Destination fileDestination;
     @Autowired
     private JmsTemplate jmsTemplate;
+    
+    private final static int AVERAGE_AUDIO_BITRATE = 128 * 1024;
+    private final static int AVERAGE_VIDEO_BITRATE = 198 * 1024;
 
     private final static Logger log = LoggerFactory.getLogger(
             FilesController.class);
@@ -212,6 +215,12 @@ public class FilesController {
                             databaseFile.setCreatedDt(new Date(System.currentTimeMillis()));
                             databaseFile.setSize(fileSize);
                             databaseFile.setClientId(session.getClientId());
+                            
+                            if (fileTypeNumber == FileTypeUtils.FILE_TYPE_AUDIO) {
+                                databaseFile.setContentLength(fileSize / AVERAGE_AUDIO_BITRATE);
+                            } else if (fileTypeNumber == FileTypeUtils.FILE_TYPE_VIDEO) {
+                                databaseFile.setContentLength(fileSize / AVERAGE_VIDEO_BITRATE);
+                            }
 
                             userService.addFile(databaseFile);
 
@@ -288,10 +297,13 @@ public class FilesController {
                 campaign.setCountFiles(campaign.getCountFiles() - 1);
                 if (dbFile.getFileType() == FileTypeUtils.FILE_TYPE_AUDIO) {
                     campaign.setCountAudios(campaign.getCountAudios() - 1);
+                    campaign.setAudioLength(campaign.getAudioLength() - dbFile.getContentLength());
                 } else if (dbFile.getFileType() == FileTypeUtils.FILE_TYPE_IMAGE) {
                     campaign.setCountImages(campaign.getCountImages() - 1);
+                    
                 } else if (dbFile.getFileType() == FileTypeUtils.FILE_TYPE_VIDEO) {
                     campaign.setCountVideos(campaign.getCountVideos() - 1);
+                    campaign.setVideoLength(campaign.getVideoLength() - dbFile.getContentLength());
                 }
 
                 userService.updateCampaign(campaign);

@@ -105,13 +105,13 @@ war {
 
 remotes {
     webServer {
-        host = '46.182.31.94'
+        host = '46.182.31.101'
         user = 'root'
     }
 }
 
 ssh {
-    identity = file("${System.properties['user.home']}/.ssh/github.pem")
+    identity = file("${System.properties['user.home']}/.ssh/id_rsa")
     knownHosts = allowAnyHosts    // Disable host key verification
 }
 

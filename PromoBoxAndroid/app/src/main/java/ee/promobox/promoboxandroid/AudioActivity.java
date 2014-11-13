@@ -17,10 +17,13 @@ import org.apache.commons.io.IOUtils;
 
 import java.io.FileInputStream;
 
+import ee.promobox.promoboxandroid.util.SoundFadeAnimation;
+
 //https://github.com/felixpalmer/android-visualizer
 public class AudioActivity extends Activity {
 
     private MediaPlayer mPlayer;
+    private SoundFadeAnimation soundFadeAnimation;
     private LocalBroadcastManager bManager;
     private String[] paths;
     private int position = 0;
@@ -120,6 +123,8 @@ public class AudioActivity extends Activity {
             mPlayer.prepare();
             mPlayer.start();
 
+            soundFadeAnimation = new SoundFadeAnimation(mPlayer);
+
             mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mediaPlayer) {
@@ -166,6 +171,11 @@ public class AudioActivity extends Activity {
             mPlayer.stop();
             mPlayer.release();
             mPlayer = null;
+        }
+
+        if(soundFadeAnimation != null) {
+            soundFadeAnimation.cleanUp();
+            soundFadeAnimation = null;
         }
 
         IOUtils.closeQuietly(inputStream);

@@ -1,15 +1,30 @@
 <div id="myDiv" style="margin-top:20px;"></div>
 <div id="myDiv2"></div>
 
-<div class="row">
+<div class="row edit-campaign">
     <div class="col-md-9 center-block">
         <form role="form" name="campaign_form" ng-submit="edit_company(this)">
             <div class="row">
                 <div class="form-group">
-                    <h4>{{ 'campaign_edit_editcompany' | translate }}</h4>
+                    <h4 class="main-title">{{ 'campaign_edit_editcompany' | translate }}</h4>
                 </div>
-                <div class="form-group">
+                <div class="form-group name-company">
                     <input type="text" class="form-control" style="width: 30%;" placeholder="{{ 'campaign_edit_companyname' | translate }}" ng-model="campaign_form.campaign_name" required>
+                </div>
+            </div>
+            <div class="load-files">
+                <div class="load-file">
+                    <div class="load-wrap img-thumbnail">
+                        <div><img src="img/img-load.png" alt=""></div>
+                        <p>Test.jpg</p>
+                    </div>
+                </div>
+
+                <div class="load-file">
+                    <div class="load-wrap img-thumbnail">
+                        <div><a class="play" href="javascript:void(0)"></a></div>
+                        <p>Test.mp3</p>
+                    </div>
                 </div>
             </div>
             <div class="row">
@@ -27,9 +42,9 @@
                 </ul>
             </div>
 
-            <div class="row" nv-file-drop="" uploader="uploader" filters="queueLimit, customFilter">
+            <div class="row upload-wrap" nv-file-drop="" uploader="uploader" filters="queueLimit, customFilter">
 
-                <div class="form-group campaigns_block col-md-9" style="margin-bottom: 40px">
+                <div class="form-group  col-md-9">
                     <div class="form-group">
                      <span class="file-input btn btn-primary btn-file">
                         {{ 'campaign_edit_browse' | translate }}&hellip; <input type="file" nv-file-select="" uploader="uploader" multiple  />
@@ -97,11 +112,11 @@
                     </div>
 
                 </div>
-
             </div>
 
-            <div class="row">
-                <div class="form-group campaigns_block col-sm-8">
+            <div class="row settings-wrap">
+                <div class="form-group campaigns_block col-sm-5">
+<!--                     
                     <div class="row">
                         <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'campaign_edit_activityofthecompany' | translate }}</label></div>
                         <div class="col-md-7 col-xs-9 col-sm-8">
@@ -110,11 +125,17 @@
                                 <option value="2">{{ 'campaign_edit_launched' | translate }}</option>
                             </select>
                         </div>
+                    </div> -->
+
+                    <div class="clearfix setting-btn">
+                        <a class="pull-left btn btn-default" href="#"><span class="glyphicon glyphicon-cog"></span>Скрыть настройки</a>
+                        <a class="pull-right btn btn-default" data-toggle="modal" data-target="#statistics" href="javascript:void(0)"><span class="glyphicon glyphicon-stats"></span>Статистика</a>
                     </div>
-                    <div class="row" style="margin-top: 10px;">
+
+                    <div class="row label-row">
                         <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'campaign_edit_changetime' | translate }}</label></div>
                         <div class="col-md-7 col-xs-9 col-sm-8">
-                            <select class="form-control" ng-model="campaign_form.campaign_time">
+                            <select class="styler" ng-model="campaign_form.campaign_time">
                                 <option value="5">5 {{ 'campaign_edit_sec' | translate }}</option>
                                 <option value="15">15 {{ 'campaign_edit_sec' | translate }}</option>
                                 <option value="30">30 {{ 'campaign_edit_sec' | translate }}</option>
@@ -124,18 +145,20 @@
                             </select>
                         </div>
                     </div>
-                    <div class="row" style="margin-top: 10px;">
+                    <div class="row label-row order">
                         <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'campaign_edit_theorder' | translate }}</label></div>
                         <div class="col-md-7 col-xs-9 col-sm-8">
-                            <select class="form-control" ng-model="campaign_form.campaign_order">
+                            <select class="styler" ng-model="campaign_form.campaign_order">
                                 <option value="1">{{ 'campaign_edit_streak' | translate }}</option>
                                 <option value="2">{{ 'campaign_edit_accident' | translate }}</option>
                             </select>
+                            <button type="button" class="btn btn-info pull-right" data-toggle="modal" data-target="#sorting">Настроить</button>
                         </div>
                     </div>
-                    <div class="row" style="margin-top: 10px;">
+                    <div class="row label-row">
                         <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'campaign_edit_dateofstart' | translate }}</label></div>
                         <div class="col-md-7 col-xs-9 col-sm-8">
+                            <div class="datepicker-wrap">
                                 <div class="dropdown">
                                     <a class="dropdown-toggle" id="timestart" role="button" data-toggle="dropdown" data-target="#" href="#">
                                         <div class="input-group">
@@ -149,62 +172,201 @@
                                         <datetimepicker data-ng-model="campaign_form.campaign_start"
                                                         data-datetimepicker-config="{ dropdownSelector: '#timestart', startView:'day', minView:'minute' }"/>
                                     </ul>
-
                                 </div>
+                            </div>
+
+                            <div class="day-wrap">
+                                <select class="styler">
+                                    <option>8:00</option>
+                                    <option>9:00</option>
+                                    <option>10:00</option>
+                                    <option>11:00</option>
+                                    <option>12:00</option>
+                                    <option>13:00</option>
+                                    <option>14:00</option>
+                                    <option>15:00</option>
+                                    <option>16:00</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
-                    <div class="row" style="margin-top: 10px;">
+                    <div class="row label-row with-border">
                         <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'campaign_edit_dateofclosure' | translate }}</label></div>
                         <div class="col-md-7 col-xs-9 col-sm-8">
-                            <div class="dropdown">
-                                <a class="dropdown-toggle" id="timefinish" role="button" data-toggle="dropdown" data-target="#" href="#">
-                                    <div class="input-group">
-                                        <input type="text" class="form-control"
-                                               value="{{ campaign_form.campaign_finish | date:'medium'}}"/>
-                                        <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
-                                    </div>
-                                </a>
+                            <div class="datepicker-wrap">
+                                <div class="dropdown">
+                                    <a class="dropdown-toggle" id="timefinish" role="button" data-toggle="dropdown" data-target="#" href="#">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control"
+                                                   value="{{ campaign_form.campaign_finish | date:'medium'}}"/>
+                                            <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                                        </div>
+                                    </a>
 
-                                <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-                                    <datetimepicker data-ng-model="campaign_form.campaign_finish"
-                                                    data-datetimepicker-config="{ dropdownSelector: '#timefinish', startView:'day', minView:'minute' }"/>
-                                </ul>
+                                    <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                                        <datetimepicker data-ng-model="campaign_form.campaign_finish"
+                                                        data-datetimepicker-config="{ dropdownSelector: '#timefinish', startView:'day', minView:'minute' }"/>
+                                    </ul>
+                                </div>
+                            </div>
 
+                            <div class="day-wrap">
+                                <select class="styler">
+                                    <option>8:00</option>
+                                    <option>9:00</option>
+                                    <option>10:00</option>
+                                    <option>11:00</option>
+                                    <option>12:00</option>
+                                    <option>13:00</option>
+                                    <option>14:00</option>
+                                    <option>15:00</option>
+                                    <option>16:00</option>
+                                </select>
                             </div>
                         </div>
                     </div>
 
-                    <div class="row" style="margin-top: 10px;">
-                        <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'campaign_edit_openinghours' | translate }}</label></div>
-                        <div class="col-md-7 col-xs-9 col-sm-8">
-                            <label ng-repeat="hour in workhours" style="margin-left: 5px; padding: 3px;">
-                                <input type='checkbox' ng-checked="checkedHours.indexOf(hour) != -1" ng-click="toggleCheckHours(hour)">
-                                {{hour}}
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="row" style="margin-top: 10px;">
+                    <div class="row label-row">
                         <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'campaign_edit_workdays' | translate }}</label></div>
                         <div class="col-md-7 col-xs-9 col-sm-8">
-                            <label ng-repeat="day in workdays" style="margin-left: 5px; padding: 3px;">
+                            <div class="btn-group days" data-toggle="buttons">
+                              <label ng-repeat="day in workdays" class="btn btn-primary" >
                                 <input type='checkbox' ng-checked="checkedDays.indexOf(day) != -1" ng-click="toggleCheckDays(day)">
                                 {{ day | translate }}
                             </label>
+                            </div>
                         </div>
                     </div>
 
+                    <div class="row label-row opening-hours">
+                        <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'campaign_edit_openinghours' | translate }}</label></div>
+                        <div class="col-md-7 col-xs-9 col-sm-8">
+                            <div class="hours-list btn-group mCustomScrollbar" data-toggle="buttons">
+                                <label ng-repeat="hour in workhours" class="btn btn-primary">
+                                    <input type='checkbox' ng-checked="checkedHours.indexOf(hour) != -1" ng-click="toggleCheckHours(hour)">
+                                    {{hour}}
+                                </label>
+                            </div>
+
+                            <div class="hours-arrow">
+                                <a href="#" data-toggle="tooltip" data-placement="top" title="Добавить"><span class="glyphicon glyphicon-chevron-left"></span></a>
+                                <a href="#" data-toggle="tooltip" data-placement="top" title="Удалить"><span class="glyphicon glyphicon-chevron-right"></span></a>
+                            </div>
+                            <div class="hours-list btn-group gray mCustomScrollbar" data-toggle="buttons">
+                                <label ng-repeat="hour in workhours" class="btn">
+                                    <input type='checkbox' ng-checked="checkedHours.indexOf(hour) != -1" ng-click="toggleCheckHours(hour)">
+                                    {{hour}}
+                                </label>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
 
-            <div class="row">
+            <div class="row button-wrap">
                 <div class="form-group">
                     <button type="submit" class="btn btn-primary">{{ 'campaign_edit_savethecompany' | translate }}</button>
                     <button ui-sref="list" type="button" class="btn btn-default" style="margin-left: 15px;">{{ 'campaign_edit_cancel' | translate }}</button>
+                    <button ui-sref="list" type="button" class="btn btn-default pull-right">В архив</button>
                 </div>
             </div>
         </form>
 
+    </div>
+</div>
+
+
+
+<!-- Modal statistics -->
+<div class="modal fade" id="statistics" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only"></span></button>
+                <h4 class="modal-title" id="myModalLabel">Статистика</h4>
+            </div>
+            <div class="modal-body">
+                <ul class="statistics-list">
+
+                    <li>
+                        <div class="img-block">
+                            <img src="img/files.png" alt="">
+                        </div>
+                        <span>200</span>
+                        <p>Всего файлов </p>
+                    </li>
+
+                    <li>
+                        <div class="img-block">
+                            <img src="img/pic.png" alt="">
+                        </div>
+                        <span>50</span>
+                        <p>Изображений </p>
+                    </li>
+
+                    <li>
+                        <div class="img-block">
+                            <img src="img/video.png" alt="">
+                        </div>
+                        <span>100</span>
+                        <p>Видеофайлов <br/> 5 часов 18 минут</p>
+                    </li>
+
+                    <li>
+                        <div class="img-block">
+                            <img src="img/songs.png" alt="">
+                        </div>
+                        <span>50</span>
+                        <p>Аудиофайлов</p>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal sorting-->
+<div class="modal fade" id="sorting" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only"></span></button>
+                <h4 class="modal-title" id="myModalLabel">Изменить порядок файлов</h4>
+            </div>
+            <div class="modal-body">
+                <div class="files-block mCustomScrollbar">
+                    <ul class="files-list">
+                        <li><i></i><span>testmusic.mp3</span></li>
+                        <li><i></i><span>testmusic.mp3</span></li>
+                        <li><i></i><span>testmusic.mp3</span></li>
+                        <li><i></i><span>testmusic.mp3</span></li>
+                        <li><i></i><span>testmusic.mp3</span></li>
+                        <li><i></i><span>testmusic.mp3</span></li>
+                        <li><i></i><span>testmusic.mp3</span></li>
+                        <li><i></i><span>testmusic.mp3</span></li>
+                        <li><i></i><span>testmusic.mp3</span></li>
+                        <li><i></i><span>testmusic.mp3</span></li>
+                        <li><i></i><span>testmusic.mp3</span></li>
+                        <li><i></i><span>testmusic.mp3</span></li>
+                        <li><i></i><span>testmusic.mp3</span></li>
+                        <li><i></i><span>testmusic.mp3</span></li>
+                        <li><i></i><span>testmusic.mp3</span></li>
+                    </ul>
+                </div>
+                <div class="controll-block">
+                    <button type="button" class="btn btn-default">В начало</button>
+                    <button type="button" class="btn btn-primary"><span class="glyphicon glyphicon-chevron-up"></span>Выше</button>
+                    <button type="button" class="btn btn-primary"><span class="glyphicon glyphicon-chevron-down"></span>Ниже</button>
+                    <button type="button" class="btn btn-default">В конец</button>
+                </div>
+                <div class="bottom-buttons">
+                    <button type="button" class="btn btn-success">Изменить</button>
+                    <button type="button" class="btn btn-default">Отмена</button>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

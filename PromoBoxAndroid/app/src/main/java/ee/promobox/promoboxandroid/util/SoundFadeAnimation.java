@@ -15,11 +15,11 @@ public class SoundFadeAnimation implements Runnable {
     private static final int DEFAULT_END_DURATION = 5000;
 
     private MediaPlayer mediaPlayer;
+    private FadeCallback fadeCallback;
     private Handler handler;
     private int startDuration;
     private int endDuration;
-
-    private int lastPlayerPosition = 0;
+    private boolean fadeStart;
 
     public SoundFadeAnimation(MediaPlayer mediaPlayer) {
         this(mediaPlayer, DEFAULT_START_DURATION, DEFAULT_END_DURATION);
@@ -52,34 +52,41 @@ public class SoundFadeAnimation implements Runnable {
                 if (startDuration != 0 && currentPosition < startDuration) {
                     volume = currentPosition / (float)startDuration;
                     wait = ANIMATION_SMOOTHNESS;
-                    RunAfterWait(wait);
+                    runAfterWait(wait);
                 } else if(endDuration != 0) {
                     int songDuration = mediaPlayer.getDuration();
                     // time end animation should be starting.
                     int endAnimationStart = songDuration - endDuration;
                     if(currentPosition > endAnimationStart) {
+                        if(fadeStart) {
+                            fadeStart = false;
+                            if(fadeCallback != null) {
+                                fadeCallback.onFade();
+                            }
+                        }
                         volume = (songDuration - currentPosition) / (float)endDuration;
                         wait = ANIMATION_SMOOTHNESS;
                     } else {
+                        fadeStart = true;
                         volume = 1f;
                         // wait time until we can start fade out animation
                         wait = endAnimationStart - currentPosition;
                     }
-                    RunAfterWait(wait);
+                    runAfterWait(wait);
                 } else {
                     volume = 1f;
                 }
                 mediaPlayer.setVolume(volume, volume);
             } else {
                 // Wait 1 second for player to start  playing.
-                RunAfterWait(1000);
+                runAfterWait(1000);
             }
         } else {
             Log.w("SoundFadeAnimation", "Animation Failed. reason: media player is null. May fire on unexpected cleanup.");
         }
     }
 
-    private void RunAfterWait(int waitTime) {
+    private void runAfterWait(int waitTime) {
         if (handler != null) {
             handler.postDelayed(this, waitTime);
         } else {
@@ -87,4 +94,9 @@ public class SoundFadeAnimation implements Runnable {
         }
     }
 
+    public void setOnFadeCallback(FadeCallback fadeCallback) {
+        this.fadeCallback = fadeCallback;
+    }
+
+    public interface FadeCallback { public void onFade(); }
 }

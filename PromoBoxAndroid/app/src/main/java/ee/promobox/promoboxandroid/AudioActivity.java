@@ -118,33 +118,23 @@ public class AudioActivity extends Activity {
 
         try {
             inputStream = new FileInputStream(paths[position]);
-
+            Log.d("AudioActivity","Create stream: " + inputStream);
             mPlayer.setDataSource(inputStream.getFD());
             mPlayer.prepare();
             mPlayer.start();
 
             soundFadeAnimation = new SoundFadeAnimation(mPlayer);
 
-            mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            soundFadeAnimation.setOnFadeCallback(new SoundFadeAnimation.FadeCallback() {
                 @Override
-                public void onCompletion(MediaPlayer mediaPlayer) {
-                    cleanUp();
-
-                    if (position == paths.length) {
-
-                        Intent returnIntent = new Intent();
-
-                        returnIntent.putExtra("result", 1);
-
-                        AudioActivity.this.setResult(RESULT_OK, returnIntent);
-
-                        AudioActivity.this.finish();
-                    } else {
+                public void onFade() {
+                    if (position != paths.length) {
                         playAudio();
                     }
                 }
             });
 
+            mPlayer.setOnCompletionListener(new OnTrackFinished(inputStream));
             position++;
 
         } catch (Exception ex) {
@@ -162,9 +152,6 @@ public class AudioActivity extends Activity {
 
     }
 
-
-
-
     private void cleanUp() {
         if (mPlayer != null) {
             mPlayer.setOnCompletionListener(null);
@@ -174,12 +161,12 @@ public class AudioActivity extends Activity {
         }
 
         if(soundFadeAnimation != null) {
+            soundFadeAnimation.setOnFadeCallback(null);
             soundFadeAnimation.cleanUp();
             soundFadeAnimation = null;
         }
 
         IOUtils.closeQuietly(inputStream);
-
     }
 
 
@@ -199,5 +186,31 @@ public class AudioActivity extends Activity {
         }
     };
 
+
+    private class OnTrackFinished implements MediaPlayer.OnCompletionListener {
+
+        private  FileInputStream iStream;
+
+        public OnTrackFinished(FileInputStream stream) {
+            this.iStream = stream;
+        }
+
+        @Override
+        public void onCompletion(MediaPlayer mp) {
+            IOUtils.closeQuietly(iStream);
+            Log.d("AudioActivity","Close stream: " + iStream);
+            if (position == paths.length) {
+                cleanUp();
+
+                Intent returnIntent = new Intent();
+
+                returnIntent.putExtra("result", 1);
+
+                AudioActivity.this.setResult(RESULT_OK, returnIntent);
+
+                AudioActivity.this.finish();
+            }
+        }
+    }
 
 }

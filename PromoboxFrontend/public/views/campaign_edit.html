@@ -13,10 +13,12 @@
                 </div>
             </div>
             <div class="load-files">
-                <div class="load-file">
+                <div class="load-file" ng-repeat="promofile in campaign_form.filesArray">
                     <div class="load-wrap img-thumbnail">
-                        <div><img src="img/img-load.png" alt=""></div>
-                        <p>Test.jpg</p>
+                        <div>
+                            <img ng-click="openPlayer($index)" src="http://api.dev.promobox.ee/service/files/thumb/{{promofile.id}}" alt="">
+                        </div>
+                        <p>{{promofile.name | limitTo: 30 | lowercase }}{{promofile.name.length > 30 ? '...' : ''}}</p>
                     </div>
                 </div>
 
@@ -284,7 +286,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only"></span></button>
-                <h4 class="modal-title" id="myModalLabel">Статистика</h4>
+                <h4 class="modal-title" id="myModalLabel">{{"campaign_edit_statistics" | translate}}</h4>
             </div>
             <div class="modal-body">
                 <ul class="statistics-list">
@@ -294,7 +296,7 @@
                             <img src="img/files.png" alt="">
                         </div>
                         <span>200</span>
-                        <p>Всего файлов </p>
+                        <p>{{"campaign_edit_allfilescount" | translate}}</p>
                     </li>
 
                     <li>
@@ -302,7 +304,7 @@
                             <img src="img/pic.png" alt="">
                         </div>
                         <span>50</span>
-                        <p>Изображений </p>
+                        <p>{{"campaign_edit_allimagescount" | translate}}</p>
                     </li>
 
                     <li>
@@ -310,7 +312,7 @@
                             <img src="img/video.png" alt="">
                         </div>
                         <span>100</span>
-                        <p>Видеофайлов <br/> 5 часов 18 минут</p>
+                        <p>{{"campaign_edit_allvideoscount" | translate}}<br/> 5 : 18 </p>
                     </li>
 
                     <li>
@@ -318,7 +320,7 @@
                             <img src="img/songs.png" alt="">
                         </div>
                         <span>50</span>
-                        <p>Аудиофайлов</p>
+                        <p>{{"campaign_edit_allaudioscount" | translate}}<br/> 5 : 18 </p>
                     </li>
                 </ul>
             </div>

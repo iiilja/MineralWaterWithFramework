@@ -223,8 +223,8 @@ public class MainActivity extends Activity {
 
 
     @Override
-    protected void onStop() {
-        super.onStop();
+    protected void onDestroy() {
+        super.onDestroy();
 
         if (mBound) {
             unbindService(mConnection);

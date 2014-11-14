@@ -37,6 +37,7 @@ public class MainActivity extends Activity {
     private MainService mainService;
     private int position;
     private Campaign campaign;
+    private boolean mBound = false;
 
     private void hideSystemUI() {
 
@@ -199,10 +200,14 @@ public class MainActivity extends Activity {
 
         Intent intent = new Intent(this, MainService.class);
 
-        bindService(intent, mConnection,
-                Context.BIND_AUTO_CREATE);
-
         startService(intent);
+
+        if (!mBound) {
+            bindService(intent, mConnection,
+                    Context.BIND_AUTO_CREATE);
+
+            mBound = true;
+        }
 
         if (mainService != null) {
             if (mainService.getOrientation() == MainActivity.ORIENTATION_PORTRAIT) {
@@ -216,9 +221,15 @@ public class MainActivity extends Activity {
 
     }
 
+
     @Override
-    protected void onPause() {
-        super.onPause();
+    protected void onStop() {
+        super.onStop();
+
+        if (mBound) {
+            unbindService(mConnection);
+            mBound = false;
+        }
     }
 
 

@@ -1,18 +1,23 @@
 <div class="row">
-    <div class="col-md-10 center-block">
-        <button ui-sref="campaign_new" type="button" class="btn btn-primary" style="margin-left: -15px;">{{ 'list_newcampaign' | translate }}</button>
+    <div class="col-md-10 center-block campaigns-top-wrap">
+        <div class="alert alert-info" role="alert">
+            <strong>Нет кампаний!</strong> Вы можете создать новую кампанию.
+        </div>
+
+        <button ui-sref="campaign_new" type="button" class="new-company-btn btn btn-primary">{{ 'list_newcampaign' | translate }}</button>
     </div>
 </div>
 <div class="row" ng-repeat="campaign in campaigns">
-    <div class="col-md-10 center-block campaigns_block">
+    <div class="col-md-10 center-block campaigns_wrap">
         <span ng-if="campaign.status == 2" class="label label-success">{{ 'list_works' | translate }}</span>
         <span ng-if="campaign.status == 3" class="label label-warning">{{ 'list_waiting' | translate }}</span>
         <span style="margin-left: 15px;">{{campaign.name}}</span>
         <span style="margin-left: 15px; color: #bfbfbf; font-size: 12px;">{{timeconvert(campaign.start)}}-{{timeconvert(campaign.finish)}}</span>
                 <span class="pull-right">
-                    <!--<a class="campaigns_link" href="#" style="margin-right: 15px;"><i class="glyphicon glyphicon-signal"></i> {{ 'list_statistics' | translate }}</a>-->
+                    <a class="campaigns_link" href="#" style="margin-right: 15px;"><i class="glyphicon glyphicon-signal"></i> {{ 'list_statistics' | translate }}</a>
                     <a class="campaigns_link" href="/#/campaign/edit/{{campaign.id}}" style="margin-right: 15px;"><i class="glyphicon glyphicon-pencil"></i> {{ 'list_change' | translate }}</a>
                     <a class="campaigns_link" ng-click="remove(campaign)" href><i class="glyphicon glyphicon-remove"></i> {{ 'list_remove' | translate }}</a>
                 </span>
     </div>
+
 </div>

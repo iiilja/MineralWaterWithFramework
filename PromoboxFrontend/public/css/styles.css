@@ -646,3 +646,110 @@ input[readonly] {
     width: 115px;
     margin-right: 15px;
 }
+
+.center-block .alert {
+    display: inline-block;
+    vertical-align: top;
+}
+
+.new-company-btn {
+    display: block;
+}
+
+.campaigns_wrap {
+    height: 56px;
+    line-height: 56px;
+    background: #fff;
+    border:1px solid #dcdcdc;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+
+.campaigns-top-wrap {
+    padding: 0;
+}
+
+.device .device-info {
+    width: 386px;
+    height: 202px;
+    border:1px solid #cccccc;
+    -webkit-border-radius: 5px 0 0 5px;
+    -moz-border-radius:  5px 0 0 5px;
+    border-radius:  5px 0 0 5px;
+    background: #ffffff;
+    -webkit-box-sizing:border-box;
+    -moz-box-sizing:border-box;
+    box-sizing:border-box;
+    padding: 13px;
+    float: left;
+}
+
+.device .device-info .top-block {
+    overflow: hidden;
+    padding-bottom: 9px;
+}
+
+.device .device-info .top-block h3 {
+    margin: 0;
+    color: #6f6f6f;
+    font-weight: bold;
+    font-size: 11pt;
+    padding: 2px 0 0 5px;
+}
+
+.device .device-info textarea {
+    width: 100%;
+    border: 1px solid #cccccc;
+    color: #989898;
+    -webkit-border-radius: 5px;
+    -moz-border-radius:  5px;
+    border-radius:  5px;
+    height: 77px;
+    padding: 10px 14px;
+    font-size: 10pt;
+}
+
+.device .device-info .label {font-weight: normal;}
+
+.device .free-space {
+    text-align: right;
+    margin: 0;
+    color: #989898;
+    line-height: 1;
+    padding-top: 6px;
+    padding-right: 4px;
+}
+
+.device .bottom-block .btn {
+    margin-top: 2px;
+    padding-right: 22px;
+    letter-spacing: 0.2px;
+}
+
+.device .bottom-block .btn span {
+    margin-right: 17px;
+    margin-left: -1px;
+}
+
+.device .bottom-block p {
+    margin: 0;
+    color: #989898;
+    text-align: right;
+    padding: 0 4px 0 0;
+}
+
+.device .bottom-block {
+    padding: 7px 0 0 0;
+}
+
+.device .company-info {
+    width: 382px;
+    height: 202px;
+    -webkit-border-radius: 0 5px 5px 0;
+    -moz-border-radius: 0 5px 5px 0;
+    border-radius: 0 5px 5px 0;
+    -webkit-box-shadow: inset 2px 2px 5px 0px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow:    inset 2px 2px 5px 0px rgba(0, 0, 0, 0.2);
+    box-shadow:         inset 2px 2px 5px 0px rgba(0, 0, 0, 0.2);
+}

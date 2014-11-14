@@ -7,6 +7,26 @@
 <div class="row" ng-repeat="device in devices">
     <div class="col-md-9 center-block campaigns_block">
         <div class="row">
+            <div class="device clearfix">
+                <div class="device-info">
+                    <div class="top-block">
+                        <h3 class="pull-left">Номер устройства: 123456</h3>
+                        <span class="label label-success pull-right">Работает</span>
+                    </div>
+                    <textarea>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. </textarea>
+                    <p class="free-space">Свободное место: 6гб</p>
+                    <div class="bottom-block">
+                        <a class="pull-left btn btn-default" href="#"><span class="glyphicon glyphicon-cog"></span>Скрыть настройки</a>
+                        <p class="pull-right">
+                            Дата обновления:<br/>02.11.14 10:00
+                        </p>
+                    </div>
+                </div>
+                <div class="company-info">
+                    
+                </div>
+            </div>
+
             <div class="col-md-4">
                 <div class="form-group">
                     <label class="control-label">{{ 'device_devicenumber' | translate }}: {{device.uuid}}</label>

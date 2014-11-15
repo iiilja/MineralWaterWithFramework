@@ -882,3 +882,81 @@ input[readonly] {
     right: 9px;
 }
 
+.opting-list {
+    list-style: none;
+    -webkit-border-radius:5px;
+    -moz-border-radius:5px;
+    border-radius:5px;
+    border:1px solid #cccccc;
+    padding: 0;
+}
+
+
+.opting-list li {
+    border-top:1px solid #cccccc;
+    position: relative;
+    width: 279px;
+}
+
+.opting-list li:first-child {
+    border-top:0;
+}
+
+.opting-list li label {
+    background: none;
+    border: 0;
+    border-radius: 0;
+    width: 100%;
+    color: #323232;
+    height: 34px;
+    line-height: 34px!important;
+    text-align: left;
+    padding: 0;
+    vertical-align: top;
+    padding-left: 10px;
+}
+
+.opting-list li label span {
+    color: #fff;
+}
+
+.opting-list li .close {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: -26px;
+    margin: auto;
+    color: #555;
+    font-weight: normal;
+    display: block;
+    height: 15px;
+    font-size: 10pt;
+}
+
+.opting-list li input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    filter:alpha(opacity=0);
+    top: 0;
+    left: 0;
+}
+
+.preferences .operation-time {
+    border-top: 0;
+}
+
+.operation-time ul {
+    padding: 0;
+    list-style: none;
+}
+
+.operation-time ul li {
+    display: inline-block;
+    vertical-align: top;
+    margin: 0 10px 0 0;
+    line-height: 34px;
+}
+
+.preferences .operation-time .jq-selectbox__select-text {
+    min-width: 58px;
+}

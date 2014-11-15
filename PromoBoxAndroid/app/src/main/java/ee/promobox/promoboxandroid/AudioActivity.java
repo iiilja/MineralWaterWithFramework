@@ -23,11 +23,17 @@ import ee.promobox.promoboxandroid.util.SoundFadeAnimation;
 public class AudioActivity extends Activity {
 
     private MediaPlayer mPlayer;
+    private MediaPlayer previousPlayer;
+
     private SoundFadeAnimation soundFadeAnimation;
+    private SoundFadeAnimation previousFadeAnimation;
+
+    private FileInputStream inputStream;
+    private FileInputStream previousInputStream;
+
     private LocalBroadcastManager bManager;
     private String[] paths;
     private int position = 0;
-    private FileInputStream inputStream;
 
     private void hideSystemUI() {
 
@@ -38,7 +44,6 @@ public class AudioActivity extends Activity {
                         | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
                         | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
         );
-
 
 
         View view = findViewById(R.id.audio_view);
@@ -114,17 +119,19 @@ public class AudioActivity extends Activity {
     }
 
     private void playAudio() {
+        previousPlayer = mPlayer;
         mPlayer = new MediaPlayer();
 
         try {
+            previousInputStream = inputStream;
             inputStream = new FileInputStream(paths[position]);
-            Log.d("AudioActivity","Create stream: " + inputStream);
+
             mPlayer.setDataSource(inputStream.getFD());
             mPlayer.prepare();
             mPlayer.start();
 
+            previousFadeAnimation = soundFadeAnimation;
             soundFadeAnimation = new SoundFadeAnimation(mPlayer);
-
             soundFadeAnimation.setOnFadeCallback(new SoundFadeAnimation.FadeCallback() {
                 @Override
                 public void onFade() {
@@ -134,12 +141,12 @@ public class AudioActivity extends Activity {
                 }
             });
 
-            mPlayer.setOnCompletionListener(new OnTrackFinished(inputStream));
+            mPlayer.setOnCompletionListener(new OnTrackFinished(inputStream, soundFadeAnimation));
             position++;
 
         } catch (Exception ex) {
             Log.e("AudioActivity", ex.getMessage(), ex);
-            IOUtils.closeQuietly(inputStream);
+            cleanUp();
 
             Intent returnIntent = new Intent();
 
@@ -154,19 +161,47 @@ public class AudioActivity extends Activity {
 
     private void cleanUp() {
         if (mPlayer != null) {
-            mPlayer.setOnCompletionListener(null);
-            mPlayer.stop();
-            mPlayer.release();
+            clearMediaPlayer(mPlayer);
             mPlayer = null;
         }
 
-        if(soundFadeAnimation != null) {
-            soundFadeAnimation.setOnFadeCallback(null);
-            soundFadeAnimation.cleanUp();
+        if (previousPlayer != null) {
+            clearMediaPlayer(previousPlayer);
+            previousPlayer = null;
+        }
+
+        if (soundFadeAnimation != null) {
+            clearFadeAnimation(soundFadeAnimation);
             soundFadeAnimation = null;
         }
 
-        IOUtils.closeQuietly(inputStream);
+        if (previousFadeAnimation != null) {
+            clearFadeAnimation(previousFadeAnimation);
+            previousFadeAnimation = null;
+        }
+
+        if (inputStream != null) {
+            IOUtils.closeQuietly(inputStream);
+        }
+
+        if (previousInputStream != null) {
+            IOUtils.closeQuietly(previousInputStream);
+        }
+    }
+
+    private void clearMediaPlayer(MediaPlayer mediaPlayer) {
+        if (mediaPlayer != null) {
+            mediaPlayer.setOnCompletionListener(null);
+            mediaPlayer.stop();
+            mediaPlayer.release();
+        }
+    }
+
+    private void clearFadeAnimation(SoundFadeAnimation fadeAnimation) {
+        if (fadeAnimation != null) {
+            fadeAnimation.cleanUp();
+            fadeAnimation.setOnFadeCallback(null);
+        }
     }
 
 
@@ -189,16 +224,20 @@ public class AudioActivity extends Activity {
 
     private class OnTrackFinished implements MediaPlayer.OnCompletionListener {
 
-        private  FileInputStream iStream;
+        private FileInputStream iStream;
+        private SoundFadeAnimation fadeAnimation;
 
-        public OnTrackFinished(FileInputStream stream) {
+        public OnTrackFinished(FileInputStream stream, SoundFadeAnimation fadeAnimation) {
             this.iStream = stream;
+            this.fadeAnimation = fadeAnimation;
         }
 
         @Override
         public void onCompletion(MediaPlayer mp) {
+            clearMediaPlayer(mp);
+            clearFadeAnimation(fadeAnimation);
             IOUtils.closeQuietly(iStream);
-            Log.d("AudioActivity","Close stream: " + iStream);
+
             if (position == paths.length) {
                 cleanUp();
 

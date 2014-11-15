@@ -646,3 +646,239 @@ input[readonly] {
     width: 115px;
     margin-right: 15px;
 }
+
+.center-block .alert {
+    display: inline-block;
+    vertical-align: top;
+}
+
+.new-company-btn {
+    display: block;
+}
+
+.campaigns_wrap {
+    height: 56px;
+    line-height: 56px;
+    background: #fff;
+    border:1px solid #dcdcdc;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+
+.campaigns-top-wrap {
+    padding: 0;
+}
+
+.device .device-info {
+    width: 386px;
+    height: 202px;
+    border:1px solid #cccccc;
+    -webkit-border-radius: 5px 0 0 5px;
+    -moz-border-radius:  5px 0 0 5px;
+    border-radius:  5px 0 0 5px;
+    background: #ffffff;
+    -webkit-box-sizing:border-box;
+    -moz-box-sizing:border-box;
+    box-sizing:border-box;
+    padding: 13px;
+    float: left;
+}
+
+.device .device-info .top-block {
+    overflow: hidden;
+    padding-bottom: 9px;
+}
+
+.device .device-info .top-block h3 {
+    margin: 0;
+    color: #6f6f6f;
+    font-weight: bold;
+    font-size: 11pt;
+    padding: 2px 0 0 5px;
+}
+
+.device .device-info textarea {
+    width: 100%;
+    border: 1px solid #cccccc;
+    color: #989898;
+    -webkit-border-radius: 5px;
+    -moz-border-radius:  5px;
+    border-radius:  5px;
+    height: 77px;
+    padding: 10px 14px;
+    font-size: 10pt;
+}
+
+.device .device-info .label {font-weight: normal;}
+
+.device .free-space {
+    text-align: right;
+    margin: 0;
+    color: #989898;
+    line-height: 1;
+    padding-top: 6px;
+    padding-right: 4px;
+}
+
+.device .bottom-block .btn {
+    margin-top: 2px;
+    padding-right: 22px;
+    letter-spacing: 0.2px;
+}
+
+.device .bottom-block .btn span {
+    margin-right: 17px;
+    margin-left: -1px;
+}
+
+.device .bottom-block p {
+    margin: 0;
+    color: #989898;
+    text-align: right;
+    padding: 0 4px 0 0;
+}
+
+.device .bottom-block {
+    padding: 7px 0 0 0;
+}
+
+.device .company-info {
+    width: 382px;
+    height: 202px;
+    -webkit-border-radius: 0 5px 5px 0;
+    -moz-border-radius: 0 5px 5px 0;
+    border-radius: 0 5px 5px 0;
+    -webkit-box-shadow: inset 2px 2px 5px 0px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow:    inset 2px 2px 5px 0px rgba(0, 0, 0, 0.2);
+    box-shadow:         inset 2px 2px 5px 0px rgba(0, 0, 0, 0.2);
+    float: left;
+    background-repeat: no-repeat;
+    background-position: center;
+    -webkit-box-sizing:border-box;
+    -moz-box-sizing:border-box;
+    box-sizing:border-box;
+    padding: 16px 20px;
+    color: #fff;
+}
+
+.device .company-info.success {
+    background-color: #7eb762;
+    background-image: url(../img/success.png);
+}
+.device  .progress {
+    width: 45%;
+    display: inline-block;
+    vertical-align: top;
+    margin: 0;
+    background: none;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.device  .progress .progress-bar {
+    color: #7eb762;
+    background-color: #ffffff;
+    font-weight: bold;
+    box-shadow: none;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+.device  .progress-name {
+    width: 50%;
+    -webkit-box-sizing:border-box;
+    -moz-box-sizing:border-box;
+    box-sizing:border-box;
+    padding-right: 15px;
+    display: inline-block;
+    vertical-align: top;
+}
+
+.device .company-info h4 {
+    margin: 0;
+    font-weight: bold;
+    font-size: 10.5pt;
+    padding-bottom: 10px;
+}
+.device {
+    margin-bottom: 9px;
+}
+
+.device .company-info p {
+    font-size: 10.5pt;
+    padding: 0 0 0 2px;
+    margin: 0;
+}
+.device .company-info ul {
+    padding: 9px 0 6px 2px;
+}
+.device .company-info ul li {
+    line-height: 25px;
+    list-style: none;
+}
+.device .company-info ul li span {
+    color: #fff;
+}
+
+.preferences-wrap {
+    width: 570px;
+}
+
+.preferences {
+    background: #fff;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    border:1px solid #dcdcdc;
+}
+
+.preferences .row {
+    padding: 10px 0 10px 0;
+    margin: 0;
+    border-top: 1px solid #e4e4e4;
+}
+
+.preferences .row:first-child {
+    border-top: 0;
+}
+
+.preferences .row label {
+    font-weight: normal;
+    margin: 0;
+    line-height: 31px;
+    padding-left: 11px;
+}
+
+.preferences .row p {
+    font-weight: normal;
+    line-height: 31px;
+    margin: 0;
+}
+
+.preferences .jq-selectbox__select-text {
+    min-width: 127px;
+}
+
+.preferences .jq-selectbox__trigger {
+    border-left: 0;
+}
+
+.preferences .jq-selectbox__trigger:after {
+    position: absolute;
+    content:"";
+    top: 10px;
+    right: 9px;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+    border-bottom: 4px solid #000;
+    border-right: 4px solid transparent;
+    border-left: 4px solid transparent;
+}
+
+.preferences .jq-selectbox__trigger-arrow {
+    top: 19px;
+    right: 9px;
+}
+

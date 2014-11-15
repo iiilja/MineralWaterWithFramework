@@ -215,7 +215,7 @@ public class FilesController {
                             databaseFile.setCreatedDt(new Date(System.currentTimeMillis()));
                             databaseFile.setSize(fileSize);
                             databaseFile.setClientId(session.getClientId());
-                            
+                            databaseFile.setContentLength(0L);
                             if (fileTypeNumber == FileTypeUtils.FILE_TYPE_AUDIO) {
                                 databaseFile.setContentLength(fileSize / AVERAGE_AUDIO_BITRATE);
                             } else if (fileTypeNumber == FileTypeUtils.FILE_TYPE_VIDEO) {
@@ -250,7 +250,7 @@ public class FilesController {
                                 log.error("Error rename file");
                             }
 
-                            FileDto fileDto = new FileDto(campaignFile.getId(), fileTypeNumber, f, fileType);
+                            FileDto fileDto = new FileDto(campaignFile.getFileId(), fileTypeNumber, f, fileType);
 
                             jmsTemplate.convertAndSend(fileDestination, fileDto);
 
@@ -419,6 +419,7 @@ public class FilesController {
             JSONObject jsonCampaignFile = new JSONObject();
             
             jsonCampaignFile.put("id", file.getId());
+            jsonCampaignFile.put("fileId",file.getFileId());
             jsonCampaignFile.put("name", file.getFilename());
             jsonCampaignFile.put("created", file.getCreatedDt());
             jsonCampaignFile.put("status", file.getStatus());

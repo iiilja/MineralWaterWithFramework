@@ -77,7 +77,7 @@ public class CampaignsController {
                 resp.put("countAudios", campaign.getCountAudios());
                 resp.put("countVideos", campaign.getCountVideos());
                 resp.put("audioLength", campaign.getAudioLength());
-                resp.put("vidioLength", campaign.getVideoLength());
+                resp.put("videoLength", campaign.getVideoLength());
 
                 try {
                     JSONObject workTimeData = new JSONObject(campaign.getWorkTimeData());

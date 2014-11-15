@@ -801,6 +801,9 @@ input[readonly] {
     font-size: 10.5pt;
     padding-bottom: 10px;
 }
+.device {
+    margin-bottom: 9px;
+}
 
 .device .company-info p {
     font-size: 10.5pt;
@@ -817,3 +820,65 @@ input[readonly] {
 .device .company-info ul li span {
     color: #fff;
 }
+
+.preferences-wrap {
+    width: 570px;
+}
+
+.preferences {
+    background: #fff;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    border:1px solid #dcdcdc;
+}
+
+.preferences .row {
+    padding: 10px 0 10px 0;
+    margin: 0;
+    border-top: 1px solid #e4e4e4;
+}
+
+.preferences .row:first-child {
+    border-top: 0;
+}
+
+.preferences .row label {
+    font-weight: normal;
+    margin: 0;
+    line-height: 31px;
+    padding-left: 11px;
+}
+
+.preferences .row p {
+    font-weight: normal;
+    line-height: 31px;
+    margin: 0;
+}
+
+.preferences .jq-selectbox__select-text {
+    min-width: 127px;
+}
+
+.preferences .jq-selectbox__trigger {
+    border-left: 0;
+}
+
+.preferences .jq-selectbox__trigger:after {
+    position: absolute;
+    content:"";
+    top: 10px;
+    right: 9px;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+    border-bottom: 4px solid #000;
+    border-right: 4px solid transparent;
+    border-left: 4px solid transparent;
+}
+
+.preferences .jq-selectbox__trigger-arrow {
+    top: 19px;
+    right: 9px;
+}
+

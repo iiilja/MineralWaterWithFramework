@@ -41,6 +41,66 @@
                 </div>
             </div>
 
+            <div class="preferences-wrap">
+                <div class="preferences">
+                    <div class="row">
+                        <div class="col-md-5 col-xs-3 col-sm-4"><label>Кэш</label></div>
+                        <div class="col-md-7 col-xs-9 col-sm-8">
+                            <p class="pull-left">500 Мб</p>
+                            <button type="button" class="btn btn-warning pull-right">Очистить кэш</button>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-5 col-xs-3 col-sm-4"><label>Ориентация</label></div>
+                        <div class="col-md-7 col-xs-9 col-sm-8">
+                            <select class="styler">
+                                <option>Горизонтальная </option>
+                                <option>Вертыкальна </option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-5 col-xs-3 col-sm-4"><label>Аудио-выход</label></div>
+                        <div class="col-md-7 col-xs-9 col-sm-8">
+                            <select class="styler">
+                                <option>HDMI</option>
+                                <option>HDMI 2</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-5 col-xs-3 col-sm-4"><label>Выбор кампании</label></div>
+                        <div class="col-md-7 col-xs-9 col-sm-8">
+                            <ul class="opting-list btn-group" data-toggle="buttons">
+                                <li>
+                                    <label class="btn btn-primary active">
+                                        <input type="checkbox" autocomplete="off" checked><span class="glyphicon glyphicon-play"></span> Кампания Наполеона
+                                    </label>
+                                    <a class="close" href="#"><span class="glyphicon glyphicon-remove"></span></a>
+                                </li>
+
+                                <li>
+                                    <label class="btn btn-primary">
+                                        <input type="checkbox" autocomplete="off"><span class="glyphicon glyphicon-play"></span> Кампания Наполеона 2
+                                    </label>
+                                    <a class="close" href="#"><span class="glyphicon glyphicon-remove"></span></a>
+                                </li>  
+
+                                <li>
+                                    <label class="btn btn-primary">
+                                        <input type="checkbox" autocomplete="off"><span class="glyphicon glyphicon-play"></span> Кампания Наполеона 2
+                                    </label>
+                                    <a class="close" href="#"><span class="glyphicon glyphicon-remove"></span></a>
+                                </li>      
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="col-md-4">
                 <div class="form-group">
                     <label class="control-label">{{ 'device_devicenumber' | translate }}: {{device.uuid}}</label>

@@ -988,4 +988,58 @@ input[readonly] {
     border-radius: 5px;
     border:1px solid #dddddd;
     height: 256px;
+    margin-bottom: 15px;
+}
+
+.add-company-list ul {
+    padding: 0;
+    list-style: none;
+    width: 100%;
+}
+
+.add-company-list ul li {
+    background: #fff;
+    position: relative;
+    width: 100%;
+}
+
+.add-company-list ul li:nth-child(even) {
+    background: #f8f8f8;
+}
+
+.add-company-list ul li label {
+    background: none;
+    height: 30px;
+    line-height: 30px;
+    position: relative;
+    border-radius:0;
+    border:0;
+    width: 100%;
+    color: #323232;
+    padding: 0;
+    padding-left: 10px;
+    text-align: left;
+}
+
+.add-company-list ul li label input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    filter:alpha(opacity=0);
+    top: 0;
+    left: 0;
+}
+
+.add-company-list ul li label span {
+    float: right;
+    font-size: 10pt;
+    font-weight: normal;
+    color: #fff;
+    opacity: 0;
+    filter:alpha(opacity=0);
+    margin: 5px 15px 0 0;
+}
+
+.add-company-list ul li label.active span {
+    opacity: 1;
+    filter:alpha(opacity=100);
 }

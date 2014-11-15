@@ -419,6 +419,7 @@ public class FilesController {
             JSONObject jsonCampaignFile = new JSONObject();
             
             jsonCampaignFile.put("id", file.getId());
+            jsonCampaignFile.put("fileId",file.getFileId());
             jsonCampaignFile.put("name", file.getFilename());
             jsonCampaignFile.put("created", file.getCreatedDt());
             jsonCampaignFile.put("status", file.getStatus());

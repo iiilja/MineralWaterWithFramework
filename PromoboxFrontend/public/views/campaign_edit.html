@@ -16,16 +16,9 @@
                 <div class="load-file" ng-repeat="promofile in campaign_form.filesArray">
                     <div class="load-wrap img-thumbnail">
                         <div>
-                            <img ng-click="openPlayer($index)" src="http://api.dev.promobox.ee/service/files/thumb/{{promofile.id}}" alt="">
+                            <img ng-click="openPlayer($index)" src="http://46.182.31.101/service/files/thumb/{{promofile.fileId}}" alt="">
                         </div>
                         <p>{{promofile.name | limitTo: 30 | lowercase }}{{promofile.name.length > 30 ? '...' : ''}}</p>
-                    </div>
-                </div>
-
-                <div class="load-file">
-                    <div class="load-wrap img-thumbnail">
-                        <div><a class="play" href="javascript:void(0)"></a></div>
-                        <p>Test.mp3</p>
                     </div>
                 </div>
             </div>

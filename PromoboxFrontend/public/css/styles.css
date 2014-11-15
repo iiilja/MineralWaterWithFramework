@@ -766,6 +766,14 @@ input[readonly] {
     background-color: #7eb762;
     background-image: url(../img/success.png);
 }
+.device .company-info.warning {
+    background-color: #efad57;
+    background-image: url(../img/warning.png);
+}
+.device .company-info.danger {
+    background-color: #d75452;
+    background-image: url(../img/danger.png);
+}
 .device  .progress {
     width: 45%;
     display: inline-block;
@@ -775,9 +783,17 @@ input[readonly] {
     border-radius: 0;
     box-shadow: none;
 }
-
-.device  .progress .progress-bar {
+.device .company-info.success .progress .progress-bar {
     color: #7eb762;
+}
+.device .company-info.warning .progress .progress-bar {
+    color: #efad57;
+}
+.device .company-info.danger .progress .progress-bar {
+    color: #d75452;
+}
+.device  .progress .progress-bar {
+    color: #fff;
     background-color: #ffffff;
     font-weight: bold;
     box-shadow: none;
@@ -831,6 +847,7 @@ input[readonly] {
     -moz-border-radius: 5px;
     border-radius: 5px;
     border:1px solid #dcdcdc;
+    margin-bottom: 10px;
 }
 
 .preferences .row {
@@ -959,4 +976,16 @@ input[readonly] {
 
 .preferences .operation-time .jq-selectbox__select-text {
     min-width: 58px;
+}
+
+#add-company .modal-dialog {
+    width: 480px;
+}
+
+.add-company-list {
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    border:1px solid #dddddd;
+    height: 256px;
 }

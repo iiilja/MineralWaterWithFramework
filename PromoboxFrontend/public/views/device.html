@@ -16,7 +16,7 @@
                     <textarea>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. </textarea>
                     <p class="free-space">Свободное место: 6гб</p>
                     <div class="bottom-block">
-                        <a class="pull-left btn btn-default" href="#"><span class="glyphicon glyphicon-cog"></span>Скрыть настройки</a>
+                        <a class="pull-left btn btn-default" href="javascript:void(0)" data-toggle="modal" data-target="#add-company"><span class="glyphicon glyphicon-cog"></span>Скрыть настройки</a>
                         <p class="pull-right">
                             Дата обновления:<br/>02.11.14 10:00
                         </p>
@@ -71,7 +71,7 @@
                         </div>
                     </div>
 
-                    <div class="row">
+                    <div class="row" style="padding-top:20px;">
                         <div class="col-md-5 col-xs-3 col-sm-4"><label>Выбор кампании</label></div>
                         <div class="col-md-7 col-xs-9 col-sm-8">
                             <ul class="opting-list btn-group" data-toggle="buttons">
@@ -100,7 +100,7 @@
                         </div>
                     </div>
 
-                    <div class="row">
+                    <div class="row" style="padding-top:20px;">
                         <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'campaign_edit_workdays' | translate }}</label></div>
                         <div class="col-md-7 col-xs-9 col-sm-8">
                             <div class="btn-group days" data-toggle="buttons">
@@ -179,6 +179,81 @@
                         </div>
                     </div>
                 </div>
+                <div class="button-wrap">
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary ng-binding">Сохранить кампанию</button>
+                        <button type="button" class="btn btn-default ng-binding" style="margin-left: 15px;">Отмена</button>
+                        <button type="button" class="btn btn-default pull-right">В архив</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="device clearfix">
+                <div class="device-info">
+                    <div class="top-block">
+                        <h3 class="pull-left">Номер устройства: 123456</h3>
+                        <span class="label label-warning pull-right">Ожидание</span>
+                    </div>
+                    <textarea>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. </textarea>
+                    <p class="free-space">Свободное место: 6гб</p>
+                    <div class="bottom-block">
+                        <a class="pull-left btn btn-default" href="#"><span class="glyphicon glyphicon-cog"></span>Показать настройки</a>
+                        <p class="pull-right">
+                            Дата обновления:<br/>02.11.14 10:00
+                        </p>
+                    </div>
+                </div>
+                <div class="company-info warning">
+                    <h4>Проигрывается кампания</h4>
+                    <p>Кампания Наполеона </p>
+                    <ul>
+                        <li><span class="glyphicon glyphicon-play"></span> testvideo.mov</li>
+                        <li><span class="glyphicon glyphicon-play"></span> testaudiotest.mp3</li>
+                    </ul>
+                    <h4>Идет загрузка кампании</h4>
+
+                    <p class="progress-name">Кампания Наполеона 2</p>
+
+                    <div class="progress">
+                        <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 77%;">
+                            77%
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="device clearfix">
+                <div class="device-info">
+                    <div class="top-block">
+                        <h3 class="pull-left">Номер устройства: 123456</h3>
+                        <span class="label label-danger pull-right">Остановлено</span>
+                    </div>
+                    <textarea>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. </textarea>
+                    <p class="free-space">Свободное место: 6гб</p>
+                    <div class="bottom-block">
+                        <a class="pull-left btn btn-default" href="#"><span class="glyphicon glyphicon-cog"></span>Показать настройки</a>
+                        <p class="pull-right">
+                            Дата обновления:<br/>02.11.14 10:00
+                        </p>
+                    </div>
+                </div>
+                <div class="company-info danger">
+                    <h4>Проигрывается кампания</h4>
+                    <p>Кампания Наполеона </p>
+                    <ul>
+                        <li><span class="glyphicon glyphicon-play"></span> testvideo.mov</li>
+                        <li><span class="glyphicon glyphicon-play"></span> testaudiotest.mp3</li>
+                    </ul>
+                    <h4>Идет загрузка кампании</h4>
+
+                    <p class="progress-name">Кампания Наполеона 2</p>
+
+                    <div class="progress">
+                        <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 77%;">
+                            77%
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="col-md-4">
@@ -253,3 +328,131 @@
         </div>
     </div>
 </div>
+
+
+<!-- Modal sorting-->
+<div class="modal fade" id="add-company" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only"></span></button>
+                <h4 class="modal-title" id="myModalLabel">Добавить кампании</h4>
+            </div>
+            <div class="modal-body">
+                <div class="add-company-list mCustomScrollbar">
+                    <ul class="btn-group" data-toggle="buttons">
+                        <li>
+                           <label  class="btn btn-primary ">
+                                <input type="checkbox"  >
+                                Кампания Наполеона 
+                                <span class="glyphicon glyphicon-ok"></span>
+                            </label>
+                        </li>
+
+                        <li>
+                           <label  class="btn btn-primary ">
+                                <input type="checkbox"  >
+                                Кампания Наполеона 
+                                <span class="glyphicon glyphicon-ok"></span>
+                            </label>
+                        </li>
+
+                        <li>
+                           <label  class="btn btn-primary ">
+                                <input type="checkbox"  >
+                                Кампания Наполеона 
+                                <span class="glyphicon glyphicon-ok"></span>
+                            </label>
+                        </li>
+
+                        <li>
+                           <label  class="btn btn-primary ">
+                                <input type="checkbox"  >
+                                Кампания Наполеона 
+                                <span class="glyphicon glyphicon-ok"></span>
+                            </label>
+                        </li>
+
+                        <li>
+                           <label  class="btn btn-primary ">
+                                <input type="checkbox"  >
+                                Кампания Наполеона 
+                                <span class="glyphicon glyphicon-ok"></span>
+                            </label>
+                        </li>
+
+                        <li>
+                           <label  class="btn btn-primary ">
+                                <input type="checkbox"  >
+                                Кампания Наполеона 
+                                <span class="glyphicon glyphicon-ok"></span>
+                            </label>
+                        </li>
+
+                        <li>
+                           <label  class="btn btn-primary ">
+                                <input type="checkbox"  >
+                                Кампания Наполеона 
+                                <span class="glyphicon glyphicon-ok"></span>
+                            </label>
+                        </li>
+
+                        <li>
+                           <label  class="btn btn-primary ">
+                                <input type="checkbox"  >
+                                Кампания Наполеона 
+                                <span class="glyphicon glyphicon-ok"></span>
+                            </label>
+                        </li>
+
+                        <li>
+                           <label  class="btn btn-primary ">
+                                <input type="checkbox"  >
+                                Кампания Наполеона 
+                                <span class="glyphicon glyphicon-ok"></span>
+                            </label>
+                        </li>
+
+                        <li>
+                           <label  class="btn btn-primary ">
+                                <input type="checkbox"  >
+                                Кампания Наполеона 
+                                <span class="glyphicon glyphicon-ok"></span>
+                            </label>
+                        </li>
+
+                        <li>
+                           <label  class="btn btn-primary ">
+                                <input type="checkbox"  >
+                                Кампания Наполеона 
+                                <span class="glyphicon glyphicon-ok"></span>
+                            </label>
+                        </li>
+
+                        <li>
+                           <label  class="btn btn-primary ">
+                                <input type="checkbox"  >
+                                Кампания Наполеона 
+                                <span class="glyphicon glyphicon-ok"></span>
+                            </label>
+                        </li>
+
+                        <li>
+                           <label  class="btn btn-primary ">
+                                <input type="checkbox"  >
+                                Кампания Наполеона 
+                                <span class="glyphicon glyphicon-ok"></span>
+                            </label>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="bottom-buttons">
+                    <button type="button" class="btn btn-success">Добавить </button>
+                    <button type="button" class="btn btn-default">Отмена</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

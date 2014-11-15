@@ -223,21 +223,31 @@
                     <div class="row label-row opening-hours">
                         <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'campaign_edit_openinghours' | translate }}</label></div>
                         <div class="col-md-7 col-xs-9 col-sm-8">
-                            <div class="hours-list btn-group mCustomScrollbar" data-toggle="buttons">
-                                <label ng-repeat="hour in workhours" class="btn btn-primary">
-                                    <input type='checkbox' ng-checked="checkedHours.indexOf(hour) != - 1" ng-click="toggleCheckHours(hour)">
-                                    {{hour}}
+                            <div class="hours-list btn-group mCustomScrollbar">
+                                <label ng-repeat="hour in workhours" 
+                                       ng-show="checkedHours.indexOf(hour) != - 1" 
+                                       class="btn"
+                                       ng-class="removeWorkhours.indexOf(hour) != - 1 ? 'active': ''"
+                                       ng-click="toggleWorkHours(removeWorkhours, hour)">
+                                    {{formatWorkingHours(hour)}}
                                 </label>
                             </div>
 
                             <div class="hours-arrow">
-                                <a href="#" data-toggle="tooltip" data-placement="top" title="Добавить"><span class="glyphicon glyphicon-chevron-left"></span></a>
-                                <a href="#" data-toggle="tooltip" data-placement="top" title="Удалить"><span class="glyphicon glyphicon-chevron-right"></span></a>
+                                <a data-toggle="tooltip" data-placement="top" title="{{ 'campaign_edit_add' | translate }}"
+                                   ng-click="addWorkingHours()">
+                                    <span class="glyphicon glyphicon-chevron-left"></span></a>
+                                <a data-toggle="tooltip" data-placement="top" title="{{ 'campaign_edit_delete' | translate }}"
+                                   ng-click="removeWorkingHours()">
+                                    <span class="glyphicon glyphicon-chevron-right"></span></a>
                             </div>
-                            <div class="hours-list btn-group gray mCustomScrollbar" data-toggle="buttons">
-                                <label ng-repeat="hour in workhours" class="btn">
-                                    <input type='checkbox' ng-checked="checkedHours.indexOf(hour) != - 1" ng-click="toggleCheckHours(hour)">
-                                    {{hour}}
+                            <div class="hours-list btn-group gray mCustomScrollbar">
+                                <label ng-repeat="hour in workhours" 
+                                       ng-hide="checkedHours.indexOf(hour) != - 1"
+                                       class="btn"
+                                       ng-class="addWorkhours.indexOf(hour) != - 1 ? 'active': ''"
+                                       ng-click="toggleWorkHours(addWorkhours, hour)">
+                                    {{formatWorkingHours(hour)}}
                                 </label>
                             </div>
                         </div>

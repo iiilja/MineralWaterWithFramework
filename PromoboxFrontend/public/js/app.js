@@ -198,14 +198,57 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
             }
         };
 
-        $scope.workhours = ['7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '0'];
-        $scope.toggleCheckHours = function (hour) {
-            if ($scope.checkedHours.indexOf(hour) === -1) {
-                $scope.checkedHours.push(hour);
+        $scope.workhours = ['7', '7:30',
+                            '8', '8:30',
+                            '9', '9:30',
+                            '10', '10:30',
+                            '11', '11:30',
+                            '12', '12:30',
+                            '13', '13:30',
+                            '14', '14:30',
+                            '15', '15:30',
+                            '16', '16:30',
+                            '17', '17:30',
+                            '18', '18:30',
+                            '19', '19:30',
+                            '20', '20:30',
+                            '21', '21:30',
+                            '22', '22:30',
+                            '23', '23:30',
+                            '0'];
+        
+        $scope.addWorkhours = [];
+        $scope.removeWorkhours = [];
+        
+        $scope.toggleWorkHours = function (ar, hour) {
+            if (ar.indexOf(hour) === -1) {
+                ar.push(hour);
             } else {
-                $scope.checkedHours.splice($scope.checkedHours.indexOf(hour), 1);
+                ar.splice(ar.indexOf(hour), 1);
             }
         };
+        
+        $scope.addWorkingHours = function () {
+            for (i = 0; i < $scope.addWorkhours.length; i++) {
+                $scope.checkedHours.push($scope.addWorkhours[i]);
+            }
+            $scope.addWorkhours = [];
+        }
+        
+        $scope.removeWorkingHours = function () {
+            for (i = 0; i < $scope.removeWorkhours.length; i++) {
+                $scope.checkedHours.splice($scope.checkedHours.indexOf($scope.removeWorkhours[i]), 1);
+            }
+            $scope.removeWorkhours = [];
+        }
+        
+        $scope.formatWorkingHours = function (hour) {
+            if (hour.indexOf(":") == -1) {
+                return hour + ":00";
+            }
+            
+            return hour;
+        }
         
         var humanLength = function(sec) {
             var hours = sec % 3600;

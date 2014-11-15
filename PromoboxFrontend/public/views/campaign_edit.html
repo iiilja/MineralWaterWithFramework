@@ -18,7 +18,7 @@
                         <div>
                             <img ng-click="openPlayer($index)" src="http://46.182.31.101:8080/service/files/thumb/{{promofile.id}}" alt="">
                         </div>
-                        <p>{{promofile.name | limitTo: 30 | lowercase }}{{promofile.name.length > 30 ? '...' : ''}}</p>
+                        <p>{{promofile.name| limitTo: 30 | lowercase }}{{promofile.name.length > 30 ? '...' : ''}}</p>
                     </div>
                 </div>
             </div>
@@ -27,49 +27,49 @@
 
                 <div class="form-group  col-md-9">
                     <div class="form-group">
-                     <span class="file-input btn btn-primary btn-file">
-                        {{ 'campaign_edit_browse' | translate }}&hellip; <input type="file" nv-file-select="" uploader="uploader" multiple  />
-                    </span>
+                        <span class="file-input btn btn-primary btn-file">
+                            {{ 'campaign_edit_browse' | translate }}&hellip; <input type="file" nv-file-select="" uploader="uploader" multiple  />
+                        </span>
                     </div>
                     <div ng-show="uploader.queue.length > 0">
-                        <p>{{ 'campaign_edit_queuelength' | translate }}: {{ uploader.queue.length }}</p>
+                        <p>{{ 'campaign_edit_queuelength' | translate }}: {{ uploader.queue.length}}</p>
 
                         <table class="table">
                             <thead>
-                            <tr>
-                                <th width="50%">{{ 'campaign_edit_name' | translate }}</th>
-                                <th ng-show="uploader.isHTML5">{{ 'campaign_edit_size' | translate }}</th>
-                                <th ng-show="uploader.isHTML5">{{ 'campaign_edit_progress' | translate }}</th>
-                                <th>{{ 'campaign_edit_status' | translate }}</th>
-                                <th>{{ 'campaign_edit_actions' | translate }}</th>
-                            </tr>
+                                <tr>
+                                    <th width="50%">{{ 'campaign_edit_name' | translate }}</th>
+                                    <th ng-show="uploader.isHTML5">{{ 'campaign_edit_size' | translate }}</th>
+                                    <th ng-show="uploader.isHTML5">{{ 'campaign_edit_progress' | translate }}</th>
+                                    <th>{{ 'campaign_edit_status' | translate }}</th>
+                                    <th>{{ 'campaign_edit_actions' | translate }}</th>
+                                </tr>
                             </thead>
                             <tbody>
-                            <tr ng-repeat="item in uploader.queue">
-                                <td><strong>{{ item.file.name }}</strong></td>
-                                <td ng-show="uploader.isHTML5" nowrap>{{ item.file.size/1024/1024|number:2 }} MB</td>
-                                <td ng-show="uploader.isHTML5">
-                                    <div class="progress" style="margin-bottom: 0;">
-                                        <div class="progress-bar" role="progressbar" ng-style="{ 'width': item.progress + '%' }"></div>
-                                    </div>
-                                </td>
-                                <td class="text-center">
-                                    <span ng-show="item.isSuccess"><i class="glyphicon glyphicon-ok"></i></span>
-                                    <span ng-show="item.isCancel"><i class="glyphicon glyphicon-ban-circle"></i></span>
-                                    <span ng-show="item.isError"><i class="glyphicon glyphicon-remove"></i></span>
-                                </td>
-                                <td nowrap>
-                                    <button type="button" class="btn btn-success btn-xs" ng-click="item.upload()" ng-disabled="item.isReady || item.isUploading || item.isSuccess">
-                                        <span class="glyphicon glyphicon-upload"></span> {{ 'campaign_edit_upload' | translate }}
-                                    </button>
-                                    <button type="button" class="btn btn-warning btn-xs" ng-click="item.cancel()" ng-disabled="!item.isUploading">
-                                        <span class="glyphicon glyphicon-ban-circle"></span> {{ 'campaign_edit_cancel' | translate }}
-                                    </button>
-                                    <button type="button" class="btn btn-danger btn-xs" ng-click="item.remove()">
-                                        <span class="glyphicon glyphicon-trash"></span> {{ 'campaign_edit_remove' | translate }}
-                                    </button>
-                                </td>
-                            </tr>
+                                <tr ng-repeat="item in uploader.queue">
+                                    <td><strong>{{ item.file.name}}</strong></td>
+                                    <td ng-show="uploader.isHTML5" nowrap>{{ item.file.size / 1024 / 1024|number:2 }} MB</td>
+                                    <td ng-show="uploader.isHTML5">
+                                        <div class="progress" style="margin-bottom: 0;">
+                                            <div class="progress-bar" role="progressbar" ng-style="{ 'width': item.progress + '%' }"></div>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        <span ng-show="item.isSuccess"><i class="glyphicon glyphicon-ok"></i></span>
+                                        <span ng-show="item.isCancel"><i class="glyphicon glyphicon-ban-circle"></i></span>
+                                        <span ng-show="item.isError"><i class="glyphicon glyphicon-remove"></i></span>
+                                    </td>
+                                    <td nowrap>
+                                        <button type="button" class="btn btn-success btn-xs" ng-click="item.upload()" ng-disabled="item.isReady || item.isUploading || item.isSuccess">
+                                            <span class="glyphicon glyphicon-upload"></span> {{ 'campaign_edit_upload' | translate }}
+                                        </button>
+                                        <button type="button" class="btn btn-warning btn-xs" ng-click="item.cancel()" ng-disabled="!item.isUploading">
+                                            <span class="glyphicon glyphicon-ban-circle"></span> {{ 'campaign_edit_cancel' | translate }}
+                                        </button>
+                                        <button type="button" class="btn btn-danger btn-xs" ng-click="item.remove()">
+                                            <span class="glyphicon glyphicon-trash"></span> {{ 'campaign_edit_remove' | translate }}
+                                        </button>
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
 
@@ -97,16 +97,16 @@
 
             <div class="row settings-wrap">
                 <div class="form-group campaigns_block col-sm-5">
-<!--                     
-                    <div class="row">
-                        <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'campaign_edit_activityofthecompany' | translate }}</label></div>
-                        <div class="col-md-7 col-xs-9 col-sm-8">
-                            <select class="form-control" ng-model="campaign_form.campaign_status">
-                                <option value="3">{{ 'campaign_edit_suspended' | translate }}</option>
-                                <option value="2">{{ 'campaign_edit_launched' | translate }}</option>
-                            </select>
-                        </div>
-                    </div> -->
+                    <!--                     
+                                        <div class="row">
+                                            <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'campaign_edit_activityofthecompany' | translate }}</label></div>
+                                            <div class="col-md-7 col-xs-9 col-sm-8">
+                                                <select class="form-control" ng-model="campaign_form.campaign_status">
+                                                    <option value="3">{{ 'campaign_edit_suspended' | translate }}</option>
+                                                    <option value="2">{{ 'campaign_edit_launched' | translate }}</option>
+                                                </select>
+                                            </div>
+                                        </div> -->
 
                     <div class="clearfix setting-btn">
                         <a class="pull-left btn btn-default" href="#"><span class="glyphicon glyphicon-cog"></span>Скрыть настройки</a>
@@ -211,10 +211,10 @@
                         <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'campaign_edit_workdays' | translate }}</label></div>
                         <div class="col-md-7 col-xs-9 col-sm-8">
                             <div class="btn-group days" data-toggle="buttons">
-                              <label ng-repeat="day in workdays" class="btn btn-primary" >
-                                <input type='checkbox' ng-checked="checkedDays.indexOf(day) != -1" ng-click="toggleCheckDays(day)">
-                                {{ day | translate }}
-                            </label>
+                                <label ng-repeat="day in workdays" class="btn btn-primary" >
+                                    <input type='checkbox' ng-checked="checkedDays.indexOf(day) != - 1" ng-click="toggleCheckDays(day)">
+                                    {{ day | translate }}
+                                </label>
                             </div>
                         </div>
                     </div>
@@ -224,7 +224,7 @@
                         <div class="col-md-7 col-xs-9 col-sm-8">
                             <div class="hours-list btn-group mCustomScrollbar" data-toggle="buttons">
                                 <label ng-repeat="hour in workhours" class="btn btn-primary">
-                                    <input type='checkbox' ng-checked="checkedHours.indexOf(hour) != -1" ng-click="toggleCheckHours(hour)">
+                                    <input type='checkbox' ng-checked="checkedHours.indexOf(hour) != - 1" ng-click="toggleCheckHours(hour)">
                                     {{hour}}
                                 </label>
                             </div>
@@ -235,7 +235,7 @@
                             </div>
                             <div class="hours-list btn-group gray mCustomScrollbar" data-toggle="buttons">
                                 <label ng-repeat="hour in workhours" class="btn">
-                                    <input type='checkbox' ng-checked="checkedHours.indexOf(hour) != -1" ng-click="toggleCheckHours(hour)">
+                                    <input type='checkbox' ng-checked="checkedHours.indexOf(hour) != - 1" ng-click="toggleCheckHours(hour)">
                                     {{hour}}
                                 </label>
                             </div>
@@ -252,62 +252,59 @@
                     <button ui-sref="list" type="button" class="btn btn-default pull-right">В архив</button>
                 </div>
             </div>
+
+            <!-- Modal statistics -->
+            <div class="modal fade" id="statistics" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only"></span></button>
+                            <h4 class="modal-title" id="myModalLabel">{{"campaign_edit_statistics"| translate}}</h4>
+                        </div>
+                        <div class="modal-body">
+                            <ul class="statistics-list">
+
+                                <li>
+                                    <div class="img-block">
+                                        <img src="img/files.png" alt="">
+                                    </div>
+                                    <span>{{campaign_stat.campaign_count_files}}</span>
+                                    <p >{{'campaign_edit_allfilescount'| translate}}</p>
+                                </li>
+
+                                <li>
+                                    <div class="img-block">
+                                        <img src="img/pic.png" alt="">
+                                    </div>
+                                    <span>{{campaign_stat.campaign_count_images}}</span>
+                                    <p>{{"campaign_edit_allimagescount"| translate}}</p>
+                                </li>
+
+                                <li>
+                                    <div class="img-block">
+                                        <img src="img/video.png" alt="">
+                                    </div>
+                                    <span>{{campaign_stat.campaign_count_videos}}</span>
+                                    <p>{{"campaign_edit_allvideoscount"| translate}}<br/>{{campaign_stat.campaign_video_length}}</p>
+                                </li>
+
+                                <li>
+                                    <div class="img-block">
+                                        <img src="img/songs.png" alt="">
+                                    </div>
+                                    <span>{{campaign_stat.campaign_count_audios}}</span>
+                                    <p>{{"campaign_edit_allaudioscount"| translate}}<br/>{{campaign_stat.campaign_audio_length}}</p>
+                                </li>
+                            </ul>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
         </form>
 
     </div>
 </div>
-
-
-
-<!-- Modal statistics -->
-<div class="modal fade" id="statistics" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only"></span></button>
-                <h4 class="modal-title" id="myModalLabel">{{"campaign_edit_statistics" | translate}}</h4>
-            </div>
-            <div class="modal-body">
-                <ul class="statistics-list">
-
-                    <li>
-                        <div class="img-block">
-                            <img src="img/files.png" alt="">
-                        </div>
-                        <span>200</span>
-                        <p>{{"campaign_edit_allfilescount" | translate}}</p>
-                    </li>
-
-                    <li>
-                        <div class="img-block">
-                            <img src="img/pic.png" alt="">
-                        </div>
-                        <span>50</span>
-                        <p>{{"campaign_edit_allimagescount" | translate}}</p>
-                    </li>
-
-                    <li>
-                        <div class="img-block">
-                            <img src="img/video.png" alt="">
-                        </div>
-                        <span>100</span>
-                        <p>{{"campaign_edit_allvideoscount" | translate}}<br/> 5 : 18 </p>
-                    </li>
-
-                    <li>
-                        <div class="img-block">
-                            <img src="img/songs.png" alt="">
-                        </div>
-                        <span>50</span>
-                        <p>{{"campaign_edit_allaudioscount" | translate}}<br/> 5 : 18 </p>
-                    </li>
-                </ul>
-            </div>
-
-        </div>
-    </div>
-</div>
-
 
 <!-- Modal sorting-->
 <div class="modal fade" id="sorting" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">

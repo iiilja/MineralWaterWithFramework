@@ -173,7 +173,20 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
             $scope.campaign = response;
             $scope.checkedDays = $scope.campaign.days;
             $scope.checkedHours = $scope.campaign.hours;
-            $scope.campaign_form = {campaign_status: $scope.campaign.status, filesArray: $scope.campaign.files, campaign_name: $scope.campaign.name, campaign_time: $scope.campaign.duration, campaign_order: $scope.campaign.sequence, campaign_start: timeToData($scope.campaign.start), campaign_finish: timeToData($scope.campaign.finish)};
+            $scope.campaign_form = {campaign_status: $scope.campaign.status, 
+                                    filesArray: $scope.campaign.files, 
+                                    campaign_name: $scope.campaign.name, 
+                                    campaign_time: $scope.campaign.duration, 
+                                    campaign_order: $scope.campaign.sequence, 
+                                    campaign_start: timeToData($scope.campaign.start), 
+                                    campaign_finish: timeToData($scope.campaign.finish)
+                                    };
+            $scope.campaign_stat = {campaign_count_files: $scope.campaign.countFiles,
+                                    campaign_count_images: $scope.campaign.countImages,
+                                    campaign_count_audios: $scope.campaign.countAudios,
+                                    campaign_count_videos: $scope.campaign.countVideos,
+                                    campaign_audio_length: humanLength($scope.campaign.audioLength),
+                                    campaign_video_length: humanLength($scope.campaign.videoLength)}
         });
 
         $scope.workdays = ['mo', 'tu', 'we', 'th', 'fr', 'sa', 'su'];
@@ -193,6 +206,15 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
                 $scope.checkedHours.splice($scope.checkedHours.indexOf(hour), 1);
             }
         };
+        
+        var humanLength = function(sec) {
+            var hours = sec % 3600;
+            sec -= hours * 3600;
+            var min = sec % 60;
+            
+            return hours + " : " + min
+           
+        }
 
         var timeToData = function(time) {
             return new Date(time);

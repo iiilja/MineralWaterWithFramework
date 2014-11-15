@@ -210,9 +210,10 @@
                     <div class="row label-row">
                         <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'campaign_edit_workdays' | translate }}</label></div>
                         <div class="col-md-7 col-xs-9 col-sm-8">
-                            <div class="btn-group days" data-toggle="buttons">
-                                <label ng-repeat="day in workdays" class="btn btn-primary" >
-                                    <input type='checkbox' ng-checked="checkedDays.indexOf(day) != - 1" ng-click="toggleCheckDays(day)">
+                            <div class="btn-group days">
+                                <label ng-repeat="day in workdays" class="btn btn-primary" 
+                                       ng-class="checkedDays.indexOf(day) != - 1 ? 'active': ''"
+                                       ng-click="toggleCheckDays(day)">
                                     {{ day | translate }}
                                 </label>
                             </div>

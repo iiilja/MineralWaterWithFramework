@@ -16,25 +16,11 @@
                 <div class="load-file" ng-repeat="promofile in campaign_form.filesArray">
                     <div class="load-wrap img-thumbnail">
                         <div>
-                            <img ng-click="openPlayer($index)" src="http://46.182.31.101/service/files/thumb/{{promofile.fileId}}" alt="">
+                            <img ng-click="openPlayer($index)" src="http://46.182.31.101:8080/service/files/thumb/{{promofile.id}}" alt="">
                         </div>
                         <p>{{promofile.name | limitTo: 30 | lowercase }}{{promofile.name.length > 30 ? '...' : ''}}</p>
                     </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="form-group col-sm-9" id="thumbnail_group">
-                    <div class="thumbnail" ng-repeat="promofile in campaign_form.filesArray">
-                        <div>
-                            <img ng-click="openPlayer($index)" style="cursor: pointer;" src="http://api.dev.promobox.ee/service/files/thumb/{{promofile.id}}" alt="" />
-                        </div>
-                        <h6>{{promofile.name | limitTo: 13 | lowercase }}{{ promofile.name.length > 13 ? '...' : '' }} <i style="cursor: pointer;" ng-click="inArchive(promofile.id)" class="glyphicon glyphicon-remove"></i></h6>
-                    </div>
-                </div>
-
-                <ul id="playlist" style="list-style: none;">
-                    <li ng-repeat="promofile in campaign_form.filesArray" data-url="http://api.dev.promobox.ee/service/files/{{promofile.id}}{{promofile.ext}}" data-thumbnail-path="http://api.dev.promobox.ee/service/files/thumb/{{promofile.id}}"></li>
-                </ul>
             </div>
 
             <div class="row upload-wrap" nv-file-drop="" uploader="uploader" filters="queueLimit, customFilter">

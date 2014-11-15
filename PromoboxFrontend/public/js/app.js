@@ -186,7 +186,7 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
                                     campaign_count_audios: $scope.campaign.countAudios,
                                     campaign_count_videos: $scope.campaign.countVideos,
                                     campaign_audio_length: humanLength($scope.campaign.audioLength),
-                                    campaign_video_length: humanLength($scope.campaign.videoLength)}
+                                    campaign_video_length: humanLength($scope.campaign.varchi)};
         });
 
         $scope.workdays = ['mo', 'tu', 'we', 'th', 'fr', 'sa', 'su'];
@@ -229,6 +229,12 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
             console.log($scope.campaign_form);
 
             Campaign.edit_campaigns({token: token.get(), id: $scope.campaign.id, status: $scope.campaign_form.campaign_status, name: $scope.campaign_form.campaign_name, sequence: $scope.campaign_form.campaign_order, start: dataToTime($scope.campaign_form.campaign_start), finish: dataToTime($scope.campaign_form.campaign_finish), duration: $scope.campaign_form.campaign_time, days: $scope.checkedDays, hours: $scope.checkedHours}, function(response){
+                sysLocation.goList();
+            });
+        };
+        
+        $scope.remove_company = function () {
+            Campaign.delete_campaigns({token: token.get(), id: $scope.campaign.id}, function (response) {
                 sysLocation.goList();
             });
         };

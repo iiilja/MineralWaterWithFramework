@@ -249,60 +249,59 @@
                 <div class="form-group">
                     <button type="submit" class="btn btn-primary">{{ 'campaign_edit_savethecompany' | translate }}</button>
                     <button ui-sref="list" type="button" class="btn btn-default" style="margin-left: 15px;">{{ 'campaign_edit_cancel' | translate }}</button>
-                    <button ui-sref="list" type="button" class="btn btn-default pull-right">В архив</button>
-                </div>
-            </div>
-
-            <!-- Modal statistics -->
-            <div class="modal fade" id="statistics" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only"></span></button>
-                            <h4 class="modal-title" id="myModalLabel">{{"campaign_edit_statistics"| translate}}</h4>
-                        </div>
-                        <div class="modal-body">
-                            <ul class="statistics-list">
-
-                                <li>
-                                    <div class="img-block">
-                                        <img src="img/files.png" alt="">
-                                    </div>
-                                    <span>{{campaign_stat.campaign_count_files}}</span>
-                                    <p >{{'campaign_edit_allfilescount'| translate}}</p>
-                                </li>
-
-                                <li>
-                                    <div class="img-block">
-                                        <img src="img/pic.png" alt="">
-                                    </div>
-                                    <span>{{campaign_stat.campaign_count_images}}</span>
-                                    <p>{{"campaign_edit_allimagescount"| translate}}</p>
-                                </li>
-
-                                <li>
-                                    <div class="img-block">
-                                        <img src="img/video.png" alt="">
-                                    </div>
-                                    <span>{{campaign_stat.campaign_count_videos}}</span>
-                                    <p>{{"campaign_edit_allvideoscount"| translate}}<br/>{{campaign_stat.campaign_video_length}}</p>
-                                </li>
-
-                                <li>
-                                    <div class="img-block">
-                                        <img src="img/songs.png" alt="">
-                                    </div>
-                                    <span>{{campaign_stat.campaign_count_audios}}</span>
-                                    <p>{{"campaign_edit_allaudioscount"| translate}}<br/>{{campaign_stat.campaign_audio_length}}</p>
-                                </li>
-                            </ul>
-                        </div>
-
-                    </div>
+                    <button ui-sref="list" type="button" class="btn btn-default pull-right" ng-click="remove_company()">{{'list_remove'| translate }}</button>
                 </div>
             </div>
         </form>
+    </div>
+</div>
 
+<!-- Modal statistics -->
+<div class="modal fade" id="statistics" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only"></span></button>
+                <h4 class="modal-title" id="myModalLabel">{{"campaign_edit_statistics"| translate}}</h4>
+            </div>
+            <div class="modal-body">
+                <ul class="statistics-list">
+
+                    <li>
+                        <div class="img-block">
+                            <img src="img/files.png" alt="">
+                        </div>
+                        <span>{{campaign_stat.campaign_count_files}}</span>
+                        <p >{{'campaign_edit_allfilescount'| translate}}</p>
+                    </li>
+
+                    <li>
+                        <div class="img-block">
+                            <img src="img/pic.png" alt="">
+                        </div>
+                        <span>{{campaign_stat.campaign_count_images}}</span>
+                        <p>{{"campaign_edit_allimagescount"| translate}}</p>
+                    </li>
+
+                    <li>
+                        <div class="img-block">
+                            <img src="img/video.png" alt="">
+                        </div>
+                        <span>{{campaign_stat.campaign_count_videos}}</span>
+                        <p>{{"campaign_edit_allvideoscount"| translate}}<br/>{{campaign_stat.campaign_video_length}}</p>
+                    </li>
+
+                    <li>
+                        <div class="img-block">
+                            <img src="img/songs.png" alt="">
+                        </div>
+                        <span>{{campaign_stat.campaign_count_audios}}</span>
+                        <p>{{"campaign_edit_allaudioscount"| translate}}<br/>{{campaign_stat.campaign_audio_length}}</p>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
     </div>
 </div>
 

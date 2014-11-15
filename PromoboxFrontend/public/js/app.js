@@ -228,7 +228,17 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
             console.log($scope.checkedDays);
             console.log($scope.campaign_form);
 
-            Campaign.edit_campaigns({token: token.get(), id: $scope.campaign.id, status: $scope.campaign_form.campaign_status, name: $scope.campaign_form.campaign_name, sequence: $scope.campaign_form.campaign_order, start: dataToTime($scope.campaign_form.campaign_start), finish: dataToTime($scope.campaign_form.campaign_finish), duration: $scope.campaign_form.campaign_time, days: $scope.checkedDays, hours: $scope.checkedHours}, function(response){
+            Campaign.edit_campaigns({
+                token: token.get(), 
+                id: $scope.campaign.id, 
+                status: $scope.campaign_form.campaign_status, 
+                name: $scope.campaign_form.campaign_name, 
+                sequence: $scope.campaign_form.campaign_order, 
+                start: dataToTime($scope.campaign_form.campaign_start), 
+                finish: dataToTime($scope.campaign_form.campaign_finish), 
+                duration: $scope.campaign_form.campaign_time, 
+                days: $scope.checkedDays, 
+                hours: $scope.checkedHours}, function(response){
                 sysLocation.goList();
             });
         };

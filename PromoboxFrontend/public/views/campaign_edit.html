@@ -94,22 +94,22 @@
 
                 </div>
             </div>
-
-            <div class="row settings-wrap">
+            
+            
+            <div class="row settings-wrap" ng-hide="settingsVisible">
                 <div class="form-group campaigns_block col-sm-5">
-                    <!--                     
-                                        <div class="row">
-                                            <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'campaign_edit_activityofthecompany' | translate }}</label></div>
-                                            <div class="col-md-7 col-xs-9 col-sm-8">
-                                                <select class="form-control" ng-model="campaign_form.campaign_status">
-                                                    <option value="3">{{ 'campaign_edit_suspended' | translate }}</option>
-                                                    <option value="2">{{ 'campaign_edit_launched' | translate }}</option>
-                                                </select>
-                                            </div>
-                                        </div> -->
 
                     <div class="clearfix setting-btn">
-                        <a class="pull-left btn btn-default" ng-click="close_settings()"><span class="glyphicon glyphicon-cog"></span>{{ 'campaign_edit_hidesettings' | translate }}</a>
+                        <a class="pull-left btn btn-default" ng-click="showSettings(true)"><span class="glyphicon glyphicon-cog"></span>{{ 'campaign_edit_showsettings' | translate }}</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row settings-wrap" ng-show="settingsVisible">
+                <div class="form-group campaigns_block col-sm-5">
+
+                    <div class="clearfix setting-btn">
+                        <a class="pull-left btn btn-default" ng-click="showSettings(false)"><span class="glyphicon glyphicon-cog"></span>{{ 'campaign_edit_hidesettings' | translate }}</a>
                         <a class="pull-right btn btn-default" data-toggle="modal" data-target="#statistics" href="javascript:void(0)"><span class="glyphicon glyphicon-stats"></span>Статистика</a>
                     </div>
 

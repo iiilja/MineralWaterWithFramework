@@ -324,6 +324,11 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
                 refreshFilesModel();
             });
         };
+        
+        $scope.settingsVisible = false;
+        $scope.showSettings = function(show) {
+            $scope.settingsVisible = show;
+        }
 
         var refreshFilesModel = function () {
             Campaign.get_campaigns({token: token.get(), id: $stateParams.cId}, function (response) {
@@ -459,5 +464,11 @@ app.controller('DevicesController', ['$scope', 'token', 'Device', 'sysMessage', 
             for (var i = 0; i < 24; i++) {
                  $scope.workhours.push(i + ":00");
             }
+            
+            $scope.visibleDeviceSettings = 0;
+            $scope.showDeviceSettings = function(id) {
+                $scope.visibleDeviceSettings = id;
+            };
+            
         };
     }]);

@@ -1,6 +1,6 @@
 var apiEndpoint = "http://46.182.31.101:8080/service/";
 
-var app = angular.module('promobox', ['ngRoute', 'ui.bootstrap', 'pascalprecht.translate', 'promobox.services', 'angularFileUpload', 'toaster', 'ui.router', 'angularMoment', 'ui.bootstrap.datetimepicker', 'checklist-model']);
+var app = angular.module('promobox', ['ngRoute', 'ui.bootstrap', 'pascalprecht.translate', 'promobox.services', 'angularFileUpload', 'toaster', 'ui.router', 'ui.sortable', 'angularMoment', 'ui.bootstrap.datetimepicker', 'checklist-model']);
 
 
 app.config(['$routeProvider','$stateProvider','$urlRouterProvider', function ($routeProvider, $stateProvider, $urlRouterProvider) {
@@ -256,7 +256,6 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
             var min = sec % 60;
             
             return hours + " : " + min
-           
         }
 
         var timeToData = function(time) {
@@ -285,6 +284,10 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
                 sysLocation.goList();
             });
         };
+        
+        $scope.close_settings = function () {
+            sysLocation.goList();
+        }
         
         $scope.remove_company = function () {
             Campaign.delete_campaigns({token: token.get(), id: $scope.campaign.id}, function (response) {

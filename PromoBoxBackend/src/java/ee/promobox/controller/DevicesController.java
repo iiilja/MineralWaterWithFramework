@@ -40,7 +40,7 @@ public class DevicesController {
     private final static Logger log = LoggerFactory.getLogger(
             DevicesController.class);
     
-    private final static  SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm");
+    private final static  SimpleDateFormat timeFormat = new SimpleDateFormat("h:mm");
 
     @Autowired
     private UserService userService;
@@ -199,16 +199,43 @@ public class DevicesController {
                     jsonD.put("resolution", d.getResolution());
                     jsonD.put("audioAut", d.getAudioOut());
                     
+                    if (d.getCurrentCampaignId() != null) {
+                        AdCampaigns campaign = userService.findCampaignByIdAndClientId(d.getCurrentCampaignId(), session.getClientId());
+                        if (campaign != null) {
+                            JSONObject currentCampaign = new JSONObject();
+                            currentCampaign.put("id", campaign.getId());
+                            currentCampaign.put("name", campaign.getName());
+                            
+                            CampaignsFiles currentFile = userService.findCampaignFile(d.getCurrentFileId(), session.getClientId());
+                            if (currentFile != null) {
+                                currentCampaign.put("file", currentFile.getFilename());
+                            }
+                            
+                            jsonD.put("currentCamp", currentCampaign);
+                        }
+                    }
+                    
+                    if (d.getLoadingCampaignId() != null) {
+                        AdCampaigns campaign = userService.findCampaignByIdAndClientId(d.getLoadingCampaignId(), session.getClientId());
+                        if (campaign != null) {
+                            JSONObject loadingCampaign = new JSONObject();
+                            loadingCampaign.put("id", campaign.getId());
+                            loadingCampaign.put("name", campaign.getName());
+                            
+                            jsonD.put("loadingCamp", loadingCampaign);
+                        }
+                    }
+                    
                     jsonD.put("workStartAt", formatTimeString(d.getWorkEndAt()));
                     jsonD.put("workEndAt", formatTimeString(d.getWorkEndAt()));
                     
-                    jsonD.put("mon", d.isMon());
-                    jsonD.put("tue", d.isTue());
-                    jsonD.put("wed", d.isWed());
-                    jsonD.put("thu", d.isThu());
-                    jsonD.put("fir", d.isFri());
-                    jsonD.put("sat", d.isSat());
-                    jsonD.put("sun", d.isSun());
+                    jsonD.put("mo", d.isMon());
+                    jsonD.put("tu", d.isTue());
+                    jsonD.put("we", d.isWed());
+                    jsonD.put("th", d.isThu());
+                    jsonD.put("fi", d.isFri());
+                    jsonD.put("sa", d.isSat());
+                    jsonD.put("su", d.isSun());
                     
                     jsonD.put("description", d.getDescription());
                     jsonD.put("lastRequestDate", d.getLastDeviceRequestDt().getTime());
@@ -244,7 +271,7 @@ public class DevicesController {
                         array.put(aObj);
                     }
 
-                    jsonD.put("campaigns", array);
+                    resp.put("campaigns", array);
 
                     devicesArray.put(jsonD);
                 }
@@ -321,13 +348,13 @@ public class DevicesController {
                 device.setWorkStartAt(parseTimeString(deviceUpdate.getString("workStartAt")));
                 device.setWorkEndAt(parseTimeString(deviceUpdate.getString("workEndAt")));
                 
-                device.setMon(deviceUpdate.getBoolean("mon"));
-                device.setTue(deviceUpdate.getBoolean("tue"));
-                device.setWed(deviceUpdate.getBoolean("wed"));
-                device.setThu(deviceUpdate.getBoolean("thu"));
-                device.setFri(deviceUpdate.getBoolean("fri"));
-                device.setSat(deviceUpdate.getBoolean("sat"));
-                device.setSun(deviceUpdate.getBoolean("sun"));
+                device.setMon(deviceUpdate.getBoolean("mo"));
+                device.setTue(deviceUpdate.getBoolean("tu"));
+                device.setWed(deviceUpdate.getBoolean("we"));
+                device.setThu(deviceUpdate.getBoolean("th"));
+                device.setFri(deviceUpdate.getBoolean("fr"));
+                device.setSat(deviceUpdate.getBoolean("sa"));
+                device.setSun(deviceUpdate.getBoolean("su"));
 
                 int campaignId = deviceUpdate.getInt("campaignId");
                 DevicesCampaigns devicesCampaigns = userService.findDeviceCampaignByCampaignId(device.getId(), campaignId);

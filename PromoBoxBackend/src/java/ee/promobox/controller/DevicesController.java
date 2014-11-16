@@ -40,7 +40,7 @@ public class DevicesController {
     private final static Logger log = LoggerFactory.getLogger(
             DevicesController.class);
     
-    private final static  SimpleDateFormat timeFormat = new SimpleDateFormat("h:mm");
+    private final static  SimpleDateFormat timeFormat = new SimpleDateFormat("H:mm");
 
     @Autowired
     private UserService userService;
@@ -197,7 +197,7 @@ public class DevicesController {
                     jsonD.put("loadingCampaingProgress", d.getLoadingCampaignProgress());
                     jsonD.put("orientation", d.getOrientation());
                     jsonD.put("resolution", d.getResolution());
-                    jsonD.put("audioAut", d.getAudioOut());
+                    jsonD.put("audioOut", d.getAudioOut());
                     
                     if (d.getCurrentCampaignId() != null) {
                         AdCampaigns campaign = userService.findCampaignByIdAndClientId(d.getCurrentCampaignId(), session.getClientId());
@@ -226,14 +226,14 @@ public class DevicesController {
                         }
                     }
                     
-                    jsonD.put("workStartAt", formatTimeString(d.getWorkEndAt()));
+                    jsonD.put("workStartAt", formatTimeString(d.getWorkStartAt()));
                     jsonD.put("workEndAt", formatTimeString(d.getWorkEndAt()));
                     
                     jsonD.put("mo", d.isMon());
                     jsonD.put("tu", d.isTue());
                     jsonD.put("we", d.isWed());
                     jsonD.put("th", d.isThu());
-                    jsonD.put("fi", d.isFri());
+                    jsonD.put("fr", d.isFri());
                     jsonD.put("sa", d.isSat());
                     jsonD.put("su", d.isSun());
                     
@@ -484,6 +484,7 @@ public class DevicesController {
             int hour = Integer.parseInt(timeParts[0]);
             int min = Integer.parseInt(timeParts[1]);
             cal.set(0, 0, 0, hour, min, 0);
+            
         } catch (Exception ex) {
             log.error(ex.getMessage(), ex);
         }

@@ -294,6 +294,25 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
                 sysLocation.goList();
             });
         };
+       
+        $scope.$watchCollection('campaign.files', function () {
+            $scope.campaign.files = orderByFilter($scope.campaign.files, ['orderId','name']);
+        });
+        
+        $scope.fileSort = {
+            stop: function(e, ui) {
+                for (var index in $scope.campaign.files) {
+                    $scope.campaign.files[index].orderId = index;
+                }
+            }
+        }
+        
+        $scope.reorder_files = function() {
+            Files.reorderFiles({
+                token: token.get(),
+                id: $scope.campaign.id,
+                filesOrder: $scope.campaign.files});
+        }
 
         $scope.openPlayer = function(key) {
             FWDRL.show('playlist', key);

@@ -326,7 +326,7 @@
             </div>
             <div class="modal-body">
                 <div class="files-block mCustomScrollbar">
-                    <ul ui-sortable class="files-list" >
+                    <ul ui-sortable="fileSort" ng-model="campaign_form.filesArray" class="files-list" >
                         <li ng-repeat="promofile in campaign_form.filesArray">
                             <i></i><span>{{promofile.name}}</span></li>
 
@@ -339,7 +339,7 @@
                     <button type="button" class="btn btn-default">В конец</button>
                 </div>
                 <div class="bottom-buttons">
-                    <button type="button" class="btn btn-success">{{ 'list_change' | translate }}</button>
+                    <button type="button" class="btn btn-success" ng-click="reorder_files()">{{ 'list_change' | translate }}</button>
                     <button type="button" class="btn btn-default" data-dismiss="modal">{{ 'campaign_edit_cancel' | translate }}</button>
                 </div>
             </div>

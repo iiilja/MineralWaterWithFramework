@@ -248,7 +248,7 @@ public class DevicesController {
                         for (AdCampaigns ac : acs) {
                             campaignIds.put(ac.getId());
                         }
-                        jsonD.put("campaignId", campaignIds);
+                        jsonD.put("campaignIds", campaignIds);
                     } else {
                         jsonD.put("campaignId", -1);
                     }

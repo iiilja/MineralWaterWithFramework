@@ -10,26 +10,28 @@
             <div class="device clearfix">
                 <div class="device-info">
                     <div class="top-block">
-                        <h3 class="pull-left">Номер устройства: 123456</h3>
-                        <span class="label label-success pull-right">Работает</span>
+                        <h3 class="pull-left">{{ 'device_devicenumber' | translate }}: {{device.uuid}}</h3>
+                        <span ng-if="device.status == 1" class="label label-warning pull-right">{{ 'device_used' | translate }}</span>
+                        <span ng-if="device.status == 2" class="label label-success pull-right">{{ 'device_online' | translate }}</span>
+                        <span ng-if="device.status == 3" class="label label-danger pull-right">{{ 'device_off' | translate }}</span>
                     </div>
-                    <textarea>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. </textarea>
-                    <p class="free-space">Свободное место: 6гб</p>
+                    <textarea ng-model="device.description" placeholder="{{ 'device_description' | translate }}"></textarea>
+                    <p class="free-space">{{ 'device_space' | translate }}: {{ device.space |  bytes }}</p>
                     <div class="bottom-block">
                         <a class="pull-left btn btn-default" href="javascript:void(0)"><span class="glyphicon glyphicon-cog"></span>Скрыть настройки</a>
                         <p class="pull-right">
-                            Дата обновления:<br/>02.11.14 10:00
+                            {{ 'device_updatedate' | translate }}:<br/> {{timeconvert(device.lastRequestDate)}}
                         </p>
                     </div>
                 </div>
-                <div class="company-info success">
-                    <h4>Проигрывается кампания</h4>
+                <div class="company-info success" ng-class="device.status == 2 ? 'success' ? (device.status == 1 ? 'warning' : 'danger')">
+                    <h4>{{ 'device_currentcompany' | translate }}</h4>
                     <p>Кампания Наполеона </p>
                     <ul>
                         <li><span class="glyphicon glyphicon-play"></span> testvideo.mov</li>
                         <li><span class="glyphicon glyphicon-play"></span> testaudiotest.mp3</li>
                     </ul>
-                    <h4>Идет загрузка кампании</h4>
+                    <h4>{{ 'device_companyloading' | translate }}</h4>
 
                     <p class="progress-name">Кампания Наполеона 2</p>
 
@@ -44,59 +46,47 @@
             <div class="preferences-wrap">
                 <div class="preferences">
                     <div class="row">
-                        <div class="col-md-5 col-xs-3 col-sm-4"><label>Кэш</label></div>
+                        <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'device_cache' | translate }}</label></div>
                         <div class="col-md-7 col-xs-9 col-sm-8">
-                            <p class="pull-left">500 Мб</p>
-                            <button type="button" class="btn btn-warning pull-right">Очистить кэш</button>
+                            <p class="pull-left">{{ device.cache |  bytes }}</p>
+                            <button type="button" class="btn btn-warning pull-right">{{ 'device_clearcache' | translate }}</button>
                         </div>
                     </div>
 
                     <div class="row">
-                        <div class="col-md-5 col-xs-3 col-sm-4"><label>Ориентация</label></div>
+                        <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'device_orientation' | translate }}</label></div>
                         <div class="col-md-7 col-xs-9 col-sm-8">
-                            <select class="styler">
-                                <option>Горизонтальная </option>
-                                <option>Вертыкальна </option>
+                            <select class="styler" ng-model="device.orientation">
+                                <option value="1">{{ 'device_horizontalorientation' | translate }}</option>
+                                <option value="2">{{ 'device_verticalorientation' | translate }}</option>
+                                <option value="3">{{ 'device_verticalorientation_emu' | translate }}</option>
                             </select>
                         </div>
                     </div>
 
                     <div class="row">
-                        <div class="col-md-5 col-xs-3 col-sm-4"><label>Аудио-выход</label></div>
+                        <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'device_audioaut' | translate }}</label></div>
                         <div class="col-md-7 col-xs-9 col-sm-8">
-                            <select class="styler">
-                                <option>HDMI</option>
-                                <option>HDMI 2</option>
+                            <select class="styler" ng-model="device.audioOut">
+                                <option value="1">HDMI</option>
+                                <option value="2">Mini jack</option>
                             </select>
                         </div>
                     </div>
 
                     <div class="row" style="padding-top:20px;">
-                        <div class="col-md-5 col-xs-3 col-sm-4"><label>Выбор кампании</label></div>
+                        <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'device_choosecampaign' | translate }}</label></div>
                         <div class="col-md-7 col-xs-9 col-sm-8">
                             <ul class="opting-list btn-group" data-toggle="buttons">
-                                <li>
+                                <li ng-repeat="campaign in campaigns"
+                                    ng-show="device.campaignId.indexOf(campaign.id) != -1">
                                     <label class="btn btn-primary active">
-                                        <input type="checkbox" autocomplete="off" checked><span class="glyphicon glyphicon-play"></span> Кампания Наполеона
+                                        <input type="checkbox" autocomplete="off" checked><span class="glyphicon glyphicon-play"></span> {{campaign.name}}
                                     </label>
                                     <a class="close" href="#"><span class="glyphicon glyphicon-remove"></span></a>
-                                </li>
-
-                                <li>
-                                    <label class="btn btn-primary">
-                                        <input type="checkbox" autocomplete="off"><span class="glyphicon glyphicon-play"></span> Кампания Наполеона 2
-                                    </label>
-                                    <a class="close" href="#"><span class="glyphicon glyphicon-remove"></span></a>
-                                </li>  
-
-                                <li>
-                                    <label class="btn btn-primary">
-                                        <input type="checkbox" autocomplete="off"><span class="glyphicon glyphicon-play"></span> Кампания Наполеона 2
-                                    </label>
-                                    <a class="close" href="#"><span class="glyphicon glyphicon-remove"></span></a>
-                                </li>      
+                                </li>     
                             </ul>
-                            <button type="button" class="btn btn-info pull-right" data-toggle="modal" data-target="#add-company">Добавить кампанию</button>
+                            <button type="button" class="btn btn-info pull-right" data-toggle="modal" data-target="#add-company">{{ 'device_addcampaign' | translate }}</button>
                         </div>
                     </div>
 
@@ -104,75 +94,26 @@
                         <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'campaign_edit_workdays' | translate }}</label></div>
                         <div class="col-md-7 col-xs-9 col-sm-8">
                             <div class="btn-group days" data-toggle="buttons">
-                               <label  class="btn btn-primary ">
-                                    <input type="checkbox"  >
-                                    Пн
-                                </label>
-                                <label  class="btn btn-primary ">
-                                    <input type="checkbox"  >
-                                    Вт
-                                </label>
-                                <label  class="btn btn-primary ">
-                                    <input type="checkbox"  >
-                                    Ср
-                                </label>
-                                <label  class="btn btn-primary ">
-                                    <input type="checkbox"  >
-                                    Чт
-                                </label>
-                                <label  class="btn btn-primary ">
-                                    <input type="checkbox"  >
-                                    Пт
-                                </label>
-                                <label  class="btn btn-primary ">
-                                    <input type="checkbox"  >
-                                    Сб
-                                </label>
-                                <label  class="btn btn-primary ">
-                                    <input type="checkbox"  >
-                                    Вс
+                               <label  class="btn btn-primary " ng-repeat="day in workdays">
+                                     {{ day | translate }}
                                 </label>
                             </div>
                         </div>
                     </div>
                     <div  class="row operation-time">
-                        <div class="col-md-5 col-xs-3 col-sm-4"><label>Время работы</label></div>
+                        <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'device_worktime' | translate }}</label></div>
                         <div class="col-md-7 col-xs-9 col-sm-8">
                             <ul>
-                                <li><span>с</span></li>
+                                <li></span></li>
                                 <li>
                                     <select class="styler">
-                                        <option>08:00</option>
-                                        <option>09:00</option>
-                                        <option>10:00</option>
-                                        <option>11:00</option>
-                                        <option>12:00</option>
-                                        <option>13:00</option>
-                                        <option>14:00</option>
-                                        <option>15:00</option>
-                                        <option>16:00</option>
-                                        <option>17:00</option>
-                                        <option>18:00</option>
-                                        <option>19:00</option>
-                                        <option>20:00</option>
+                                        <option ng-repeat="hour in workhours">{{hour}}</option>
                                     </select>
                                 </li>
-                                <li><span>до</span></li>
+                                <li><span> - </span></li>
                                 <li>
                                     <select class="styler">
-                                        <option>08:00</option>
-                                        <option>09:00</option>
-                                        <option>10:00</option>
-                                        <option>11:00</option>
-                                        <option>12:00</option>
-                                        <option>13:00</option>
-                                        <option>14:00</option>
-                                        <option>15:00</option>
-                                        <option>16:00</option>
-                                        <option>17:00</option>
-                                        <option>18:00</option>
-                                        <option>19:00</option>
-                                        <option>20:00</option>
+                                        <option ng-repeat="hour in workhours">{{hour}}</option>
                                     </select>
                                 </li>
                             </ul>
@@ -181,9 +122,9 @@
                 </div>
                 <div class="button-wrap">
                     <div class="form-group">
-                        <button type="submit" class="btn btn-primary ng-binding">Сохранить кампанию</button>
+                        <button type="submit" ng-click="change_device(device)" class="btn btn-primary ng-binding">{{ 'device_save' | translate }}</button>
                         <button type="button" class="btn btn-default ng-binding" style="margin-left: 15px;">Отмена</button>
-                        <button type="button" class="btn btn-default pull-right">В архив</button>
+                        <button type="button" ng-click="delete_device(device)" class="btn btn-default pull-right" >{{ 'device_remove' | translate }}</button>
                     </div>
                 </div>
             </div>
@@ -255,76 +196,6 @@
                     </div>
                 </div>
             </div>
-
-            <div class="col-md-4">
-                <div class="form-group">
-                    <label class="control-label">{{ 'device_devicenumber' | translate }}: {{device.uuid}}</label>
-                    <span ng-if="device.status == 2" class="label label-success pull-right">{{ 'device_status' | translate }}</span>
-                    <span ng-if="device.status == 3" class="label label-danger pull-right">{{ 'device_status' | translate }}</span>
-                </div>
-                <div class="form-group">
-                    <select class="form-control" ng-model="device.campaignId" data-ng-options="campaign.id as campaign.name for campaign in device.campaigns">
-                        <option value="">{{ 'device_selectcompany' | translate }}</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <select class="form-control" ng-model="device.orientation">
-                        <option value="1">{{ 'device_horizontalorientation' | translate }}</option>
-                        <option value="2">{{ 'device_verticalorientation' | translate }}</option>
-                        <option value="3">{{ 'device_verticalorientation_emu' | translate }}</option>
-                    </select>
-                </div>
-                <!--<div class="form-group" style="margin-bottom: 0px;">-->
-                    <!--<form class="form-inline" role="form">-->
-                        <!--<div class="form-group">-->
-                            <!--<select class="form-control" ng-model="device.resolution">-->
-                                <!--<option value="1">1920x1080</option>-->
-                                <!--<option value="2">1366x768</option>-->
-                                <!--<option value="3">1280x1024</option>-->
-                                <!--<option value="4">1280x800</option>-->
-                                <!--<option value="5">1024x768</option>-->
-                            <!--</select>-->
-                        <!--</div>-->
-                        <!--&lt;!&ndash;<div class="form-group" style="margin-left: 15px;">&ndash;&gt;-->
-                            <!--&lt;!&ndash;<div class="checkbox">&ndash;&gt;-->
-                                <!--&lt;!&ndash;<label>&ndash;&gt;-->
-                                    <!--&lt;!&ndash;<input type="checkbox"> {{ 'device_sound' | translate }}&ndash;&gt;-->
-                                <!--&lt;!&ndash;</label>&ndash;&gt;-->
-                            <!--&lt;!&ndash;</div>&ndash;&gt;-->
-                        <!--&lt;!&ndash;</div>&ndash;&gt;-->
-                    <!--</form>-->
-                <!--</div>-->
-            </div>
-
-            <div class="col-md-5">
-                <div class="form-group ">
-                    <textarea ng-model="device.description" rows="4" cols="45" placeholder="{{ 'device_description' | translate }}"></textarea>
-                </div>
-            </div>
-
-            <div class="col-md-3">
-                <div class="clearfix">
-                    <div class="form-group pull-right">
-                        <span style="font-weight: bolder;">{{ 'device_space' | translate }}: {{ device.space |  bytes }}</span>
-                    </div>
-                </div>
-                <!--<div class="form-group pull-right">-->
-                    <!--<button type="button" class="btn btn-warning">{{ 'device_clearthecache' | translate }}</button>-->
-                <!--</div>-->
-                <div class="clearfix">
-                    <div class="form-group pull-right">
-                        <button ng-click="change_device(device)" type="button" class="btn btn-success" style="margin-right: 5px;">{{ 'device_save' | translate }}</button>
-                    </div>
-                    <div class="form-group pull-right">
-                        <button ng-click="delete_device(device)" type="button" class="btn btn-success" style="margin-right: 5px;">{{ 'device_remove' | translate }}</button>
-                    </div>
-                </div>
-                <div class="clearfix">
-                    <div class="form-group pull-right">
-                        Дата обнавления: {{timeconvert(device.lastRequestDate)}}
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 </div>
@@ -336,111 +207,15 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only"></span></button>
-                <h4 class="modal-title" id="myModalLabel">Добавить кампании</h4>
+                <h4 class="modal-title" id="myModalLabel">{{ 'device_addcampaign' | translate }}</h4>
             </div>
             <div class="modal-body">
                 <div class="add-company-list mCustomScrollbar">
                     <ul class="btn-group" data-toggle="buttons">
-                        <li>
+                        <li ng-repeat="campaign in campaigns">
                            <label  class="btn btn-primary ">
                                 <input type="checkbox"  >
-                                Кампания Наполеона 
-                                <span class="glyphicon glyphicon-ok"></span>
-                            </label>
-                        </li>
-
-                        <li>
-                           <label  class="btn btn-primary ">
-                                <input type="checkbox"  >
-                                Кампания Наполеона 
-                                <span class="glyphicon glyphicon-ok"></span>
-                            </label>
-                        </li>
-
-                        <li>
-                           <label  class="btn btn-primary ">
-                                <input type="checkbox"  >
-                                Кампания Наполеона 
-                                <span class="glyphicon glyphicon-ok"></span>
-                            </label>
-                        </li>
-
-                        <li>
-                           <label  class="btn btn-primary ">
-                                <input type="checkbox"  >
-                                Кампания Наполеона 
-                                <span class="glyphicon glyphicon-ok"></span>
-                            </label>
-                        </li>
-
-                        <li>
-                           <label  class="btn btn-primary ">
-                                <input type="checkbox"  >
-                                Кампания Наполеона 
-                                <span class="glyphicon glyphicon-ok"></span>
-                            </label>
-                        </li>
-
-                        <li>
-                           <label  class="btn btn-primary ">
-                                <input type="checkbox"  >
-                                Кампания Наполеона 
-                                <span class="glyphicon glyphicon-ok"></span>
-                            </label>
-                        </li>
-
-                        <li>
-                           <label  class="btn btn-primary ">
-                                <input type="checkbox"  >
-                                Кампания Наполеона 
-                                <span class="glyphicon glyphicon-ok"></span>
-                            </label>
-                        </li>
-
-                        <li>
-                           <label  class="btn btn-primary ">
-                                <input type="checkbox"  >
-                                Кампания Наполеона 
-                                <span class="glyphicon glyphicon-ok"></span>
-                            </label>
-                        </li>
-
-                        <li>
-                           <label  class="btn btn-primary ">
-                                <input type="checkbox"  >
-                                Кампания Наполеона 
-                                <span class="glyphicon glyphicon-ok"></span>
-                            </label>
-                        </li>
-
-                        <li>
-                           <label  class="btn btn-primary ">
-                                <input type="checkbox"  >
-                                Кампания Наполеона 
-                                <span class="glyphicon glyphicon-ok"></span>
-                            </label>
-                        </li>
-
-                        <li>
-                           <label  class="btn btn-primary ">
-                                <input type="checkbox"  >
-                                Кампания Наполеона 
-                                <span class="glyphicon glyphicon-ok"></span>
-                            </label>
-                        </li>
-
-                        <li>
-                           <label  class="btn btn-primary ">
-                                <input type="checkbox"  >
-                                Кампания Наполеона 
-                                <span class="glyphicon glyphicon-ok"></span>
-                            </label>
-                        </li>
-
-                        <li>
-                           <label  class="btn btn-primary ">
-                                <input type="checkbox"  >
-                                Кампания Наполеона 
+                                {{campaign.name}}
                                 <span class="glyphicon glyphicon-ok"></span>
                             </label>
                         </li>
@@ -448,8 +223,8 @@
                 </div>
 
                 <div class="bottom-buttons">
-                    <button type="button" class="btn btn-success">Добавить </button>
-                    <button type="button" class="btn btn-default">Отмена</button>
+                    <button type="button" class="btn btn-success">{{ 'device_add' | translate }} </button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{{ 'campaign_edit_cancel' | translate }}</button>
                 </div>
             </div>
         </div>

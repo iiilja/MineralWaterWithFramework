@@ -429,6 +429,7 @@ app.controller('DevicesController', ['$scope', 'token', 'Device', 'sysMessage', 
             Device.get_data({token: token.get()}, function (response) {
                 console.log(response);
                 $scope.devices = response.devices;
+                $scope.campaigns = response.campaigns;
             });
             $scope.change_device = function(device) {
                 Device.update({token: token.get(), id: device.id, orientation: parseInt(device.orientation), resolution: parseInt(device.resolution), campaignId: parseInt(device.campaignId), description: device.description }, function (response) {
@@ -452,5 +453,11 @@ app.controller('DevicesController', ['$scope', 'token', 'Device', 'sysMessage', 
                     });
                 });
             };
+            
+            $scope.workdays = ['mo', 'tu', 'we', 'th', 'fr', 'sa', 'su'];
+            $scope.workhours = [];
+            for (var i = 0; i < 24; i++) {
+                 $scope.workhours.push(i + ":00");
+            }
         };
     }]);

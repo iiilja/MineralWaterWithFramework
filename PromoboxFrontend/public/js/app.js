@@ -459,6 +459,10 @@ app.controller('DevicesController', ['$scope', 'token', 'Device', 'sysMessage', 
                 });
             };
             
+            $scope.clearCache =  function(deviceId) {
+                Device.clearCache({token: token.get() , id: deviceId});
+            }
+            
             $scope.workdays = ['mo', 'tu', 'we', 'th', 'fr', 'sa', 'su'];
             $scope.toggleWorkDay = function(device, day) {
                 device[day] = !device[day];

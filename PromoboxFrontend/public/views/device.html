@@ -35,7 +35,7 @@
                         <h4>{{ 'device_currentcompany' | translate }}</h4>
                         <p>{{device.currentCamp.name}}</p>
                         <ul>
-                            <li><span class="glyphicon glyphicon-play"></span> device.currentCamp.ашду</li>
+                            <li><span class="glyphicon glyphicon-play"></span> device.currentCamp.file</li>
                         </ul>
                     </div>
                     <div ng-if="device.loadingCamp">
@@ -58,7 +58,8 @@
                         <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'device_cache' | translate }}</label></div>
                         <div class="col-md-7 col-xs-9 col-sm-8">
                             <p class="pull-left">{{ device.cache |  bytes }}</p>
-                            <button type="button" class="btn btn-warning pull-right">{{ 'device_clearcache' | translate }}</button>
+                            <button type="button" class="btn btn-warning pull-right"
+                                    ng-click="clearCache(device.id)">{{ 'device_clearcache' | translate }}</button>
                         </div>
                     </div>
 

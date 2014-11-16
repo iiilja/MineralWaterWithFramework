@@ -64,6 +64,7 @@ public class DevicesController {
             JSONObject objectGiven = new JSONObject(json);
 
             d.setFreeSpace(objectGiven.getLong("freeSpace"));
+            d.setCache(objectGiven.getLong("cache"));
             d.setCurrentFileId(objectGiven.has("currentFileId") ? objectGiven.getInt("currentFileId") : null);
             d.setCurrentCampaignId(objectGiven.has("currentCampaignId") ? objectGiven.getInt("currentCampaignId") : null);
             d.setLoadingCampaignId(objectGiven.has("loadingCampaingId") ? objectGiven.getInt("loadingCampaingId") : null);
@@ -511,12 +512,13 @@ public class DevicesController {
             resp.put("uuid", device.getUuid());
             resp.put("status", device.getStatus());
             resp.put("freeSpace", device.getFreeSpace());
+            resp.put("cache", device.getCache());
             resp.put("orientation", device.getOrientation());
             resp.put("resolution", device.getResolution());
             resp.put("description", device.getDescription());
             resp.put("audioOut", device.getAudioOut());
             
-            resp.put("workStartAt", formatTimeString(device.getWorkEndAt()));
+            resp.put("workStartAt", formatTimeString(device.getWorkStartAt()));
             resp.put("workEndAt", formatTimeString(device.getWorkEndAt()));
 
             resp.put("mon", device.isMon());

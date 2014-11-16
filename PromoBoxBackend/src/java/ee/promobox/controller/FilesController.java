@@ -91,7 +91,7 @@ public class FilesController {
                 
                 JSONArray filesOrderArray = objectGiven.getJSONArray("filesOrder");
                 for (int i = 0; i < filesOrderArray.length(); i++) {
-                    int fileId = filesOrderArray.getJSONObject(i).getInt("fileId");
+                    int fileId = filesOrderArray.getJSONObject(i).getInt("id");
                     int orderId = filesOrderArray.getJSONObject(i).getInt("orderId");
                     
                     userService.updateCampaignFileOrder(fileId, orderId, campaignId, session.getClientId());

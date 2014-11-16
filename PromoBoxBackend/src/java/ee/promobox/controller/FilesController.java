@@ -420,6 +420,7 @@ public class FilesController {
             
             jsonCampaignFile.put("id", file.getId());
             jsonCampaignFile.put("fileId",file.getFileId());
+            jsonCampaignFile.put("orderId",file.getOrderId());
             jsonCampaignFile.put("name", file.getFilename());
             jsonCampaignFile.put("created", file.getCreatedDt());
             jsonCampaignFile.put("status", file.getStatus());

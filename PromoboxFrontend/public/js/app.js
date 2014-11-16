@@ -460,6 +460,9 @@ app.controller('DevicesController', ['$scope', 'token', 'Device', 'sysMessage', 
             };
             
             $scope.workdays = ['mo', 'tu', 'we', 'th', 'fr', 'sa', 'su'];
+            $scope.toggleWorkDay = function(device, day) {
+                device[day] = !device[day];
+            }
             $scope.workhours = [];
             for (var i = 0; i < 24; i++) {
                  $scope.workhours.push(i + ":00");

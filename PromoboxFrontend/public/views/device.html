@@ -30,20 +30,23 @@
                         </p>
                     </div>
                 </div>
-                <div class="company-info success" ng-class="device.status == 2 ? 'success' ? (device.status == 1 ? 'warning' : 'danger')">
-                    <h4>{{ 'device_currentcompany' | translate }}</h4>
-                    <p>Кампания Наполеона </p>
-                    <ul>
-                        <li><span class="glyphicon glyphicon-play"></span> testvideo.mov</li>
-                        <li><span class="glyphicon glyphicon-play"></span> testaudiotest.mp3</li>
-                    </ul>
-                    <h4>{{ 'device_companyloading' | translate }}</h4>
+                <div class="company-info success" ng-class="device.status == 2 ? 'success' : (device.status == 1 ? 'warning' : 'danger')">
+                    <div ng-if="device.currentCamp">
+                        <h4>{{ 'device_currentcompany' | translate }}</h4>
+                        <p>{{device.currentCamp.name}}</p>
+                        <ul>
+                            <li><span class="glyphicon glyphicon-play"></span> device.currentCamp.ашду</li>
+                        </ul>
+                    </div>
+                    <div ng-if="device.loadingCamp">
+                        <h4>{{ 'device_companyloading' | translate }}</h4>
 
-                    <p class="progress-name">Кампания Наполеона 2</p>
+                        <p class="progress-name">{{device.loadingCamp.name}}</p>
 
-                    <div class="progress">
-                        <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: {{device.loadingCampaingProgress}}%;">
-                            {{device.loadingCampaingProgress}}%
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: {{device.loadingCampaingProgress}}%;">
+                                {{device.loadingCampaingProgress}}%
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -99,8 +102,11 @@
                     <div class="row" style="padding-top:20px;">
                         <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'campaign_edit_workdays' | translate }}</label></div>
                         <div class="col-md-7 col-xs-9 col-sm-8">
-                            <div class="btn-group days" data-toggle="buttons">
-                               <label  class="btn btn-primary " ng-repeat="day in workdays">
+                            <div class="btn-group days">
+                               <label  class="btn btn-primary " 
+                                       ng-class="device[day] ? 'active' : ''"
+                                       ng-repeat="day in workdays"
+                                       ng-click="toggleWorkDay(device, day)">
                                      {{ day | translate }}
                                 </label>
                             </div>

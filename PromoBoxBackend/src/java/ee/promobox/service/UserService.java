@@ -75,4 +75,6 @@ public interface UserService {
     public void addDeviceAdCampaign(DevicesCampaigns dc);
     
     public CampaignsFiles findCampaignFileById(int fileId);
+    
+    public void deleteDeviceCampaign(int deviceId, int campaignId);
 }

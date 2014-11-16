@@ -192,6 +192,7 @@ public class DevicesController {
                     }
 
                     jsonD.put("space", d.getFreeSpace());
+                    jsonD.put("cache", d.getCache());
                     jsonD.put("currentFileId", d.getCurrentFileId());
                     jsonD.put("loadingCampaingId", d.getLoadingCampaignId());
                     jsonD.put("loadingCampaingProgress", d.getLoadingCampaignProgress());
@@ -317,6 +318,39 @@ public class DevicesController {
         }
 
     }
+    
+    @RequestMapping(value = "token/{token}/devices/{id}/campaign/{campaignId}", method = RequestMethod.DELETE)
+    public void deleteDeviceCampaign(
+            @PathVariable("token") String token,
+            @PathVariable("id") int id,
+            @PathVariable("campaignId") int campaignId,
+            HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+
+        JSONObject resp = new JSONObject();
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+        Session session = sessionService.findSession(token);
+
+        if (session != null) {
+
+            Devices device = userService.findDeviceByIdAndClientId(id, session.getClientId());
+
+            if (device != null) {
+                userService.deleteDeviceCampaign(device.getId(), campaignId);
+                
+                response.setStatus(HttpServletResponse.SC_OK);
+
+                RequestUtils.printResult(resp.toString(), response);
+                
+                return;
+            }
+
+        }
+        
+        RequestUtils.sendUnauthorized(response);
+    }
+
 
     @RequestMapping(value = "token/{token}/devices/{id}", method = RequestMethod.PUT)
     public void updateDevice(

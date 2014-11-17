@@ -130,6 +130,12 @@ public class CampaignsController {
                     jsonCampaign.put("status", campaign.getStatus());
                     jsonCampaign.put("finish", campaign.getFinish() == null ? null : campaign.getFinish().getTime());
                     jsonCampaign.put("start", campaign.getStart() == null ? null : campaign.getStart().getTime());
+                    jsonCampaign.put("countFiles", campaign.getCountFiles());
+                    jsonCampaign.put("countImages", campaign.getCountImages());
+                    jsonCampaign.put("countAudios", campaign.getCountAudios());
+                    jsonCampaign.put("countVideos", campaign.getCountVideos());
+                    jsonCampaign.put("audioLength", campaign.getAudioLength());
+                    jsonCampaign.put("videoLength", campaign.getVideoLength());
 
                     campaignsArray.put(jsonCampaign);
                 }

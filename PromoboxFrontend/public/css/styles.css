@@ -277,7 +277,7 @@ input[readonly] {
     background: #fff;
     padding: 0 12px;
     margin-bottom: 10px;
-    width: 570px;
+    width: 755px;
 }
 
 .setting-btn {
@@ -360,7 +360,7 @@ input[readonly] {
 }
 .label-row .datepicker-wrap {
     float: left;
-    width: 152px;
+    width: 240px;
 }
 
 .label-row .datepicker-wrap .input-group-addon {
@@ -447,8 +447,17 @@ input[readonly] {
 .hours-list label:nth-child(odd) {
     background: #5499d3;
 }
+
+.hours-list label.active {
+    background: #0E63AB;
+    box-shadow: none;
+}
 .hours-list.gray label {
     color: #9f9f9f;
+}
+.hours-list.gray label.active {
+    background: #ccc;
+    box-shadow: none;
 }
 .hours-list.gray label:nth-child(even) {
     background: #f8f8f8;
@@ -490,7 +499,7 @@ input[readonly] {
 }
 
 .button-wrap {
-    width: 570px;
+    width: 755px;
 }
 
 .mCustomScrollbar .mCSB_inside > .mCSB_container {
@@ -671,7 +680,7 @@ input[readonly] {
 }
 
 .device .device-info {
-    width: 386px;
+    width: 445px;
     height: 202px;
     border:1px solid #cccccc;
     -webkit-border-radius: 5px 0 0 5px;
@@ -838,7 +847,7 @@ input[readonly] {
 }
 
 .preferences-wrap {
-    width: 570px;
+    width: 755px;
 }
 
 .preferences {
@@ -1042,4 +1051,8 @@ input[readonly] {
 .add-company-list ul li label.active span {
     opacity: 1;
     filter:alpha(opacity=100);
+}
+
+.jq-selectbox__dropdown ul {
+    max-height: 200px;
 }

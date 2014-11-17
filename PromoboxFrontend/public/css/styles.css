@@ -451,13 +451,15 @@ input[readonly] {
 .hours-list label.active {
     background: #0E63AB;
     box-shadow: none;
+    color: #fff;
 }
 .hours-list.gray label {
     color: #9f9f9f;
 }
 .hours-list.gray label.active {
-    background: #ccc;
-    box-shadow: none;
+    background: #ccc!important;
+    box-shadow: none!important;
+    color: #fff!important;
 }
 .hours-list.gray label:nth-child(even) {
     background: #f8f8f8;

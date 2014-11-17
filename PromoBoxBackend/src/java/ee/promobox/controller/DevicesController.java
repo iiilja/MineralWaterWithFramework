@@ -36,11 +36,11 @@ import org.springframework.web.bind.annotation.*;
  */
 @Controller
 public class DevicesController {
-    
+
     private final static Logger log = LoggerFactory.getLogger(
             DevicesController.class);
-    
-    private final static  SimpleDateFormat timeFormat = new SimpleDateFormat("H:mm");
+
+    private final static SimpleDateFormat timeFormat = new SimpleDateFormat("H:mm");
 
     @Autowired
     private UserService userService;
@@ -69,7 +69,7 @@ public class DevicesController {
             d.setCurrentCampaignId(objectGiven.has("currentCampaignId") ? objectGiven.getInt("currentCampaignId") : null);
             d.setLoadingCampaignId(objectGiven.has("loadingCampaingId") ? objectGiven.getInt("loadingCampaingId") : null);
             d.setLoadingCampaignProgress(objectGiven.has("loadingCampaingProgress") ? objectGiven.getInt("loadingCampaingProgress") : null);
-            
+
             if (objectGiven.has("ip")) {
                 d.setNetworkData(objectGiven.getJSONArray("ip").toString());
             }
@@ -77,11 +77,10 @@ public class DevicesController {
             resp.put("lastUpdate", d.getLastDeviceRequestDt().getTime());
             resp.put("orientation", d.getOrientation());
             resp.put("clearCache", d.isClearCache());
-            
+
             d.setClearCache(false);
 
             JSONArray campaigns = new JSONArray();
-            
 
             DevicesCampaigns dc = userService.findLastUpdatedDeviceCampaign(d.getId());
 
@@ -89,9 +88,9 @@ public class DevicesController {
 
                 if (dc.getUpdatedDt().after(d.getLastDeviceRequestDt()) || objectGiven.has("force")) {
 
-                    for (AdCampaigns ad: userService.findCampaignByDeviceId(d.getId())) {
+                    for (AdCampaigns ad : userService.findCampaignByDeviceId(d.getId())) {
                         JSONObject campaign = new JSONObject();
-                        
+
                         campaign.put("campaignId", ad.getId());
                         campaign.put("campaignName", ad.getName());
                         campaign.put("campaignStatus", ad.getStatus());
@@ -101,7 +100,7 @@ public class DevicesController {
                         campaign.put("sequence", ad.getSequence());
                         campaign.put("duration", ad.getDuration());
                         campaign.put("updateDate", ad.getUpdateDate().getTime());
-                        
+
                         try {
                             JSONObject workTimeData = new JSONObject(ad.getWorkTimeData());
 
@@ -111,7 +110,7 @@ public class DevicesController {
                         } catch (Exception ex) {
                             log.error(ex.getMessage(), ex);
                         }
-                        
+
                         List<CampaignsFiles> campaignFiles = userService.findUsersCampaignFiles(dc.getAdCampaignsId(), d.getClientId());
 
                         if (!campaignFiles.isEmpty()) {
@@ -131,10 +130,10 @@ public class DevicesController {
 
                             campaign.put("files", jsonCampaignFiles);
                         }
-                        
+
                         campaigns.put(campaign);
                     }
-                    
+
                     resp.put("campaigns", campaigns);
                 }
 
@@ -150,12 +149,12 @@ public class DevicesController {
             }
 
         } else {
-             resp.put("status", "error");
-             resp.put("error", "not_found_device");
-             
-             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-             
-             RequestUtils.printResult(resp.toString(), response);
+            resp.put("status", "error");
+            resp.put("error", "not_found_device");
+
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+
+            RequestUtils.printResult(resp.toString(), response);
         }
     }
 
@@ -199,37 +198,37 @@ public class DevicesController {
                     jsonD.put("orientation", d.getOrientation());
                     jsonD.put("resolution", d.getResolution());
                     jsonD.put("audioOut", d.getAudioOut());
-                    
+
                     if (d.getCurrentCampaignId() != null) {
                         AdCampaigns campaign = userService.findCampaignByIdAndClientId(d.getCurrentCampaignId(), session.getClientId());
                         if (campaign != null) {
                             JSONObject currentCampaign = new JSONObject();
                             currentCampaign.put("id", campaign.getId());
                             currentCampaign.put("name", campaign.getName());
-                            
+
                             CampaignsFiles currentFile = userService.findCampaignFile(d.getCurrentFileId(), session.getClientId());
                             if (currentFile != null) {
                                 currentCampaign.put("file", currentFile.getFilename());
                             }
-                            
+
                             jsonD.put("currentCamp", currentCampaign);
                         }
                     }
-                    
+
                     if (d.getLoadingCampaignId() != null) {
                         AdCampaigns campaign = userService.findCampaignByIdAndClientId(d.getLoadingCampaignId(), session.getClientId());
                         if (campaign != null) {
                             JSONObject loadingCampaign = new JSONObject();
                             loadingCampaign.put("id", campaign.getId());
                             loadingCampaign.put("name", campaign.getName());
-                            
+
                             jsonD.put("loadingCamp", loadingCampaign);
                         }
                     }
-                    
+
                     jsonD.put("workStartAt", formatTimeString(d.getWorkStartAt()));
                     jsonD.put("workEndAt", formatTimeString(d.getWorkEndAt()));
-                    
+
                     jsonD.put("mo", d.isMon());
                     jsonD.put("tu", d.isTue());
                     jsonD.put("we", d.isWed());
@@ -237,7 +236,7 @@ public class DevicesController {
                     jsonD.put("fr", d.isFri());
                     jsonD.put("sa", d.isSat());
                     jsonD.put("su", d.isSun());
-                    
+
                     jsonD.put("description", d.getDescription());
                     jsonD.put("lastRequestDate", d.getLastDeviceRequestDt().getTime());
 
@@ -250,7 +249,7 @@ public class DevicesController {
                         }
                         jsonD.put("campaignIds", campaignIds);
                     } else {
-                        jsonD.put("campaignId", -1);
+                        jsonD.put("campaignIds", -1);
                     }
 
                     List<AdCampaigns> adCampaignses = userService.findUserAdCompaigns(session.getClientId());
@@ -318,7 +317,7 @@ public class DevicesController {
         }
 
     }
-    
+
     @RequestMapping(value = "token/{token}/devices/{id}/campaign/{campaignId}", method = RequestMethod.DELETE)
     public void deleteDeviceCampaign(
             @PathVariable("token") String token,
@@ -338,19 +337,18 @@ public class DevicesController {
 
             if (device != null) {
                 userService.deleteDeviceCampaign(device.getId(), campaignId);
-                
+
                 response.setStatus(HttpServletResponse.SC_OK);
 
                 RequestUtils.printResult(resp.toString(), response);
-                
+
                 return;
             }
 
         }
-        
+
         RequestUtils.sendUnauthorized(response);
     }
-
 
     @RequestMapping(value = "token/{token}/devices/{id}", method = RequestMethod.PUT)
     public void updateDevice(
@@ -378,10 +376,10 @@ public class DevicesController {
                 device.setResolution(deviceUpdate.getInt("resolution"));
                 device.setDescription(deviceUpdate.getString("description"));
                 device.setAudioOut(deviceUpdate.getInt("audioOut"));
-                
+
                 device.setWorkStartAt(parseTimeString(deviceUpdate.getString("workStartAt")));
                 device.setWorkEndAt(parseTimeString(deviceUpdate.getString("workEndAt")));
-                
+
                 device.setMon(deviceUpdate.getBoolean("mo"));
                 device.setTue(deviceUpdate.getBoolean("tu"));
                 device.setWed(deviceUpdate.getBoolean("we"));
@@ -390,42 +388,45 @@ public class DevicesController {
                 device.setSat(deviceUpdate.getBoolean("sa"));
                 device.setSun(deviceUpdate.getBoolean("su"));
 
-                int campaignId = deviceUpdate.getInt("campaignId");
-                DevicesCampaigns devicesCampaigns = userService.findDeviceCampaignByCampaignId(device.getId(), campaignId);
+                for (int i = 0; i < deviceUpdate.getJSONArray("campaignIds").length(); i++) {
+                    int campaignId = deviceUpdate.getJSONArray("campaignIds").getInt(i);
 
-                if (devicesCampaigns == null ) {
-                    
-                    AdCampaigns newAd = userService.findCampaignByCampaignId(campaignId);
-                    
-                    boolean timeIntersection = false;
-                    for (AdCampaigns ad: userService.findCampaignByDeviceId(device.getId())) {
-                        if (checkTimeIntersection(newAd, ad)) {
-                            timeIntersection = true;
-                            
-                            break;
+                    DevicesCampaigns devicesCampaigns = userService.findDeviceCampaignByCampaignId(device.getId(), campaignId);
+
+                    if (devicesCampaigns == null) {
+
+                        AdCampaigns newAd = userService.findCampaignByCampaignId(campaignId);
+
+                        boolean timeIntersection = false;
+                        for (AdCampaigns ad : userService.findCampaignByDeviceId(device.getId())) {
+                            if (checkTimeIntersection(newAd, ad)) {
+                                timeIntersection = true;
+
+                                break;
+                            }
                         }
-                    }
-                    
-                    if (!timeIntersection) {
-                        devicesCampaigns = new DevicesCampaigns();
 
-                        devicesCampaigns.setDeviceId(device.getId());
+                        if (!timeIntersection) {
+                            devicesCampaigns = new DevicesCampaigns();
+
+                            devicesCampaigns.setDeviceId(device.getId());
+                            devicesCampaigns.setAdCampaignsId(campaignId);
+                            devicesCampaigns.setUpdatedDt(new Date());
+
+                            userService.addDeviceAdCampaign(devicesCampaigns);
+
+                            userService.updateDevice(device);
+                        } else {
+                            resp.put("ERROR", "time_intersection");
+                        }
+                    } else {
                         devicesCampaigns.setAdCampaignsId(campaignId);
                         devicesCampaigns.setUpdatedDt(new Date());
 
-                        userService.addDeviceAdCampaign(devicesCampaigns);
-                        
-                        userService.updateDevice(device);
-                    } else {
-                        resp.put("ERROR", "time_intersection");
-                    }
-                } else {
-                    devicesCampaigns.setAdCampaignsId(campaignId);
-                    devicesCampaigns.setUpdatedDt(new Date());
+                        userService.updateDeviceAdCampaign(devicesCampaigns);
 
-                    userService.updateDeviceAdCampaign(devicesCampaigns);
-                    
-                    userService.updateDevice(device);
+                        userService.updateDevice(device);
+                    }
                 }
 
                 response.setStatus(HttpServletResponse.SC_OK);
@@ -437,8 +438,7 @@ public class DevicesController {
             }
         }
     }
-    
-    
+
     private boolean checkTimeIntersection(AdCampaigns campaign1, AdCampaigns campaign2) {
         try {
             JSONObject workTime1 = new JSONObject(campaign1.getWorkTimeData());
@@ -476,7 +476,7 @@ public class DevicesController {
 
         return false;
     }
-    
+
     @RequestMapping(value = "token/{token}/devices/{id}/clearcache", method = RequestMethod.PUT)
     public void clearDeviceCache(
             @PathVariable("token") String token,
@@ -497,7 +497,7 @@ public class DevicesController {
             if (device != null) {
 
                 device.setClearCache(true);
-                
+
                 userService.updateDevice(device);
 
                 response.setStatus(HttpServletResponse.SC_OK);
@@ -509,23 +509,23 @@ public class DevicesController {
             }
         }
     }
-    
+
     private Date parseTimeString(String timeString) {
         Calendar cal = GregorianCalendar.getInstance();
-        
+
         try {
             String[] timeParts = timeString.split(":");
             int hour = Integer.parseInt(timeParts[0]);
             int min = Integer.parseInt(timeParts[1]);
             cal.set(0, 0, 0, hour, min, 0);
-            
+
         } catch (Exception ex) {
             log.error(ex.getMessage(), ex);
         }
-        
+
         return cal.getTime();
     }
-    
+
     private String formatTimeString(Date time) {
         return timeFormat.format(time);
     }
@@ -556,7 +556,7 @@ public class DevicesController {
             device.setUuid(UUID.randomUUID().toString().substring(0, 4));
             device.setDescription("");
             device.setNetworkData("");
-            
+
             device.setWorkStartAt(parseTimeString("9:00"));
             device.setWorkEndAt(parseTimeString("20:00"));
 
@@ -579,7 +579,7 @@ public class DevicesController {
             resp.put("resolution", device.getResolution());
             resp.put("description", device.getDescription());
             resp.put("audioOut", device.getAudioOut());
-            
+
             resp.put("workStartAt", formatTimeString(device.getWorkStartAt()));
             resp.put("workEndAt", formatTimeString(device.getWorkEndAt()));
 
@@ -600,8 +600,7 @@ public class DevicesController {
         }
 
     }
-    
-    
+
     @ExceptionHandler(Exception.class)
     public void handleAllException(Exception ex) {
         log.error(ex.getMessage(), ex);

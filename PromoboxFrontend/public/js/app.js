@@ -186,7 +186,7 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
                                     campaign_count_audios: $scope.campaign.countAudios,
                                     campaign_count_videos: $scope.campaign.countVideos,
                                     campaign_audio_length: humanLength($scope.campaign.audioLength),
-                                    campaign_video_length: humanLength($scope.campaign.varchi)};
+                                    campaign_video_length: humanLength($scope.campaign.videoLength)};
         });
 
         $scope.workdays = ['mo', 'tu', 'we', 'th', 'fr', 'sa', 'su'];
@@ -406,9 +406,17 @@ app.controller('CampaignsController', ['$scope', 'token', 'Campaign', 'sysMessag
             };
 
             $rootScope.top_link_active_list = 'top_link_active';
+            $scope.currentCampaign = {};
             Campaign.get_all_campaigns({token: token.get()}, function (response) {
                 $scope.campaigns = response.campaigns;
+                
+                if ($scope.campaigns.length > 0) {
+                    $scope.currentCampaign = $scope.campaigns[0];
+                }
             });
+            $scope.show_statistics = function(campaign) {
+                $scope.currentCampaign = campaign;
+            }
             $scope.remove = function (campaign) {
                 $scope.campaigns.splice($scope.campaigns.indexOf(campaign), 1);
                 Campaign.delete_campaigns({token: token.get(), id: campaign.id}, function (response) {

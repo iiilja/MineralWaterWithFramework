@@ -128,6 +128,7 @@ public class FilesController {
                     JSONObject jsonCampaignFile = new JSONObject();
                     
                     jsonCampaignFile.put("id", file.getId());
+                    jsonCampaignFile.put("orderId", file.getOrderId());
                     jsonCampaignFile.put("name", file.getFilename());
                     jsonCampaignFile.put("ext", "." + FilenameUtils.getExtension(file.getFilename()));
                     jsonCampaignFile.put("status", file.getStatus());
@@ -231,7 +232,7 @@ public class FilesController {
                             campaignFile.setAdCampaignsId(campaignId);
                             campaignFile.setFileId(databaseFile.getId());
                             campaignFile.setFileType(fileTypeNumber);
-                            campaignFile.setOrderId(null);
+                            campaignFile.setOrderId(databaseFile.getId());
                             campaignFile.setStatus(CampaignsFiles.STATUS_UPLOADED);
                             campaignFile.setCreatedDt(new Date());
                             campaignFile.setFilename(fileName);
@@ -420,7 +421,7 @@ public class FilesController {
             
             jsonCampaignFile.put("id", file.getId());
             jsonCampaignFile.put("fileId",file.getFileId());
-            jsonCampaignFile.put("orderId",file.getOrderId());
+            jsonCampaignFile.put("orderId", file.getOrderId());
             jsonCampaignFile.put("name", file.getFilename());
             jsonCampaignFile.put("created", file.getCreatedDt());
             jsonCampaignFile.put("status", file.getStatus());

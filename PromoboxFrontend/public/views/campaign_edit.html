@@ -339,7 +339,8 @@
                     <button type="button" class="btn btn-default">В конец</button>
                 </div>
                 <div class="bottom-buttons">
-                    <button type="button" class="btn btn-success" ng-click="reorder_files()">{{ 'list_change' | translate }}</button>
+                    <button type="button" class="btn btn-success" data-dismiss="modal" 
+                            ng-click="reorder_files()">{{ 'list_change' | translate }}</button>
                     <button type="button" class="btn btn-default" data-dismiss="modal">{{ 'campaign_edit_cancel' | translate }}</button>
                 </div>
             </div>

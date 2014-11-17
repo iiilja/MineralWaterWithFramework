@@ -161,13 +161,13 @@ app.controller('CampaignNewController', ['token', 'Campaign', 'sysLocation',
         });
     }]);
 
-app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Campaign', '$location', '$http', 'toaster', 'Files','sysMessage', 'sysLocation', 'FileUploader', '$rootScope', '$filter',
-    function ($scope, $stateParams, token, Campaign, $location, $http, toaster, Files, sysMessage, sysLocation, FileUploader, $rootScope, $filter) {
+app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Campaign', '$location', '$http', 'toaster', 'Files','sysMessage', 'sysLocation', 'FileUploader', '$rootScope', '$filter', 'orderByFilter',
+    function ($scope, $stateParams, token, Campaign, $location, $http, toaster, Files, sysMessage, sysLocation, FileUploader, $rootScope, $filter, orderByFilter) {
         $rootScope.top_link_active_list = 'top_link_active';
         $scope.filesArray = [];
         $scope.checkedDays = [];
         $scope.checkedHours = [];
-
+        
         Campaign.get_campaigns({token: token.get(), id: $stateParams.cId}, function (response) {
             console.log(response);
             $scope.campaign = response;
@@ -187,6 +187,14 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
                                     campaign_count_videos: $scope.campaign.countVideos,
                                     campaign_audio_length: humanLength($scope.campaign.audioLength),
                                     campaign_video_length: humanLength($scope.campaign.videoLength)};
+                                
+            if (!$scope.campaign.files) {
+                $scope.campaign.files = [];
+            }
+            
+            $scope.$watchCollection('campaign.files', function () {
+                $scope.campaign.files = orderByFilter($scope.campaign.files, ['orderId','name']);
+            });
         });
 
         $scope.workdays = ['mo', 'tu', 'we', 'th', 'fr', 'sa', 'su'];
@@ -197,6 +205,8 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
                 $scope.checkedDays.splice($scope.checkedDays.indexOf(day), 1);
             }
         };
+        
+        
 
         $scope.workhours = ['7', '7:30',
                             '8', '8:30',
@@ -219,6 +229,8 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         
         $scope.addWorkhours = [];
         $scope.removeWorkhours = [];
+        
+        
         
         $scope.toggleWorkHours = function (ar, hour) {
             if (ar.indexOf(hour) === -1) {
@@ -295,10 +307,6 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
             });
         };
        
-        $scope.$watchCollection('campaign.files', function () {
-            $scope.campaign.files = orderByFilter($scope.campaign.files, ['orderId','name']);
-        });
-        
         $scope.fileSort = {
             stop: function(e, ui) {
                 for (var index in $scope.campaign.files) {
@@ -329,7 +337,7 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         $scope.showSettings = function(show) {
             $scope.settingsVisible = show;
         }
-
+        
         var refreshFilesModel = function () {
             Campaign.get_campaigns({token: token.get(), id: $stateParams.cId}, function (response) {
                 console.log(response);
@@ -394,6 +402,10 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         };
 
         console.info('uploader', uploader);
+        
+        setTimeout(function(){jQuery('.styler').styler();}, 800);
+        //jQuery(function(){jQuery('.styler').styler()});
+        console.log("styler")
     }]);
 
 app.controller('CampaignsController', ['$scope', 'token', 'Campaign', 'sysMessage', '$rootScope', '$filter',
@@ -441,6 +453,7 @@ app.controller('DevicesController', ['$scope', 'token', 'Device', 'sysMessage', 
             $rootScope.top_link_active_device = 'top_link_active';
             Device.get_data({token: token.get()}, function (response) {
                 console.log(response);
+                
                 $scope.devices = response.devices;
                 $scope.campaigns = response.campaigns;
                 
@@ -449,6 +462,8 @@ app.controller('DevicesController', ['$scope', 'token', 'Device', 'sysMessage', 
                 if ($scope.devices.length > 0) {
                     $scope.currentDevice = $scope.devices[0];
                 }
+                setTimeout(function(){jQuery('.styler').styler();}, 800); 
+                console.log("styler")
             });
             
             $scope.open_add_campaign = function(device) {

@@ -28,7 +28,8 @@ services.factory('Device', ['$resource',
                 update: {method: 'PUT', url:apiEndpoint + 'token/:token/devices/:id', params: {token: '@token', id: '@id'}},
                 delete: {method: 'DELETE', url:apiEndpoint + 'token/:token/devices/:id', params: {token: '@token', id: '@id'}},
                 add: {method: 'POST', url:apiEndpoint + 'token/:token/devices/', params: {token: '@token'}},
-                clearCache: {method: 'PUT', url:apiEndpoint + 'token/:token/devices/:id/clearcache', params: {token: '@token', id: '@id'}}
+                clearCache: {method: 'PUT', url:apiEndpoint + 'token/:token/devices/:id/clearcache', params: {token: '@token', id: '@id'}},
+                delete_device_campaign: {method: 'DELETE', url:apiEndpoint + 'token/:token/devices/:id/campaign/:campaignId', params: {token: '@token', id: '@id', campaignId: '@campaignId'}}
             });}]);
 
 services.factory('Files', ['$resource',
@@ -85,7 +86,10 @@ services.factory("sysMessage", ['toaster','$filter', function (toaster, $filter)
         },
         login_failed: function (message) {
             toaster.pop('error', $filter('translate')('system_error'), message);
-        }
+        },
+        error: function (message) {
+            toaster.pop('error', $filter('translate')('system_error'), message);
+        },
     }
 }]);
 

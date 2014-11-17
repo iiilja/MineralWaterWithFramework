@@ -435,12 +435,89 @@ app.controller('DevicesController', ['$scope', 'token', 'Device', 'sysMessage', 
                 console.log(response);
                 $scope.devices = response.devices;
                 $scope.campaigns = response.campaigns;
+                
+                $scope.currentDevice = null;
+                $scope.tmpCampaignIds = [];
+                if ($scope.devices.length > 0) {
+                    $scope.currentDevice = $scope.devices[0];
+                }
             });
+            
+            $scope.open_add_campaign = function(device) {
+                $scope.currentDevice = device;
+                
+                if (!$scope.currentDevice.campaignIds) {
+                    $scope.currentDevice.campaignIds = [];
+                }
+                              
+                $scope.tmpCampaignIds = [];
+                for (var index in device.campaignIds) {
+                    $scope.tmpCampaignIds.push(device.campaignIds[index]);
+                }
+            };
+            $scope.filter_device_campigns = function(value, index) {
+                if (!$scope.currentDevice) {
+                    $scope.currentDevice = {campaignIds: []};
+                }
+                
+                if (!$scope.currentDevice.campaignIds) {
+                    $scope.currentDevice.campaignIds = [];
+                }
+                
+                return $scope.currentDevice.campaignIds.indexOf(value.id) == -1;
+            }
+            $scope.toggle_campaign = function(campaignId) {
+                var index = $scope.tmpCampaignIds.indexOf(campaignId);
+                if (index == -1) {
+                    $scope.tmpCampaignIds.push(campaignId);
+                } else {
+                    $scope.tmpCampaignIds.splice(index, 1);
+                }
+            }
+            $scope.add_campaigns = function() {
+                for (var index in $scope.tmpCampaignIds) {
+                    var campId = $scope.tmpCampaignIds[index];
+                    
+                    if ($scope.currentDevice.campaignIds.indexOf(campId) == -1) {
+                        $scope.currentDevice.campaignIds.push(campId);
+                    }
+                }
+            }
+            
             $scope.change_device = function(device) {
-                Device.update({token: token.get(), id: device.id, orientation: parseInt(device.orientation), resolution: parseInt(device.resolution), campaignId: parseInt(device.campaignId), description: device.description }, function (response) {
-                    sysMessage.update_s($filter('translate')('system_device') + ' ' + $filter('translate')('system_updated'));
+                var deviceUpdate = {token: token.get(), 
+                    id: device.id, 
+                    orientation: parseInt(device.orientation), 
+                    resolution: parseInt(device.resolution), 
+                    campaignIds: device.campaignIds, 
+                    description: device.description,
+                    audioOut: device.audioOut,
+                    workStartAt: device.workStartAt,
+                    workEndAt: device.workEndAt
+                }
+                
+                for (index in $scope.workdays) {
+                    var day = $scope.workdays[index];
+                    deviceUpdate[day] = device[day];
+                }
+                
+                Device.update(deviceUpdate, function (response) {
+                    if (response.ERROR) {
+                        sysMessage.error($filter('translate')('system_device') + ' ' + $filter('translate')('time_intersection'));
+                    } else {
+                        sysMessage.update_s($filter('translate')('system_device') + ' ' + $filter('translate')('system_updated'));
+                    }
                 });
             };
+            
+            $scope.delete_device_campaign = function (device, campaignId) {
+                Device.delete_device_campaign(
+                        {token: token.get(), id: device.id, campaignId: campaignId}, function(response) {
+                        var index = device.campaignIds.indexOf(campaignId);
+                        device.campaignIds.splice(index, 1);
+                    });
+            };
+            
             $scope.delete_device = function(device) {
                 Device.delete({token: token.get(), id: device.id}, function (response){
                     Device.get_data({token: token.get()}, function (response) {

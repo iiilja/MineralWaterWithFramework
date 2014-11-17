@@ -89,14 +89,16 @@
                         <div class="col-md-7 col-xs-9 col-sm-8">
                             <ul class="opting-list btn-group" data-toggle="buttons">
                                 <li ng-repeat="campaign in campaigns"
-                                    ng-show="device.campaignId.indexOf(campaign.id) != -1">
+                                    ng-show="device.campaignIds.indexOf(campaign.id) != -1">
                                     <label class="btn btn-primary active">
                                         <input type="checkbox" autocomplete="off" checked><span class="glyphicon glyphicon-play"></span> {{campaign.name}}
                                     </label>
-                                    <a class="close" href="#"><span class="glyphicon glyphicon-remove"></span></a>
+                                    <a class="close" ng-click="delete_device_campaign(device, campaign.id)"><span class="glyphicon glyphicon-remove"></span></a>
                                 </li>     
                             </ul>
-                            <button type="button" class="btn btn-info pull-right" data-toggle="modal" data-target="#add-company">{{ 'device_addcampaign' | translate }}</button>
+                            <button type="button" class="btn btn-info pull-right"
+                                    data-toggle="modal" data-target="#add-company"
+                                    ng-click="open_add_campaign(device)">{{ 'device_addcampaign' | translate }}</button>
                         </div>
                     </div>
 
@@ -156,10 +158,11 @@
             </div>
             <div class="modal-body">
                 <div class="add-company-list mCustomScrollbar">
-                    <ul class="btn-group" data-toggle="buttons">
-                        <li ng-repeat="campaign in campaigns">
-                           <label  class="btn btn-primary ">
-                                <input type="checkbox"  >
+                    <ul class="btn-group">
+                        <li ng-repeat="campaign in campaigns | filter:filter_device_campigns" 
+                            ng-click="toggle_campaign(campaign.id)">
+                            <label  class="btn btn-primary" 
+                                    ng-class="tmpCampaignIds.indexOf(campaign.id) != -1 ? 'active' : ''">
                                 {{campaign.name}}
                                 <span class="glyphicon glyphicon-ok"></span>
                             </label>
@@ -168,7 +171,9 @@
                 </div>
 
                 <div class="bottom-buttons">
-                    <button type="button" class="btn btn-success">{{ 'device_add' | translate }} </button>
+                    <button type="button" class="btn btn-success" 
+                            data-dismiss="modal"
+                            ng-click="add_campaigns()">{{ 'device_add' | translate }} </button>
                     <button type="button" class="btn btn-default" data-dismiss="modal">{{ 'campaign_edit_cancel' | translate }}</button>
                 </div>
             </div>

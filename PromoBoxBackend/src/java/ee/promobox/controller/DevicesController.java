@@ -206,9 +206,11 @@ public class DevicesController {
                             currentCampaign.put("id", campaign.getId());
                             currentCampaign.put("name", campaign.getName());
 
-                            CampaignsFiles currentFile = userService.findCampaignFile(d.getCurrentFileId(), session.getClientId());
-                            if (currentFile != null) {
-                                currentCampaign.put("file", currentFile.getFilename());
+                            if (d.getCurrentFileId() != null) {
+                                CampaignsFiles currentFile = userService.findCampaignFile(d.getCurrentFileId(), session.getClientId());
+                                if (currentFile != null) {
+                                    currentCampaign.put("file", currentFile.getFilename());
+                                }
                             }
 
                             jsonD.put("currentCamp", currentCampaign);

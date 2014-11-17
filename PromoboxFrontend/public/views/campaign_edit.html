@@ -326,9 +326,13 @@
             </div>
             <div class="modal-body">
                 <div class="files-block mCustomScrollbar">
-                    <ul ui-sortable="fileSort" ng-model="campaign_form.filesArray" class="files-list" >
+                    <ul ui-sortable="fileSort" ng-model="campaign_form.filesArray" class="files-list btn-group" data-toggle="buttons">
                         <li ng-repeat="promofile in campaign_form.filesArray">
-                            <i></i><span>{{promofile.name}}</span></li>
+                            <label class="btn btn-primary">
+                                <input type="checkbox" autocomplete="off" checked>
+                                <i></i><span>{{promofile.name}}</span>
+                            </label>
+                        </li>
 
                     </ul>
                 </div>

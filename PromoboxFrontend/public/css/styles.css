@@ -600,12 +600,44 @@ input[readonly] {
 #sorting .files-list {
     padding: 0;
     list-style: none;
+    width: 100%;
 }
 
 #sorting .files-list  li {
     cursor: pointer;
     height: 30px;
     line-height: 30px;
+    width: 100%;
+}
+
+#sorting .files-list  li label {
+    width: 100%;
+    height: 30px;
+    line-height: 30px;
+    background: none;
+    position: relative;
+    border-radius: 0;
+    border:0;
+    display: block;
+    padding: 0;
+}
+
+#sorting .files-list  li label.active {
+    color: #fff!important;
+    box-shadow: none;
+    background-color: #428bca;
+}
+
+#sorting .files-list  li label.active span {
+    color: #fff!important;
+}
+
+#sorting .files-list  li label input[type="checkbox"] {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    filter:alpha(opacity=0);
 }
 
 #sorting .files-list  li:nth-child(even) {

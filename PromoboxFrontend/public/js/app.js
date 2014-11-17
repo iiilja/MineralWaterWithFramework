@@ -420,6 +420,8 @@ app.controller('CampaignsController', ['$scope', 'token', 'Campaign', 'sysMessag
             $rootScope.top_link_active_list = 'top_link_active';
             $scope.currentCampaign = {};
             Campaign.get_all_campaigns({token: token.get()}, function (response) {
+                console.log(response);
+                
                 $scope.campaigns = response.campaigns;
                 
                 if ($scope.campaigns.length > 0) {

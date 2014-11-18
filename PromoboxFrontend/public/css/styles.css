@@ -772,8 +772,7 @@ input[readonly] {
 }
 
 .device .bottom-block .btn span {
-    margin-right: 17px;
-    margin-left: -1px;
+    margin-right: 10px;
 }
 
 .device .bottom-block p {

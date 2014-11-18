@@ -133,6 +133,7 @@ and open the template in the editor.
 
 .campaigns_link {
     color: black;
+    cursor: pointer;
 }
 
 .campaigns_link:hover {

@@ -192,9 +192,9 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
                 $scope.campaign.files = [];
             }
             
-            $scope.$watchCollection('campaign.files', function () {
-                $scope.campaign.files = orderByFilter($scope.campaign.files, ['orderId','name']);
-            });
+            //$scope.$watchCollection('campaign.files', function () {
+            //    $scope.campaign.files = orderByFilter($scope.campaign.files, ['orderId','name']);
+            //});
         });
 
         $scope.workdays = ['mo', 'tu', 'we', 'th', 'fr', 'sa', 'su'];
@@ -309,9 +309,59 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
        
         $scope.fileSort = {
             stop: function(e, ui) {
-                for (var index in $scope.campaign.files) {
-                    $scope.campaign.files[index].orderId = index;
-                }
+                update_files_order_id();
+            }
+        }
+        
+        $scope.selectedFile = null;
+        $scope.file_sort_select_file = function(file) { 
+            $scope.selectedFile = file;
+        };
+        
+        $scope.file_sort_up = function () {
+            var index = $scope.campaign_form.filesArray.indexOf($scope.selectedFile);
+
+            if (index != -1 && index != 0 ) {
+                change_files_order(index, index - 1);
+            }
+        };
+        
+        $scope.file_sort_down = function () {
+            var index = $scope.campaign_form.filesArray.indexOf($scope.selectedFile);
+
+            if (index != -1 && index != $scope.campaign_form.filesArray.length - 1) {
+                change_files_order(index, index + 1);
+            }
+        };
+        
+        $scope.file_sort_top = function () {
+            var index = $scope.campaign_form.filesArray.indexOf($scope.selectedFile);
+
+            if (index != -1 && index != 0 ) {
+                change_files_order(index, 0);
+            }
+        };
+        
+        $scope.file_sort_bottom = function () {
+            var index = $scope.campaign_form.filesArray.indexOf($scope.selectedFile);
+
+            if (index != -1 && index != $scope.campaign_form.filesArray.length - 1) {
+                change_files_order(index, $scope.campaign_form.filesArray.length - 1);
+            }
+        };
+        
+        
+        var change_files_order = function(i1, i2) {
+            var f1 = $scope.campaign_form.filesArray[i1];
+            $scope.campaign_form.filesArray.splice(i1, 1);
+            $scope.campaign_form.filesArray.splice(i2, 0, f1);
+            
+            update_files_order_id();
+        };
+        
+        var update_files_order_id = function() {
+            for (var index in $scope.campaign.files) {
+                $scope.campaign.files[index].orderId = index;
             }
         }
         
@@ -320,11 +370,11 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
                 token: token.get(),
                 id: $scope.campaign.id,
                 filesOrder: $scope.campaign.files});
-        }
+        };
 
         $scope.openPlayer = function(key) {
             FWDRL.show('playlist', key);
-        }
+        };
 
         $scope.inArchive = function (id) {
             Files.arhiveFiles({token: token.get(), id: id}, function(response){

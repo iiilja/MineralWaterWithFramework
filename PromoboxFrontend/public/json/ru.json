@@ -59,7 +59,10 @@
     "device_addcampaign": "Добавить кампанию",
     "device_add": "Добавить",
     "device_time_intersection": "Пересечение времени кампаний",
-    
+    "up": "Выше",
+    "down": "Ниже",
+    "toBegin": "В начало",
+    "toEnd": "В конец",
     "campaign_edit_editcompany": "Редактировать кампанию",
     "campaign_edit_companyname": "Название кампании",
     "campaign_edit_browse": "Добабить фаил",

@@ -326,9 +326,11 @@
             </div>
             <div class="modal-body">
                 <div class="files-block mCustomScrollbar">
-                    <ul ui-sortable="fileSort" ng-model="campaign_form.filesArray" class="files-list btn-group" data-toggle="buttons">
-                        <li ng-repeat="promofile in campaign_form.filesArray">
-                            <label class="btn btn-primary">
+                    <ul ui-sortable="fileSort" ng-model="campaign_form.filesArray" class="files-list btn-group">
+                        <li ng-repeat="promofile in campaign_form.filesArray"
+                            ng-click="file_sort_select_file(promofile)">
+                            <label class="btn btn-primary"
+                                   ng-class="promofile.id == selectedFile.id ? 'active' : ''">
                                 <input type="checkbox" autocomplete="off" checked>
                                 <i></i><span>{{promofile.name}}</span>
                             </label>
@@ -337,10 +339,14 @@
                     </ul>
                 </div>
                 <div class="controll-block">
-                    <button type="button" class="btn btn-default">В начало</button>
-                    <button type="button" class="btn btn-primary"><span class="glyphicon glyphicon-chevron-up"></span>Выше</button>
-                    <button type="button" class="btn btn-primary"><span class="glyphicon glyphicon-chevron-down"></span>Ниже</button>
-                    <button type="button" class="btn btn-default">В конец</button>
+                    <button type="button" class="btn btn-default"
+                            ng-click="file_sort_top()">{{ 'toBegin' | translate }}</button>
+                    <button type="button" class="btn btn-primary"
+                            ng-click="file_sort_up()"><span class="glyphicon glyphicon-chevron-up"></span>{{ 'up' | translate }}</button>
+                    <button type="button" class="btn btn-primary"
+                            ng-click="file_sort_down()"><span class="glyphicon glyphicon-chevron-down"></span>{{ 'down' | translate }}</button>
+                    <button type="button" class="btn btn-default"
+                            ng-click="file_sort_bottom()">{{ 'toEnd' | translate }}</button>
                 </div>
                 <div class="bottom-buttons">
                     <button type="button" class="btn btn-success" data-dismiss="modal" 

@@ -21,6 +21,10 @@
                         <p>{{promofile.name| limitTo: 30 | lowercase }}{{promofile.name.length > 30 ? '...' : ''}}</p>
                     </div>
                 </div>
+                
+                <ul id="playlist" style="list-style: none;">
+                    <li ng-repeat="promofile in campaign_form.filesArray" data-url="http://46.182.31.101:8080/service/files/{{promofile.id}}{{promofile.ext}}" data-thumbnail-path="http://46.182.31.101:8080/service/files/thumb/{{promofile.id}}"></li>
+                </ul>
             </div>
 
             <div class="row upload-wrap" nv-file-drop="" uploader="uploader" filters="queueLimit, customFilter">

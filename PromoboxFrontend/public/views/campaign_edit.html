@@ -21,6 +21,10 @@
                         <p>{{promofile.name| limitTo: 30 | lowercase }}{{promofile.name.length > 30 ? '...' : ''}}</p>
                     </div>
                 </div>
+                
+                <ul id="playlist" style="list-style: none;">
+                    <li ng-repeat="promofile in campaign_form.filesArray" data-url="http://46.182.31.101:8080/service/files/{{promofile.id}}{{promofile.ext}}" data-thumbnail-path="http://46.182.31.101:8080/service/files/thumb/{{promofile.id}}"></li>
+                </ul>
             </div>
 
             <div class="row upload-wrap" nv-file-drop="" uploader="uploader" filters="queueLimit, customFilter">
@@ -94,22 +98,22 @@
 
                 </div>
             </div>
-
-            <div class="row settings-wrap">
+            
+            
+            <div class="row settings-wrap" ng-hide="settingsVisible">
                 <div class="form-group campaigns_block col-sm-5">
-                    <!--                     
-                                        <div class="row">
-                                            <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'campaign_edit_activityofthecompany' | translate }}</label></div>
-                                            <div class="col-md-7 col-xs-9 col-sm-8">
-                                                <select class="form-control" ng-model="campaign_form.campaign_status">
-                                                    <option value="3">{{ 'campaign_edit_suspended' | translate }}</option>
-                                                    <option value="2">{{ 'campaign_edit_launched' | translate }}</option>
-                                                </select>
-                                            </div>
-                                        </div> -->
 
                     <div class="clearfix setting-btn">
-                        <a class="pull-left btn btn-default" href="#"><span class="glyphicon glyphicon-cog"></span>Скрыть настройки</a>
+                        <a class="pull-left btn btn-default" ng-click="showSettings(true)"><span class="glyphicon glyphicon-cog"></span>{{ 'campaign_edit_showsettings' | translate }}</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row settings-wrap" ng-show="settingsVisible">
+                <div class="form-group campaigns_block col-sm-5">
+
+                    <div class="clearfix setting-btn">
+                        <a class="pull-left btn btn-default" ng-click="showSettings(false)"><span class="glyphicon glyphicon-cog"></span>{{ 'campaign_edit_hidesettings' | translate }}</a>
                         <a class="pull-right btn btn-default" data-toggle="modal" data-target="#statistics" href="javascript:void(0)"><span class="glyphicon glyphicon-stats"></span>Статистика</a>
                     </div>
 
@@ -210,9 +214,10 @@
                     <div class="row label-row">
                         <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'campaign_edit_workdays' | translate }}</label></div>
                         <div class="col-md-7 col-xs-9 col-sm-8">
-                            <div class="btn-group days" data-toggle="buttons">
-                                <label ng-repeat="day in workdays" class="btn btn-primary" >
-                                    <input type='checkbox' ng-checked="checkedDays.indexOf(day) != - 1" ng-click="toggleCheckDays(day)">
+                            <div class="btn-group days">
+                                <label ng-repeat="day in workdays" class="btn btn-primary" 
+                                       ng-class="checkedDays.indexOf(day) != - 1 ? 'active': ''"
+                                       ng-click="toggleCheckDays(day)">
                                     {{ day | translate }}
                                 </label>
                             </div>
@@ -222,21 +227,31 @@
                     <div class="row label-row opening-hours">
                         <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'campaign_edit_openinghours' | translate }}</label></div>
                         <div class="col-md-7 col-xs-9 col-sm-8">
-                            <div class="hours-list btn-group mCustomScrollbar" data-toggle="buttons">
-                                <label ng-repeat="hour in workhours" class="btn btn-primary">
-                                    <input type='checkbox' ng-checked="checkedHours.indexOf(hour) != - 1" ng-click="toggleCheckHours(hour)">
-                                    {{hour}}
+                            <div class="hours-list btn-group mCustomScrollbar">
+                                <label ng-repeat="hour in workhours" 
+                                       ng-show="checkedHours.indexOf(hour) != - 1" 
+                                       class="btn"
+                                       ng-class="removeWorkhours.indexOf(hour) != - 1 ? 'active': ''"
+                                       ng-click="toggleWorkHours(removeWorkhours, hour)">
+                                    {{formatWorkingHours(hour)}}
                                 </label>
                             </div>
 
                             <div class="hours-arrow">
-                                <a href="#" data-toggle="tooltip" data-placement="top" title="Добавить"><span class="glyphicon glyphicon-chevron-left"></span></a>
-                                <a href="#" data-toggle="tooltip" data-placement="top" title="Удалить"><span class="glyphicon glyphicon-chevron-right"></span></a>
+                                <a data-toggle="tooltip" data-placement="top" title="{{ 'campaign_edit_add' | translate }}"
+                                   ng-click="addWorkingHours()">
+                                    <span class="glyphicon glyphicon-chevron-left"></span></a>
+                                <a data-toggle="tooltip" data-placement="top" title="{{ 'campaign_edit_delete' | translate }}"
+                                   ng-click="removeWorkingHours()">
+                                    <span class="glyphicon glyphicon-chevron-right"></span></a>
                             </div>
-                            <div class="hours-list btn-group gray mCustomScrollbar" data-toggle="buttons">
-                                <label ng-repeat="hour in workhours" class="btn">
-                                    <input type='checkbox' ng-checked="checkedHours.indexOf(hour) != - 1" ng-click="toggleCheckHours(hour)">
-                                    {{hour}}
+                            <div class="hours-list btn-group gray mCustomScrollbar">
+                                <label ng-repeat="hour in workhours" 
+                                       ng-hide="checkedHours.indexOf(hour) != - 1"
+                                       class="btn"
+                                       ng-class="addWorkhours.indexOf(hour) != - 1 ? 'active': ''"
+                                       ng-click="toggleWorkHours(addWorkhours, hour)">
+                                    {{formatWorkingHours(hour)}}
                                 </label>
                             </div>
                         </div>
@@ -248,61 +263,60 @@
             <div class="row button-wrap">
                 <div class="form-group">
                     <button type="submit" class="btn btn-primary">{{ 'campaign_edit_savethecompany' | translate }}</button>
-                    <button ui-sref="list" type="button" class="btn btn-default" style="margin-left: 15px;">{{ 'campaign_edit_cancel' | translate }}</button>
-                    <button ui-sref="list" type="button" class="btn btn-default pull-right">В архив</button>
-                </div>
-            </div>
-
-            <!-- Modal statistics -->
-            <div class="modal fade" id="statistics" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only"></span></button>
-                            <h4 class="modal-title" id="myModalLabel">{{"campaign_edit_statistics"| translate}}</h4>
-                        </div>
-                        <div class="modal-body">
-                            <ul class="statistics-list">
-
-                                <li>
-                                    <div class="img-block">
-                                        <img src="img/files.png" alt="">
-                                    </div>
-                                    <span>{{campaign_stat.campaign_count_files}}</span>
-                                    <p >{{'campaign_edit_allfilescount'| translate}}</p>
-                                </li>
-
-                                <li>
-                                    <div class="img-block">
-                                        <img src="img/pic.png" alt="">
-                                    </div>
-                                    <span>{{campaign_stat.campaign_count_images}}</span>
-                                    <p>{{"campaign_edit_allimagescount"| translate}}</p>
-                                </li>
-
-                                <li>
-                                    <div class="img-block">
-                                        <img src="img/video.png" alt="">
-                                    </div>
-                                    <span>{{campaign_stat.campaign_count_videos}}</span>
-                                    <p>{{"campaign_edit_allvideoscount"| translate}}<br/>{{campaign_stat.campaign_video_length}}</p>
-                                </li>
-
-                                <li>
-                                    <div class="img-block">
-                                        <img src="img/songs.png" alt="">
-                                    </div>
-                                    <span>{{campaign_stat.campaign_count_audios}}</span>
-                                    <p>{{"campaign_edit_allaudioscount"| translate}}<br/>{{campaign_stat.campaign_audio_length}}</p>
-                                </li>
-                            </ul>
-                        </div>
-
-                    </div>
+                    <button ui-sref="list" type="button" class="btn btn-default" style="margin-left: 15px;" ng-click="close_settings()">{{ 'campaign_edit_cancel' | translate }}</button>
+                    <button ui-sref="list" type="button" class="btn btn-default pull-right" ng-click="remove_company()">{{'list_remove'| translate }}</button>
                 </div>
             </div>
         </form>
+    </div>
+</div>
 
+<!-- Modal statistics -->
+<div class="modal fade" id="statistics" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only"></span></button>
+                <h4 class="modal-title" id="myModalLabel">{{"campaign_edit_statistics"| translate}}</h4>
+            </div>
+            <div class="modal-body">
+                <ul class="statistics-list">
+
+                    <li>
+                        <div class="img-block">
+                            <img src="img/files.png" alt="">
+                        </div>
+                        <span>{{campaign_stat.campaign_count_files}}</span>
+                        <p >{{'campaign_edit_allfilescount'| translate}}</p>
+                    </li>
+
+                    <li>
+                        <div class="img-block">
+                            <img src="img/pic.png" alt="">
+                        </div>
+                        <span>{{campaign_stat.campaign_count_images}}</span>
+                        <p>{{"campaign_edit_allimagescount"| translate}}</p>
+                    </li>
+
+                    <li>
+                        <div class="img-block">
+                            <img src="img/video.png" alt="">
+                        </div>
+                        <span>{{campaign_stat.campaign_count_videos}}</span>
+                        <p>{{"campaign_edit_allvideoscount"| translate}}<br/>{{campaign_stat.campaign_video_length}}</p>
+                    </li>
+
+                    <li>
+                        <div class="img-block">
+                            <img src="img/songs.png" alt="">
+                        </div>
+                        <span>{{campaign_stat.campaign_count_audios}}</span>
+                        <p>{{"campaign_edit_allaudioscount"| translate}}<br/>{{campaign_stat.campaign_audio_length}}</p>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
     </div>
 </div>
 
@@ -312,37 +326,36 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only"></span></button>
-                <h4 class="modal-title" id="myModalLabel">Изменить порядок файлов</h4>
+                <h4 class="modal-title" id="myModalLabel">{{ 'campaign_edit_changefilesorder' | translate }}</h4>
             </div>
             <div class="modal-body">
                 <div class="files-block mCustomScrollbar">
-                    <ul class="files-list">
-                        <li><i></i><span>testmusic.mp3</span></li>
-                        <li><i></i><span>testmusic.mp3</span></li>
-                        <li><i></i><span>testmusic.mp3</span></li>
-                        <li><i></i><span>testmusic.mp3</span></li>
-                        <li><i></i><span>testmusic.mp3</span></li>
-                        <li><i></i><span>testmusic.mp3</span></li>
-                        <li><i></i><span>testmusic.mp3</span></li>
-                        <li><i></i><span>testmusic.mp3</span></li>
-                        <li><i></i><span>testmusic.mp3</span></li>
-                        <li><i></i><span>testmusic.mp3</span></li>
-                        <li><i></i><span>testmusic.mp3</span></li>
-                        <li><i></i><span>testmusic.mp3</span></li>
-                        <li><i></i><span>testmusic.mp3</span></li>
-                        <li><i></i><span>testmusic.mp3</span></li>
-                        <li><i></i><span>testmusic.mp3</span></li>
+                    <ul ui-sortable="fileSort" ng-model="campaign_form.filesArray" class="files-list btn-group">
+                        <li ng-repeat="promofile in campaign_form.filesArray"
+                            ng-click="file_sort_select_file(promofile)">
+                            <label class="btn btn-primary"
+                                   ng-class="promofile.id == selectedFile.id ? 'active' : ''">
+                                <input type="checkbox" autocomplete="off" checked>
+                                <i></i><span>{{promofile.name}}</span>
+                            </label>
+                        </li>
+
                     </ul>
                 </div>
                 <div class="controll-block">
-                    <button type="button" class="btn btn-default">В начало</button>
-                    <button type="button" class="btn btn-primary"><span class="glyphicon glyphicon-chevron-up"></span>Выше</button>
-                    <button type="button" class="btn btn-primary"><span class="glyphicon glyphicon-chevron-down"></span>Ниже</button>
-                    <button type="button" class="btn btn-default">В конец</button>
+                    <button type="button" class="btn btn-default"
+                            ng-click="file_sort_top()">{{ 'toBegin' | translate }}</button>
+                    <button type="button" class="btn btn-primary"
+                            ng-click="file_sort_up()"><span class="glyphicon glyphicon-chevron-up"></span>{{ 'up' | translate }}</button>
+                    <button type="button" class="btn btn-primary"
+                            ng-click="file_sort_down()"><span class="glyphicon glyphicon-chevron-down"></span>{{ 'down' | translate }}</button>
+                    <button type="button" class="btn btn-default"
+                            ng-click="file_sort_bottom()">{{ 'toEnd' | translate }}</button>
                 </div>
                 <div class="bottom-buttons">
-                    <button type="button" class="btn btn-success">Изменить</button>
-                    <button type="button" class="btn btn-default">Отмена</button>
+                    <button type="button" class="btn btn-success" data-dismiss="modal" 
+                            ng-click="reorder_files()">{{ 'list_change' | translate }}</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{{ 'campaign_edit_cancel' | translate }}</button>
                 </div>
             </div>
         </div>

@@ -1,7 +1,7 @@
 <div class="row">
     <div class="col-md-10 center-block campaigns-top-wrap">
-        <div class="alert alert-info" role="alert">
-            <strong>Нет кампаний!</strong> Вы можете создать новую кампанию.
+        <div class="alert alert-info" role="alert" ng-show="campaigns.length == 0">
+            <strong>{{ 'list_empty' | translate }}!</strong> {{ 'list_createnewcampaign' | translate }}.
         </div>
 
         <button ui-sref="campaign_new" type="button" class="new-company-btn btn btn-primary">{{ 'list_newcampaign' | translate }}</button>
@@ -14,10 +14,61 @@
         <span style="margin-left: 15px;">{{campaign.name}}</span>
         <span style="margin-left: 15px; color: #bfbfbf; font-size: 12px;">{{timeconvert(campaign.start)}}-{{timeconvert(campaign.finish)}}</span>
                 <span class="pull-right">
-                    <a class="campaigns_link" href="#" style="margin-right: 15px;"><i class="glyphicon glyphicon-signal"></i> {{ 'list_statistics' | translate }}</a>
+                    <a class="campaigns_link" data-toggle="modal" data-target=".stat" style="margin-right: 15px;"
+                       ng-click="show_statistics(campaign)"><i class="glyphicon glyphicon-signal"></i> {{ 'list_statistics' | translate }}</a>
                     <a class="campaigns_link" href="/#/campaign/edit/{{campaign.id}}" style="margin-right: 15px;"><i class="glyphicon glyphicon-pencil"></i> {{ 'list_change' | translate }}</a>
                     <a class="campaigns_link" ng-click="remove(campaign)" href><i class="glyphicon glyphicon-remove"></i> {{ 'list_remove' | translate }}</a>
                 </span>
     </div>
 
+</div>
+
+
+<!-- Modal statistics -->
+<div class="modal fade stat"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only"></span></button>
+                <h4 class="modal-title" id="myModalLabel">{{"campaign_edit_statistics"| translate}}</h4>
+            </div>
+            <div class="modal-body">
+                <ul class="statistics-list">
+
+                    <li>
+                        <div class="img-block">
+                            <img src="img/files.png" alt="">
+                        </div>
+                        <span>{{currentCampaign.countFiles}}</span>
+                        <p >{{'campaign_edit_allfilescount'| translate}}</p>
+                    </li>
+
+                    <li>
+                        <div class="img-block">
+                            <img src="img/pic.png" alt="">
+                        </div>
+                        <span>{{currentCampaign.countImages}}</span>
+                        <p>{{"campaign_edit_allimagescount"| translate}}</p>
+                    </li>
+
+                    <li>
+                        <div class="img-block">
+                            <img src="img/video.png" alt="">
+                        </div>
+                        <span>{{currentCampaign.countVideos}}</span>
+                        <p>{{"campaign_edit_allvideoscount"| translate}}<br/>{{currentCampaign.videoLength}}</p>
+                    </li>
+
+                    <li>
+                        <div class="img-block">
+                            <img src="img/songs.png" alt="">
+                        </div>
+                        <span>{{currentCampaign.countAudios}}</span>
+                        <p>{{"campaign_edit_allaudioscount"| translate}}<br/>{{currentCampaign.audioLength}}</p>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
 </div>

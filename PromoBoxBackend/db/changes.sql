@@ -17,7 +17,8 @@ ALTER TABLE devices ADD COLUMN current_campaign_id INTEGER;
 ALTER TABLE devices ADD COLUMN loading_campaign_id INTEGER;
 ALTER TABLE devices ADD COLUMN loading_compaign_progress INTEGER;
 
-ALTER TABLE devices ADD COLUMN clear_cache BOOLEAN  NOT NULL DEFAULT FALSE;;
+ALTER TABLE devices ADD COLUMN cache INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE devices ADD COLUMN clear_cache BOOLEAN  NOT NULL DEFAULT FALSE;
 
 ALTER TABLE ad_campaigns ADD COLUMN count_files INTEGER NOT NULL DEFAULT 0;
 ALTER TABLE ad_campaigns ADD COLUMN count_images INTEGER NOT NULL DEFAULT 0;
@@ -28,6 +29,6 @@ ALTER TABLE ad_campaigns ADD COLUMN video_length BIGINT NOT NULL DEFAULT 0;
 
 ALTER TABLE files ADD COLUMN content_length BIGINT NOT NULL DEFAULT 0;
 
-UPDATE campaigns_files SET order_id = id;
+UPDATE campaigns_files SET order_id = file_id;
 
 COMMIT;

@@ -133,6 +133,7 @@ and open the template in the editor.
 
 .campaigns_link {
     color: black;
+    cursor: pointer;
 }
 
 .campaigns_link:hover {
@@ -277,7 +278,7 @@ input[readonly] {
     background: #fff;
     padding: 0 12px;
     margin-bottom: 10px;
-    width: 570px;
+    width: 755px;
 }
 
 .setting-btn {
@@ -360,7 +361,7 @@ input[readonly] {
 }
 .label-row .datepicker-wrap {
     float: left;
-    width: 152px;
+    width: 240px;
 }
 
 .label-row .datepicker-wrap .input-group-addon {
@@ -447,8 +448,19 @@ input[readonly] {
 .hours-list label:nth-child(odd) {
     background: #5499d3;
 }
+
+.hours-list label.active {
+    background: #0E63AB;
+    box-shadow: none;
+    color: #fff;
+}
 .hours-list.gray label {
     color: #9f9f9f;
+}
+.hours-list.gray label.active {
+    background: #ccc!important;
+    box-shadow: none!important;
+    color: #fff!important;
 }
 .hours-list.gray label:nth-child(even) {
     background: #f8f8f8;
@@ -490,7 +502,7 @@ input[readonly] {
 }
 
 .button-wrap {
-    width: 570px;
+    width: 755px;
 }
 
 .mCustomScrollbar .mCSB_inside > .mCSB_container {
@@ -589,12 +601,44 @@ input[readonly] {
 #sorting .files-list {
     padding: 0;
     list-style: none;
+    width: 100%;
 }
 
 #sorting .files-list  li {
     cursor: pointer;
     height: 30px;
     line-height: 30px;
+    width: 100%;
+}
+
+#sorting .files-list  li label {
+    width: 100%;
+    height: 30px;
+    line-height: 30px;
+    background: none;
+    position: relative;
+    border-radius: 0;
+    border:0;
+    display: block;
+    padding: 0;
+}
+
+#sorting .files-list  li label.active {
+    color: #fff!important;
+    box-shadow: none;
+    background-color: #428bca;
+}
+
+#sorting .files-list  li label.active span {
+    color: #fff!important;
+}
+
+#sorting .files-list  li label input[type="checkbox"] {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    filter:alpha(opacity=0);
 }
 
 #sorting .files-list  li:nth-child(even) {
@@ -671,7 +715,7 @@ input[readonly] {
 }
 
 .device .device-info {
-    width: 386px;
+    width: 445px;
     height: 202px;
     border:1px solid #cccccc;
     -webkit-border-radius: 5px 0 0 5px;
@@ -728,8 +772,7 @@ input[readonly] {
 }
 
 .device .bottom-block .btn span {
-    margin-right: 17px;
-    margin-left: -1px;
+    margin-right: 10px;
 }
 
 .device .bottom-block p {
@@ -766,6 +809,14 @@ input[readonly] {
     background-color: #7eb762;
     background-image: url(../img/success.png);
 }
+.device .company-info.warning {
+    background-color: #efad57;
+    background-image: url(../img/warning.png);
+}
+.device .company-info.danger {
+    background-color: #d75452;
+    background-image: url(../img/danger.png);
+}
 .device  .progress {
     width: 45%;
     display: inline-block;
@@ -775,9 +826,17 @@ input[readonly] {
     border-radius: 0;
     box-shadow: none;
 }
-
-.device  .progress .progress-bar {
+.device .company-info.success .progress .progress-bar {
     color: #7eb762;
+}
+.device .company-info.warning .progress .progress-bar {
+    color: #efad57;
+}
+.device .company-info.danger .progress .progress-bar {
+    color: #d75452;
+}
+.device  .progress .progress-bar {
+    color: #fff;
     background-color: #ffffff;
     font-weight: bold;
     box-shadow: none;
@@ -822,7 +881,7 @@ input[readonly] {
 }
 
 .preferences-wrap {
-    width: 570px;
+    width: 755px;
 }
 
 .preferences {
@@ -831,6 +890,7 @@ input[readonly] {
     -moz-border-radius: 5px;
     border-radius: 5px;
     border:1px solid #dcdcdc;
+    margin-bottom: 10px;
 }
 
 .preferences .row {
@@ -882,3 +942,151 @@ input[readonly] {
     right: 9px;
 }
 
+.opting-list {
+    list-style: none;
+    -webkit-border-radius:5px;
+    -moz-border-radius:5px;
+    border-radius:5px;
+    border:1px solid #cccccc;
+    padding: 0;
+}
+
+
+.opting-list li {
+    border-top:1px solid #cccccc;
+    position: relative;
+    width: 279px;
+}
+
+.opting-list li:first-child {
+    border-top:0;
+}
+
+.opting-list li label {
+    background: none;
+    border: 0;
+    border-radius: 0;
+    width: 100%;
+    color: #323232;
+    height: 34px;
+    line-height: 34px!important;
+    text-align: left;
+    padding: 0;
+    vertical-align: top;
+    padding-left: 10px;
+}
+
+.opting-list li label span {
+    color: #fff;
+}
+
+.opting-list li .close {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: -26px;
+    margin: auto;
+    color: #555;
+    font-weight: normal;
+    display: block;
+    height: 15px;
+    font-size: 10pt;
+}
+
+.opting-list li input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    filter:alpha(opacity=0);
+    top: 0;
+    left: 0;
+}
+
+.preferences .operation-time {
+    border-top: 0;
+}
+
+.operation-time ul {
+    padding: 0;
+    list-style: none;
+}
+
+.operation-time ul li {
+    display: inline-block;
+    vertical-align: top;
+    margin: 0 10px 0 0;
+    line-height: 34px;
+}
+
+.preferences .operation-time .jq-selectbox__select-text {
+    min-width: 58px;
+}
+
+#add-company .modal-dialog {
+    width: 480px;
+}
+
+.add-company-list {
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    border:1px solid #dddddd;
+    height: 256px;
+    margin-bottom: 15px;
+}
+
+.add-company-list ul {
+    padding: 0;
+    list-style: none;
+    width: 100%;
+}
+
+.add-company-list ul li {
+    background: #fff;
+    position: relative;
+    width: 100%;
+}
+
+.add-company-list ul li:nth-child(even) {
+    background: #f8f8f8;
+}
+
+.add-company-list ul li label {
+    background: none;
+    height: 30px;
+    line-height: 30px;
+    position: relative;
+    border-radius:0;
+    border:0;
+    width: 100%;
+    color: #323232;
+    padding: 0;
+    padding-left: 10px;
+    text-align: left;
+}
+
+.add-company-list ul li label input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    filter:alpha(opacity=0);
+    top: 0;
+    left: 0;
+}
+
+.add-company-list ul li label span {
+    float: right;
+    font-size: 10pt;
+    font-weight: normal;
+    color: #fff;
+    opacity: 0;
+    filter:alpha(opacity=0);
+    margin: 5px 15px 0 0;
+}
+
+.add-company-list ul li label.active span {
+    opacity: 1;
+    filter:alpha(opacity=100);
+}
+
+.jq-selectbox__dropdown ul {
+    max-height: 200px;
+}

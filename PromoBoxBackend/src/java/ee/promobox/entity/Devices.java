@@ -53,6 +53,7 @@ public class Devices implements Serializable {
     public static final int STATUS_AHRCHIVED = 4;
     
     public static final int AUDIO_OUT_HDMI = 1;
+    public static final int AUDIO_OUT_MINI_JACK = 2;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -116,6 +117,9 @@ public class Devices implements Serializable {
     
     @Column(name = "free_space")
     private long freeSpace;
+    
+    @Column(name = "cache")
+    private long cache;
     
     @Column(name = "clear_cache")
     private boolean clearCache;
@@ -369,5 +373,13 @@ public class Devices implements Serializable {
      */
     public void setNetworkData(String networkData) {
         this.networkData = networkData;
+    }
+
+    public long getCache() {
+        return cache;
+    }
+
+    public void setCache(long cache) {
+        this.cache = cache;
     }
 }

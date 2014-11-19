@@ -275,5 +275,17 @@ public class UserServiceImpl implements UserService {
 
         return (Devices) q.uniqueResult();
     }
+    
+    @Override
+    public void deleteDeviceCampaign(int deviceId, int campaignId) {
+        Session session = sessionFactory.getCurrentSession();
+
+        Query q = session.createQuery("DELETE FROM DevicesCampaigns WHERE adCampaignsId = :campaignId AND deviceId = :deviceId");
+
+        q.setParameter("deviceId", deviceId);
+        q.setParameter("campaignId", campaignId);
+
+        q.executeUpdate();
+    }
 
 }

@@ -61,7 +61,7 @@ public class FileConsumerService extends MessageListenerAdapter {
             
             camp.setCountFiles(camp.getCountFiles() + 1);
             if (fileDto.getFileType() == FileTypeUtils.FILE_TYPE_IMAGE) {
-                camp.setCountImages(camp.getCountImages());
+                camp.setCountImages(camp.getCountImages() + 1);
             } else if (fileDto.getFileType() == FileTypeUtils.FILE_TYPE_AUDIO) {
                 camp.setCountAudios(camp.getCountAudios() + 1);
                 camp.setAudioLength(camp.getAudioLength() + dbFile.getContentLength());

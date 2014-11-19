@@ -46,6 +46,8 @@ public class Campaign {
             setUpdateDate(json.getLong("updateDate"));
             setDelay(json.getInt("duration"));
             setSequence(json.getInt("sequence"));
+            setStartDate(new Date(json.getLong("startDate")));
+            setEndDate(new Date(json.getLong("endDate")));
 
             JSONArray ar  = json.getJSONArray("files");
 
@@ -70,7 +72,7 @@ public class Campaign {
 
 
         } catch (Exception ex) {
-            Log.e("Campgaign", ex.getMessage(), ex);
+            Log.e("Campaign", ex.getMessage(), ex);
         }
 
     }

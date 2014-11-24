@@ -7,20 +7,26 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
 public class MainActivity extends Activity {
+
+    private final static String AUDIO_DEVICE_PARAM = "audio_devices_out_active";
+    public final static  String AUDIO_DEVICE_PREF = "audio_device";
 
     public final static String CAMPAIGN_UPDATE = "ee.promobox.promoboxandroid.UPDATE";
     public final static String ACTIVITY_FINISH = "ee.promobox.promoboxandroid.FINISH";
@@ -81,15 +87,8 @@ public class MainActivity extends Activity {
 
         bManager.registerReceiver(bReceiver, intentFilter);
 
-        AudioManager am = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
-
-        //am.setParameters("audio_devices_out=AUDIO_CODEC,AUDIO_HDMI,AUDIO_SPDIF");
-        am.setParameters("audio_devices_out_active=AUDIO_CODEC");
-
-
+        setAudioDeviceFromPrefs();
     }
-
-
 
     private void startNextFile() {
         if (campaign != null && campaign.getFiles() != null && campaign.getFiles().size() > 0) {
@@ -98,6 +97,8 @@ public class MainActivity extends Activity {
                 position = 0;
                 mainService.checkAndDownloadCampaign();
             }
+
+            mainService.setCurrentFileId(campaign.getFiles().get(position).getId());
 
             CampaignFileType fileType = null;
             List<String> filePack = new ArrayList<String>();
@@ -130,7 +131,6 @@ public class MainActivity extends Activity {
             if (campaign.getFiles().size() == 1) {
                 campaign.setDelay(60 * 60 * 12);
             }
-
 
             if (fileType == CampaignFileType.IMAGE) {
 
@@ -168,8 +168,6 @@ public class MainActivity extends Activity {
                 startActivityForResult(i, RESULT_FINISH_PLAY);
 
             }
-
-
         }
     }
 
@@ -199,8 +197,7 @@ public class MainActivity extends Activity {
 
         Intent intent = new Intent(this, MainService.class);
 
-        bindService(intent, mConnection,
-                Context.BIND_AUTO_CREATE);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 
         startService(intent);
 
@@ -210,15 +207,35 @@ public class MainActivity extends Activity {
             } else {
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
             }
+
+            String audioDevice = mainService.getAudioDevice();
+            if(audioDevice != null) {
+                setAudioDevice(audioDevice);
+            }
         } else {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
+    }
 
+    private void setAudioDeviceFromPrefs() {
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        String audioDevice = sharedPref.getString(AUDIO_DEVICE_PREF,"AUDIO_CODEC");
+        setAudioDevice(audioDevice);
+    }
+
+    private void setAudioDevice(String audioDevice) {
+        AudioManager am = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
+        //am.setParameters("audio_devices_out=AUDIO_CODEC,AUDIO_HDMI,AUDIO_SPDIF"); // for reference.
+        if(!audioDevice.equals(am.getParameters(AUDIO_DEVICE_PARAM))) {
+            am.setParameters(AUDIO_DEVICE_PARAM + "=" + audioDevice);
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        unbindService(mConnection);
+        stopService(getIntent());
     }
 
 

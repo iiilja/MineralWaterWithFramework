@@ -74,6 +74,8 @@ public class DevicesController {
                 d.setNetworkData(objectGiven.getJSONArray("ip").toString());
             }
 
+            resp.put("audioAut", d.getAudioOut());
+            
             resp.put("lastUpdate", d.getLastDeviceRequestDt().getTime());
             resp.put("orientation", d.getOrientation());
             resp.put("clearCache", d.isClearCache());

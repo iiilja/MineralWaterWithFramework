@@ -193,6 +193,9 @@ public class FileConsumerService extends MessageListenerAdapter {
 
         imageConvert.processToFile(new File(f.getFile().getParent() + File.separator + f.getId() + "_output"));
         
+        
+        
+        
         imageConvert = new ImageOP(config.getImageMagick());
 
         imageConvert.input(f.getFile());
@@ -216,6 +219,7 @@ public class FileConsumerService extends MessageListenerAdapter {
     }
 
     private boolean convertVideo(FileDto f) {
+        File thumbFile = new File(f.getFile().getParent() + File.separator + f.getId() + "_thumb");
         VideoOP videoConvert = new VideoOP(config.getAvconv());
         
         videoConvert.input(f.getFile());
@@ -223,8 +227,21 @@ public class FileConsumerService extends MessageListenerAdapter {
         videoConvert.scale("500:-1");
         videoConvert.format("image2");
         
-        videoConvert.processToFile(new File(f.getFile().getParent() + File.separator + f.getId() + "_thumb"));
-        
+        videoConvert.processToFile(thumbFile);
+        if (f.getRotate() != 0) {
+            ImageOP imageConvert = new ImageOP(config.getImageMagick());
+
+            imageConvert.input(thumbFile);
+            imageConvert.outputFormat("png");
+            imageConvert.resize(250, 250);
+            imageConvert.rotate(f.getRotate());
+
+            imageConvert.background("white");
+            imageConvert.gravity("center");
+            imageConvert.extent("250x250");
+
+            return imageConvert.processToFile(thumbFile);
+        } 
         
         ImageOP imageConvert = new ImageOP(config.getImageMagick());
 
@@ -238,15 +255,38 @@ public class FileConsumerService extends MessageListenerAdapter {
 
         imageConvert.processToFile(new File(f.getFile().getParent() + File.separator + f.getId() + "_thumb"));
         
+        boolean result = false;
+        File videoFile = new File(f.getFile().getParent() + File.separator + f.getId() + "_output");
         videoConvert = new VideoOP(config.getAvconv());
-        videoConvert.input(f.getFile())
+        
+        if (f.getRotate() == 0) {
+            videoConvert.input(f.getFile())
+                    .codecVideo("libvpx")
+                    .scale("-1:720")
+                    .bitrateVideo("1M")
+                    .maxrate("1M")
+                    .format("webm");
+
+            result = videoConvert.processToFile(videoFile);
+        
+        } else {
+            videoConvert = new VideoOP(config.getAvconv());
+                videoConvert.input(videoFile)
                 .codecVideo("libvpx")
-                .scale("-1:720")
                 .bitrateVideo("1M")
                 .maxrate("1M")
                 .format("webm");
+                
+            if (f.getRotate() == 90) {
+                videoConvert.flip("transpose=1");
+            } else if (f.getRotate() == 270) {
+                videoConvert.flip("transpose=2");
+            }
+            
+            result = videoConvert.processToFile(videoFile);
+        }
 
-        return videoConvert.processToFile(new File(f.getFile().getParent() + File.separator + f.getId() + "_output"));
+        return result;
     }
     
 }

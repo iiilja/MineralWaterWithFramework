@@ -270,6 +270,48 @@ public class FilesController {
         }
 
     }
+    
+    @RequestMapping(value = "token/{token}/campaigns/{id}/files/{file}/rotate/{angle}", method = RequestMethod.PUT)
+    public void rotwteFile(
+            @PathVariable("token") String token,
+            @PathVariable("id") int campaignId,
+            @PathVariable("file") int fileId,
+            @PathVariable("angle") int angle,
+            HttpServletRequest request,
+            HttpServletResponse response){
+
+        JSONObject resp = new JSONObject();
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+        Session session = sessionService.findSession(token);
+
+        if (session != null) {
+            AdCampaigns campaign = userService.findCampaignByIdAndClientId(campaignId, session.getClientId());
+
+            // if this campaign belongs to user
+            if (campaign != null) {
+                CampaignsFiles cFile = userService.findCampaignFileById(fileId);
+                Files databaseFile = userService.findFileById(fileId);
+                
+                String userFilePath = config.getDataDir() + session.getClientId() + File.separator;
+                
+                String fileType = FilenameUtils.getExtension(databaseFile.getFilename());
+                
+                File f = new File(userFilePath + databaseFile.getId());
+                FileDto fileDto = new FileDto(cFile.getFileId(), databaseFile.getFileType(), f, fileType);
+                fileDto.setRotate(angle);
+                
+                jmsTemplate.convertAndSend(fileDestination, fileDto);
+
+                response.setStatus(HttpServletResponse.SC_OK);
+
+                RequestUtils.printResult(resp.toString(), response);
+            }
+        } else {
+            RequestUtils.sendUnauthorized(response);
+        }
+
+    }
 
     @RequestMapping(value = "token/{token}/files/archive/{id}", method = RequestMethod.PUT)
     public void archiveCampaignFiles(

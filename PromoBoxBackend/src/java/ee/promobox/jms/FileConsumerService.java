@@ -143,7 +143,7 @@ public class FileConsumerService extends MessageListenerAdapter {
 
             imageConvert.input(new File(f.getFile().getParent() + File.separator + f.getId() + "_output"));            
             
-            imageConvert.rotate(270);
+            imageConvert.rotate(270 + f.getRotate());
             
             imageConvert.outputFormat("png");
 
@@ -187,6 +187,7 @@ public class FileConsumerService extends MessageListenerAdapter {
         imageConvert.input(f.getFile());
         imageConvert.outputFormat("png");
         imageConvert.resize(1920, 1920);
+        imageConvert.rotate(f.getRotate());
 
         imageConvert.processToFile(new File(f.getFile().getParent() + File.separator + f.getId() + "_output"));
         
@@ -194,7 +195,7 @@ public class FileConsumerService extends MessageListenerAdapter {
 
         imageConvert.input(f.getFile());
         imageConvert.outputFormat("png");
-        imageConvert.rotate(270);
+        imageConvert.rotate(270 + f.getRotate());
 
         imageConvert.processToFile(new File(f.getFile().getParent() + File.separator + f.getId() + "_output_port"));
 
@@ -203,6 +204,7 @@ public class FileConsumerService extends MessageListenerAdapter {
         imageConvert.input(f.getFile());
         imageConvert.outputFormat("png");
         imageConvert.resize(250, 250);
+        imageConvert.rotate(f.getRotate());
 
         imageConvert.background("white");
         imageConvert.gravity("center");

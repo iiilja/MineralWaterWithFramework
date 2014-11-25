@@ -19,6 +19,7 @@ public class FileDto implements Serializable {
     private int fileType;
     private File file;
     private String extention;
+    private int rotate;
 
     public FileDto(int id, int fileType, File file, String extention) {
         this.id = id;
@@ -65,4 +66,12 @@ public class FileDto implements Serializable {
         this.extention = extention;
     }
 
+    public int getRotate() {
+        return rotate;
+    }
+
+    public void setRotate(int rotate) {
+        this.rotate = rotate;
+    }
+    
 }

@@ -92,6 +92,13 @@ public class VideoOP {
         return this;
     }
     
+    public VideoOP flip(String flip) {
+        args.add("-vf");
+        args.add(flip);
+
+        return this;
+    }
+    
     public VideoOP format(String format) {
         args.add("-f");
         args.add(format);

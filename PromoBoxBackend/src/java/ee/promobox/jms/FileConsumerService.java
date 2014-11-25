@@ -133,6 +133,7 @@ public class FileConsumerService extends MessageListenerAdapter {
         imageConvert.page(0);
         imageConvert.background("white");
         imageConvert.resize(1920, 1920);
+        imageConvert.rotate(f.getRotate());
         
                 
         imageConvert.outputFormat("png");
@@ -158,6 +159,7 @@ public class FileConsumerService extends MessageListenerAdapter {
             imageConvert.background("white");
             imageConvert.gravity("center");
             imageConvert.extent("250x250");
+            imageConvert.rotate(f.getRotate());
 
             imageConvert.processToFile(new File(f.getFile().getParent() + File.separator + f.getId() + "_thumb"));
             

@@ -218,7 +218,7 @@ input[readonly] {
     padding-top: 4px;
 }
 .edit-campaign .load-files .load-file {
-    width: 259px;
+/*    max-width: 259px;*/
     margin-right: 10px;
     display: inline-block;
     vertical-align: top;
@@ -231,11 +231,14 @@ input[readonly] {
 }
 
 .edit-campaign .load-files .load-wrap div {
-    height: 200px;
+    height: 100px;
     overflow: hidden;
     background: #ededed;
     position: relative;
     text-align: center;
+    width: 120px;
+    line-height: 100px;
+    cursor: pointer;
 }
 
 .edit-campaign .load-files .load-wrap div a.play {
@@ -260,6 +263,10 @@ input[readonly] {
     line-height: 29px;
     padding-left: 3px;
     font-family: 'Open Sans', sans-serif;
+    width: 120px;
+    text-overflow:ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .edit-campaign .upload-wrap .form-group {
@@ -290,8 +297,7 @@ input[readonly] {
     letter-spacing: 0.2px;
 }
 .setting-btn a.btn span.glyphicon-cog  {
-    margin-right: 17px;
-    margin-left: -1px;
+    margin-right: 10px;
 }
 .setting-btn a.btn.pull-right {
     padding: 5px 16px;
@@ -621,6 +627,7 @@ input[readonly] {
     border:0;
     display: block;
     padding: 0;
+    text-align: left;
 }
 
 #sorting .files-list  li label.active {

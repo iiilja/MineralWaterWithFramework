@@ -612,11 +612,8 @@ app.controller('DevicesController', ['$scope', 'token', 'Device', 'sysMessage', 
             };
             
             $scope.clearCache =  function(deviceId) {
-                Device.clearCache({token: token.get() , id: deviceId}, function (response){
-                    Device.get_data({token: token.get()}, function (response) {
-                        $scope.devices = response.devices;
-                        sysMessage.update_s($filter('translate')('system_device_cachecleared'));
-                    });
+                Device.clearCache({token: token.get() , id: deviceId}, function (response) {
+                    sysMessage.update_s($filter('translate')('system_device_cachecleared'));
                 });
             }
             

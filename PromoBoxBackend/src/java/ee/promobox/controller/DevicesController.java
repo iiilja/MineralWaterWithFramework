@@ -646,16 +646,16 @@ public class DevicesController {
             device.setDescription("");
             device.setNetworkData("");
 
-            device.setWorkStartAt(parseTimeString("9:00"));
-            device.setWorkEndAt(parseTimeString("20:00"));
+            device.setWorkStartAt(parseTimeString("0:00"));
+            device.setWorkEndAt(parseTimeString("23:59"));
 
             device.setMon(true);
             device.setTue(true);
             device.setWed(true);
             device.setThu(true);
             device.setFri(true);
-            device.setSat(false);
-            device.setSun(false);
+            device.setSat(true);
+            device.setSun(true);
 
             userService.addDevice(device);
 

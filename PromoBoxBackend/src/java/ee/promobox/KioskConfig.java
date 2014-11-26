@@ -22,12 +22,23 @@ public class KioskConfig {
     @Value("${dataDir}")
     private String dataDir;
     
+    @Value("${archiveDir}")
+    private String archiveDir;
+    
     @Value("${imageMagick}")
     private String imageMagick;
     
     @Value("${avconv}")
     private String avconv;
 
+    public String getArchiveDir() {
+        return archiveDir;
+    }
+
+    public void setArchiveDir(String archiveDir) {
+        this.archiveDir = archiveDir;
+    }
+    
     public String getDataDir() {
         return dataDir;
     }

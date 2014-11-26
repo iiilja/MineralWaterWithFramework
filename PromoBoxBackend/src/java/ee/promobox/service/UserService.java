@@ -49,6 +49,8 @@ public interface UserService {
 
     public List<AdCampaigns> findCampaignByDeviceId(int deviceId);
     
+    public List<AdCampaigns> findCampaignsArchiveCandidates();
+    
     public AdCampaigns findCampaignByCampaignId(int campaignId);
     
     public Files findFileById(int id);

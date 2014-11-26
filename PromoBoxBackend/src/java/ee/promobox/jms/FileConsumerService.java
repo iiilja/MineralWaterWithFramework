@@ -10,6 +10,7 @@ import ee.promobox.KioskConfig;
 import ee.promobox.entity.AdCampaigns;
 import ee.promobox.entity.CampaignsFiles;
 import ee.promobox.entity.Files;
+import ee.promobox.service.FileService;
 import ee.promobox.service.UserService;
 import ee.promobox.util.FileTypeUtils;
 import ee.promobox.util.ImageOP;
@@ -34,6 +35,9 @@ public class FileConsumerService extends MessageListenerAdapter {
     @Autowired
     private UserService userService;
     
+    @Autowired
+    private FileService fileService;
+    
     public static Log log = LogFactory.getLog(FileConsumerService.class);
     
     public void handleMessage(FileDto fileDto) {
@@ -49,7 +53,7 @@ public class FileConsumerService extends MessageListenerAdapter {
         if (result) {
             cFile.setStatus(CampaignsFiles.STATUS_ACTIVE);
             
-            File file = new File(fileDto.getFile().getParent() + File.separator + fileDto.getId() + "_output");
+            File file = fileService.getOtputFile(fileDto.getClientId(), fileDto.getId());
             cFile.setSize((int)file.length());
             
             Files dbFile = userService.findFileById(fileDto.getId());
@@ -125,11 +129,19 @@ public class FileConsumerService extends MessageListenerAdapter {
     
     
     private boolean convertPdf(FileDto f) {
+        int clientId = f.getClientId();
+        int fileId = f.getId();
+        
+        File rawFile = fileService.getRawFile(clientId, fileId);
+        File outputFile = fileService.getOtputFile(clientId, fileId);
+        File outputPortFile = fileService.getOtputPortFile(clientId, fileId);
+        File thumbFile = fileService.getThumbFile(clientId, fileId);
+        
         ImageOP imageConvert = new ImageOP(config.getImageMagick());
 
         imageConvert.density(300);
         imageConvert.flatten();
-        imageConvert.input(f.getFile());
+        imageConvert.input(rawFile);
         imageConvert.page(0);
         imageConvert.background("white");
         imageConvert.resize(1920, 1920);
@@ -138,21 +150,21 @@ public class FileConsumerService extends MessageListenerAdapter {
                 
         imageConvert.outputFormat("png");
         
-        if (imageConvert.processToFile(new File(f.getFile().getParent() + File.separator + f.getId() + "_output"))) {
+        if (imageConvert.processToFile(outputFile)) {
             
             imageConvert = new ImageOP(config.getImageMagick());
 
-            imageConvert.input(new File(f.getFile().getParent() + File.separator + f.getId() + "_output"));            
+            imageConvert.input(rawFile);            
             
             imageConvert.rotate(270 + f.getRotate());
             
             imageConvert.outputFormat("png");
 
-            imageConvert.processToFile(new File(f.getFile().getParent() + File.separator + f.getId() + "_output_port"));
+            imageConvert.processToFile(outputPortFile);
 
             imageConvert = new ImageOP(config.getImageMagick());
 
-            imageConvert.input(new File(f.getFile().getParent() + File.separator + f.getId() + "_output"));
+            imageConvert.input(outputFile);
 
             imageConvert.resize(250, 250);
 
@@ -161,7 +173,7 @@ public class FileConsumerService extends MessageListenerAdapter {
             imageConvert.extent("250x250");
             imageConvert.rotate(f.getRotate());
 
-            imageConvert.processToFile(new File(f.getFile().getParent() + File.separator + f.getId() + "_thumb"));
+            imageConvert.processToFile(thumbFile);
             
             return true;
         }
@@ -171,10 +183,14 @@ public class FileConsumerService extends MessageListenerAdapter {
     
     
     private boolean copyFile(FileDto f) {
-        File output = new File(f.getFile().getParent() + File.separator + f.getId() + "_output");
+        int clientId = f.getClientId();
+        int fileId = f.getId();
         
+        File rawFile = fileService.getRawFile(clientId, fileId);
+        File outputFile = fileService.getOtputFile(clientId, fileId);
+
         try {
-            FileUtils.copyFile(f.getFile(), output);
+            FileUtils.copyFile(rawFile, outputFile);
         } catch(Exception ex) {
             log.error(ex.getMessage(), ex);
             return false;
@@ -184,29 +200,37 @@ public class FileConsumerService extends MessageListenerAdapter {
     }
 
     private boolean convertImage(FileDto f) {
+        int clientId = f.getClientId();
+        int fileId = f.getId();
+        
+        File rawFile = fileService.getRawFile(clientId, fileId);
+        File outputFile = fileService.getOtputFile(clientId, fileId);
+        File outputPortFile = fileService.getOtputPortFile(clientId, fileId);
+        File thumbFile = fileService.getThumbFile(clientId, fileId);
+        
         ImageOP imageConvert = new ImageOP(config.getImageMagick());
 
-        imageConvert.input(f.getFile());
+        imageConvert.input(rawFile);
         imageConvert.outputFormat("png");
         imageConvert.resize(1920, 1920);
         imageConvert.rotate(f.getRotate());
 
-        imageConvert.processToFile(new File(f.getFile().getParent() + File.separator + f.getId() + "_output"));
+        imageConvert.processToFile(outputFile);
         
         
         
         
         imageConvert = new ImageOP(config.getImageMagick());
 
-        imageConvert.input(f.getFile());
+        imageConvert.input(rawFile);
         imageConvert.outputFormat("png");
         imageConvert.rotate(270 + f.getRotate());
 
-        imageConvert.processToFile(new File(f.getFile().getParent() + File.separator + f.getId() + "_output_port"));
+        imageConvert.processToFile(outputPortFile);
 
         imageConvert = new ImageOP(config.getImageMagick());
 
-        imageConvert.input(f.getFile());
+        imageConvert.input(rawFile);
         imageConvert.outputFormat("png");
         imageConvert.resize(250, 250);
         imageConvert.rotate(f.getRotate());
@@ -215,14 +239,20 @@ public class FileConsumerService extends MessageListenerAdapter {
         imageConvert.gravity("center");
         imageConvert.extent("250x250");
 
-        return imageConvert.processToFile(new File(f.getFile().getParent() + File.separator + f.getId() + "_thumb"));
+        return imageConvert.processToFile(thumbFile);
     }
 
     private boolean convertVideo(FileDto f) {
-        File thumbFile = new File(f.getFile().getParent() + File.separator + f.getId() + "_thumb");
+        int clientId = f.getClientId();
+        int fileId = f.getId();
+        
+        File rawFile = fileService.getRawFile(clientId, fileId);
+        File outputFile = fileService.getOtputFile(clientId, fileId);
+        File thumbFile = fileService.getThumbFile(clientId, fileId);
+        
         VideoOP videoConvert = new VideoOP(config.getAvconv());
         
-        videoConvert.input(f.getFile());
+        videoConvert.input(rawFile);
         videoConvert.thumbnail();
         videoConvert.scale("500:-1");
         videoConvert.format("image2");
@@ -245,7 +275,7 @@ public class FileConsumerService extends MessageListenerAdapter {
         
         ImageOP imageConvert = new ImageOP(config.getImageMagick());
 
-        imageConvert.input(new File(f.getFile().getParent() + File.separator + f.getId() + "_thumb"));
+        imageConvert.input(thumbFile);
         imageConvert.outputFormat("png");
         imageConvert.resize(250, 250);
 
@@ -253,25 +283,24 @@ public class FileConsumerService extends MessageListenerAdapter {
         imageConvert.gravity("center");
         imageConvert.extent("250x250");
 
-        imageConvert.processToFile(new File(f.getFile().getParent() + File.separator + f.getId() + "_thumb"));
+        imageConvert.processToFile(thumbFile);
         
         boolean result = false;
-        File videoFile = new File(f.getFile().getParent() + File.separator + f.getId() + "_output");
         videoConvert = new VideoOP(config.getAvconv());
         
         if (f.getRotate() == 0) {
-            videoConvert.input(f.getFile())
+            videoConvert.input(rawFile)
                     .codecVideo("libvpx")
                     .scale("-1:720")
                     .bitrateVideo("1M")
                     .maxrate("1M")
                     .format("webm");
 
-            result = videoConvert.processToFile(videoFile);
+            result = videoConvert.processToFile(outputFile);
         
         } else {
             videoConvert = new VideoOP(config.getAvconv());
-                videoConvert.input(videoFile)
+                videoConvert.input(outputFile)
                 .codecVideo("libvpx")
                 .bitrateVideo("1M")
                 .maxrate("1M")
@@ -283,7 +312,7 @@ public class FileConsumerService extends MessageListenerAdapter {
                 videoConvert.flip("transpose=2");
             }
             
-            result = videoConvert.processToFile(videoFile);
+            result = videoConvert.processToFile(outputFile);
         }
 
         return result;

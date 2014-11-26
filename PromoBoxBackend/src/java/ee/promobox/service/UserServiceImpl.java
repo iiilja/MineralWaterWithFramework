@@ -172,6 +172,18 @@ public class UserServiceImpl implements UserService {
         return q.list();
     }
 
+    @Override
+    public List<AdCampaigns> findCampaignsArchiveCandidates() {
+        Session session = sessionFactory.getCurrentSession();
+        
+        Query q = session.createQuery("FROM AdCampaigns ad WHERE ad.status = :statusArchived AND ad.filesArchived IS TRUE")
+                .setInteger("statusArchived", AdCampaigns.STATUS_AHRCHIVED);
+        
+        return q.list();
+    }
+    
+    
+
     public AdCampaigns findCampaignByCampaignId(int campaignId) {
         Session session = sessionFactory.getCurrentSession();
         

@@ -91,6 +91,9 @@ public class AdCampaigns implements Serializable {
     
     @Column(name = "video_length", nullable = false)
     private long videoLength;
+    
+    @Column(name = "files_archived", nullable = false)
+    private boolean filesArchived;
 
     public AdCampaigns() {
     }
@@ -257,4 +260,13 @@ public class AdCampaigns implements Serializable {
     public void setWorkTimeData(String workTimeData) {
         this.workTimeData = workTimeData;
     }
+
+    public boolean isFilesArchived() {
+        return filesArchived;
+    }
+
+    public void setFilesArchived(boolean filesArchived) {
+        this.filesArchived = filesArchived;
+    }
+    
 }

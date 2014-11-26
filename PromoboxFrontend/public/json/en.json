@@ -115,6 +115,7 @@
     "system_updated": "updated",
     "system_removed": "Removed",
     "system_deviceadded": "Device added",
+    "system_device_cachecleared": "Cache will be cleared",
     "system_error": "Error",
     "system_thenameorpassworddonotmatch": "The name or password do not match"
 

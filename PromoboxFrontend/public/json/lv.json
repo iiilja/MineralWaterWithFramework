@@ -107,5 +107,6 @@
     "system_device": "Ierīce",
     "system_updated": "Atjaunots",
     "system_removed": "Noņemts",
-    "system_deviceadded": "Ierīce pievienota"
+    "system_deviceadded": "Ierīce pievienota",
+    "system_device_cachecleared": "Cache will be cleared"
 }

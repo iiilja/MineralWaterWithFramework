@@ -115,6 +115,7 @@
     "system_updated": "Обновленно",
     "system_removed": "Удалено",
     "system_deviceadded": "Устройство добавлено",
+    "system_device_cachecleared": "Кэш будет очищен",
     "system_error": "Ошибка",
     "system_thenameorpassworddonotmatch": "Имя или пароль не совпадают"
 }

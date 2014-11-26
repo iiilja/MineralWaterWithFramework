@@ -115,6 +115,7 @@
     "system_updated": "Uuendatud",
     "system_removed": "Eemaldatud",
     "system_deviceadded": "Seade lisatud",
+    "system_device_cachecleared": "Cache will be cleared",
     "system_error": "Viga",
     "system_thenameorpassworddonotmatch": "Nimi või salasõna on vale"
 }

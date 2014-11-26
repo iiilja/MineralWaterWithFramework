@@ -9,6 +9,7 @@
        http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core-5.10.0.xsd">
     
     <bean id="fileConsumerService" class="ee.promobox.jms.FileConsumerService"/>
+    <bean id="mailConsumerService" class="ee.promobox.jms.MailConsumerService"/>
     
     <amq:broker id="kioskBroker" brokerName="kioskBroker" useJmx="true" persistent="true">
         <amq:persistenceAdapter>
@@ -26,11 +27,13 @@
             copyMessageOnSend="false"/>
 
     <amq:queue id="fileDestination" physicalName="fileQueue"/>
+    <amq:queue id="mailDestination" physicalName="mailQueue"/>
 
     <bean id="jmsConsumerManager" class="ee.promobox.jms.JmsConsumerManager" factory-method="getInstance" depends-on="kioskBroker">
         <property name="listeningContainers">
             <list>
                 <ref bean="fileConsumerListener"/>
+                <ref bean="mailListener"/>
             </list>
         </property>
     </bean>
@@ -41,6 +44,14 @@
         <property name="sessionTransacted" value="true"/>
         <property name="destination" ref="fileDestination"/>
         <property name="messageListener" ref="fileConsumerService"/>
+    </bean>
+    
+    <bean id="mailListener" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+        <property name="connectionFactory" ref="jmsFactory"/>
+        <property name="maxConcurrentConsumers" value="1"/>
+        <property name="sessionTransacted" value="true"/>
+        <property name="destination" ref="mailDestination"/>
+        <property name="messageListener" ref="mailConsumerService"/>
     </bean>
 
 

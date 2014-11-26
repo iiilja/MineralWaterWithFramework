@@ -30,6 +30,9 @@ public class KioskConfig {
     
     @Value("${avconv}")
     private String avconv;
+    
+    @Value("${deviceAdmin}")
+    private String deviceAdmin;
 
     public String getArchiveDir() {
         return archiveDir;
@@ -61,6 +64,14 @@ public class KioskConfig {
 
     public void setAvconv(String avconv) {
         this.avconv = avconv;
+    }
+
+    public String getDeviceAdmin() {
+        return deviceAdmin;
+    }
+
+    public void setDeviceAdmin(String deviceAdmin) {
+        this.deviceAdmin = deviceAdmin;
     }
     
     @Bean

@@ -135,6 +135,17 @@ public class UserServiceImpl implements UserService {
         return (Devices) q.uniqueResult();
     }
 
+    @Override
+    public List<Devices> findAllDevices() {
+        Session session = sessionFactory.getCurrentSession();
+    
+        Query q = session.getNamedQuery("Devices.findAll");
+        
+        return q.list();
+    }
+    
+    
+
     public DevicesCampaigns findDeviceCampaignByCampaignId(int deviceId, int campaignId) {
         Session session = sessionFactory.getCurrentSession();
 

@@ -41,6 +41,8 @@ public interface UserService {
     
     public Devices findDeviceByUuid(String uuid);
     
+    public List<Devices> findAllDevices();
+    
     public List<DevicesCampaigns> findDeviceCampaignsByDeviceId(int deviceId);
     
     public DevicesCampaigns findLastUpdatedDeviceCampaign(int deviceId);

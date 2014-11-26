@@ -5,10 +5,12 @@
  */
 package ee.promobox.controller;
 
+import ee.promobox.KioskConfig;
 import ee.promobox.entity.AdCampaigns;
 import ee.promobox.entity.CampaignsFiles;
 import ee.promobox.entity.Devices;
 import ee.promobox.entity.DevicesCampaigns;
+import ee.promobox.jms.MailDto;
 import ee.promobox.service.Session;
 import ee.promobox.service.SessionService;
 import ee.promobox.service.UserService;
@@ -20,6 +22,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.UUID;
+import javax.jms.Destination;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.json.JSONArray;
@@ -27,6 +30,9 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -47,6 +53,29 @@ public class DevicesController {
 
     @Autowired
     private SessionService sessionService;
+    
+    @Autowired
+    private KioskConfig config;
+    
+    @Autowired
+    @Qualifier("mailDestination")
+    private Destination mailDestination;
+    @Autowired
+    private JmsTemplate jmsTemplate;
+    
+    @Scheduled(fixedDelay = 15 * 60 * 1000)
+    public void emailDeviceStatusPayments() {
+        for (Devices d: userService.findAllDevices()) {
+            if (System.currentTimeMillis() - d.getLastDeviceRequestDt().getTime() >= 15 * 60 * 1000) {
+                if (d.getStatus() != Devices.STATUS_OFFLINE) {
+                    sendDeviceEmail(d, "Device OFFLINE!");
+                    
+                    d.setStatus(Devices.STATUS_OFFLINE);
+                    userService.updateDevice(d);
+                }
+            }
+        }
+    }
 
     @RequestMapping("/device/{uuid}/pull")
     public void showCampaign(
@@ -141,6 +170,10 @@ public class DevicesController {
 
                     resp.put("campaigns", campaigns);
                 }
+                
+                if (d.getStatus() == Devices.STATUS_OFFLINE) {
+                    sendDeviceEmail(d, "Device ONLINE!");
+                }
 
                 d.setLastDeviceRequestDt(new Date());
                 d.setStatus(Devices.STATUS_ONLINE);
@@ -161,6 +194,21 @@ public class DevicesController {
 
             RequestUtils.printResult(resp.toString(), response);
         }
+    }
+    
+    private void sendDeviceEmail(Devices d, String topic) {
+        MailDto mailDto = new MailDto();
+        mailDto.setFrom("no-reply@promobox.ee");
+        mailDto.setSubject(topic);
+        mailDto.setTo(config.getDeviceAdmin());
+
+        StringBuilder text = new StringBuilder();
+        text.append("Device: " + d.getUuid() + "\n");
+        text.append("Description: " + d.getDescription() + "\n");
+
+        mailDto.setText(text.toString());
+
+        jmsTemplate.convertAndSend(mailDestination, mailDto);
     }
 
     @RequestMapping(value = "token/{token}/devices", method = RequestMethod.GET)

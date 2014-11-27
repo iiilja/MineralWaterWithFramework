@@ -167,6 +167,7 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         $scope.filesArray = [];
         $scope.checkedDays = [];
         $scope.checkedHours = [];
+        $scope.apiEndpoint = apiEndpoint;
         
         Campaign.get_campaigns({token: token.get(), id: $stateParams.cId}, function (response) {
             console.log(response);

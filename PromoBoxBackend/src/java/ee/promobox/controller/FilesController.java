@@ -176,6 +176,7 @@ public class FilesController {
                     jsonCampaignFile.put("ext", "." + FilenameUtils.getExtension(file.getFilename()));
                     jsonCampaignFile.put("status", file.getStatus());
                     jsonCampaignFile.put("created", file.getCreatedDt());
+                    jsonCampaignFile.put("fileType", file.getFileType());
 
                     jsonCampaignFiles.put(jsonCampaignFile);
                 }

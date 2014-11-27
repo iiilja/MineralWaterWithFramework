@@ -11,6 +11,15 @@ services.factory('Campaign', ['$resource',
                 edit_campaigns: {method: 'PUT', url: apiEndpoint + 'token/:token/campaigns/:id', params: {token: '@token', id: '@id'}},
                 get_campaigns: {method: 'GET', url: apiEndpoint + 'token/:token/campaigns/:id/', params: {token: '@token', id: '@id'}},
                 get_all_campaigns: {method: 'GET', url: apiEndpoint + 'token/:token/campaigns/', params: {token: '@token'}},
+                play_next_file: {
+                    method: 'PUT',
+                    url: apiEndpoint + 'token/:token/campaigns/:id/nextFile/:file',
+                    params: {
+                        token: '@token',
+                        id: '@id',
+                        file: '@file'
+                    }
+                },
                 delete_campaigns: {method: 'DELETE', url: apiEndpoint + 'token/:token/campaigns/:id/', params: {token: '@token', id: '@id'},
                     interceptor: {
                         response: function(response) {
@@ -19,6 +28,7 @@ services.factory('Campaign', ['$resource',
                             response.data = response.data.tags;
                             return response;
                         }}}
+                
             });}]);
 
 services.factory('Device', ['$resource',

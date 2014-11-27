@@ -394,8 +394,14 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
 
         $scope.inArchive = function (id) {
             Files.arhiveFiles({token: token.get(), id: id}, function(response){
-                sysMessage.delete_s($filter('translate')('system_filewasdeleted'))
+                sysMessage.delete_s($filter('translate')('system_filewasdeleted'));
                 refreshFilesModel();
+            });
+        };
+        
+        $scope.playNextFile = function (id) {
+            Campaign.play_next_file({token: token.get(), id: $stateParams.cId, file: id}, function(responce) {
+                sysMessage.update_s($filter('translate')('system_playnextFile'));
             });
         };
         

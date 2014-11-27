@@ -23,10 +23,10 @@
                             <img ng-click="openPlayer($index)" ng-src="{{apiEndpoint}}files/thumb/{{promofile.id}}" alt="">
                             <ul class="controll-block" ng-if="promofile.fileType == 2">
                                 <li class="Play-audio">
-                                    <a href="#"></a>
+                                    <a ng-click="openPlayer($index)"></a>
                                 </li>
                                 <li class="Play-on-device">
-                                    <a href="#"></a>
+                                    <a ng-click="playNextFile(promofile.id)"></a>
                                 </li>
                                 <li class="Arrow-menu">
                                     <a href="#"></a>
@@ -42,14 +42,15 @@
                     </div>
                     <div class="Video-picture-wrap img-thumbnail" ng-if="promofile.fileType != 2">
                         <div class="cont">
-                            <img ng-src="{{apiEndpoint}}files/thumb/{{promofile.id}}"  alt="">
+                            <img ng-click="openPlayer($index)"
+                                 ng-src="{{apiEndpoint}}files/thumb/{{promofile.id}}"  alt="">
 
                             <a class="play" href="#"></a>
 
                             <div class="bottom-block">
                                 <span></span>
                                 <ul class="controll-block pull-right">
-                                    <li class="Play-on-device"><a href="#"></a></li>
+                                    <li class="Play-on-device"><a ng-click="playNextFile(promofile.id)"></a></li>
                                     <li class="Arrow-menu">
                                         <a href="#"></a>
 

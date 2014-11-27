@@ -76,6 +76,8 @@ public interface UserService {
 
     public Devices findDeviceByIdAndClientId(int id, int clientId);
     
+    public Devices findDeviceByCampaignId(int id, int clientId);
+    
     public void addDeviceAdCampaign(DevicesCampaigns dc);
     
     public CampaignsFiles findCampaignFileById(int fileId);

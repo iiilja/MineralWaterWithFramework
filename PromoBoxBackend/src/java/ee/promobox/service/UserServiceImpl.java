@@ -298,6 +298,20 @@ public class UserServiceImpl implements UserService {
 
         return (Devices) q.uniqueResult();
     }
+
+    @Override
+    public Devices findDeviceByCampaignId(int campignId, int clientId) {
+        Session session = sessionFactory.getCurrentSession();
+
+        Query q = session.createQuery("FROM Devices WHERE currentCampaignId = :campignId AND clientId = :clientId");
+
+        q.setParameter("campignId", campignId);
+        q.setParameter("clientId", clientId);
+
+        return (Devices) q.uniqueResult();
+    }
+    
+    
     
     @Override
     public void deleteDeviceCampaign(int deviceId, int campaignId) {

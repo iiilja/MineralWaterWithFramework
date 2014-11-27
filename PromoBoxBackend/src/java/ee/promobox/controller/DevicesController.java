@@ -565,40 +565,6 @@ public class DevicesController {
         }
     }
     
-    @RequestMapping(value = "token/{token}/devices/{id}/nextFile/{file}", method = RequestMethod.PUT)
-    public void clearDeviceCache(
-            @PathVariable("token") String token,
-            @PathVariable("id") int id,
-            @PathVariable("file") int fileId,
-            HttpServletRequest request,
-            HttpServletResponse response) throws Exception {
-
-        JSONObject resp = new JSONObject();
-        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-
-        Session session = sessionService.findSession(token);
-
-        if (session != null) {
-            int clientId = session.getClientId();
-
-            Devices device = userService.findDeviceByIdAndClientId(id, clientId);
-
-            if (device != null) {
-
-                device.setNextFile(fileId);
-
-                userService.updateDevice(device);
-
-                response.setStatus(HttpServletResponse.SC_OK);
-
-                RequestUtils.printResult(resp.toString(), response);
-
-            } else {
-                RequestUtils.sendUnauthorized(response);
-            }
-        }
-    }
-
     private Date parseTimeString(String timeString) {
         Calendar cal = GregorianCalendar.getInstance();
 

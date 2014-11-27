@@ -12,13 +12,35 @@
                     <input type="text" class="form-control" style="width: 30%;" placeholder="{{ 'campaign_edit_companyname' | translate }}" ng-model="campaign_form.campaign_name" required>
                 </div>
             </div>
+
             <div class="load-files">
+
                 <div class="load-file" ng-repeat="promofile in campaign_form.filesArray">
                     <div class="load-wrap img-thumbnail">
                         <div>
                             <img ng-click="openPlayer($index)" ng-src="{{apiEndpoint}}files/thumb/{{promofile.id}}" alt="">
                         </div>
                         <p>{{promofile.name| limitTo: 30 | lowercase }}{{promofile.name.length > 30 ? '...' : ''}}</p>
+                    </div>
+                </div>
+
+                <div class="load-file audio-file">
+                    <div class="load-wrap img-thumbnail">
+                        <div>
+                            <img ng-src="{{apiEndpoint}}files/thumb/{{promofile.id}}" src="../img/pic.png" alt="">
+                            <ul class="controll-block">
+                                <li class="Play-audio">
+                                    <a href="#"></a>
+                                </li>
+                                <li class="Play-on-device">
+                                    <a href="#"></a>
+                                </li>
+                                <li class="Arrow-menu">
+                                    <a href="#"></a>
+                                </li>
+                            </ul>
+                        </div>
+                        <p>Test.mp3 <a href="#"><span class="glyphicon glyphicon-remove"></span></a></p>
                     </div>
                 </div>
                 
@@ -50,7 +72,7 @@
                             </thead>
                             <tbody>
                                 <tr ng-repeat="item in uploader.queue">
-                                    <td><strong>{{ item.file.name}}</strong></td>
+                                    <td><strong class="file-name">{{ item.file.name}}</strong></td>
                                     <td ng-show="uploader.isHTML5" nowrap>{{ item.file.size / 1024 / 1024|number:2 }} MB</td>
                                     <td ng-show="uploader.isHTML5">
                                         <div class="progress" style="margin-bottom: 0;">

@@ -20,6 +20,16 @@ services.factory('Campaign', ['$resource',
                         file: '@file'
                     }
                 },
+                rotate_file: {
+                    method: 'PUT',
+                    url: apiEndpoint + "token/:token/campaigns/:id/files/:file/rotate/:angle",
+                    params: {
+                        token: '@token',
+                        id: '@id',
+                        file: '@file',
+                        angle: '@angle'
+                    }
+                },
                 delete_campaigns: {method: 'DELETE', url: apiEndpoint + 'token/:token/campaigns/:id/', params: {token: '@token', id: '@id'},
                     interceptor: {
                         response: function(response) {

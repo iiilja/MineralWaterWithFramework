@@ -55,8 +55,8 @@
                                         <a href="#"></a>
 
                                         <ul>
-                                            <li><a href="#"><i class="po"></i><span>{{'campaign_edit_clockwise' | translate }}</span></a></li>
-                                            <li><a href="#"><i class="protiv"></i><span>{{'campaign_edit_counterclockwise' | translate }}</span></a></li>
+                                            <li><a ng-click="rotateFile(promofile.id, 90)"><i class="po"></i><span>{{'campaign_edit_clockwise' | translate }}</span></a></li>
+                                            <li><a ng-click="rotateFile(promofile.id, 270)"><i class="protiv"></i><span>{{'campaign_edit_counterclockwise' | translate }}</span></a></li>
                                             <li><a ng-click="inArchive(promofile.id)"><i class="delete"></i><span>{{'campaign_edit_deletefile' | translate }}</span></a></li>
                                         </ul>
                                     </li>

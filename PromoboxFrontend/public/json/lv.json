@@ -112,5 +112,6 @@
     "system_removed": "Noņemts",
     "system_deviceadded": "Ierīce pievienota",
     "system_device_cachecleared": "Cache will be cleared",
-    "system_playnextFile": "Файл будет воспроизведен следующим"
+    "system_playnextfile": "Файл будет воспроизведен следующим",
+    "system_rotatefile": "Файл будет повернут"
 }

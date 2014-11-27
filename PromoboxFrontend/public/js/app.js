@@ -401,7 +401,13 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         
         $scope.playNextFile = function (id) {
             Campaign.play_next_file({token: token.get(), id: $stateParams.cId, file: id}, function(responce) {
-                sysMessage.update_s($filter('translate')('system_playnextFile'));
+                sysMessage.update_s($filter('translate')('system_playnextfile'));
+            });
+        };
+        
+        $scope.rotateFile = function (id, angle) {
+            Campaign.rotate_file({token: token.get(), id: $stateParams.cId, file: id, angle: angle}, function(responce) {
+                sysMessage.update_s($filter('translate')('system_rotatefile'));
             });
         };
         

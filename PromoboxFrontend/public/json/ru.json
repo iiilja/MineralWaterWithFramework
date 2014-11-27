@@ -121,5 +121,6 @@
     "system_device_cachecleared": "Кэш будет очищен",
     "system_error": "Ошибка",
     "system_thenameorpassworddonotmatch": "Имя или пароль не совпадают",
-    "system_playnextFile": "Файл будет воспроизведен следующим"
+    "system_playnextfile": "Файл будет воспроизведен следующим",
+    "system_rotatefile": "Файл будет повернут"
 }

@@ -121,5 +121,6 @@
     "system_device_cachecleared": "Cache will be cleared",
     "system_error": "Viga",
     "system_thenameorpassworddonotmatch": "Nimi või salasõna on vale",
-    "system_playnextFile": "Файл будет воспроизведен следующим"
+    "system_playnextfile": "Файл будет воспроизведен следующим",
+    "system_rotatefile": "Файл будет повернут"
 }

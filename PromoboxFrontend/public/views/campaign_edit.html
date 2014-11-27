@@ -16,7 +16,7 @@
                 <div class="load-file" ng-repeat="promofile in campaign_form.filesArray">
                     <div class="load-wrap img-thumbnail">
                         <div>
-                            <img ng-click="openPlayer($index)" src="{{apiEndpoint}}files/thumb/{{promofile.id}}" alt="">
+                            <img ng-click="openPlayer($index)" ng-src="{{apiEndpoint}}files/thumb/{{promofile.id}}" alt="">
                         </div>
                         <p>{{promofile.name| limitTo: 30 | lowercase }}{{promofile.name.length > 30 ? '...' : ''}}</p>
                     </div>

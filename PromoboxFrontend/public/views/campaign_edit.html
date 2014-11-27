@@ -155,22 +155,14 @@
 
                                     <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
                                         <datetimepicker data-ng-model="campaign_form.campaign_start"
-                                                        data-datetimepicker-config="{ dropdownSelector: '#timestart', startView:'day', minView:'minute' }"/>
+                                                        data-datetimepicker-config="{ dropdownSelector: '#timestart', startView:'day', minView:'day' }"/>
                                     </ul>
                                 </div>
                             </div>
 
                             <div class="day-wrap">
                                 <select class="styler">
-                                    <option>8:00</option>
-                                    <option>9:00</option>
-                                    <option>10:00</option>
-                                    <option>11:00</option>
-                                    <option>12:00</option>
-                                    <option>13:00</option>
-                                    <option>14:00</option>
-                                    <option>15:00</option>
-                                    <option>16:00</option>
+                                    <option ng-repeat="hour in workhours"> {{hour}}</option>
                                 </select>
                             </div>
                         </div>
@@ -190,22 +182,14 @@
 
                                     <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
                                         <datetimepicker data-ng-model="campaign_form.campaign_finish"
-                                                        data-datetimepicker-config="{ dropdownSelector: '#timefinish', startView:'day', minView:'minute' }"/>
+                                                        data-datetimepicker-config="{ dropdownSelector: '#timefinish', startView:'day', minView:'day' }"/>
                                     </ul>
                                 </div>
                             </div>
 
                             <div class="day-wrap">
                                 <select class="styler">
-                                    <option>8:00</option>
-                                    <option>9:00</option>
-                                    <option>10:00</option>
-                                    <option>11:00</option>
-                                    <option>12:00</option>
-                                    <option>13:00</option>
-                                    <option>14:00</option>
-                                    <option>15:00</option>
-                                    <option>16:00</option>
+                                    <option ng-repeat="hour in workhours"> {{hour}}</option>
                                 </select>
                             </div>
                         </div>

@@ -177,6 +177,7 @@
 
                                     <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
                                         <datetimepicker data-ng-model="campaign_form.campaign_start"
+                                                        data-date-format="yyyy-mm-dd"
                                                         data-datetimepicker-config="{ dropdownSelector: '#timestart', startView:'day', minView:'day' }"/>
                                     </ul>
                                 </div>
@@ -184,7 +185,7 @@
 
                             <div class="day-wrap">
                                 <select class="styler">
-                                    <option ng-repeat="hour in workhours"> {{hour}}</option>
+                                    <option ng-repeat="hour in workhours">{{formatWorkingHours(hour)}}</option>
                                 </select>
                             </div>
                         </div>
@@ -204,6 +205,7 @@
 
                                     <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
                                         <datetimepicker data-ng-model="campaign_form.campaign_finish"
+                                                        data-date-format="yyyy-mm-dd"
                                                         data-datetimepicker-config="{ dropdownSelector: '#timefinish', startView:'day', minView:'day' }"/>
                                     </ul>
                                 </div>
@@ -211,7 +213,7 @@
 
                             <div class="day-wrap">
                                 <select class="styler">
-                                    <option ng-repeat="hour in workhours"> {{hour}}</option>
+                                    <option ng-repeat="hour in workhours">{{formatWorkingHours(hour)}}</option>
                                 </select>
                             </div>
                         </div>

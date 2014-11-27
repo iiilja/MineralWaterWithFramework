@@ -269,6 +269,11 @@ input[readonly] {
     overflow: hidden;
 }
 
+.edit-campaign .load-files p a {
+    color: #333333;
+    float: right;
+}
+
 .edit-campaign .upload-wrap .form-group {
     padding-left: 0;
     margin: 0;
@@ -286,6 +291,68 @@ input[readonly] {
     padding: 0 12px;
     margin-bottom: 10px;
     width: 755px;
+}
+
+.edit-campaign .load-files .load-file.audio-file .load-wrap div {
+    width: 147px;
+}
+
+.controll-block {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    padding: 0;
+    width: 147px;
+    margin: 0;
+}
+.controll-block li {
+    float: left;
+/*    width: 33.3%;*/
+    -webkit-box-sizing:border-box;
+    -moz-box-sizing:border-box;
+    box-sizing:border-box;
+    list-style: none;
+}
+
+.controll-block li.Play-on-device a {
+    width: 57px;
+    height: 45px;
+    background: url(../img/Play-on-device-normal.png);
+}   
+
+.controll-block li.Play-on-device a:hover {
+    background: url(../img/Play-on-device-hover.png);
+}
+
+.controll-block li.Play-audio a {
+    width: 45px;
+    height: 45px;
+    background: url(../img/Play-audio-normal.png);
+}
+
+.controll-block li.Play-audio a:hover {
+    background: url(../img/Play-audio-hover.png);
+}
+
+.controll-block li.Arrow-menu a  {
+    width: 45px;
+    height: 45px;
+    background: url(../img/Arrow-menu-normal.png);
+}
+
+.controll-block li.Arrow-menu a:hover {
+    background: url(../img/Arrow-menu-hover.png);
+}
+
+.controll-block li a {
+/*    color: #fff;
+    height: 43px;
+    line-height: 43px;
+    background: rgba(0,0,0,0.5);*/
+    -webkit-transition:0.5s all ease;
+    -moz-transition:0.5s all ease;
+    transition:0.5s all ease;
+    display: block;
 }
 
 .setting-btn {
@@ -415,7 +482,8 @@ input[readonly] {
     font-size: 10pt;
 }
 
-.btn-group.days .btn.active {
+.btn-group.days .btn.active ,
+.btn-group.days .btn:hover {
     color: #fff;
     background-color: #3071a9;
     border-color: #285e8e;
@@ -443,6 +511,7 @@ input[readonly] {
     text-align: center;
     border:0;
     margin: 0!important;
+    color: #fff;
 }
 .opening-hours {
     padding-top: 16px;
@@ -885,6 +954,7 @@ input[readonly] {
 }
 .device .company-info ul li span {
     color: #fff;
+    margin-right: 10px;
 }
 
 .preferences-wrap {
@@ -1096,4 +1166,16 @@ input[readonly] {
 
 .jq-selectbox__dropdown ul {
     max-height: 200px;
+}
+
+.file-name {
+    display: block;
+    white-space: nowrap;
+    text-overflow:ellipsis;
+    overflow: hidden;
+    max-width: 300px;
+}
+
+.stat .modal-title {
+    text-align: center;
 }

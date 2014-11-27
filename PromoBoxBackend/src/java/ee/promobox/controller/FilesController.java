@@ -506,6 +506,7 @@ public class FilesController {
             jsonCampaignFile.put("fileId",file.getFileId());
             jsonCampaignFile.put("orderId", file.getOrderId());
             jsonCampaignFile.put("name", file.getFilename());
+            jsonCampaignFile.put("fileType", file.getFileType());
             jsonCampaignFile.put("created", file.getCreatedDt());
             jsonCampaignFile.put("status", file.getStatus());
             jsonCampaignFile.put("ext", "." + FilenameUtils.getExtension(file.getFilename()));

@@ -27,7 +27,7 @@
                 <div class="load-file audio-file">
                     <div class="load-wrap img-thumbnail">
                         <div>
-                            <img ng-src="{{apiEndpoint}}files/thumb/{{promofile.id}}" src="../img/pic.png" alt="">
+                            <img  src="../img/pic.png" alt="">
                             <ul class="controll-block">
                                 <li class="Play-audio">
                                     <a href="#"></a>
@@ -44,6 +44,37 @@
                     </div>
                 </div>
                 
+                <div class="load-file video-file">
+                    <div class="load-wrap img-thumbnail">
+                        <div>
+                            <img  src="../img/pic.png" alt="">
+                        </div>
+                        <p>Test.mov <a href="#"><span class="glyphicon glyphicon-remove"></span></a></p>
+                    </div>
+                    <div class="Video-picture-wrap img-thumbnail">
+                        <div class="cont">
+                            <img src="../img/pic-2.png"  alt="">
+
+                            <a class="play" href="#"></a>
+
+                            <div class="bottom-block">
+                                <span></span>
+                                <ul class="controll-block pull-right">
+                                    <li class="Play-on-device"><a href="#"></a></li>
+                                    <li class="Arrow-menu">
+                                        <a href="#"></a>
+
+                                        <ul>
+                                            <li><a href="#"><i class="po"></i><span>Повернуть по часовой</span></a></li>
+                                            <li><a href="#"><i class="protiv"></i><span>Повернуть против часовой</span></a></li>
+                                            <li><a href="#"><i class="delete"></i><span>Удалить файл</span></a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <ul id="playlist" style="list-style: none;">
                     <li ng-repeat="promofile in campaign_form.filesArray" data-url="{{apiEndpoint}}files/{{promofile.id}}{{promofile.ext}}" data-thumbnail-path="{{apiEndpoint}}files/thumb/{{promofile.id}}"></li>
                 </ul>

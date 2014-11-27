@@ -180,7 +180,9 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
                                     campaign_time: $scope.campaign.duration, 
                                     campaign_order: $scope.campaign.sequence, 
                                     campaign_start: timeToData($scope.campaign.start), 
-                                    campaign_finish: timeToData($scope.campaign.finish)
+                                    campaign_finish: timeToData($scope.campaign.finish),
+                                    campaign_start_time: timeToDataTime($scope.campaign.start),
+                                    campaign_finish_time: timeToDataTime($scope.campaign.finish),
                                     };
             $scope.campaign_stat = {campaign_count_files: $scope.campaign.countFiles,
                                     campaign_count_images: $scope.campaign.countImages,
@@ -274,9 +276,22 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         var timeToData = function(time) {
             return new Date(time);
         };
-
-        var dataToTime = function(data) {
-            return data.getTime();
+        
+        var timeToDataTime = function(time) {
+            var date = new Date(time);
+            
+            var h = date.getHours();
+            var m = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
+            var result =  h + ":" + m;
+            
+            console.log(result);
+            
+            return result;
+        };
+ 
+        var dataToTime = function(data, time) {
+            var timePart = time.split(":");
+            return data.getTime() + (timePart[0] * 60 * 60 + timePart[1] * 60) * 1000;
         };
         $scope.edit_company = function () {
             console.log($scope.checkedHours);
@@ -289,8 +304,8 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
                 status: $scope.campaign_form.campaign_status, 
                 name: $scope.campaign_form.campaign_name, 
                 sequence: $scope.campaign_form.campaign_order, 
-                start: dataToTime($scope.campaign_form.campaign_start), 
-                finish: dataToTime($scope.campaign_form.campaign_finish), 
+                start: dataToTime($scope.campaign_form.campaign_start, $scope.campaign_form.campaign_start_time), 
+                finish: dataToTime($scope.campaign_form.campaign_finish, $scope.campaign_form.campaign_finish_time), 
                 duration: $scope.campaign_form.campaign_time, 
                 days: $scope.checkedDays, 
                 hours: $scope.checkedHours}, function(response){

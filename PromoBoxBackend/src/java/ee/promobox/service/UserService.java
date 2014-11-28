@@ -7,6 +7,7 @@ package ee.promobox.service;
 
 import ee.promobox.entity.AdCampaigns;
 import ee.promobox.entity.CampaignsFiles;
+import ee.promobox.entity.Clients;
 import ee.promobox.entity.Devices;
 import ee.promobox.entity.DevicesCampaigns;
 import ee.promobox.entity.Files;
@@ -22,6 +23,8 @@ public interface UserService {
     public List<Users> findAllUsers();
 
     public Users findUserByEmailAndPassword(String email, String password);
+    
+    public Clients findClientById(int clientId);
 
     public List<AdCampaigns> findUserAdCompaigns(int clientId);
 

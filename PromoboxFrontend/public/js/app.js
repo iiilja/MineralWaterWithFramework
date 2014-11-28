@@ -109,11 +109,16 @@ app.controller('Exit', ['token',
         token.remove();
     }]);
 
-app.controller('TopMenuController', ['$scope', '$location', '$http', 'token', '$rootScope', '$translate',
-    function ($scope, $location, $http, token, $rootScope, $translate) {
+app.controller('TopMenuController', ['$scope', '$location', '$http', 'token', 'Clients', '$rootScope', '$translate',
+    function ($scope, $location, $http, token, Clients, $rootScope, $translate) {
         $rootScope.bodyClass = 'content_bg';
         $rootScope.top_link_active_list = '';
         $rootScope.top_link_active_device = '';
+        
+        Clients.getClient({token: token.get()}, function(response) {
+            console.log(response);
+            $scope.compName = response.compName;
+        });
 
         $scope.change_language = function(lang) {
             $translate.use(lang);

@@ -61,6 +61,19 @@ services.factory('Files', ['$resource',
         });
     }]);
 
+services.factory("Clients", ['$resource',
+    function($resource) {
+        return $resource('',{},{
+            getClient: {
+                method: 'GET',
+                url: apiEndpoint + "/user/data/:token",
+                params: {
+                    token: '@token'
+                }
+            }
+        });
+    }]);
+
 services.factory("token", ['$cookies', '$location', function ($cookies, $location) {
     var token = '';
     token = $cookies.token;

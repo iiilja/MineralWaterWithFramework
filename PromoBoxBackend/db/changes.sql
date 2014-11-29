@@ -32,6 +32,7 @@ ALTER TABLE ad_campaigns ADD COLUMN video_length BIGINT NOT NULL DEFAULT 0;
 ALTER TABLE ad_campaigns ADD COLUMN files_archived BOOLEAN NOT NULL DEFAULT FALSE;
 
 ALTER TABLE files ADD COLUMN content_length BIGINT NOT NULL DEFAULT 0;
+ALTER TABLE files ADD COLUMN angle BIGINT NOT NULL DEFAULT 0;
 
 UPDATE campaigns_files SET order_id = file_id;
 

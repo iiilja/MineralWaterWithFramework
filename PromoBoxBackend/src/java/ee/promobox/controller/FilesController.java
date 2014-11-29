@@ -336,6 +336,13 @@ public class FilesController {
             if (campaign != null) {
                 CampaignsFiles cFile = userService.findCampaignFileById(fileId);
                 Files databaseFile = userService.findFileById(fileId);
+                
+                angle = databaseFile.getAngle() + angle;
+                if (angle < 360) {
+                    angle -= 360;
+                }
+                databaseFile.setAngle(angle);
+                userService.updateFile(databaseFile);
 
                 String fileType = FilenameUtils.getExtension(databaseFile.getFilename());
                 

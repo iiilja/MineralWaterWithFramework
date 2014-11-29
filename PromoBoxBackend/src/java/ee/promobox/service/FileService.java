@@ -18,7 +18,7 @@ public interface FileService {
     public File getClientFolder(int clientId);
     public File getArchiveClientFolder(int clientId);
     public File getRawFile(int clientId, int fileId);
-    public File getOtputFile(int clientId, int fileId);
-    public File getOtputPortFile(int clientId, int fileId);
+    public File getOutputFile(int clientId, int fileId);
+    public File getOutputPortFile(int clientId, int fileId);
     public File getThumbFile(int clientId, int fileId);
 }

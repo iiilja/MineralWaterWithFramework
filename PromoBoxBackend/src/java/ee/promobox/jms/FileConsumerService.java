@@ -53,7 +53,7 @@ public class FileConsumerService extends MessageListenerAdapter {
         if (result) {
             cFile.setStatus(CampaignsFiles.STATUS_ACTIVE);
             
-            File file = fileService.getOtputFile(fileDto.getClientId(), fileDto.getId());
+            File file = fileService.getOutputFile(fileDto.getClientId(), fileDto.getId());
             cFile.setSize((int)file.length());
             
             Files dbFile = userService.findFileById(fileDto.getId());
@@ -133,8 +133,8 @@ public class FileConsumerService extends MessageListenerAdapter {
         int fileId = f.getId();
         
         File rawFile = fileService.getRawFile(clientId, fileId);
-        File outputFile = fileService.getOtputFile(clientId, fileId);
-        File outputPortFile = fileService.getOtputPortFile(clientId, fileId);
+        File outputFile = fileService.getOutputFile(clientId, fileId);
+        File outputPortFile = fileService.getOutputPortFile(clientId, fileId);
         File thumbFile = fileService.getThumbFile(clientId, fileId);
         
         ImageOP imageConvert = new ImageOP(config.getImageMagick());
@@ -187,7 +187,7 @@ public class FileConsumerService extends MessageListenerAdapter {
         int fileId = f.getId();
         
         File rawFile = fileService.getRawFile(clientId, fileId);
-        File outputFile = fileService.getOtputFile(clientId, fileId);
+        File outputFile = fileService.getOutputFile(clientId, fileId);
 
         try {
             FileUtils.copyFile(rawFile, outputFile);
@@ -204,8 +204,8 @@ public class FileConsumerService extends MessageListenerAdapter {
         int fileId = f.getId();
         
         File rawFile = fileService.getRawFile(clientId, fileId);
-        File outputFile = fileService.getOtputFile(clientId, fileId);
-        File outputPortFile = fileService.getOtputPortFile(clientId, fileId);
+        File outputFile = fileService.getOutputFile(clientId, fileId);
+        File outputPortFile = fileService.getOutputPortFile(clientId, fileId);
         File thumbFile = fileService.getThumbFile(clientId, fileId);
         
         ImageOP imageConvert = new ImageOP(config.getImageMagick());
@@ -247,7 +247,7 @@ public class FileConsumerService extends MessageListenerAdapter {
         int fileId = f.getId();
         
         File rawFile = fileService.getRawFile(clientId, fileId);
-        File outputFile = fileService.getOtputFile(clientId, fileId);
+        File outputFile = fileService.getOutputFile(clientId, fileId);
         File thumbFile = fileService.getThumbFile(clientId, fileId);
         
         VideoOP videoConvert = new VideoOP(config.getAvconv());

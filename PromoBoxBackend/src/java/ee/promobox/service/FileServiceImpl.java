@@ -37,12 +37,12 @@ public class FileServiceImpl implements FileService{
     }
 
     @Override
-    public File getOtputFile(int clientId, int fileId) {
+    public File getOutputFile(int clientId, int fileId) {
         return new File(getClientFolder(clientId), fileId + "_output");
     }
 
     @Override
-    public File getOtputPortFile(int clientId, int fileId) {
+    public File getOutputPortFile(int clientId, int fileId) {
         return new File(getClientFolder(clientId), fileId + "_output_port");
     }
     

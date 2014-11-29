@@ -85,8 +85,8 @@ public class FilesController {
                 int fileId = f.getId();
 
                 File rawFile = fileService.getRawFile(clientId, fileId);
-                File outputFile = fileService.getOtputFile(clientId, fileId);
-                File outputPortFile = fileService.getOtputPortFile(clientId, fileId);
+                File outputFile = fileService.getOutputFile(clientId, fileId);
+                File outputPortFile = fileService.getOutputPortFile(clientId, fileId);
                 File thumbFile = fileService.getThumbFile(clientId, fileId);
                 
                 
@@ -294,7 +294,7 @@ public class FilesController {
                                 log.error("Error rename file");
                             }
 
-                            FileDto fileDto = new FileDto(campaignFile.getFileId(),
+                            FileDto fileDto = new FileDto(databaseFile.getId(),
                                     session.getClientId(), fileTypeNumber, fileType);
 
                             jmsTemplate.convertAndSend(fileDestination, fileDto);
@@ -432,10 +432,10 @@ public class FilesController {
             }
                         
             
-            File file = fileService.getOtputFile(dbFile.getClientId(), dbFile.getId());
+            File file = fileService.getOutputFile(dbFile.getClientId(), dbFile.getFileId());
                                     
             if (orient!=null && orient == Devices.ORIENTATION_PORTRAIT_EMULATION) {
-                File filePort = fileService.getOtputPortFile(dbFile.getClientId(), dbFile.getId());
+                File filePort = fileService.getOutputPortFile(dbFile.getClientId(), dbFile.getFileId());
                 
                 if (filePort.exists()) {
                     file = filePort;
@@ -476,7 +476,7 @@ public class FilesController {
             OutputStream outputStream = response.getOutputStream();
 
             if (dbFile.getFileType() != FileTypeUtils.FILE_TYPE_AUDIO && !(dbFile.getStatus() == CampaignsFiles.STATUS_UPLOADED)) {
-                file = fileService.getThumbFile(dbFile.getClientId(), dbFile.getId());
+                file = fileService.getThumbFile(dbFile.getClientId(), dbFile.getFileId());
 
                 FileInputStream fileInputStream = new FileInputStream(file);
                 

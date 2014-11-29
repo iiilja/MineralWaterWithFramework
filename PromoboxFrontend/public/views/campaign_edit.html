@@ -45,14 +45,14 @@
                             <img ng-click="openPlayer($index)"
                                  ng-src="{{apiEndpoint}}files/thumb/{{promofile.id}}"  alt="">
 
-                            <a class="play" href="#"></a>
+                            <a ng-click="openPlayer($index)" class="play"></a>
 
                             <div class="bottom-block">
                                 <span></span>
                                 <ul class="controll-block pull-right">
                                     <li class="Play-on-device"><a ng-click="playNextFile(promofile.id)"></a></li>
                                     <li class="Arrow-menu">
-                                        <a href="#"></a>
+                                        <a></a>
 
                                         <ul>
                                             <li><a ng-click="rotateFile(promofile.id, 90)"><i class="po"></i><span>{{'campaign_edit_clockwise' | translate }}</span></a></li>

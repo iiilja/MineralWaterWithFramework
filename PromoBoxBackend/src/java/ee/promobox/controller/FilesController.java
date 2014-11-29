@@ -338,7 +338,7 @@ public class FilesController {
                 Files databaseFile = userService.findFileById(fileId);
                 
                 angle = databaseFile.getAngle() + angle;
-                if (angle < 360) {
+                if (angle > 360) {
                     angle -= 360;
                 }
                 databaseFile.setAngle(angle);
@@ -346,7 +346,7 @@ public class FilesController {
 
                 String fileType = FilenameUtils.getExtension(databaseFile.getFilename());
                 
-                FileDto fileDto = new FileDto(cFile.getFileId(), session.getClientId(), databaseFile.getFileType(), fileType);
+                FileDto fileDto = new FileDto(fileId, session.getClientId(), databaseFile.getFileType(), fileType);
                 fileDto.setRotate(angle);
                 
                 jmsTemplate.convertAndSend(fileDestination, fileDto);

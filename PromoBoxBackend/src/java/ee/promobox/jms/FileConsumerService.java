@@ -258,20 +258,6 @@ public class FileConsumerService extends MessageListenerAdapter {
         videoConvert.format("image2");
         
         videoConvert.processToFile(thumbFile);
-        if (f.getRotate() != 0) {
-            ImageOP imageConvert = new ImageOP(config.getImageMagick());
-
-            imageConvert.input(thumbFile);
-            imageConvert.outputFormat("png");
-            imageConvert.resize(250, 250);
-            imageConvert.rotate(f.getRotate());
-
-            imageConvert.background("white");
-            imageConvert.gravity("center");
-            imageConvert.extent("250x250");
-
-            imageConvert.processToFile(thumbFile);
-        } 
         
         ImageOP imageConvert = new ImageOP(config.getImageMagick());
 
@@ -282,6 +268,10 @@ public class FileConsumerService extends MessageListenerAdapter {
         imageConvert.background("white");
         imageConvert.gravity("center");
         imageConvert.extent("250x250");
+        
+        if (f.getRotate() != 0) {
+            imageConvert.rotate(f.getRotate());
+        }
 
         imageConvert.processToFile(thumbFile);
         

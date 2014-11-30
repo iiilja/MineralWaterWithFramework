@@ -270,7 +270,7 @@ public class FileConsumerService extends MessageListenerAdapter {
             imageConvert.gravity("center");
             imageConvert.extent("250x250");
 
-            return imageConvert.processToFile(thumbFile);
+            imageConvert.processToFile(thumbFile);
         } 
         
         ImageOP imageConvert = new ImageOP(config.getImageMagick());
@@ -300,16 +300,20 @@ public class FileConsumerService extends MessageListenerAdapter {
         
         } else {
             videoConvert = new VideoOP(config.getAvconv());
-                videoConvert.input(outputFile)
+                videoConvert.input(rawFile)
                 .codecVideo("libvpx")
                 .bitrateVideo("1M")
                 .maxrate("1M")
-                .format("webm");
+                .format("webm")
+                .overwrite();
+                
                 
             if (f.getRotate() == 90) {
-                videoConvert.flip("transpose=1");
+                videoConvert.vf("scale=-1:720", "transpose=1");
+            } else if (f.getRotate() == 180) { 
+                videoConvert.vf("scale=-1:720", "transpose=1,transpose=1");
             } else if (f.getRotate() == 270) {
-                videoConvert.flip("transpose=2");
+                videoConvert.vf("scale=-1:720", "transpose=2");
             }
             
             result = videoConvert.processToFile(outputFile);

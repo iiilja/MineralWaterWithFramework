@@ -92,10 +92,16 @@ public class VideoOP {
         return this;
     }
     
-    public VideoOP flip(String flip) {
+    public VideoOP vf(String scale, String flip) {
         args.add("-vf");
-        args.add(flip);
+        args.add(scale + "," + flip);
 
+        return this;
+    }
+    
+    public VideoOP overwrite() {
+        args.add("-y");
+        
         return this;
     }
     

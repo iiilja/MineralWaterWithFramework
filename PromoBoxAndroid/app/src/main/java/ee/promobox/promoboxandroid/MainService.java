@@ -5,12 +5,15 @@ import android.app.Service;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.MediaRecorder;
+import android.net.rtp.AudioCodec;
 import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.Environment;
 import android.os.IBinder;
 import android.os.StatFs;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
@@ -235,7 +238,21 @@ public class MainService extends Service {
                     Log.d("MainService", "Data: " + data.toString());
 
                     if(data.has("audioOut")) {
-                        setAudioDevice(data.getString("audioOut"));
+                        int deviceId = data.getInt("audioOut");
+                        String device;
+                        switch(deviceId) {
+                            case 1:
+                                device = "AUDIO_HDMI";
+                                break;
+                            case 2:
+                                device = "AUDIO_SPDIF";
+                                break;
+                            default:
+                            case 0:
+                                device = "AUDIO_CODEC";
+                                break;
+                        }
+                        setAudioDevice(device);
                     }
 
                     if (data.has("campaigns")) {

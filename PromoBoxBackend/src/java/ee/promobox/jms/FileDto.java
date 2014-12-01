@@ -16,13 +16,14 @@ import java.io.Serializable;
 public class FileDto implements Serializable {
     
     private int id;
+    private int clientId;
     private int fileType;
-    private File file;
     private String extention;
+    private int rotate;
 
-    public FileDto(int id, int fileType, File file, String extention) {
+    public FileDto(int id, int clientId, int fileType, String extention) {
         this.id = id;
-        this.file = file;
+        this.clientId = clientId;
         this.fileType = fileType;
         this.extention = extention;
     }
@@ -35,13 +36,14 @@ public class FileDto implements Serializable {
         this.id = id;
     }
 
-    public File getFile() {
-        return file;
+    public int getClientId() {
+        return clientId;
     }
 
-    public void setFile(File file) {
-        this.file = file;
+    public void setClientId(int clientId) {
+        this.clientId = clientId;
     }
+    
 
     public int getFileType() {
         return fileType;
@@ -65,4 +67,12 @@ public class FileDto implements Serializable {
         this.extention = extention;
     }
 
+    public int getRotate() {
+        return rotate;
+    }
+
+    public void setRotate(int rotate) {
+        this.rotate = rotate;
+    }
+    
 }

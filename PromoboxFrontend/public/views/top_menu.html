@@ -1,5 +1,5 @@
 <div class="row" style="height: 56px;">
-    <img style="margin-top: 5px;margin-bottom: 6px;margin-left: 10px;" src="img/small_logo.png" alt="" />
+    <img style="margin-top: 5px;margin-bottom: 6px;margin-left: 40px;" src="img/small_logo.png" alt="" />
     <a ui-sref="list" class="top_link {{$root.top_link_active_list}}" href>{{ 'top_menu_advertisingcampaigns' | translate }}</a>
     <a ui-sref="device" class="top_link {{$root.top_link_active_device}}" href>{{ 'top_menu_devices' | translate }}</a>
             <span class="pull-right" style="height: 56px; line-height: 56px;">
@@ -9,7 +9,7 @@
                 <span ng-click="change_language('ru')" class="lang-lg language_button" lang="ru"></span>
                 <span ng-click="change_language('en')" class="lang-lg language_button" lang="en"></span>
 
-                <button type="button" class="btn btn-custom-lighten">{{ 'top_menu_company' | translate }}</button>
+                <button type="button" class="btn btn-custom-lighten">{{compName}}</button>
                 <button ui-sref="exit" type="button" class="btn btn-custom-lighten">{{ 'top_menu_exit' | translate }}</button>
             </span>
 </div>

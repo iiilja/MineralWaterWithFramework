@@ -72,6 +72,9 @@
     "campaign_edit_uploadall": "Aplodēt visu",
     "campaign_edit_cancelall": "Atcelt visu",
     "campaign_edit_removeall": "Noņemt visu",
+    "campaign_edit_clockwise": "Повернуть по часовой",
+    "campaign_edit_counterclockwise": "Повернуть против часовой",
+    "campaign_edit_deletefile": "Удалить файл",
     "campaign_edit_activityofthecompany": "Uzņēmuma aktivitātes",
     "campaign_edit_suspended": "Apturēts",
     "campaign_edit_launched": "Sākts",
@@ -107,5 +110,8 @@
     "system_device": "Ierīce",
     "system_updated": "Atjaunots",
     "system_removed": "Noņemts",
-    "system_deviceadded": "Ierīce pievienota"
+    "system_deviceadded": "Ierīce pievienota",
+    "system_device_cachecleared": "Cache will be cleared",
+    "system_playnextfile": "Файл будет воспроизведен следующим",
+    "system_rotatefile": "Файл будет повернут"
 }

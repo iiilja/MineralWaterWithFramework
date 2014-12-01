@@ -111,7 +111,7 @@ remotes {
 }
 
 ssh {
-    identity = file("${System.properties['user.home']}/.ssh/id_rsa")
+    identity = file("${System.properties['user.home']}/.ssh/gradle/id_rsa")
     knownHosts = allowAnyHosts    // Disable host key verification
 }
 

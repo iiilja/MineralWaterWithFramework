@@ -9,3 +9,5 @@
 /PromoBoxFrontend/.DS_Store
 /PromoBoxFrontend/build
 PromoboxFrontend/.idea/workspace.xml
+
+PromoBoxBackend/build.gradle

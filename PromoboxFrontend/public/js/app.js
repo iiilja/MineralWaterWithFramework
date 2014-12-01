@@ -109,11 +109,16 @@ app.controller('Exit', ['token',
         token.remove();
     }]);
 
-app.controller('TopMenuController', ['$scope', '$location', '$http', 'token', '$rootScope', '$translate',
-    function ($scope, $location, $http, token, $rootScope, $translate) {
+app.controller('TopMenuController', ['$scope', '$location', '$http', 'token', 'Clients', '$rootScope', '$translate',
+    function ($scope, $location, $http, token, Clients, $rootScope, $translate) {
         $rootScope.bodyClass = 'content_bg';
         $rootScope.top_link_active_list = '';
         $rootScope.top_link_active_device = '';
+        
+        Clients.getClient({token: token.get()}, function(response) {
+            console.log(response);
+            $scope.compName = response.compName;
+        });
 
         $scope.change_language = function(lang) {
             $translate.use(lang);
@@ -167,6 +172,7 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         $scope.filesArray = [];
         $scope.checkedDays = [];
         $scope.checkedHours = [];
+        $scope.apiEndpoint = apiEndpoint;
         
         Campaign.get_campaigns({token: token.get(), id: $stateParams.cId}, function (response) {
             console.log(response);
@@ -179,7 +185,9 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
                                     campaign_time: $scope.campaign.duration, 
                                     campaign_order: $scope.campaign.sequence, 
                                     campaign_start: timeToData($scope.campaign.start), 
-                                    campaign_finish: timeToData($scope.campaign.finish)
+                                    campaign_finish: timeToData($scope.campaign.finish),
+                                    campaign_start_time: timeToDataTime($scope.campaign.start),
+                                    campaign_finish_time: timeToDataTime($scope.campaign.finish),
                                     };
             $scope.campaign_stat = {campaign_count_files: $scope.campaign.countFiles,
                                     campaign_count_images: $scope.campaign.countImages,
@@ -273,9 +281,22 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         var timeToData = function(time) {
             return new Date(time);
         };
-
-        var dataToTime = function(data) {
-            return data.getTime();
+        
+        var timeToDataTime = function(time) {
+            var date = new Date(time);
+            
+            var h = date.getHours();
+            var m = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
+            var result =  h + ":" + m;
+            
+            console.log(result);
+            
+            return result;
+        };
+ 
+        var dataToTime = function(data, time) {
+            var timePart = time.split(":");
+            return data.getTime() + (timePart[0] * 60 * 60 + timePart[1] * 60) * 1000;
         };
         $scope.edit_company = function () {
             console.log($scope.checkedHours);
@@ -288,8 +309,8 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
                 status: $scope.campaign_form.campaign_status, 
                 name: $scope.campaign_form.campaign_name, 
                 sequence: $scope.campaign_form.campaign_order, 
-                start: dataToTime($scope.campaign_form.campaign_start), 
-                finish: dataToTime($scope.campaign_form.campaign_finish), 
+                start: dataToTime($scope.campaign_form.campaign_start, $scope.campaign_form.campaign_start_time), 
+                finish: dataToTime($scope.campaign_form.campaign_finish, $scope.campaign_form.campaign_finish_time), 
                 duration: $scope.campaign_form.campaign_time, 
                 days: $scope.checkedDays, 
                 hours: $scope.checkedHours}, function(response){
@@ -378,8 +399,20 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
 
         $scope.inArchive = function (id) {
             Files.arhiveFiles({token: token.get(), id: id}, function(response){
-                sysMessage.delete_s($filter('translate')('system_filewasdeleted'))
+                sysMessage.delete_s($filter('translate')('system_filewasdeleted'));
                 refreshFilesModel();
+            });
+        };
+        
+        $scope.playNextFile = function (id) {
+            Campaign.play_next_file({token: token.get(), id: $stateParams.cId, file: id}, function(responce) {
+                sysMessage.update_s($filter('translate')('system_playnextfile'));
+            });
+        };
+        
+        $scope.rotateFile = function (id, angle) {
+            Campaign.rotate_file({token: token.get(), id: $stateParams.cId, file: id, angle: angle}, function(responce) {
+                sysMessage.update_s($filter('translate')('system_rotatefile'));
             });
         };
         
@@ -612,7 +645,9 @@ app.controller('DevicesController', ['$scope', 'token', 'Device', 'sysMessage', 
             };
             
             $scope.clearCache =  function(deviceId) {
-                Device.clearCache({token: token.get() , id: deviceId});
+                Device.clearCache({token: token.get() , id: deviceId}, function (response) {
+                    sysMessage.update_s($filter('translate')('system_device_cachecleared'));
+                });
             }
             
             $scope.workdays = ['mo', 'tu', 'we', 'th', 'fr', 'sa', 'su'];

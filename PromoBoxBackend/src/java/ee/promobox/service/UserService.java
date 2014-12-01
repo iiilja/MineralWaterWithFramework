@@ -7,6 +7,7 @@ package ee.promobox.service;
 
 import ee.promobox.entity.AdCampaigns;
 import ee.promobox.entity.CampaignsFiles;
+import ee.promobox.entity.Clients;
 import ee.promobox.entity.Devices;
 import ee.promobox.entity.DevicesCampaigns;
 import ee.promobox.entity.Files;
@@ -22,6 +23,8 @@ public interface UserService {
     public List<Users> findAllUsers();
 
     public Users findUserByEmailAndPassword(String email, String password);
+    
+    public Clients findClientById(int clientId);
 
     public List<AdCampaigns> findUserAdCompaigns(int clientId);
 
@@ -41,6 +44,8 @@ public interface UserService {
     
     public Devices findDeviceByUuid(String uuid);
     
+    public List<Devices> findAllDevices();
+    
     public List<DevicesCampaigns> findDeviceCampaignsByDeviceId(int deviceId);
     
     public DevicesCampaigns findLastUpdatedDeviceCampaign(int deviceId);
@@ -48,6 +53,8 @@ public interface UserService {
     public DevicesCampaigns findDeviceCampaignByCampaignId(int deviceId, int campaignId);
 
     public List<AdCampaigns> findCampaignByDeviceId(int deviceId);
+    
+    public List<AdCampaigns> findCampaignsArchiveCandidates();
     
     public AdCampaigns findCampaignByCampaignId(int campaignId);
     
@@ -71,6 +78,8 @@ public interface UserService {
     public void updateFile(Files file);
 
     public Devices findDeviceByIdAndClientId(int id, int clientId);
+    
+    public Devices findDeviceByCampaignId(int id, int clientId);
     
     public void addDeviceAdCampaign(DevicesCampaigns dc);
     

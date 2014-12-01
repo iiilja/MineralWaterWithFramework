@@ -134,7 +134,10 @@ public class Devices implements Serializable {
     private Integer loadingCampaignId;
     
     @Column(name = "loading_compaign_progress")
-    private Integer loadingCampaignProgress; 
+    private Integer loadingCampaignProgress;
+    
+    @Column(name = "next_file")
+    private Integer nextFile; 
 
     public Devices() {
     }
@@ -382,4 +385,13 @@ public class Devices implements Serializable {
     public void setCache(long cache) {
         this.cache = cache;
     }
+
+    public Integer getNextFile() {
+        return nextFile;
+    }
+
+    public void setNextFile(Integer nextFile) {
+        this.nextFile = nextFile;
+    }
+    
 }

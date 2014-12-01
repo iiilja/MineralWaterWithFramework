@@ -7,6 +7,7 @@ package ee.promobox.controller;
 
 import ee.promobox.entity.AdCampaigns;
 import ee.promobox.entity.CampaignsFiles;
+import ee.promobox.entity.Devices;
 import ee.promobox.service.Session;
 import ee.promobox.service.SessionService;
 import ee.promobox.service.UserService;
@@ -288,6 +289,42 @@ public class CampaignsController {
         }
 
     }
+    
+    @RequestMapping(value = "token/{token}/campaigns/{id}/nextFile/{file}", method = RequestMethod.PUT)
+    public void clearDeviceCache(
+            @PathVariable("token") String token,
+            @PathVariable("id") int id,
+            @PathVariable("file") int fileId,
+            HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+
+        JSONObject resp = new JSONObject();
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+        Session session = sessionService.findSession(token);
+
+        if (session != null) {
+            int clientId = session.getClientId();
+            
+
+            Devices device = userService.findDeviceByCampaignId(id, clientId);
+
+            if (device != null) {
+
+                device.setNextFile(fileId);
+
+                userService.updateDevice(device);
+
+                response.setStatus(HttpServletResponse.SC_OK);
+
+                RequestUtils.printResult(resp.toString(), response);
+
+            } else {
+                RequestUtils.sendUnauthorized(response);
+            }
+        }
+    }
+
 
     @ExceptionHandler(Exception.class)
     public void handleAllException(Exception ex) {

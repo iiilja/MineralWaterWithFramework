@@ -11,6 +11,25 @@ services.factory('Campaign', ['$resource',
                 edit_campaigns: {method: 'PUT', url: apiEndpoint + 'token/:token/campaigns/:id', params: {token: '@token', id: '@id'}},
                 get_campaigns: {method: 'GET', url: apiEndpoint + 'token/:token/campaigns/:id/', params: {token: '@token', id: '@id'}},
                 get_all_campaigns: {method: 'GET', url: apiEndpoint + 'token/:token/campaigns/', params: {token: '@token'}},
+                play_next_file: {
+                    method: 'PUT',
+                    url: apiEndpoint + 'token/:token/campaigns/:id/nextFile/:file',
+                    params: {
+                        token: '@token',
+                        id: '@id',
+                        file: '@file'
+                    }
+                },
+                rotate_file: {
+                    method: 'PUT',
+                    url: apiEndpoint + "token/:token/campaigns/:id/files/:file/rotate/:angle",
+                    params: {
+                        token: '@token',
+                        id: '@id',
+                        file: '@file',
+                        angle: '@angle'
+                    }
+                },
                 delete_campaigns: {method: 'DELETE', url: apiEndpoint + 'token/:token/campaigns/:id/', params: {token: '@token', id: '@id'},
                     interceptor: {
                         response: function(response) {
@@ -19,6 +38,7 @@ services.factory('Campaign', ['$resource',
                             response.data = response.data.tags;
                             return response;
                         }}}
+                
             });}]);
 
 services.factory('Device', ['$resource',
@@ -38,6 +58,19 @@ services.factory('Files', ['$resource',
             getFiles: {method: 'GET', url: apiEndpoint + 'token/:token/campaigns/:id/files/', params: {token: '@token', id: '@id'}},
             arhiveFiles: {method: 'PUT', url: apiEndpoint + 'token/:token/files/archive/:id/', params: {token: '@token', id: '@id'}},
             reorderFiles: {method: 'PUT', url: apiEndpoint + 'token/:token/campaigns/:id/files/order', params: {token: '@token', id: '@id'}}
+        });
+    }]);
+
+services.factory("Clients", ['$resource',
+    function($resource) {
+        return $resource('',{},{
+            getClient: {
+                method: 'GET',
+                url: apiEndpoint + "/user/data/:token",
+                params: {
+                    token: '@token'
+                }
+            }
         });
     }]);
 

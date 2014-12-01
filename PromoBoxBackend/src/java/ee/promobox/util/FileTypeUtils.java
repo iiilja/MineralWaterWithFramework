@@ -23,6 +23,14 @@ public class FileTypeUtils {
     public static int determineFileTypeNumber(String filetype) {
         // if file type is not legal then 0 is returned
         switch (filetype.toUpperCase()) {
+            case "DOC":
+                return FILE_TYPE_IMAGE;
+            case "DOCX":
+                return FILE_TYPE_IMAGE;
+            case "PPT":
+                return FILE_TYPE_IMAGE;
+            case "XLS":
+                return FILE_TYPE_IMAGE;
             case "JPG":
                 return FILE_TYPE_IMAGE;
             case "JPEG":

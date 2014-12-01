@@ -7,6 +7,7 @@ package ee.promobox.service;
 
 import ee.promobox.entity.AdCampaigns;
 import ee.promobox.entity.CampaignsFiles;
+import ee.promobox.entity.Clients;
 import ee.promobox.entity.Devices;
 import ee.promobox.entity.DevicesCampaigns;
 import ee.promobox.entity.Files;
@@ -47,6 +48,20 @@ public class UserServiceImpl implements UserService {
         return (Users) q.uniqueResult();
     }
 
+    @Override
+    public Clients findClientById(int clientId) {
+        //
+        
+        Session session = sessionFactory.getCurrentSession();
+
+        Query q = session.getNamedQuery("Clients.findById");
+        q.setParameter("id", clientId);
+
+        return (Clients) q.uniqueResult();
+    }
+    
+    
+
     public List<AdCampaigns> findUserAdCompaigns(int clientId) {
         Session session = sessionFactory.getCurrentSession();
 
@@ -79,7 +94,7 @@ public class UserServiceImpl implements UserService {
     public CampaignsFiles findCampaignFileById(int id) {
         Session session = sessionFactory.getCurrentSession();
 
-        Query q = session.createQuery("from CampaignsFiles where id  = :id");
+        Query q = session.createQuery("from CampaignsFiles where fileId  = :id");
         q.setParameter("id", id);
 
         return (CampaignsFiles) q.uniqueResult();
@@ -135,6 +150,17 @@ public class UserServiceImpl implements UserService {
         return (Devices) q.uniqueResult();
     }
 
+    @Override
+    public List<Devices> findAllDevices() {
+        Session session = sessionFactory.getCurrentSession();
+    
+        Query q = session.getNamedQuery("Devices.findAll");
+        
+        return q.list();
+    }
+    
+    
+
     public DevicesCampaigns findDeviceCampaignByCampaignId(int deviceId, int campaignId) {
         Session session = sessionFactory.getCurrentSession();
 
@@ -171,6 +197,18 @@ public class UserServiceImpl implements UserService {
 
         return q.list();
     }
+
+    @Override
+    public List<AdCampaigns> findCampaignsArchiveCandidates() {
+        Session session = sessionFactory.getCurrentSession();
+        
+        Query q = session.createQuery("FROM AdCampaigns ad WHERE ad.status = :statusArchived AND ad.filesArchived IS TRUE")
+                .setInteger("statusArchived", AdCampaigns.STATUS_AHRCHIVED);
+        
+        return q.list();
+    }
+    
+    
 
     public AdCampaigns findCampaignByCampaignId(int campaignId) {
         Session session = sessionFactory.getCurrentSession();
@@ -275,6 +313,20 @@ public class UserServiceImpl implements UserService {
 
         return (Devices) q.uniqueResult();
     }
+
+    @Override
+    public Devices findDeviceByCampaignId(int campignId, int clientId) {
+        Session session = sessionFactory.getCurrentSession();
+
+        Query q = session.createQuery("FROM Devices WHERE currentCampaignId = :campignId AND clientId = :clientId");
+
+        q.setParameter("campignId", campignId);
+        q.setParameter("clientId", clientId);
+
+        return (Devices) q.uniqueResult();
+    }
+    
+    
     
     @Override
     public void deleteDeviceCampaign(int deviceId, int campaignId) {

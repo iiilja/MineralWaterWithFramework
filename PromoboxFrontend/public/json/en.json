@@ -79,6 +79,9 @@
     "campaign_edit_uploadall": "Upload all",
     "campaign_edit_cancelall": "Cancel all",
     "campaign_edit_removeall": "Remove all",
+    "campaign_edit_clockwise": "Повернуть по часовой",
+    "campaign_edit_counterclockwise": "Повернуть против часовой",
+    "campaign_edit_deletefile": "Удалить файл",
     "campaign_edit_activityofthecompany": "Activity of the company",
     "campaign_edit_suspended": "Suspended",
     "campaign_edit_launched": "Launched",
@@ -115,7 +118,10 @@
     "system_updated": "updated",
     "system_removed": "Removed",
     "system_deviceadded": "Device added",
+    "system_device_cachecleared": "Cache will be cleared",
     "system_error": "Error",
-    "system_thenameorpassworddonotmatch": "The name or password do not match"
+    "system_thenameorpassworddonotmatch": "The name or password do not match",
+    "system_playnextfile": "Файл будет воспроизведен следующим",
+    "system_rotatefile": "Файл будет повернут"
 
 }

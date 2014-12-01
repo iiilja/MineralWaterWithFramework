@@ -5,6 +5,7 @@
 package ee.promobox.controller;
 
 import ee.promobox.entity.AdCampaigns;
+import ee.promobox.entity.Clients;
 import ee.promobox.entity.Devices;
 import ee.promobox.entity.Users;
 import ee.promobox.service.Session;
@@ -83,6 +84,7 @@ public class UserController {
         
         Users user = userService.findUserByEmailAndPassword(email, password);
         
+        
         if (user!=null) {
             resp.put("response", RequestUtils.OK);
             
@@ -117,6 +119,11 @@ public class UserController {
         
         if (session!=null) {
             resp.put("response", RequestUtils.OK);
+            
+            Clients client = userService.findClientById(session.getClientId());
+            if (client != null) {
+                resp.put("compName", client.getCompanyName());
+            }
             
             List<AdCampaigns> campaigns = userService.findUserAdCompaigns(session.getClientId());
             List<Devices> devices = userService.findUserDevieces(session.getClientId());

@@ -14,7 +14,9 @@ import ee.promobox.entity.AdCampaigns;
 import ee.promobox.entity.CampaignsFiles;
 import ee.promobox.entity.Devices;
 import ee.promobox.entity.Files;
+import static ee.promobox.jms.FileConsumerService.log;
 import ee.promobox.jms.FileDto;
+import ee.promobox.service.FileService;
 import ee.promobox.service.Session;
 import ee.promobox.service.SessionService;
 import ee.promobox.service.UserService;
@@ -27,6 +29,7 @@ import java.util.List;
 import javax.jms.Destination;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
@@ -36,6 +39,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -53,6 +57,9 @@ public class FilesController {
 
     @Autowired
     private UserService userService;
+    
+    @Autowired
+    private FileService fileService;
 
     @Autowired
     private KioskConfig config;
@@ -68,6 +75,42 @@ public class FilesController {
 
     private final static Logger log = LoggerFactory.getLogger(
             FilesController.class);
+    
+    
+    @Scheduled(cron = "00 00 2 * * ?")
+    public void moveArchivedCampaignFiles() throws Exception {
+        for (AdCampaigns ac: userService.findCampaignsArchiveCandidates()) {
+            for (Files f: userService.findCampaignFiles(ac.getId())) {
+                int clientId = f.getClientId();
+                int fileId = f.getId();
+
+                File rawFile = fileService.getRawFile(clientId, fileId);
+                File outputFile = fileService.getOutputFile(clientId, fileId);
+                File outputPortFile = fileService.getOutputPortFile(clientId, fileId);
+                File thumbFile = fileService.getThumbFile(clientId, fileId);
+                
+                
+                moveFile(rawFile, clientId);
+                moveFile(outputFile, clientId);
+                moveFile(outputPortFile, clientId);
+                moveFile(thumbFile, clientId);
+            }
+            
+            ac.setFilesArchived(true);
+            userService.updateCampaign(ac);
+        }
+    }
+    
+    
+    private void moveFile(File f, int clientId) {
+        if (f.exists()) {
+            try {
+                f.renameTo(new File(fileService.getArchiveClientFolder(clientId), f.getName()));
+            } catch(Exception ex) {
+                log.error(ex.getMessage(), ex);
+            }
+        }
+    }
     
     @RequestMapping(value = "token/{token}/campaigns/{id}/files/order", method = RequestMethod.PUT)
     public void saveFilesOrder(
@@ -133,6 +176,7 @@ public class FilesController {
                     jsonCampaignFile.put("ext", "." + FilenameUtils.getExtension(file.getFilename()));
                     jsonCampaignFile.put("status", file.getStatus());
                     jsonCampaignFile.put("created", file.getCreatedDt());
+                    jsonCampaignFile.put("fileType", file.getFileType());
 
                     jsonCampaignFiles.put(jsonCampaignFile);
                 }
@@ -153,7 +197,7 @@ public class FilesController {
             @PathVariable("id") int campaignId,
             @ModelAttribute FileUploadCommand command,
             HttpServletRequest request,
-            HttpServletResponse response){
+            HttpServletResponse response) throws IOException{
 
         JSONObject resp = new JSONObject();
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -174,9 +218,8 @@ public class FilesController {
 
                     // define path for users directory
                     String temporaryFolder = config.getDataDir() + "TEMP" + File.separator;
-                    String userFilePath = config.getDataDir() + session.getClientId() + File.separator;
                     // if users folder doesnt exist, create one
-                    File userFolder = new File(userFilePath);
+                    File userFolder = fileService.getClientFolder(session.getClientId());
 
                     if (!userFolder.exists()) {
                         userFolder.mkdir();
@@ -212,7 +255,7 @@ public class FilesController {
 
                             databaseFile.setFilename(fileName);
                             databaseFile.setFileType(fileTypeNumber);
-                            databaseFile.setPath(userFilePath);
+                            databaseFile.setPath(userFolder.getCanonicalPath());
                             databaseFile.setCreatedDt(new Date(System.currentTimeMillis()));
                             databaseFile.setSize(fileSize);
                             databaseFile.setClientId(session.getClientId());
@@ -245,13 +288,14 @@ public class FilesController {
 
                             userService.updateCampaign(campaign);
 
-                            File f = new File(userFilePath + databaseFile.getId());
+                            File f = fileService.getRawFile(session.getClientId(), databaseFile.getId());
 
                             if (!physicalFile.renameTo(f)) {
                                 log.error("Error rename file");
                             }
 
-                            FileDto fileDto = new FileDto(campaignFile.getFileId(), fileTypeNumber, f, fileType);
+                            FileDto fileDto = new FileDto(databaseFile.getId(),
+                                    session.getClientId(), fileTypeNumber, fileType);
 
                             jmsTemplate.convertAndSend(fileDestination, fileDto);
 
@@ -264,6 +308,52 @@ public class FilesController {
                         log.error("Invalid file type: " + fileType);
                     }
                 }
+            }
+        } else {
+            RequestUtils.sendUnauthorized(response);
+        }
+
+    }
+    
+    @RequestMapping(value = "token/{token}/campaigns/{id}/files/{file}/rotate/{angle}", method = RequestMethod.PUT)
+    public void rotwteFile(
+            @PathVariable("token") String token,
+            @PathVariable("id") int campaignId,
+            @PathVariable("file") int fileId,
+            @PathVariable("angle") int angle,
+            HttpServletRequest request,
+            HttpServletResponse response){
+
+        JSONObject resp = new JSONObject();
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+        Session session = sessionService.findSession(token);
+
+        if (session != null) {
+            AdCampaigns campaign = userService.findCampaignByIdAndClientId(campaignId, session.getClientId());
+
+            // if this campaign belongs to user
+            if (campaign != null) {
+                CampaignsFiles cFile = userService.findCampaignFileById(fileId);
+                Files databaseFile = userService.findFileById(fileId);
+                
+                angle = databaseFile.getAngle() + angle;
+                if (angle > 360) {
+                    angle -= 360;
+                }
+                databaseFile.setAngle(angle);
+                userService.updateFile(databaseFile);
+
+                String fileType = FilenameUtils.getExtension(databaseFile.getFilename());
+                
+                FileDto fileDto = new FileDto(fileId, session.getClientId(), databaseFile.getFileType(), fileType);
+                fileDto.setRotate(angle);
+                
+                jmsTemplate.convertAndSend(fileDestination, fileDto);
+
+                response.setStatus(HttpServletResponse.SC_OK);
+
+                RequestUtils.printResult(resp.toString(), response);
             }
         } else {
             RequestUtils.sendUnauthorized(response);
@@ -342,10 +432,10 @@ public class FilesController {
             }
                         
             
-            File file = new File(config.getDataDir() + dbFile.getClientId() + File.separator + dbFile.getId() + "_output");
+            File file = fileService.getOutputFile(dbFile.getClientId(), dbFile.getFileId());
                                     
             if (orient!=null && orient == Devices.ORIENTATION_PORTRAIT_EMULATION) {
-                File filePort = new File(config.getDataDir() + dbFile.getClientId() + File.separator + dbFile.getId() + "_output_port");
+                File filePort = fileService.getOutputPortFile(dbFile.getClientId(), dbFile.getFileId());
                 
                 if (filePort.exists()) {
                     file = filePort;
@@ -386,7 +476,7 @@ public class FilesController {
             OutputStream outputStream = response.getOutputStream();
 
             if (dbFile.getFileType() != FileTypeUtils.FILE_TYPE_AUDIO && !(dbFile.getStatus() == CampaignsFiles.STATUS_UPLOADED)) {
-                file = new File(config.getDataDir() + dbFile.getClientId() + File.separator + dbFile.getId() + "_thumb");
+                file = fileService.getThumbFile(dbFile.getClientId(), dbFile.getFileId());
 
                 FileInputStream fileInputStream = new FileInputStream(file);
                 
@@ -423,6 +513,7 @@ public class FilesController {
             jsonCampaignFile.put("fileId",file.getFileId());
             jsonCampaignFile.put("orderId", file.getOrderId());
             jsonCampaignFile.put("name", file.getFilename());
+            jsonCampaignFile.put("fileType", file.getFileType());
             jsonCampaignFile.put("created", file.getCreatedDt());
             jsonCampaignFile.put("status", file.getStatus());
             jsonCampaignFile.put("ext", "." + FilenameUtils.getExtension(file.getFilename()));

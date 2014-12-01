@@ -31,6 +31,9 @@ public class KioskConfig {
     @Value("${avconv}")
     private String avconv;
     
+    @Value("${unoconv}")
+    private String unoconv;
+    
     @Value("${deviceAdmin}")
     private String deviceAdmin;
 
@@ -72,6 +75,14 @@ public class KioskConfig {
 
     public void setDeviceAdmin(String deviceAdmin) {
         this.deviceAdmin = deviceAdmin;
+    }
+
+    public String getUnoconv() {
+        return unoconv;
+    }
+
+    public void setUnoconv(String unoconv) {
+        this.unoconv = unoconv;
     }
     
     @Bean

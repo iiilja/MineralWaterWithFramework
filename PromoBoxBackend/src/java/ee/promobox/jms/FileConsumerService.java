@@ -14,6 +14,7 @@ import ee.promobox.service.FileService;
 import ee.promobox.service.UserService;
 import ee.promobox.util.FileTypeUtils;
 import ee.promobox.util.ImageOP;
+import ee.promobox.util.UnoconvOP;
 import ee.promobox.util.VideoOP;
 import java.io.File;
 import java.util.Date;
@@ -84,6 +85,18 @@ public class FileConsumerService extends MessageListenerAdapter {
         boolean result = false;
 
         switch (type.toUpperCase()) {
+            case "DOC":
+                result = convertOfficeDocument(f);
+                break;
+            case "DOCX":
+                result = convertOfficeDocument(f);
+                break;
+            case "PPT":
+                result = convertOfficeDocument(f);
+                break;
+            case "XLS":
+                result = convertOfficeDocument(f);
+                break;
             case "JPG":
                 result = convertImage(f);
                 break;
@@ -127,6 +140,73 @@ public class FileConsumerService extends MessageListenerAdapter {
         return result;
     }
     
+    private boolean convertOfficeDocument(FileDto f) {
+        int clientId = f.getClientId();
+        int fileId = f.getId();
+        
+        File rawFile = fileService.getRawFile(clientId, fileId);
+        File outputFile = fileService.getOutputFile(clientId, fileId);
+        File outputPortFile = fileService.getOutputPortFile(clientId, fileId);
+        File thumbFile = fileService.getThumbFile(clientId, fileId);
+        
+        File rawFileWithExt = null;
+        try {
+            rawFileWithExt = new File(rawFile.getCanonicalPath() + "." + f.getExtention());
+            
+            FileUtils.copyFile(rawFile, rawFileWithExt);
+        } catch(Exception ex) {
+            log.error(ex.getMessage(), ex);
+            return false;
+        }
+        
+        UnoconvOP unoconv = new UnoconvOP(config.getUnoconv());
+        unoconv.output(outputFile);
+        unoconv.format("pdf");
+        unoconv.input(rawFileWithExt);
+        unoconv.processToFile();
+
+        ImageOP imageConvert = new ImageOP(config.getImageMagick());
+        imageConvert.density(300);
+        imageConvert.flatten();
+        imageConvert.input(outputFile);
+        imageConvert.page(0);
+        imageConvert.background("white");
+        imageConvert.resize(1920, 1920);
+        imageConvert.rotate(f.getRotate());
+        
+                
+        imageConvert.outputFormat("png");
+        
+        if (imageConvert.processToFile(outputFile)) {
+            
+            imageConvert = new ImageOP(config.getImageMagick());
+
+            imageConvert.input(rawFile);            
+            
+            imageConvert.rotate(270 + f.getRotate());
+            
+            imageConvert.outputFormat("png");
+
+            imageConvert.processToFile(outputPortFile);
+
+            imageConvert = new ImageOP(config.getImageMagick());
+
+            imageConvert.input(outputFile);
+
+            imageConvert.resize(250, 250);
+
+            imageConvert.background("white");
+            imageConvert.gravity("center");
+            imageConvert.extent("250x250");
+            imageConvert.rotate(f.getRotate());
+
+            imageConvert.processToFile(thumbFile);
+            
+            return true;
+        }
+
+        return false;
+    }
     
     private boolean convertPdf(FileDto f) {
         int clientId = f.getClientId();

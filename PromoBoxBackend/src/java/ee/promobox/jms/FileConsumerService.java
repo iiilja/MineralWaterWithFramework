@@ -198,7 +198,6 @@ public class FileConsumerService extends MessageListenerAdapter {
             imageConvert.background("white");
             imageConvert.gravity("center");
             imageConvert.extent("250x250");
-            imageConvert.rotate(f.getRotate());
 
             imageConvert.processToFile(thumbFile);
             
@@ -251,7 +250,6 @@ public class FileConsumerService extends MessageListenerAdapter {
             imageConvert.background("white");
             imageConvert.gravity("center");
             imageConvert.extent("250x250");
-            imageConvert.rotate(f.getRotate());
 
             imageConvert.processToFile(thumbFile);
             

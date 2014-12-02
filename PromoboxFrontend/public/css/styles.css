@@ -310,10 +310,16 @@ input[readonly] {
     filter:alpha(opacity=100);
 }
 
+.edit-campaign .load-files .load-wrap:hover .controll-block {
+    display: block;
+    opacity: 1;
+    filter:alpha(opacity=100);
+}
+
 .controll-block {
     position: absolute;
-    left: 0;
-    bottom: 0;
+    left: 3px;
+    bottom: 27px;
     padding: 0;
     width: 147px;
     margin: 0;

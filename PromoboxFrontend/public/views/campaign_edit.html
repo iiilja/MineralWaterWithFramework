@@ -21,22 +21,23 @@
                     <div class="load-wrap img-thumbnail" >
                         <div>
                             <img ng-click="openPlayer($index)" ng-src="{{apiEndpoint}}files/thumb/{{promofile.fileId}}" alt="">
-                            <ul class="controll-block" ng-if="promofile.fileType == 2">
-                                <li class="Play-audio">
-                                    <a ng-click="openPlayer($index)"></a>
-                                </li>
-                                <li class="Play-on-device">
-                                    <a ng-click="playNextFile(promofile.fileId)"></a>
-                                </li>
-                                <li class="Arrow-menu">
-                                    <a href="#"></a>
-                                    
-                                    <ul>
-                                        <li><a ng-click="inArchive(promofile.id)"><i class="delete"></i><span>{{'campaign_edit_deletefile' | translate }}</span></a></li>
-                                    </ul>
-                                </li>
-                            </ul>
                         </div>
+                                                    
+                        <ul class="controll-block" ng-if="promofile.fileType == 2">
+                            <li class="Play-audio">
+                                <a ng-click="openPlayer($index)"></a>
+                            </li>
+                            <li class="Play-on-device">
+                                <a ng-click="playNextFile(promofile.fileId)"></a>
+                            </li>
+                            <li class="Arrow-menu">
+                                <a href="#"></a>
+                                
+                                <ul>
+                                    <li><a ng-click="inArchive(promofile.id)"><i class="delete"></i><span>{{'campaign_edit_deletefile' | translate }}</span></a></li>
+                                </ul>
+                            </li>
+                        </ul>
                         
                         <p>{{promofile.name| limitTo: 30 | lowercase }}{{promofile.name.length > 30 ? '...' : ''}}</p>
                     </div>

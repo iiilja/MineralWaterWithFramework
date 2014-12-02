@@ -369,7 +369,7 @@ input[readonly] {
     transition:0.5s all ease;
     display: block;
 }
-.controll-block > li:hover ul {display: block;}
+.controll-block > li:hover ul {display: block!important;}
 
 .controll-block > li ul {
     position: absolute;
@@ -381,7 +381,7 @@ input[readonly] {
     -moz-border-radius: 5px 5px 0 0;
     border-radius: 5px 5px 0 0;
     padding: 0;
-    display: none;
+    display: none!important;
     overflow: hidden;
     list-style: none;
 }

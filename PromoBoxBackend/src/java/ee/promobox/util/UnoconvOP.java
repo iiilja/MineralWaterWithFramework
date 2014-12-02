@@ -28,9 +28,6 @@ public class UnoconvOP {
     
     public UnoconvOP(String path) {
         args.add(path);
-        args.add("--listener");
-        args.add("&");
-        args.add(path);
     }
     
     public UnoconvOP output(File file) {

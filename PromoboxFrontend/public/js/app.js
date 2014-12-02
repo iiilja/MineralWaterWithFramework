@@ -195,7 +195,7 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
                                     campaign_count_videos: $scope.campaign.countVideos,
                                     campaign_audio_length: humanLength($scope.campaign.audioLength),
                                     campaign_video_length: humanLength($scope.campaign.videoLength)};
-                                
+            
             if (!$scope.campaign.files) {
                 $scope.campaign.files = [];
             }
@@ -413,6 +413,7 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         $scope.rotateFile = function (id, angle) {
             Campaign.rotate_file({token: token.get(), id: $stateParams.cId, file: id, angle: angle}, function(responce) {
                 sysMessage.update_s($filter('translate')('system_rotatefile'));
+                refreshFilesModel();
             });
         };
         

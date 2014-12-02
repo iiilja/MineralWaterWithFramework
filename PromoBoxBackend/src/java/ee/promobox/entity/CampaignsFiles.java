@@ -42,6 +42,7 @@ public class CampaignsFiles implements Serializable {
     public static final int STATUS_CONVERTED = 1;
     public static final int STATUS_ACTIVE = 2;
     public static final int STATUS_ARCHIVED = 3;
+    public static final int STATUS_CONVERTING = 4;
     
     private static final long serialVersionUID = 1L;
     @Id

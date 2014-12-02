@@ -349,6 +349,9 @@ public class FilesController {
                 FileDto fileDto = new FileDto(fileId, session.getClientId(), databaseFile.getFileType(), fileType);
                 fileDto.setRotate(angle);
                 
+                cFile.setStatus(CampaignsFiles.STATUS_CONVERTING);
+                userService.updateCampaignFile(cFile);
+                
                 jmsTemplate.convertAndSend(fileDestination, fileDto);
 
                 response.setStatus(HttpServletResponse.SC_OK);
@@ -475,7 +478,8 @@ public class FilesController {
             File file = null;
             OutputStream outputStream = response.getOutputStream();
 
-            if (dbFile.getFileType() != FileTypeUtils.FILE_TYPE_AUDIO && !(dbFile.getStatus() == CampaignsFiles.STATUS_UPLOADED)) {
+            if (dbFile.getFileType() != FileTypeUtils.FILE_TYPE_AUDIO 
+                    && !(dbFile.getStatus() == CampaignsFiles.STATUS_UPLOADED || dbFile.getStatus() == CampaignsFiles.STATUS_CONVERTING)) {
                 file = fileService.getThumbFile(dbFile.getClientId(), dbFile.getFileId());
 
                 FileInputStream fileInputStream = new FileInputStream(file);
@@ -483,7 +487,8 @@ public class FilesController {
                 IOUtils.copy(fileInputStream, outputStream);
                 
                 IOUtils.closeQuietly(fileInputStream);
-            } else if (dbFile.getFileType() == FileTypeUtils.FILE_TYPE_AUDIO && !(dbFile.getStatus() == CampaignsFiles.STATUS_UPLOADED)) {
+            } else if (dbFile.getFileType() == FileTypeUtils.FILE_TYPE_AUDIO 
+                    && !(dbFile.getStatus() == CampaignsFiles.STATUS_UPLOADED || dbFile.getStatus() == CampaignsFiles.STATUS_CONVERTING)) {
                 InputStream is = getClass().getClassLoader().getResourceAsStream("ee/promobox/assets/play.png");
                 IOUtils.copy(is, outputStream);
                 IOUtils.closeQuietly(is);

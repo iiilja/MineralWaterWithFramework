@@ -5,12 +5,15 @@ import android.app.Service;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.MediaRecorder;
+import android.net.rtp.AudioCodec;
 import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.Environment;
 import android.os.IBinder;
 import android.os.StatFs;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
@@ -234,8 +237,23 @@ public class MainService extends Service {
 
                     Log.d("MainService", "Data: " + data.toString());
 
-                    // TODO: take from data.
-                    setAudioDevice("AUDIO_CODEC");
+                    if(data.has("audioOut")) {
+                        int deviceId = data.getInt("audioOut");
+                        String device;
+                        switch(deviceId) {
+                            case 1:
+                                device = "AUDIO_HDMI";
+                                break;
+                            case 2:
+                                device = "AUDIO_SPDIF";
+                                break;
+                            default:
+                            case 0:
+                                device = "AUDIO_CODEC";
+                                break;
+                        }
+                        setAudioDevice(device);
+                    }
 
                     if (data.has("campaigns")) {
                         CampaignList newCampaigns = new CampaignList(data.getJSONArray("campaigns"));
@@ -444,6 +462,7 @@ public class MainService extends Service {
             json.put("freeSpace", bytesAvailable);
             json.put("force", 1);
 
+            json.put("cache", dirSize(root.getAbsoluteFile()));
             json.put("currentFileId", currentFileId);
             if(loadingCampaign != null) {
                 json.put("loadingCampaingId", loadingCampaign.getCampaignId());
@@ -492,6 +511,25 @@ public class MainService extends Service {
         }
 
         protected void onPostExecute(File result) {
+        }
+
+        private long dirSize(File dir) {
+
+            if (dir.exists()) {
+                long result = 0;
+                File[] fileList = dir.listFiles();
+                for(int i = 0; i < fileList.length; i++) {
+                    // Recursive call if it's a directory
+                    if(fileList[i].isDirectory()) {
+                        result += dirSize(fileList [i]);
+                    } else {
+                        // Sum the file size in bytes
+                        result += fileList[i].length();
+                    }
+                }
+                return result; // return the file size
+            }
+            return 0;
         }
     }
 

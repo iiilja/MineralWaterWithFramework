@@ -226,7 +226,14 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         
         
 
-        $scope.workhours = ['7', '7:30',
+        $scope.workhours = ['0', '0:30',
+                            '1', '1:30',
+                            '2', '2:30',
+                            '3', '3:30',
+                            '4', '4:30',
+                            '5', '5:30',
+                            '6', '6:30',
+                            '7', '7:30',
                             '8', '8:30',
                             '9', '9:30',
                             '10', '10:30',
@@ -242,8 +249,7 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
                             '20', '20:30',
                             '21', '21:30',
                             '22', '22:30',
-                            '23', '23:30',
-                            '0'];
+                            '23', '23:30'];
         
         $scope.addWorkhours = [];
         $scope.removeWorkhours = [];

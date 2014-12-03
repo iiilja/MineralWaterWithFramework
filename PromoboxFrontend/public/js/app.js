@@ -324,7 +324,7 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
                 duration: $scope.campaign_form.campaign_time, 
                 days: $scope.checkedDays, 
                 hours: $scope.checkedHours}, function(response){
-                //sysLocation.goList();
+                    sysMessage.update_s($filter('translate')('campaign_updated'));
             });
         };
         
@@ -417,7 +417,7 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         $scope.playNextFile = function (id) {
             Campaign.play_next_file({token: token.get(), id: $stateParams.cId, file: id}, function(responce) {
                 if (responce.error == "no_device") {
-                    sysMessage.error($filter('translate')('campaign_no_active_device'));
+                    sysMessage.error($filter('translate')('system_device') + ' ' + $filter('translate')('campaign_no_active_device'));
                 } else {
                     sysMessage.update_s($filter('translate')('system_playnextfile'));
                 }

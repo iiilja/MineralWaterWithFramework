@@ -208,7 +208,7 @@
 
                             <div class="day-wrap">
                                 <select class="styler" ng-model="campaign_form.campaign_start_time">
-                                    <option ng-repeat="hour in workhours">{{formatWorkingHours(hour)}}</option>
+                                    <option ng-repeat="hour in workhours" value="{{formatWorkingHours(hour)}}">{{formatWorkingHours(hour)}}</option>
                                 </select>
                             </div>
                         </div>
@@ -236,7 +236,7 @@
 
                             <div class="day-wrap">
                                 <select class="styler" ng-model="campaign_form.campaign_finish_time">
-                                    <option ng-repeat="hour in workhours">{{formatWorkingHours(hour)}}</option>
+                                    <option ng-repeat="hour in workhours" value="{{formatWorkingHours(hour)}}">{{formatWorkingHours(hour)}}</option>
                                 </select>
                             </div>
                         </div>

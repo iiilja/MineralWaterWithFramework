@@ -12,7 +12,9 @@ import ee.promobox.service.Session;
 import ee.promobox.service.SessionService;
 import ee.promobox.service.UserService;
 import ee.promobox.util.RequestUtils;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -167,13 +169,29 @@ public class CampaignsController {
         if (session != null) {
 
             AdCampaigns campaign = new AdCampaigns();
+            
+            Date today = new Date();
+            
+            Calendar start = GregorianCalendar.getInstance();
+            start.setTime(today);
+            start.set(Calendar.HOUR_OF_DAY, 0);
+            start.set(Calendar.MINUTE, 0);
+            start.set(Calendar.SECOND, 0);
+            start.set(Calendar.MILLISECOND, 0);
+            
+            Calendar finish = GregorianCalendar.getInstance();
+            finish.setTime(today);
+            finish.set(Calendar.HOUR_OF_DAY, 23);
+            finish.set(Calendar.MINUTE, 30);
+            finish.set(Calendar.SECOND, 0);
+            finish.set(Calendar.MILLISECOND, 0);
 
             campaign.setName("New campaign");
             campaign.setClientId(session.getClientId());
             campaign.setStatus(AdCampaigns.STATUS_PUBLISHED);
             campaign.setSequence(1);
-            campaign.setStart(new Date());
-            campaign.setFinish(new Date());
+            campaign.setStart(start.getTime());
+            campaign.setFinish(finish.getTime());
             campaign.setDuration(30);
             campaign.setUpdateDate(new Date());
 

@@ -335,11 +335,13 @@ public class CampaignsController {
 
                 response.setStatus(HttpServletResponse.SC_OK);
 
-                RequestUtils.printResult(resp.toString(), response);
-
             } else {
-                RequestUtils.sendUnauthorized(response);
+                resp.put("error", "no_device");
             }
+            
+            RequestUtils.printResult(resp.toString(), response);
+        } else {
+            RequestUtils.sendUnauthorized(response);
         }
     }
 

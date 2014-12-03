@@ -324,7 +324,7 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
                 duration: $scope.campaign_form.campaign_time, 
                 days: $scope.checkedDays, 
                 hours: $scope.checkedHours}, function(response){
-                sysLocation.goList();
+                //sysLocation.goList();
             });
         };
         

@@ -114,7 +114,8 @@ public class UserServiceImpl implements UserService {
         Session session = sessionFactory.getCurrentSession();
 
         Query q = session.createQuery("SELECT cf FROM CampaignsFiles cf "
-                + "WHERE cf.clientId = :clientId AND cf.adCampaignsId = :campaignId AND cf.status != :status");
+                + "WHERE cf.clientId = :clientId AND cf.adCampaignsId = :campaignId AND cf.status != :status "
+                + "ORDER BY id DESC");
         
         q.setParameter("clientId", clientId);
         q.setParameter("status", CampaignsFiles.STATUS_ARCHIVED);

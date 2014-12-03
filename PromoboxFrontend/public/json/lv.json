@@ -101,6 +101,7 @@
     "campaign_edit_changefilesorder": "Изменить порядок файлов",
     "campaign_edit_hidesettings": "Скрыть настройки",
     "campaign_edit_showsettings": "Показать настройки",
+    "campaign_no_active_device": "Кампания не проигрываеется ни на одной устройтве",
     "system_adding": "Tiek pievienots",
     "system_update": "Atjaunots",
     "system_deleting": "Tiek dzēsts",

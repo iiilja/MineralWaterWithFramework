@@ -416,7 +416,11 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         
         $scope.playNextFile = function (id) {
             Campaign.play_next_file({token: token.get(), id: $stateParams.cId, file: id}, function(responce) {
-                sysMessage.update_s($filter('translate')('system_playnextfile'));
+                if (responce.error == "no_device") {
+                    sysMessage.error($filter('translate')('campaign_no_active_device'));
+                } else {
+                    sysMessage.update_s($filter('translate')('system_playnextfile'));
+                }
             });
         };
         

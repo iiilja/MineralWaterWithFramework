@@ -279,7 +279,8 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         }
 
         var timeToData = function(time) {
-            return new Date(time);
+            var dateTime = new Date(time);
+            return new Date(dateTime.getFullYear(), dateTime.getMonth(), dateTime.getDate(), 0, 0, 0, 0);
         };
         
         var timeToDataTime = function(time) {

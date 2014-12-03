@@ -103,6 +103,15 @@ app.filter('bytes', function() {
     }
 });
 
+app.filter('humanLength', function() {
+    return function(sec) {
+        var hours = sec % 3600;
+        sec -= hours * 3600;
+        var min = sec % 60;
+
+        return hours + " : " + min
+    }
+ });
 
 app.controller('Exit', ['token',
     function (token) {
@@ -193,8 +202,9 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
                                     campaign_count_images: $scope.campaign.countImages,
                                     campaign_count_audios: $scope.campaign.countAudios,
                                     campaign_count_videos: $scope.campaign.countVideos,
-                                    campaign_audio_length: humanLength($scope.campaign.audioLength),
-                                    campaign_video_length: humanLength($scope.campaign.videoLength)};
+                                    campaign_audio_length: $scope.campaign.audioLength,
+                                    campaign_video_length: $scope.campaign.videoLength
+                                    };
             
             if (!$scope.campaign.files) {
                 $scope.campaign.files = [];
@@ -270,13 +280,6 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
             return hour;
         }
         
-        var humanLength = function(sec) {
-            var hours = sec % 3600;
-            sec -= hours * 3600;
-            var min = sec % 60;
-            
-            return hours + " : " + min
-        }
 
         var timeToData = function(time) {
             var dateTime = new Date(time);

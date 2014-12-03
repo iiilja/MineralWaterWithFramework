@@ -334,7 +334,7 @@
                             <img src="img/video.png" alt="">
                         </div>
                         <span>{{campaign_stat.campaign_count_videos}}</span>
-                        <p>{{"campaign_edit_allvideoscount"| translate}}<br/>{{campaign_stat.campaign_video_length}}</p>
+                        <p>{{"campaign_edit_allvideoscount"| translate}}<br/>{{campaign_stat.campaign_video_length | humanLength}}</p>
                     </li>
 
                     <li>
@@ -342,7 +342,7 @@
                             <img src="img/songs.png" alt="">
                         </div>
                         <span>{{campaign_stat.campaign_count_audios}}</span>
-                        <p>{{"campaign_edit_allaudioscount"| translate}}<br/>{{campaign_stat.campaign_audio_length}}</p>
+                        <p>{{"campaign_edit_allaudioscount"| translate}}<br/>{{campaign_stat.campaign_audio_length | humanLength}}</p>
                     </li>
                 </ul>
             </div>

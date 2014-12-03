@@ -332,13 +332,11 @@ public class CampaignsController {
                 device.setNextFile(fileId);
 
                 userService.updateDevice(device);
-
-                response.setStatus(HttpServletResponse.SC_OK);
-
             } else {
                 resp.put("error", "no_device");
             }
             
+            response.setStatus(HttpServletResponse.SC_OK);
             RequestUtils.printResult(resp.toString(), response);
         } else {
             RequestUtils.sendUnauthorized(response);

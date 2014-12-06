@@ -44,20 +44,23 @@ public class FileConsumerService extends MessageListenerAdapter {
     public void handleMessage(FileDto fileDto) {
         log.info("Converting file:");
         
-        log.info("File id: " + fileDto.getId());
+        log.info("Campaign File id: " + fileDto.getCampaignFileId());
         log.info("File extention: " + fileDto.getExtention());
         
-        boolean result = convertFile(fileDto);
+        CampaignsFiles cFile = userService.findCampaignFileById(fileDto.getCampaignFileId());
+        log.info(" cFile: " + cFile);
+        log.info(" File id: " + cFile.getFileId());
+        fileDto.setFileId(cFile.getFileId());
         
-        CampaignsFiles cFile = userService.findCampaignFileById(fileDto.getId());
+        boolean result = convertFile(fileDto);
         
         if (result) {
             cFile.setStatus(CampaignsFiles.STATUS_ACTIVE);
             
-            File file = fileService.getOutputFile(fileDto.getClientId(), fileDto.getId());
+            File file = fileService.getOutputFile(fileDto.getClientId(), cFile.getFileId());
             cFile.setSize((int)file.length());
             
-            Files dbFile = userService.findFileById(fileDto.getId());
+            Files dbFile = userService.findFileById(cFile.getFileId());
             
             userService.updateCampaignFile(cFile);
             
@@ -142,7 +145,7 @@ public class FileConsumerService extends MessageListenerAdapter {
     
     private boolean convertOfficeDocument(FileDto f) {
         int clientId = f.getClientId();
-        int fileId = f.getId();
+        int fileId = f.getFileId();
         
         File rawFile = fileService.getRawFile(clientId, fileId);
         File outputFile = fileService.getOutputFile(clientId, fileId);
@@ -209,7 +212,7 @@ public class FileConsumerService extends MessageListenerAdapter {
     
     private boolean convertPdf(FileDto f) {
         int clientId = f.getClientId();
-        int fileId = f.getId();
+        int fileId = f.getFileId();
         
         File rawFile = fileService.getRawFile(clientId, fileId);
         File outputFile = fileService.getOutputFile(clientId, fileId);
@@ -262,7 +265,7 @@ public class FileConsumerService extends MessageListenerAdapter {
     
     private boolean copyFile(FileDto f) {
         int clientId = f.getClientId();
-        int fileId = f.getId();
+        int fileId = f.getFileId();
         
         File rawFile = fileService.getRawFile(clientId, fileId);
         File outputFile = fileService.getOutputFile(clientId, fileId);
@@ -279,7 +282,7 @@ public class FileConsumerService extends MessageListenerAdapter {
 
     private boolean convertImage(FileDto f) {
         int clientId = f.getClientId();
-        int fileId = f.getId();
+        int fileId = f.getFileId();
         
         File rawFile = fileService.getRawFile(clientId, fileId);
         File outputFile = fileService.getOutputFile(clientId, fileId);
@@ -322,7 +325,7 @@ public class FileConsumerService extends MessageListenerAdapter {
 
     private boolean convertVideo(FileDto f) {
         int clientId = f.getClientId();
-        int fileId = f.getId();
+        int fileId = f.getFileId();
         
         File rawFile = fileService.getRawFile(clientId, fileId);
         File outputFile = fileService.getOutputFile(clientId, fileId);

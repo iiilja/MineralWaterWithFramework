@@ -294,7 +294,7 @@ public class FilesController {
                                 log.error("Error rename file");
                             }
 
-                            FileDto fileDto = new FileDto(databaseFile.getId(),
+                            FileDto fileDto = new FileDto(campaignFile.getId(),
                                     session.getClientId(), fileTypeNumber, fileType);
 
                             jmsTemplate.convertAndSend(fileDestination, fileDto);
@@ -335,7 +335,7 @@ public class FilesController {
             // if this campaign belongs to user
             if (campaign != null) {
                 CampaignsFiles cFile = userService.findCampaignFileById(fileId);
-                Files databaseFile = userService.findFileById(fileId);
+                Files databaseFile = userService.findFileById(cFile.getFileId());
                 
                 angle = databaseFile.getAngle() + angle;
                 if (angle > 360) {
@@ -346,7 +346,7 @@ public class FilesController {
 
                 String fileType = FilenameUtils.getExtension(databaseFile.getFilename());
                 
-                FileDto fileDto = new FileDto(fileId, session.getClientId(), databaseFile.getFileType(), fileType);
+                FileDto fileDto = new FileDto(cFile.getId(), session.getClientId(), databaseFile.getFileType(), fileType);
                 fileDto.setRotate(angle);
                 
                 cFile.setStatus(CampaignsFiles.STATUS_CONVERTING);
@@ -378,7 +378,7 @@ public class FilesController {
 
         if (session != null) {
             CampaignsFiles campaignsFile = userService.findCampaignFile(fileId, session.getClientId());
-            Files dbFile = userService.findFileById(fileId);
+            Files dbFile = userService.findFileById(campaignsFile.getFileId());
             
             if (campaignsFile != null && dbFile != null) {
                 

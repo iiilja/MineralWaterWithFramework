@@ -613,7 +613,7 @@ public class DevicesController {
             device.setNetworkData("");
 
             device.setWorkStartAt(parseTimeString("0:00"));
-            device.setWorkEndAt(parseTimeString("23:59"));
+            device.setWorkEndAt(parseTimeString("23:00"));
 
             device.setMon(true);
             device.setTue(true);

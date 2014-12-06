@@ -35,7 +35,7 @@ public class MailConsumerService  extends MessageListenerAdapter {
                     message.setTo(mailDto.getTo());
                     message.setFrom(mailDto.getFrom());
                     message.setSubject(mailDto.getSubject());
-                    message.setReplyTo(mailDto.getReplyTo());
+                    message.setReplyTo("no-reply@promobox.ee");
 
                     message.setText(mailDto.getText(), mailDto.isHtml());
 

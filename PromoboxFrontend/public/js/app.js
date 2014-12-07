@@ -105,11 +105,11 @@ app.filter('bytes', function() {
 
 app.filter('humanLength', function() {
     return function(sec) {
-        var hours = sec % 3600;
+        var hours = Math.floor(sec / 3600);
         sec -= hours * 3600;
-        var min = sec % 60;
+        var min = Math.floor(sec / 60);
 
-        return hours + " : " + min
+        return hours + " : " + min;
     }
  });
 
@@ -237,7 +237,6 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         } 
         
         var refreshFileStatuses = function() {
-            console.log("refreshFileStatuses");
             var files = [];
             for (var i = 0; i < $scope.campaign.files.length; i++) {
                 if ($scope.campaign.files[i].status == 0 || 
@@ -247,7 +246,6 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
             }
             if (files.length > 0) {
                 Campaign.refrehs_files_stautes({token: token.get(), files: files}, function(responce) {
-                    console.log(responce);
                     for (var i = 0; i < responce.files.length; i++) {
                         var f = responce.files[i];
 
@@ -258,7 +256,6 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
                 });
             }
             
-            console.log("Exist conv files: " + extstsConvertingFiles());
             if (extstsConvertingFiles()) {
                 $timeout(refreshFileStatuses, 15000);
             }

@@ -100,6 +100,16 @@ public class UserServiceImpl implements UserService {
         return (CampaignsFiles) q.uniqueResult();
 
     }
+    
+    public List<CampaignsFiles> findCampaignFileByIds(List<Integer> ids) {
+        Session session = sessionFactory.getCurrentSession();
+
+        Query q = session.createQuery("from CampaignsFiles where id  IN (:ids)");
+        q.setParameterList("ids", ids);
+
+        return q.list();
+
+    }
 
     public List<Files> findCampaignFiles(int campgaignId) {
         Session session = sessionFactory.getCurrentSession();

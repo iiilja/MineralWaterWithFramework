@@ -24,6 +24,7 @@ import ee.promobox.util.FileTypeUtils;
 import ee.promobox.util.RequestUtils;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.jms.Destination;
@@ -362,6 +363,36 @@ public class FilesController {
             RequestUtils.sendUnauthorized(response);
         }
 
+    }
+    
+    @RequestMapping(value = "token/{token}/files/status", method = RequestMethod.GET)
+    public void getFilesStatus(
+            @PathVariable("token") String token,
+            @RequestParam List<Integer> files,
+            HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+        
+        JSONObject resp = new JSONObject();
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+        Session session = sessionService.findSession(token);
+
+        if (session != null) {
+            JSONArray filesArray = new JSONArray();
+            for (CampaignsFiles campaignsFile: userService.findCampaignFileByIds(files)) {
+                JSONObject fileObj = new JSONObject();
+                fileObj.put("id", campaignsFile.getId());
+                fileObj.put("status", campaignsFile.getStatus());
+                
+                filesArray.put(fileObj);
+            }
+            resp.put("files", filesArray);
+            
+            response.setStatus(HttpServletResponse.SC_OK);
+            RequestUtils.printResult(resp.toString(), response);
+        } else {
+            RequestUtils.sendUnauthorized(response);
+        }
     }
 
     @RequestMapping(value = "token/{token}/files/archive/{id}", method = RequestMethod.PUT)

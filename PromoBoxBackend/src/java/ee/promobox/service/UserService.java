@@ -85,5 +85,7 @@ public interface UserService {
     
     public CampaignsFiles findCampaignFileById(int fileId);
     
+    public List<CampaignsFiles> findCampaignFileByIds(List<Integer> fileIds);
+    
     public void deleteDeviceCampaign(int deviceId, int campaignId);
 }

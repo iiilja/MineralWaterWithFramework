@@ -326,13 +326,14 @@ public class CampaignsController {
             int clientId = session.getClientId();
             
 
-            Devices device = userService.findDeviceByCampaignId(id, clientId);
+            List<Devices> devices = userService.findDevicesByCampaignId(id, clientId);
 
-            if (device != null) {
+            if (!devices.isEmpty()) {
+                for (Devices device: devices) {
+                    device.setNextFile(fileId);
 
-                device.setNextFile(fileId);
-
-                userService.updateDevice(device);
+                    userService.updateDevice(device);
+                }
             } else {
                 resp.put("error", "no_device");
             }

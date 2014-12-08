@@ -326,7 +326,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Devices findDeviceByCampaignId(int campignId, int clientId) {
+    public List<Devices> findDevicesByCampaignId(int campignId, int clientId) {
         Session session = sessionFactory.getCurrentSession();
 
         Query q = session.createQuery("FROM Devices WHERE currentCampaignId = :campignId AND clientId = :clientId");
@@ -334,7 +334,7 @@ public class UserServiceImpl implements UserService {
         q.setParameter("campignId", campignId);
         q.setParameter("clientId", clientId);
 
-        return (Devices) q.uniqueResult();
+        return q.list();
     }
     
     

@@ -108,7 +108,7 @@
     "campaign_edit_changefilesorder": "Изменить порядок файлов",
     "campaign_edit_hidesettings": "Скрыть настройки",
     "campaign_edit_showsettings": "Показать настройки",
-    "campaign_no_active_device": "Кампания не проигрываеется ни на одной устройтве",
+    "campaign_no_active_device": "Не найдены устройства online",
     "campaign_updated": "Кампания сохранена",
     "system_adding": "Lisada",
     "system_update": "Uuenda",

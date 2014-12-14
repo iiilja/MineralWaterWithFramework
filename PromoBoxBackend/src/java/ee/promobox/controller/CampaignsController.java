@@ -181,6 +181,7 @@ public class CampaignsController {
             
             Calendar finish = GregorianCalendar.getInstance();
             finish.setTime(today);
+            finish.set(Calendar.YEAR, 2099);
             finish.set(Calendar.HOUR_OF_DAY, 23);
             finish.set(Calendar.MINUTE, 30);
             finish.set(Calendar.SECOND, 0);
@@ -325,21 +326,22 @@ public class CampaignsController {
             int clientId = session.getClientId();
             
 
-            Devices device = userService.findDeviceByCampaignId(id, clientId);
+            List<Devices> devices = userService.findDevicesByCampaignId(id, clientId);
 
-            if (device != null) {
+            if (!devices.isEmpty()) {
+                for (Devices device: devices) {
+                    device.setNextFile(fileId);
 
-                device.setNextFile(fileId);
-
-                userService.updateDevice(device);
-
-                response.setStatus(HttpServletResponse.SC_OK);
-
-                RequestUtils.printResult(resp.toString(), response);
-
+                    userService.updateDevice(device);
+                }
             } else {
-                RequestUtils.sendUnauthorized(response);
+                resp.put("error", "no_device");
             }
+            
+            response.setStatus(HttpServletResponse.SC_OK);
+            RequestUtils.printResult(resp.toString(), response);
+        } else {
+            RequestUtils.sendUnauthorized(response);
         }
     }
 

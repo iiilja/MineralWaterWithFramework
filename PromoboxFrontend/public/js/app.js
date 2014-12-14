@@ -105,11 +105,11 @@ app.filter('bytes', function() {
 
 app.filter('humanLength', function() {
     return function(sec) {
-        var hours = sec % 3600;
+        var hours = Math.floor(sec / 3600);
         sec -= hours * 3600;
-        var min = sec % 60;
+        var min = Math.floor(sec / 60);
 
-        return hours + " : " + min
+        return hours + " : " + min;
     }
  });
 
@@ -175,8 +175,8 @@ app.controller('CampaignNewController', ['token', 'Campaign', 'sysLocation',
         });
     }]);
 
-app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Campaign', '$location', '$http', 'toaster', 'Files','sysMessage', 'sysLocation', 'FileUploader', '$rootScope', '$filter', 'orderByFilter',
-    function ($scope, $stateParams, token, Campaign, $location, $http, toaster, Files, sysMessage, sysLocation, FileUploader, $rootScope, $filter, orderByFilter) {
+app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Campaign', '$location', '$http', 'toaster', 'Files','sysMessage', 'sysLocation', 'FileUploader', '$rootScope', '$filter', 'orderByFilter', '$timeout',
+    function ($scope, $stateParams, token, Campaign, $location, $http, toaster, Files, sysMessage, sysLocation, FileUploader, $rootScope, $filter, orderByFilter, $timeout) {
         $rootScope.top_link_active_list = 'top_link_active';
         $scope.filesArray = [];
         $scope.checkedDays = [];
@@ -214,6 +214,52 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
             //    $scope.campaign.files = orderByFilter($scope.campaign.files, ['orderId','name']);
             //});
         });
+        
+        var extstsConvertingFiles = function(id) {
+            for (var i = 0; i < $scope.campaign.files.length; i++) {
+                if ($scope.campaign.files[i].status == 0 || 
+                        $scope.campaign.files[i].status == 4) {
+                    return true;
+                }
+            }
+            
+            return false;
+        }
+        
+        var findFileById = function(id) {
+            for (var i = 0; i < $scope.campaign.files.length; i++) {
+                if (id == $scope.campaign.files[i].id) {
+                    return $scope.campaign.files[i];
+                }
+            }
+            
+            return null;
+        } 
+        
+        var refreshFileStatuses = function() {
+            var files = [];
+            for (var i = 0; i < $scope.campaign.files.length; i++) {
+                if ($scope.campaign.files[i].status == 0 || 
+                        $scope.campaign.files[i].status == 4) {
+                    files.push($scope.campaign.files[i].id);
+                }
+            }
+            if (files.length > 0) {
+                Campaign.refrehs_files_stautes({token: token.get(), files: files}, function(responce) {
+                    for (var i = 0; i < responce.files.length; i++) {
+                        var f = responce.files[i];
+
+                        var file = findFileById(f.id);
+                        file.t= new Date().getTime();
+                        file.status = f.status;
+                     }
+                });
+            }
+            
+            if (extstsConvertingFiles()) {
+                $timeout(refreshFileStatuses, 15000);
+            }
+        };
 
         $scope.workdays = ['mo', 'tu', 'we', 'th', 'fr', 'sa', 'su'];
         $scope.toggleCheckDays = function (day) {
@@ -324,7 +370,7 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
                 duration: $scope.campaign_form.campaign_time, 
                 days: $scope.checkedDays, 
                 hours: $scope.checkedHours}, function(response){
-                sysLocation.goList();
+                    sysMessage.update_s($filter('translate')('campaign_updated'));
             });
         };
         
@@ -416,7 +462,11 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         
         $scope.playNextFile = function (id) {
             Campaign.play_next_file({token: token.get(), id: $stateParams.cId, file: id}, function(responce) {
-                sysMessage.update_s($filter('translate')('system_playnextfile'));
+                if (responce.error == "no_device") {
+                    sysMessage.error($filter('translate')('system_device') + ' ' + $filter('translate')('campaign_no_active_device'));
+                } else {
+                    sysMessage.update_s($filter('translate')('system_playnextfile'));
+                }
             });
         };
         
@@ -435,8 +485,10 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         var refreshFilesModel = function () {
             Campaign.get_campaigns({token: token.get(), id: $stateParams.cId}, function (response) {
                 console.log(response);
-                $scope.files = response;
-                $scope.campaign_form.filesArray = $scope.files.files;
+                $scope.campaign.files = response.files;
+                $scope.campaign_form.filesArray = $scope.campaign.files;
+                
+                $timeout(refreshFileStatuses, 15000);
             });
         };
 

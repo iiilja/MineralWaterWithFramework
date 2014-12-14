@@ -94,10 +94,20 @@ public class UserServiceImpl implements UserService {
     public CampaignsFiles findCampaignFileById(int id) {
         Session session = sessionFactory.getCurrentSession();
 
-        Query q = session.createQuery("from CampaignsFiles where fileId  = :id");
+        Query q = session.createQuery("from CampaignsFiles where id  = :id");
         q.setParameter("id", id);
 
         return (CampaignsFiles) q.uniqueResult();
+
+    }
+    
+    public List<CampaignsFiles> findCampaignFileByIds(List<Integer> ids) {
+        Session session = sessionFactory.getCurrentSession();
+
+        Query q = session.createQuery("from CampaignsFiles where id  IN (:ids)");
+        q.setParameterList("ids", ids);
+
+        return q.list();
 
     }
 
@@ -114,7 +124,8 @@ public class UserServiceImpl implements UserService {
         Session session = sessionFactory.getCurrentSession();
 
         Query q = session.createQuery("SELECT cf FROM CampaignsFiles cf "
-                + "WHERE cf.clientId = :clientId AND cf.adCampaignsId = :campaignId AND cf.status != :status");
+                + "WHERE cf.clientId = :clientId AND cf.adCampaignsId = :campaignId AND cf.status != :status "
+                + "ORDER BY id DESC");
         
         q.setParameter("clientId", clientId);
         q.setParameter("status", CampaignsFiles.STATUS_ARCHIVED);
@@ -315,7 +326,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Devices findDeviceByCampaignId(int campignId, int clientId) {
+    public List<Devices> findDevicesByCampaignId(int campignId, int clientId) {
         Session session = sessionFactory.getCurrentSession();
 
         Query q = session.createQuery("FROM Devices WHERE currentCampaignId = :campignId AND clientId = :clientId");
@@ -323,7 +334,7 @@ public class UserServiceImpl implements UserService {
         q.setParameter("campignId", campignId);
         q.setParameter("clientId", clientId);
 
-        return (Devices) q.uniqueResult();
+        return q.list();
     }
     
     

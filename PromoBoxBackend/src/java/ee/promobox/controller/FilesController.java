@@ -24,6 +24,7 @@ import ee.promobox.util.FileTypeUtils;
 import ee.promobox.util.RequestUtils;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.jms.Destination;
@@ -294,7 +295,7 @@ public class FilesController {
                                 log.error("Error rename file");
                             }
 
-                            FileDto fileDto = new FileDto(databaseFile.getId(),
+                            FileDto fileDto = new FileDto(campaignFile.getId(),
                                     session.getClientId(), fileTypeNumber, fileType);
 
                             jmsTemplate.convertAndSend(fileDestination, fileDto);
@@ -335,7 +336,7 @@ public class FilesController {
             // if this campaign belongs to user
             if (campaign != null) {
                 CampaignsFiles cFile = userService.findCampaignFileById(fileId);
-                Files databaseFile = userService.findFileById(fileId);
+                Files databaseFile = userService.findFileById(cFile.getFileId());
                 
                 angle = databaseFile.getAngle() + angle;
                 if (angle > 360) {
@@ -346,7 +347,7 @@ public class FilesController {
 
                 String fileType = FilenameUtils.getExtension(databaseFile.getFilename());
                 
-                FileDto fileDto = new FileDto(fileId, session.getClientId(), databaseFile.getFileType(), fileType);
+                FileDto fileDto = new FileDto(cFile.getId(), session.getClientId(), databaseFile.getFileType(), fileType);
                 fileDto.setRotate(angle);
                 
                 cFile.setStatus(CampaignsFiles.STATUS_CONVERTING);
@@ -363,6 +364,36 @@ public class FilesController {
         }
 
     }
+    
+    @RequestMapping(value = "token/{token}/files/status", method = RequestMethod.GET)
+    public void getFilesStatus(
+            @PathVariable("token") String token,
+            @RequestParam List<Integer> files,
+            HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+        
+        JSONObject resp = new JSONObject();
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+        Session session = sessionService.findSession(token);
+
+        if (session != null) {
+            JSONArray filesArray = new JSONArray();
+            for (CampaignsFiles campaignsFile: userService.findCampaignFileByIds(files)) {
+                JSONObject fileObj = new JSONObject();
+                fileObj.put("id", campaignsFile.getId());
+                fileObj.put("status", campaignsFile.getStatus());
+                
+                filesArray.put(fileObj);
+            }
+            resp.put("files", filesArray);
+            
+            response.setStatus(HttpServletResponse.SC_OK);
+            RequestUtils.printResult(resp.toString(), response);
+        } else {
+            RequestUtils.sendUnauthorized(response);
+        }
+    }
 
     @RequestMapping(value = "token/{token}/files/archive/{id}", method = RequestMethod.PUT)
     public void archiveCampaignFiles(
@@ -378,7 +409,7 @@ public class FilesController {
 
         if (session != null) {
             CampaignsFiles campaignsFile = userService.findCampaignFile(fileId, session.getClientId());
-            Files dbFile = userService.findFileById(fileId);
+            Files dbFile = userService.findFileById(campaignsFile.getFileId());
             
             if (campaignsFile != null && dbFile != null) {
                 

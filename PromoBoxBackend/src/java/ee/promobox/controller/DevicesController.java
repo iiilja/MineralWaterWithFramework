@@ -64,10 +64,11 @@ public class DevicesController {
     private JmsTemplate jmsTemplate;
     
     @Scheduled(fixedDelay = 15 * 60 * 1000)
-    public void emailDeviceStatusPayments() {
+    public void emailDeviceStatus() {
         for (Devices d: userService.findAllDevices()) {
             if (System.currentTimeMillis() - d.getLastDeviceRequestDt().getTime() >= 15 * 60 * 1000) {
-                if (d.getStatus() != Devices.STATUS_OFFLINE) {
+                if (d.getStatus() != Devices.STATUS_AHRCHIVED && 
+                        d.getStatus() != Devices.STATUS_OFFLINE) {
                     sendDeviceEmail(d, "Device OFFLINE!");
                     
                     d.setStatus(Devices.STATUS_OFFLINE);
@@ -613,7 +614,7 @@ public class DevicesController {
             device.setNetworkData("");
 
             device.setWorkStartAt(parseTimeString("0:00"));
-            device.setWorkEndAt(parseTimeString("23:59"));
+            device.setWorkEndAt(parseTimeString("23:00"));
 
             device.setMon(true);
             device.setTue(true);

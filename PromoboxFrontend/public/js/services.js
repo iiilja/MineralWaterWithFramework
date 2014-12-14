@@ -11,6 +11,13 @@ services.factory('Campaign', ['$resource',
                 edit_campaigns: {method: 'PUT', url: apiEndpoint + 'token/:token/campaigns/:id', params: {token: '@token', id: '@id'}},
                 get_campaigns: {method: 'GET', url: apiEndpoint + 'token/:token/campaigns/:id/', params: {token: '@token', id: '@id'}},
                 get_all_campaigns: {method: 'GET', url: apiEndpoint + 'token/:token/campaigns/', params: {token: '@token'}},
+                refrehs_files_stautes: {
+                    method: 'GET',
+                    url: apiEndpoint + 'token/:token/files/status',
+                    params: {
+                        token: '@token'
+                    }
+                },
                 play_next_file: {
                     method: 'PUT',
                     url: apiEndpoint + 'token/:token/campaigns/:id/nextFile/:file',

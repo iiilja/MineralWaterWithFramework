@@ -38,6 +38,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 
 public class MainService extends Service {
@@ -53,6 +54,7 @@ public class MainService extends Service {
     private int currentFileId;
     private int loadingCampaignProgress;
     private boolean alwaysOnTop = false;
+    private final AtomicBoolean isDownloading = new AtomicBoolean(false);
 
     private Campaign campaign; // current campaign.
     private Campaign loadingCampaign;
@@ -104,15 +106,14 @@ public class MainService extends Service {
                 Log.d("MainService", "Data from file: " + dataString);
                 campaigns = new CampaignList(new JSONObject(dataString).getJSONArray("campaigns"));
                 selectNextCampaign();
-                //campaign = new Campaign(new JSONObject(FileUtils.readFileToString(data)).getJSONObject("campaign"));
             }
         } catch (Exception ex) {
             Log.e("MainService", ex.getMessage(), ex);
         }
 
         if (getUuid() != null) {
-            dTask = new DownloadFilesTask(dTask.getStatus() == AsyncTask.Status.RUNNING);
-            dTask.execute(String.format(DEFAULT_SERVER_JSON, getUuid()));
+            dTask = new DownloadFilesTask();
+            dTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, String.format(DEFAULT_SERVER_JSON, getUuid()));
         }
 
     }
@@ -212,15 +213,10 @@ public class MainService extends Service {
 
     private class DownloadFilesTask extends AsyncTask<String, Integer, File> {
 
-        private boolean pullOnly;
 
         public DownloadFilesTask() {
-            this(false);
         }
 
-        public DownloadFilesTask(boolean pullOnly) {
-            this.pullOnly = pullOnly;
-        }
 
         protected File doInBackground(String... urls) {
 
@@ -228,7 +224,7 @@ public class MainService extends Service {
                 CampaignList oldCampaigns = campaigns;
 
                 JSONObject data = loadData(urls[0]);
-                if(pullOnly) return null;
+                if(isDownloading.get()) return null;
 
                 if (data != null) {
 
@@ -343,6 +339,8 @@ public class MainService extends Service {
             loadingCampaign = camp;
             loadingCampaignProgress = 0;
 
+            isDownloading.set(true);
+
             List<CampaignFile> campaignFiles = camp.getFiles();
             int loadStep = 100 / campaignFiles.size();
 
@@ -369,6 +367,8 @@ public class MainService extends Service {
             }
 
             loadingCampaignProgress = 100;
+            loadingCampaign = null;
+            isDownloading.set(false);
         }
 
         private File downloadFile(String fileURL, String fileName, Campaign camp) {
@@ -455,12 +455,12 @@ public class MainService extends Service {
 
             json.put("cache", dirSize(root.getAbsoluteFile()));
             json.put("currentFileId", currentFileId);
+            json.put("currentCampaignId", campaign.getCampaignId());
 
             if(loadingCampaign != null) {
                 json.put("loadingCampaingId", loadingCampaign.getCampaignId());
                 json.put("loadingCampaingProgress", loadingCampaignProgress);
             } else {
-                json.put("loadingCampaingProgress", 0);
                 json.put("loadingCampaingProgress", 0);
             }
             Log.i("MainService", "Pull info:" + json.toString());
@@ -473,7 +473,7 @@ public class MainService extends Service {
 
             HttpResponse response = httpclient.execute(httppost);
 
-            if (response.getStatusLine().getStatusCode() == 200 && !pullOnly) {
+            if (response.getStatusLine().getStatusCode() == 200 && !isDownloading.get()) {
                 HttpEntity entity = response.getEntity();
 
                 if (entity != null) {

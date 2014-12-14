@@ -11,8 +11,8 @@ import android.util.Log;
 public class SoundFadeAnimation implements Runnable {
 
     private static final int ANIMATION_SMOOTHNESS = 1000; // how often animation updates in ms.
-    private static final int DEFAULT_START_DURATION = 5000;
-    private static final int DEFAULT_END_DURATION = 5000;
+    private static final int DEFAULT_START_DURATION = 3000;
+    private static final int DEFAULT_END_DURATION = 3000;
 
     private MediaPlayer mediaPlayer;
     private FadeCallback fadeCallback;

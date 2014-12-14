@@ -59,6 +59,7 @@ public class Campaign {
                 f.setId(obj.getInt("id"));
                 f.setType(CampaignFileType.valueOf(obj.getInt("type")));
                 f.setSize(obj.getInt("size"));
+                f.setPath(new File(getRoot(), f.getId() + "").getAbsolutePath());
 
                 files.add(f);
 

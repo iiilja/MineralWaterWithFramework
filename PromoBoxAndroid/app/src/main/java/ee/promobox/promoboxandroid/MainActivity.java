@@ -43,6 +43,7 @@ public class MainActivity extends Activity {
     private MainService mainService;
     private int position;
     private Campaign campaign;
+    private boolean mBound = false;
 
     private void hideSystemUI() {
 
@@ -90,6 +91,8 @@ public class MainActivity extends Activity {
         setAudioDeviceFromPrefs();
     }
 
+
+
     private void startNextFile() {
         if (campaign != null && campaign.getFiles() != null && campaign.getFiles().size() > 0) {
 
@@ -132,6 +135,7 @@ public class MainActivity extends Activity {
                 campaign.setDelay(60 * 60 * 12);
             }
 
+
             if (fileType == CampaignFileType.IMAGE) {
 
                 Intent i = new Intent(this, ImageActivity.class);
@@ -168,6 +172,8 @@ public class MainActivity extends Activity {
                 startActivityForResult(i, RESULT_FINISH_PLAY);
 
             }
+
+
         }
     }
 
@@ -197,9 +203,14 @@ public class MainActivity extends Activity {
 
         Intent intent = new Intent(this, MainService.class);
 
-        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-
         startService(intent);
+
+        if (!mBound) {
+            bindService(intent, mConnection,
+                    Context.BIND_AUTO_CREATE);
+
+            mBound = true;
+        }
 
         if (mainService != null) {
             if (mainService.getOrientation() == MainActivity.ORIENTATION_PORTRAIT) {
@@ -232,10 +243,13 @@ public class MainActivity extends Activity {
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        unbindService(mConnection);
-        stopService(getIntent());
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (mBound) {
+            unbindService(mConnection);
+            mBound = false;
+        }
     }
 
 

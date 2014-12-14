@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import org.apache.commons.io.IOUtils;
 
+import java.io.File;
 import java.io.FileInputStream;
 
 import ee.promobox.promoboxandroid.util.SoundFadeAnimation;
@@ -124,7 +125,7 @@ public class AudioActivity extends Activity {
 
         try {
             previousInputStream = inputStream;
-            inputStream = new FileInputStream(paths[position]);
+            inputStream = new FileInputStream(new File(paths[position]));
 
             mPlayer.setDataSource(inputStream.getFD());
             mPlayer.prepare();

@@ -5,15 +5,12 @@ import android.app.Service;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.media.MediaRecorder;
-import android.net.rtp.AudioCodec;
 import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.Environment;
 import android.os.IBinder;
 import android.os.StatFs;
 import android.preference.PreferenceManager;
-import android.provider.MediaStore;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
@@ -54,7 +51,7 @@ public class MainService extends Service {
     private String audioDevice; // which audio interface is used for output
     private int orientation;
     private int currentFileId;
-    private float loadingCampaignProgress;
+    private int loadingCampaignProgress;
     private boolean alwaysOnTop = false;
 
     private Campaign campaign; // current campaign.
@@ -106,7 +103,7 @@ public class MainService extends Service {
                 String dataString = FileUtils.readFileToString(data);
                 Log.d("MainService", "Data from file: " + dataString);
                 campaigns = new CampaignList(new JSONObject(dataString).getJSONArray("campaigns"));
-                SelectNextCampaign();
+                selectNextCampaign();
                 //campaign = new Campaign(new JSONObject(FileUtils.readFileToString(data)).getJSONObject("campaign"));
             }
         } catch (Exception ex) {
@@ -138,7 +135,7 @@ public class MainService extends Service {
         return campaign;
     }
 
-    private void SelectNextCampaign() {
+    private void selectNextCampaign() {
         if(campaigns != null) {
             Date currentDate = new Date();
 
@@ -257,7 +254,6 @@ public class MainService extends Service {
 
                     if (data.has("campaigns")) {
                         CampaignList newCampaigns = new CampaignList(data.getJSONArray("campaigns"));
-//                        Campaign newCamp = new Campaign(data.getJSONObject("campaign"));
 
                         setOrientation(data.optInt("orientation", MainActivity.ORIENTATION_LANDSCAPE));
                         sharedPref.edit().putInt("orientation", orientation).commit();
@@ -266,10 +262,13 @@ public class MainService extends Service {
 
                         if (oldCampaigns == null) { // Campaigns are not yet initialised.
                             campaigns = newCampaigns;
+
                             for (Campaign camp : newCampaigns) {
                                 downloadFiles(camp);
                             }
+
                             campaignsUpdated = true;
+
                         } else { // Have previous campaigns.
                             int oldCampaignsCount = oldCampaigns.size();
                             campaigns = new CampaignList(newCampaigns.size());
@@ -279,6 +278,7 @@ public class MainService extends Service {
                             int newCampaignId;
 
                             for (Campaign newCampaign : newCampaigns) {
+
                                 newCampaignId = newCampaign.getCampaignId();
                                 oldCampaign = null;
 
@@ -286,6 +286,7 @@ public class MainService extends Service {
                                 // note: size might change every iteration of newCampaigns.
                                 for (int i = 0; i < oldCampaignsCount; i++) {
                                     bufCampaign = oldCampaigns.get(i);
+
                                     if (newCampaignId == bufCampaign.getCampaignId()) {
                                         oldCampaign = bufCampaign;
                                         oldCampaignIndex = i;
@@ -305,7 +306,7 @@ public class MainService extends Service {
 
                         if (campaignsUpdated) {
                             Campaign oldCampaign = campaign;
-                            SelectNextCampaign();
+                            selectNextCampaign();
 
                             // NB! Reusing variable to store if we should update current campaign in main activity.
                             // If new campaign was assigned instead of missing one.
@@ -340,10 +341,10 @@ public class MainService extends Service {
             Log.i("MainService", "Download files");
 
             loadingCampaign = camp;
-            loadingCampaignProgress = 0f;
+            loadingCampaignProgress = 0;
 
             List<CampaignFile> campaignFiles = camp.getFiles();
-            float loadStep = 1f / campaignFiles.size();
+            int loadStep = 100 / campaignFiles.size();
 
             for (CampaignFile f : campaignFiles) {
                 loadingCampaignProgress += loadStep;
@@ -367,7 +368,7 @@ public class MainService extends Service {
                 }
             }
 
-            loadingCampaignProgress = 1f;
+            loadingCampaignProgress = 100;
         }
 
         private File downloadFile(String fileURL, String fileName, Campaign camp) {
@@ -413,16 +414,6 @@ public class MainService extends Service {
 
         private JSONObject loadData(String url) throws Exception {
 
-            ////////////////// DEBUG
-//            String debugJson = "{ \"orientation\": 1, \"days\": [ \"mo\", \"tu\", \"we\", \"th\", \"fr\", \"sa\", \"su\" ], \"hours\": [ \"0\", \"1\", \"2\", \"3\", \"4\", \"5\", \"6\", \"7\", \"8\", \"9\", \"10\", \"11\", \"12\", \"13\", \"14\", \"15\", \"16\", \"17\", \"18\", \"19\", \"20\", \"21\", \"22\", \"23\" ], \"lastUpdate\": 1416045632226, \"campaigns\": [ { \"campaignName\": \"test music 1\", \"files\": [ { \"id\": 940, \"type\": 2, \"size\": 8307147 }, { \"id\": 941, \"type\": 2, \"size\": 9715642 }, { \"id\": 942, \"type\": 2, \"size\": 8372894 }, { \"id\": 943, \"type\": 2, \"size\": 7431459 }, { \"id\": 944, \"type\": 2, \"size\": 9573540 } ], \"startDate\": 1416354000000, \"endDate\": 1416440400000, \"campaignStatus\": 2, \"duration\": 30, \"campaignId\": 163, \"sequence\": 1, \"updateDate\": 1414676425155, \"clientId\": 1 }, { \"campaignName\": \"test music 2\", \"files\": [ { \"id\": 945, \"type\": 2, \"size\": 8400125 }, { \"id\": 946, \"type\": 2, \"size\": 8158698 }, { \"id\": 947, \"type\": 2, \"size\": 10495188 }, { \"id\": 948, \"type\": 2, \"size\": 10511832 }, { \"id\": 949, \"type\": 2, \"size\": 16458377 }, { \"id\": 950, \"type\": 2, \"size\": 15833482 }, { \"id\": 2363, \"type\": 1, \"size\": 3971220 } ], \"startDate\": 1416267600000, \"endDate\": 1416354000000, \"campaignStatus\": 2, \"duration\": 30, \"campaignId\": 163, \"sequence\": 1, \"updateDate\": 1414676425155, \"clientId\": 1 } ] }";
-//            root.mkdirs();
-//            File f = new File(root, "data.json");
-//            FileOutputStream fOut = new FileOutputStream(f);
-//            fOut.write(debugJson.getBytes());
-//            IOUtils.closeQuietly(fOut);
-//            return new JSONObject(debugJson);
-            ///////////////// DEBUG
-
             HttpClient httpclient = new DefaultHttpClient();
 
             HttpPost httppost = new HttpPost(url);
@@ -464,6 +455,7 @@ public class MainService extends Service {
 
             json.put("cache", dirSize(root.getAbsoluteFile()));
             json.put("currentFileId", currentFileId);
+
             if(loadingCampaign != null) {
                 json.put("loadingCampaingId", loadingCampaign.getCampaignId());
                 json.put("loadingCampaingProgress", loadingCampaignProgress);
@@ -500,6 +492,8 @@ public class MainService extends Service {
 
                     return new JSONObject(FileUtils.readFileToString(file));
                 }
+            } else {
+                Log.e("MainService", IOUtils.toString(response.getEntity().getContent()));
             }
 
             return null;

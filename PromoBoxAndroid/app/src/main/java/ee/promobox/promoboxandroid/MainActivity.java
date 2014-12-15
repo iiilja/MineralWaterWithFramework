@@ -258,7 +258,7 @@ public class MainActivity extends Activity {
 
             mainService = b.getService();
 
-            campaign = mainService.getCampaign();
+            campaign = mainService.getCurrentCampaign();
 
             if (mainService.getUuid() == null || mainService.getUuid().equals("fail")) {
                 startActivityForResult(new Intent(MainActivity.this, FirstActivity.class), 2);
@@ -277,7 +277,7 @@ public class MainActivity extends Activity {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(CAMPAIGN_UPDATE)) {
-                campaign = mainService.getCampaign();
+                campaign = mainService.getCurrentCampaign();
                 position = 0;
                 startNextFile();
             } else if (intent.getAction().equals(CURRENT_FILE_ID)) {

@@ -17,10 +17,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 
 public class MainActivity extends Activity {
@@ -30,6 +27,7 @@ public class MainActivity extends Activity {
 
     public final static String CAMPAIGN_UPDATE = "ee.promobox.promoboxandroid.UPDATE";
     public final static String ACTIVITY_FINISH = "ee.promobox.promoboxandroid.FINISH";
+    public static final String CURRENT_FILE_ID = "ee.promobox.promoboxandroid.CURRENT_FILE_ID";;
 
     public final static String APP_START = "ee.promobox.promoboxandroid.START";
 
@@ -40,9 +38,11 @@ public class MainActivity extends Activity {
     public static final int ORIENTATION_PORTRAIT = 2;
     public static final int ORIENTATION_PORTRAIT_EMULATION = 3;
 
+
     private MainService mainService;
     private int position;
     private Campaign campaign;
+    private boolean mBound = false;
 
     private void hideSystemUI() {
 
@@ -80,15 +80,18 @@ public class MainActivity extends Activity {
         IntentFilter intentFilter = new IntentFilter();
 
         intentFilter.addAction(CAMPAIGN_UPDATE);
+        intentFilter.addAction(CURRENT_FILE_ID);
+
+        bManager.registerReceiver(bReceiver, intentFilter);
 
         Intent start = new Intent();
         start.setAction(MainActivity.APP_START);
         sendBroadcast(start);
 
-        bManager.registerReceiver(bReceiver, intentFilter);
-
         setAudioDeviceFromPrefs();
     }
+
+
 
     private void startNextFile() {
         if (campaign != null && campaign.getFiles() != null && campaign.getFiles().size() > 0) {
@@ -98,10 +101,10 @@ public class MainActivity extends Activity {
                 mainService.checkAndDownloadCampaign();
             }
 
-            mainService.setCurrentFileId(campaign.getFiles().get(position).getId());
+            //mainService.setCurrentFileId(campaign.getFiles().get(position).getId());
 
             CampaignFileType fileType = null;
-            List<String> filePack = new ArrayList<String>();
+            ArrayList<CampaignFile> filePack = new ArrayList<CampaignFile>();
 
             for (int i = position; i < campaign.getFiles().size(); i++) {
                 CampaignFile cFile = campaign.getFiles().get(i);
@@ -111,18 +114,11 @@ public class MainActivity extends Activity {
                 }
 
                 if (cFile.getType() == fileType) {
-                    String portSufix = "";
 
-                    if (mainService.getOrientation() == MainActivity.ORIENTATION_PORTRAIT_EMULATION) {
-                        portSufix = "_port";
-                    }
-                    File f = new File(campaign.getRoot(), cFile.getId() + portSufix);
+                    filePack.add(cFile);
+                    fileType = cFile.getType();
+                    position++;
 
-                    if (f.exists()) {
-                        filePack.add(f.getAbsolutePath());
-                        fileType = cFile.getType();
-                        position++;
-                    }
                 } else {
                     break;
                 }
@@ -132,11 +128,13 @@ public class MainActivity extends Activity {
                 campaign.setDelay(60 * 60 * 12);
             }
 
+
             if (fileType == CampaignFileType.IMAGE) {
 
                 Intent i = new Intent(this, ImageActivity.class);
 
-                i.putExtra("paths", filePack.toArray(new String[filePack.size()]));
+                i.putParcelableArrayListExtra("files", filePack);
+
                 i.putExtra("delay", campaign.getDelay());
                 i.putExtra("orientation", mainService.getOrientation());
 
@@ -149,7 +147,8 @@ public class MainActivity extends Activity {
 
                 Intent i = new Intent(this, AudioActivity.class);
 
-                i.putExtra("paths", filePack.toArray(new String[filePack.size()]));
+                i.putParcelableArrayListExtra("files", filePack);
+
                 i.putExtra("orientation", mainService.getOrientation());
 
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -160,7 +159,8 @@ public class MainActivity extends Activity {
 
                 Intent i = new Intent(this, VideoActivity.class);
 
-                i.putExtra("paths", filePack.toArray(new String[filePack.size()]));
+                i.putParcelableArrayListExtra("files", filePack);
+
                 i.putExtra("orientation", mainService.getOrientation());
 
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -168,6 +168,8 @@ public class MainActivity extends Activity {
                 startActivityForResult(i, RESULT_FINISH_PLAY);
 
             }
+
+
         }
     }
 
@@ -197,9 +199,14 @@ public class MainActivity extends Activity {
 
         Intent intent = new Intent(this, MainService.class);
 
-        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-
         startService(intent);
+
+        if (!mBound) {
+            bindService(intent, mConnection,
+                    Context.BIND_AUTO_CREATE);
+
+            mBound = true;
+        }
 
         if (mainService != null) {
             if (mainService.getOrientation() == MainActivity.ORIENTATION_PORTRAIT) {
@@ -232,10 +239,13 @@ public class MainActivity extends Activity {
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        unbindService(mConnection);
-        stopService(getIntent());
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (mBound) {
+            unbindService(mConnection);
+            mBound = false;
+        }
     }
 
 
@@ -248,7 +258,7 @@ public class MainActivity extends Activity {
 
             mainService = b.getService();
 
-            campaign = mainService.getCampaign();
+            campaign = mainService.getCurrentCampaign();
 
             if (mainService.getUuid() == null || mainService.getUuid().equals("fail")) {
                 startActivityForResult(new Intent(MainActivity.this, FirstActivity.class), 2);
@@ -267,9 +277,12 @@ public class MainActivity extends Activity {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(CAMPAIGN_UPDATE)) {
-                campaign = mainService.getCampaign();
+                campaign = mainService.getCurrentCampaign();
                 position = 0;
                 startNextFile();
+            } else if (intent.getAction().equals(CURRENT_FILE_ID)) {
+                mainService.setCurrentFileId(intent.getExtras().getInt("fileId"));
+                Log.i("MainActivity", "File id = " + mainService.getCurrentFileId());
             }
         }
     };

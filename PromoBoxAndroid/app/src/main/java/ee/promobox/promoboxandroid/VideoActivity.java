@@ -18,14 +18,15 @@ import android.widget.Toast;
 import org.apache.commons.io.IOUtils;
 
 import java.io.FileInputStream;
+import java.util.ArrayList;
 
-//http://cadabracorp.com/blog/2013/04/24/playing-a-full-screen-video-the-easy-way/
+
 public class VideoActivity extends Activity implements MediaPlayer.OnCompletionListener, SurfaceHolder.Callback {
 
 
     private SurfaceView videoView;
     private LocalBroadcastManager bManager;
-    private String[] paths;
+    private ArrayList<CampaignFile> files;
     private int position = 0;
     private MediaPlayer mediaPlayer;
     private FileInputStream streamMediaPlayer;
@@ -47,7 +48,7 @@ public class VideoActivity extends Activity implements MediaPlayer.OnCompletionL
 
         Bundle extras = getIntent().getExtras();
 
-        paths = extras.getStringArray("paths");
+        files = extras.getParcelableArrayList("files");
 
         videoView = (SurfaceView) findViewById(R.id.videoview);
 
@@ -55,20 +56,22 @@ public class VideoActivity extends Activity implements MediaPlayer.OnCompletionL
 
 
     public void playVideo() {
-        if (paths.length > 0) {
+        if (files.size() > 0) {
             try {
 
                 mediaPlayer = new MediaPlayer();
 
                 mediaPlayer.setDisplay(surfaceHolder);
 
-                streamMediaPlayer = new FileInputStream(paths[position]);
+                streamMediaPlayer = new FileInputStream(files.get(position).getPath());
 
                 mediaPlayer.setDataSource(streamMediaPlayer.getFD());
 
                 mediaPlayer.prepare();
 
                 mediaPlayer.start();
+
+                sendPlayCampaignFile();
 
                 position++;
 
@@ -127,7 +130,7 @@ public class VideoActivity extends Activity implements MediaPlayer.OnCompletionL
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
 
-        if (position > paths.length - 1) {
+        if (position > files.size() - 1) {
             position = 0;
         }
 
@@ -147,7 +150,7 @@ public class VideoActivity extends Activity implements MediaPlayer.OnCompletionL
     @Override
     public void onCompletion(MediaPlayer mp) {
 
-        if (position < paths.length) {
+        if (position < files.size()) {
             mediaPlayer.setOnCompletionListener(null);
             mediaPlayer.release();
 
@@ -182,6 +185,12 @@ public class VideoActivity extends Activity implements MediaPlayer.OnCompletionL
         }
 
         IOUtils.closeQuietly(streamMediaPlayer);
+    }
+
+    private void sendPlayCampaignFile() {
+        Intent playFile = new Intent(MainActivity.CURRENT_FILE_ID);
+        playFile.putExtra("fileId", files.get(position).getId());
+        LocalBroadcastManager.getInstance(VideoActivity.this).sendBroadcast(playFile);
     }
 
     @Override

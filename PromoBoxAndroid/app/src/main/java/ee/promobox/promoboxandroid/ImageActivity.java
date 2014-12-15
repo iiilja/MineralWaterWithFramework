@@ -19,12 +19,13 @@ import org.apache.commons.io.IOUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.ArrayList;
 
 public class ImageActivity extends Activity {
 
     private ImageView slide;
     private LocalBroadcastManager bManager;
-    private String[] paths;
+    private ArrayList<CampaignFile> files;
     private int position = 0;
 
     private Bitmap decodeBitmap(File file) {
@@ -95,12 +96,12 @@ public class ImageActivity extends Activity {
 
         hideSystemUI();
 
-        if (position > paths.length - 1) {
+        if (position > files.size() - 1) {
             position = 0;
         }
 
-        if (paths.length > 0) {
-            playImage(paths[position]);
+        if (files.size() > 0) {
+            playImage(files.get(position).getPath());
         }
 
     }
@@ -124,14 +125,14 @@ public class ImageActivity extends Activity {
 
         Bundle extras = getIntent().getExtras();
 
-        paths = extras.getStringArray("paths");
+        files = extras.getParcelableArrayList("files");
 
     }
 
     final Runnable r = new Runnable() {
         @Override
         public void run() {
-            if (position == paths.length) {
+            if (position == files.size()) {
 
                 Intent returnIntent = new Intent();
                 returnIntent.putExtra("result", MainActivity.RESULT_FINISH_PLAY);
@@ -139,10 +140,16 @@ public class ImageActivity extends Activity {
 
                 ImageActivity.this.finish();
             } else {
-                playImage(paths[position]);
+                playImage(files.get(position).getPath());
             }
         }
     };
+
+    private void sendPlayCampaignFile() {
+        Intent playFile = new Intent(MainActivity.CURRENT_FILE_ID);
+        playFile.putExtra("fileId", files.get(position).getId());
+        LocalBroadcastManager.getInstance(this).sendBroadcast(playFile);
+    }
 
     private void playImage(String path) {
         File file = new File(path);
@@ -150,6 +157,8 @@ public class ImageActivity extends Activity {
         try {
 
             slide.setImageBitmap(decodeBitmap(file));
+
+            sendPlayCampaignFile();
 
             position++;
 

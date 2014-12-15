@@ -16,6 +16,7 @@ import android.widget.Toast;
 import org.apache.commons.io.IOUtils;
 
 import java.io.FileInputStream;
+import java.util.ArrayList;
 
 import ee.promobox.promoboxandroid.util.SoundFadeAnimation;
 
@@ -32,7 +33,8 @@ public class AudioActivity extends Activity {
     private FileInputStream previousInputStream;
 
     private LocalBroadcastManager bManager;
-    private String[] paths;
+
+    private ArrayList<CampaignFile> files;
     private int position = 0;
 
     private void hideSystemUI() {
@@ -77,7 +79,8 @@ public class AudioActivity extends Activity {
 
         Bundle extras = getIntent().getExtras();
 
-        paths = extras.getStringArray("paths");
+        files = extras.getParcelableArrayList("files");
+
     }
 
     @Override
@@ -92,11 +95,11 @@ public class AudioActivity extends Activity {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
 
-        if (position > paths.length - 1) {
+        if (position > files.size() - 1) {
             position = 0;
         }
 
-        if (paths.length > 0) {
+        if (files.size() > 0) {
             playAudio();
         }
 
@@ -118,24 +121,32 @@ public class AudioActivity extends Activity {
         cleanUp();
     }
 
+    private void sendPlayCampaignFile() {
+        Intent playFile = new Intent(MainActivity.CURRENT_FILE_ID);
+        playFile.putExtra("fileId", files.get(position).getId());
+        LocalBroadcastManager.getInstance(AudioActivity.this).sendBroadcast(playFile);
+    }
+
     private void playAudio() {
         previousPlayer = mPlayer;
         mPlayer = new MediaPlayer();
 
         try {
             previousInputStream = inputStream;
-            inputStream = new FileInputStream(paths[position]);
+            inputStream = new FileInputStream(files.get(position).getPath());
 
             mPlayer.setDataSource(inputStream.getFD());
             mPlayer.prepare();
             mPlayer.start();
+
+            sendPlayCampaignFile();
 
             previousFadeAnimation = soundFadeAnimation;
             soundFadeAnimation = new SoundFadeAnimation(mPlayer);
             soundFadeAnimation.setOnFadeCallback(new SoundFadeAnimation.FadeCallback() {
                 @Override
                 public void onFade() {
-                    if (position != paths.length) {
+                    if (position != files.size()) {
                         playAudio();
                     }
                 }
@@ -238,7 +249,7 @@ public class AudioActivity extends Activity {
             clearFadeAnimation(fadeAnimation);
             IOUtils.closeQuietly(iStream);
 
-            if (position == paths.length) {
+            if (position == files.size()) {
                 cleanUp();
 
                 Intent returnIntent = new Intent();

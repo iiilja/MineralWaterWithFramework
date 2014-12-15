@@ -44,35 +44,7 @@ public class UserController {
     @Autowired
     private SessionService sessionService;
     
-    @RequestMapping("/index")
-    public ModelAndView indexHandler(
-            HttpServletRequest request,
-            HttpServletResponse response) throws Exception {
 
-        JSONObject json = new JSONObject();
-        json.put("response", "OK");
-        JSONArray userAr = new JSONArray();
-
-        List<Users> list = userService.findAllUsers();
-        
-        for (Users u : list) {
-
-            JSONObject jsonUser = new JSONObject();
-            jsonUser.put("firstname", u.getFirstname());
-            jsonUser.put("surname", u.getSurname());
-            jsonUser.put("emai", u.getEmail());
-
-            userAr.put(jsonUser);
-
-        }
-
-        json.put("users", userAr);
-
-        return RequestUtils.printResult(json.toString(), response);
-
-    }
-    
-    
     @RequestMapping("/user/login")
     public ModelAndView userLoginHandler(
             @RequestParam String email,

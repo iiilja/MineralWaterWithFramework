@@ -575,7 +575,7 @@ input[readonly] {
 }
 .label-row .datepicker-wrap {
     float: left;
-    width: 240px;
+    width: 145px;
 }
 
 .label-row .datepicker-wrap .input-group-addon {
@@ -838,6 +838,9 @@ input[readonly] {
     display: block;
     padding: 0;
     text-align: left;
+    text-overflow:ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 #sorting .files-list  li label.active {
@@ -876,6 +879,10 @@ input[readonly] {
     font-size: 10.5pt;
     display: inline-block;
     vertical-align: top;
+    width: 250px;
+    text-overflow:ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 #sorting  .controll-block {
@@ -1387,7 +1394,9 @@ input[readonly] {
     overflow: hidden;
     position: relative;
 }
-
+.Video-picture-wrap .cont img {
+    width: 100%;
+}
 .Video-picture-wrap .cont .controll-block {
     position: relative;
     left: auto;

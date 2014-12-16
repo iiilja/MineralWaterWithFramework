@@ -888,8 +888,12 @@ input[readonly] {
 #sorting  .controll-block {
     display: inline-block;
     vertical-align: top;
-    margin: 3px 0 0 21px;
+    margin: 0 0 0 21px;
     width: 115px;
+    opacity: 2;
+    position: relative;
+    bottom: auto;
+    left: auto;
 }
 
 #sorting  .controll-block .btn {

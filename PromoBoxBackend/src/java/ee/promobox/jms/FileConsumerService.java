@@ -318,7 +318,7 @@ public class FileConsumerService extends MessageListenerAdapter {
 
         imageConvert.background("white");
         imageConvert.gravity("center");
-        imageConvert.extent("250x250");
+        //imageConvert.extent("250x250");
 
         return imageConvert.processToFile(thumbFile);
     }

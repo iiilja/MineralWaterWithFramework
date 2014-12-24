@@ -63,6 +63,8 @@ public class VideoActivity extends Activity implements MediaPlayer.OnCompletionL
 
                 mediaPlayer.setDisplay(surfaceHolder);
 
+                mediaPlayer.setScreenOnWhilePlaying(true);
+
                 streamMediaPlayer = new FileInputStream(files.get(position).getPath());
 
                 mediaPlayer.setDataSource(streamMediaPlayer.getFD());
@@ -151,7 +153,9 @@ public class VideoActivity extends Activity implements MediaPlayer.OnCompletionL
     public void onCompletion(MediaPlayer mp) {
 
         if (position < files.size()) {
+
             mediaPlayer.setOnCompletionListener(null);
+            mediaPlayer.stop();
             mediaPlayer.release();
 
             IOUtils.closeQuietly(streamMediaPlayer);
@@ -221,6 +225,7 @@ public class VideoActivity extends Activity implements MediaPlayer.OnCompletionL
 
     @Override
     public void surfaceCreated(SurfaceHolder surfaceHolder) {
+        Log.i("VideoActivity", "surfaceCreated");
         playVideo();
     }
 
@@ -230,6 +235,7 @@ public class VideoActivity extends Activity implements MediaPlayer.OnCompletionL
 
     @Override
     public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
+        Log.i("VideoActivity", "surfaceDestroyed");
     }
 
 }

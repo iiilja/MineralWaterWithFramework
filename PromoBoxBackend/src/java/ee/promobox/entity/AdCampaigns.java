@@ -71,6 +71,9 @@ public class AdCampaigns implements Serializable {
     @Column(name = "update_dt")
     @Temporal(TemporalType.TIMESTAMP)
     private Date updateDate;
+    @Column(name = "created_dt", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdDate;
     @Column(name = "work_time_data")
     private String workTimeData;
     
@@ -268,5 +271,12 @@ public class AdCampaigns implements Serializable {
     public void setFilesArchived(boolean filesArchived) {
         this.filesArchived = filesArchived;
     }
-    
-}
+
+    public Date getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(Date createdDate) {
+        this.createdDate = createdDate;
+    }
+}   

@@ -186,6 +186,8 @@ public class CampaignsController {
             finish.set(Calendar.MINUTE, 30);
             finish.set(Calendar.SECOND, 0);
             finish.set(Calendar.MILLISECOND, 0);
+            
+            Date createdDate = new Date();
 
             campaign.setName("New campaign");
             campaign.setClientId(session.getClientId());
@@ -194,7 +196,8 @@ public class CampaignsController {
             campaign.setStart(start.getTime());
             campaign.setFinish(finish.getTime());
             campaign.setDuration(30);
-            campaign.setUpdateDate(new Date());
+            campaign.setCreatedDate(createdDate);
+            campaign.setUpdateDate(createdDate);
 
             JSONObject workTimeJson = new JSONObject();
 

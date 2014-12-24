@@ -488,6 +488,13 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
                 $scope.campaign.files = response.files;
                 $scope.campaign_form.filesArray = $scope.campaign.files;
                 
+                for (var i = 0; i < $scope.campaign.files.length; i++) {
+                    if ($scope.campaign.files[i].status == 0 || 
+                            $scope.campaign.files[i].status == 4) {
+                        $scope.campaign.files[i].t =  new Date().getTime();
+                    }
+                }
+                
                 $timeout(refreshFileStatuses, 15000);
             });
         };

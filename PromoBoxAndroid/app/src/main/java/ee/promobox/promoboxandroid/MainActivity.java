@@ -145,6 +145,8 @@ public class MainActivity extends Activity {
 
                 startActivityForResult(i, RESULT_FINISH_PLAY);
 
+                this.overridePendingTransition(0, 0);
+
 
             } else if (fileType == CampaignFileType.AUDIO) {
 
@@ -167,6 +169,8 @@ public class MainActivity extends Activity {
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
                 startActivityForResult(i, RESULT_FINISH_PLAY);
+
+                this.overridePendingTransition(0, 0);
 
             }
 

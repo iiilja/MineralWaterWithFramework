@@ -6,30 +6,27 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
-import android.media.MediaPlayer;
+import android.graphics.SurfaceTexture;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
+import android.view.Surface;
+import android.view.TextureView;
 import android.view.View;
 import android.widget.Toast;
 
-import org.apache.commons.io.IOUtils;
-
-import java.io.FileInputStream;
-
-//http://cadabracorp.com/blog/2013/04/24/playing-a-full-screen-video-the-easy-way/
-public class VideoActivity extends Activity implements MediaPlayer.OnCompletionListener, SurfaceHolder.Callback {
+import java.io.File;
+import java.io.IOException;
 
 
-    private SurfaceView videoView;
+public class VideoActivity extends Activity implements TextureView.SurfaceTextureListener {
+
+
+    private TextureView videoView;
     private LocalBroadcastManager bManager;
     private String[] paths;
     private int position = 0;
-    private MediaPlayer mediaPlayer;
-    private FileInputStream streamMediaPlayer;
-    private SurfaceHolder surfaceHolder;
+    private MoviePlayer player;
 
     @Override
     public void onCreate(Bundle b) {
@@ -49,8 +46,6 @@ public class VideoActivity extends Activity implements MediaPlayer.OnCompletionL
 
         paths = extras.getStringArray("paths");
 
-        videoView = (SurfaceView) findViewById(R.id.videoview);
-
     }
 
 
@@ -58,21 +53,39 @@ public class VideoActivity extends Activity implements MediaPlayer.OnCompletionL
         if (paths.length > 0) {
             try {
 
-                mediaPlayer = new MediaPlayer();
+                Surface surface = new Surface(videoView.getSurfaceTexture());
 
-                mediaPlayer.setDisplay(surfaceHolder);
+                try {
+                    player = new MoviePlayer(
+                            new File(paths[position]), surface, new SpeedControlCallback());
+                } catch (IOException ioe) {
+                    Log.e("Vi", "Unable to play movie", ioe);
+                    surface.release();
+                    return;
+                }
 
-                streamMediaPlayer = new FileInputStream(paths[position]);
+                MoviePlayer.PlayTask mPlayTask = new MoviePlayer.PlayTask(player, new MoviePlayer.PlayerFeedback() {
+                    @Override
+                    public void playbackStopped() {
+                        if (position < paths.length) {
+                            playVideo();
+                        } else {
 
-                mediaPlayer.setDataSource(streamMediaPlayer.getFD());
+                            Intent returnIntent = new Intent();
 
-                mediaPlayer.prepare();
+                            returnIntent.putExtra("result", MainActivity.RESULT_FINISH_PLAY);
 
-                mediaPlayer.start();
+                            setResult(RESULT_OK, returnIntent);
+
+                            VideoActivity.this.finish();
+                        }
+                    }
+                });
+
+                mPlayTask.execute();
 
                 position++;
 
-                mediaPlayer.setOnCompletionListener(this);
 
             } catch (Exception ex) {
                 Log.e("VideoActivity", ex.getMessage(), ex);
@@ -131,9 +144,9 @@ public class VideoActivity extends Activity implements MediaPlayer.OnCompletionL
             position = 0;
         }
 
-        surfaceHolder = videoView.getHolder();
+        videoView = (TextureView) findViewById(R.id.videoview);
 
-        surfaceHolder.addCallback(this);
+        videoView.setSurfaceTextureListener(this);
 
     }
 
@@ -144,44 +157,11 @@ public class VideoActivity extends Activity implements MediaPlayer.OnCompletionL
 
     }
 
-    @Override
-    public void onCompletion(MediaPlayer mp) {
 
-        if (position < paths.length) {
-            mediaPlayer.setOnCompletionListener(null);
-            mediaPlayer.release();
-
-            IOUtils.closeQuietly(streamMediaPlayer);
-
-            playVideo();
-        } else {
-
-            Intent returnIntent = new Intent();
-
-            returnIntent.putExtra("result", MainActivity.RESULT_FINISH_PLAY);
-
-            setResult(RESULT_OK, returnIntent);
-
-            VideoActivity.this.finish();
-        }
-    }
 
 
     private void cleanUp() {
-        videoView.destroyDrawingCache();
-
-        surfaceHolder = videoView.getHolder();
-
-        surfaceHolder.removeCallback(this);
-
-        if (mediaPlayer != null) {
-            mediaPlayer.stop();
-            mediaPlayer.setOnCompletionListener(null);
-            mediaPlayer.release();
-            mediaPlayer = null;
-        }
-
-        IOUtils.closeQuietly(streamMediaPlayer);
+        player.requestStop();
     }
 
     @Override
@@ -210,17 +190,25 @@ public class VideoActivity extends Activity implements MediaPlayer.OnCompletionL
     };
 
 
+
+
     @Override
-    public void surfaceCreated(SurfaceHolder surfaceHolder) {
+    public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture, int width, int height) {
         playVideo();
     }
 
     @Override
-    public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i2, int i3) {
+    public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
+
     }
 
     @Override
-    public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
+    public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+        return false;
     }
 
+    @Override
+    public void onSurfaceTextureUpdated(SurfaceTexture surface) {
+
+    }
 }

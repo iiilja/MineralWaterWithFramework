@@ -7,7 +7,7 @@
     tools:context="ee.promobox.promoboxandroid.VideoActivity"
     android:background="@drawable/promobox">
 
-    <SurfaceView
+    <TextureView
         android:id="@+id/videoview"
         android:layout_gravity="fill"
         android:adjustViewBounds="true"

@@ -84,6 +84,8 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
 
                 mPlayTask.execute();
 
+                sendPlayCampaignFile();
+
                 position++;
 
 
@@ -155,8 +157,11 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
 
     }
 
-
-
+    private void sendPlayCampaignFile() {
+        Intent playFile = new Intent(MainActivity.CURRENT_FILE_ID);
+        playFile.putExtra("fileId", files.get(position).getId());
+        LocalBroadcastManager.getInstance(VideoActivity.this).sendBroadcast(playFile);
+    }
 
     private void cleanUp() {
         player.requestStop();

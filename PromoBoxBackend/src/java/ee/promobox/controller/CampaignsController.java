@@ -126,6 +126,15 @@ public class CampaignsController {
                 JSONArray campaignsArray = new JSONArray();
                 // iterate trough the list of campaigns that belong to the client
                 for (AdCampaigns campaign : campaigns) {
+                	
+                	Date now = new Date();
+                	if (campaign.getStart().before(now) && 
+                			campaign.getFinish().after(now)) {
+                		campaign.setStatus(AdCampaigns.STATUS_PUBLISHED);
+                	} else {
+                		campaign.setStatus(AdCampaigns.STATUS_UNPUBLISHED);
+                	}
+                	
                     JSONObject jsonCampaign = new JSONObject();
 
                     jsonCampaign.put("id", campaign.getId());

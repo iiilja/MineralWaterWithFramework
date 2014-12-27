@@ -6,31 +6,27 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
-import android.media.MediaPlayer;
+import android.graphics.SurfaceTexture;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
+import android.view.Surface;
+import android.view.TextureView;
 import android.view.View;
-import android.widget.Toast;
 
-import org.apache.commons.io.IOUtils;
-
-import java.io.FileInputStream;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 
-public class VideoActivity extends Activity implements MediaPlayer.OnCompletionListener, SurfaceHolder.Callback {
+public class VideoActivity extends Activity implements TextureView.SurfaceTextureListener {
 
 
-    private SurfaceView videoView;
+    private TextureView videoView;
     private LocalBroadcastManager bManager;
     private ArrayList<CampaignFile> files;
     private int position = 0;
-    private MediaPlayer mediaPlayer;
-    private FileInputStream streamMediaPlayer;
-    private SurfaceHolder surfaceHolder;
+    private MoviePlayer player;
 
     @Override
     public void onCreate(Bundle b) {
@@ -50,8 +46,6 @@ public class VideoActivity extends Activity implements MediaPlayer.OnCompletionL
 
         files = extras.getParcelableArrayList("files");
 
-        videoView = (SurfaceView) findViewById(R.id.videoview);
-
     }
 
 
@@ -59,23 +53,41 @@ public class VideoActivity extends Activity implements MediaPlayer.OnCompletionL
         if (files.size() > 0) {
             try {
 
-                mediaPlayer = new MediaPlayer();
+                Surface surface = new Surface(videoView.getSurfaceTexture());
 
-                mediaPlayer.setDisplay(surfaceHolder);
+                try {
+                    player = new MoviePlayer(
+                            new File(files.get(position).getPath()), surface, new SpeedControlCallback());
+                } catch (IOException ioe) {
+                    Log.e("Vi", "Unable to play movie", ioe);
+                    surface.release();
+                    return;
+                }
 
-                streamMediaPlayer = new FileInputStream(files.get(position).getPath());
+                MoviePlayer.PlayTask mPlayTask = new MoviePlayer.PlayTask(player, new MoviePlayer.PlayerFeedback() {
+                    @Override
+                    public void playbackStopped() {
+                        if (position < files.size()) {
+                            playVideo();
+                        } else {
 
-                mediaPlayer.setDataSource(streamMediaPlayer.getFD());
+                            Intent returnIntent = new Intent();
 
-                mediaPlayer.prepare();
+                            returnIntent.putExtra("result", MainActivity.RESULT_FINISH_PLAY);
 
-                mediaPlayer.start();
+                            setResult(RESULT_OK, returnIntent);
+
+                            VideoActivity.this.finish();
+                        }
+                    }
+                });
+
+                mPlayTask.execute();
 
                 sendPlayCampaignFile();
 
                 position++;
 
-                mediaPlayer.setOnCompletionListener(this);
 
             } catch (Exception ex) {
                 Log.e("VideoActivity", ex.getMessage(), ex);
@@ -110,8 +122,6 @@ public class VideoActivity extends Activity implements MediaPlayer.OnCompletionL
                 Intent i = new Intent(VideoActivity.this, SettingsActivity.class);
                 startActivity(i);
 
-                Toast.makeText(view.getContext(), "Just a test", Toast.LENGTH_SHORT).show();
-
                 return true;
             }
         });
@@ -134,9 +144,9 @@ public class VideoActivity extends Activity implements MediaPlayer.OnCompletionL
             position = 0;
         }
 
-        surfaceHolder = videoView.getHolder();
+        videoView = (TextureView) findViewById(R.id.videoview);
 
-        surfaceHolder.addCallback(this);
+        videoView.setSurfaceTextureListener(this);
 
     }
 
@@ -147,50 +157,14 @@ public class VideoActivity extends Activity implements MediaPlayer.OnCompletionL
 
     }
 
-    @Override
-    public void onCompletion(MediaPlayer mp) {
-
-        if (position < files.size()) {
-            mediaPlayer.setOnCompletionListener(null);
-            mediaPlayer.release();
-
-            IOUtils.closeQuietly(streamMediaPlayer);
-
-            playVideo();
-        } else {
-
-            Intent returnIntent = new Intent();
-
-            returnIntent.putExtra("result", MainActivity.RESULT_FINISH_PLAY);
-
-            setResult(RESULT_OK, returnIntent);
-
-            VideoActivity.this.finish();
-        }
-    }
-
-
-    private void cleanUp() {
-        videoView.destroyDrawingCache();
-
-        surfaceHolder = videoView.getHolder();
-
-        surfaceHolder.removeCallback(this);
-
-        if (mediaPlayer != null) {
-            mediaPlayer.stop();
-            mediaPlayer.setOnCompletionListener(null);
-            mediaPlayer.release();
-            mediaPlayer = null;
-        }
-
-        IOUtils.closeQuietly(streamMediaPlayer);
-    }
-
     private void sendPlayCampaignFile() {
         Intent playFile = new Intent(MainActivity.CURRENT_FILE_ID);
         playFile.putExtra("fileId", files.get(position).getId());
         LocalBroadcastManager.getInstance(VideoActivity.this).sendBroadcast(playFile);
+    }
+
+    private void cleanUp() {
+        player.requestStop();
     }
 
     @Override
@@ -219,17 +193,25 @@ public class VideoActivity extends Activity implements MediaPlayer.OnCompletionL
     };
 
 
+
+
     @Override
-    public void surfaceCreated(SurfaceHolder surfaceHolder) {
+    public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture, int width, int height) {
         playVideo();
     }
 
     @Override
-    public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i2, int i3) {
+    public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
+
     }
 
     @Override
-    public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
+    public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+        return false;
     }
 
+    @Override
+    public void onSurfaceTextureUpdated(SurfaceTexture surface) {
+
+    }
 }

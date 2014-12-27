@@ -4,10 +4,9 @@
     android:layout_height="match_parent"
     android:id="@+id/video_view"
     android:keepScreenOn="true"
-    tools:context="ee.promobox.promoboxandroid.VideoActivity"
-    android:background="@drawable/promobox">
+    tools:context="ee.promobox.promoboxandroid.VideoActivity">
 
-    <SurfaceView
+    <TextureView
         android:id="@+id/videoview"
         android:layout_gravity="fill"
         android:adjustViewBounds="true"

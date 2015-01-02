@@ -26,24 +26,16 @@
             useAsyncSend="true"
             copyMessageOnSend="false"/>
 
-    <amq:queue id="fileDestination" physicalName="fileQueue"/>
     <amq:queue id="mailDestination" physicalName="mailQueue"/>
+    
+    <bean id="clientThreadPool" class="ee.promobox.jms.ClientThreadPool"/>
 
     <bean id="jmsConsumerManager" class="ee.promobox.jms.JmsConsumerManager" factory-method="getInstance" depends-on="kioskBroker">
         <property name="listeningContainers">
             <list>
-                <ref bean="fileConsumerListener"/>
                 <ref bean="mailListener"/>
             </list>
         </property>
-    </bean>
-
-    <bean id="fileConsumerListener" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
-        <property name="connectionFactory" ref="jmsFactory"/>
-        <property name="maxConcurrentConsumers" value="1"/>
-        <property name="sessionTransacted" value="true"/>
-        <property name="destination" ref="fileDestination"/>
-        <property name="messageListener" ref="fileConsumerService"/>
     </bean>
     
     <bean id="mailListener" class="org.springframework.jms.listener.DefaultMessageListenerContainer">

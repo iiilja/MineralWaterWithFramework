@@ -3,6 +3,7 @@ PromoBoxBackend/dist/
 PromoBoxBackend/build/
 PromoBoxBackend/.gradle
 PromoBoxBackend/.idea/workspace.xml
+PromoBoxBackend/.gradle/
 PromoBoxFrontend/.gradle
 PromoBoxFrontend/local.properties
 PromoBoxFrontend/.idea/workspace.xml

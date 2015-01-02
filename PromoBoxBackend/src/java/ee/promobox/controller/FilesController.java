@@ -14,22 +14,28 @@ import ee.promobox.entity.AdCampaigns;
 import ee.promobox.entity.CampaignsFiles;
 import ee.promobox.entity.Devices;
 import ee.promobox.entity.Files;
-import static ee.promobox.jms.FileConsumerService.log;
+import ee.promobox.jms.ClientThreadPool;
 import ee.promobox.jms.FileDto;
+import ee.promobox.jms.FileDtoConsumer;
+import ee.promobox.jms.ThreadPool;
 import ee.promobox.service.FileService;
+import ee.promobox.jms.FileDtoProducer;
 import ee.promobox.service.Session;
 import ee.promobox.service.SessionService;
 import ee.promobox.service.UserService;
 import ee.promobox.util.FileTypeUtils;
 import ee.promobox.util.RequestUtils;
 
+import java.beans.DesignMode;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 import javax.jms.Destination;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -66,10 +72,7 @@ public class FilesController {
     private KioskConfig config;
 
     @Autowired
-    @Qualifier("fileDestination")
-    private Destination fileDestination;
-    @Autowired
-    private JmsTemplate jmsTemplate;
+    private ClientThreadPool clientThreadPool;
     
     private final static int AVERAGE_AUDIO_BITRATE = 128 * 1024;
     private final static int AVERAGE_VIDEO_BITRATE = 198 * 1024;
@@ -298,7 +301,13 @@ public class FilesController {
                             FileDto fileDto = new FileDto(campaignFile.getId(),
                                     session.getClientId(), fileTypeNumber, fileType);
 
-                            jmsTemplate.convertAndSend(fileDestination, fileDto);
+                            log.info("convert");
+                            FileDtoProducer producer = new FileDtoProducer(fileDto);
+                            FileDtoConsumer consumer = new FileDtoConsumer(session.getClientId(), config, userService, fileService);
+                            
+                            ThreadPool threadPool = clientThreadPool.getClientThreadPool(session.getClientId());
+                            threadPool.execute(consumer);
+                            threadPool.execute(producer);
 
                             response.setStatus(HttpServletResponse.SC_OK);
                             
@@ -353,7 +362,13 @@ public class FilesController {
                 cFile.setStatus(CampaignsFiles.STATUS_CONVERTING);
                 userService.updateCampaignFile(cFile);
                 
-                jmsTemplate.convertAndSend(fileDestination, fileDto);
+                FileDtoProducer producer = new FileDtoProducer(fileDto);
+                FileDtoConsumer consumer = new FileDtoConsumer(session.getClientId(), config, userService, fileService);
+                
+                ThreadPool threadPool = clientThreadPool.getClientThreadPool(session.getClientId());
+                threadPool.execute(consumer);
+                threadPool.execute(producer);
+                
 
                 response.setStatus(HttpServletResponse.SC_OK);
 

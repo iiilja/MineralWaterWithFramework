@@ -352,12 +352,14 @@ public class FilesController {
                     angle -= 360;
                 }
                 databaseFile.setAngle(angle);
+                
                 userService.updateFile(databaseFile);
 
                 String fileType = FilenameUtils.getExtension(databaseFile.getFilename());
                 
                 FileDto fileDto = new FileDto(cFile.getId(), session.getClientId(), databaseFile.getFileType(), fileType);
-                fileDto.setRotate(angle);
+                fileDto.setAngle(angle);
+                fileDto.setRotate(true);
                 
                 cFile.setStatus(CampaignsFiles.STATUS_CONVERTING);
                 userService.updateCampaignFile(cFile);

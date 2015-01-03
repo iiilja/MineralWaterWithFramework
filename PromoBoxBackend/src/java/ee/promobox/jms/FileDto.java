@@ -20,7 +20,8 @@ public class FileDto implements Serializable {
     private int clientId;
     private int fileType;
     private String extention;
-    private int rotate;
+    private int angle;
+    private boolean rotate;
 
     public FileDto(int campaignFileId, int clientId, int fileType, String extention) {
         this.campaignFileId = campaignFileId;
@@ -68,12 +69,12 @@ public class FileDto implements Serializable {
         this.extention = extention;
     }
 
-    public int getRotate() {
-        return rotate;
+    public int getAngle() {
+        return angle;
     }
 
-    public void setRotate(int rotate) {
-        this.rotate = rotate;
+    public void setAngle(int angle) {
+        this.angle = angle;
     }
 
     public int getFileId() {
@@ -83,5 +84,12 @@ public class FileDto implements Serializable {
     public void setFileId(int fileId) {
         this.fileId = fileId;
     }
-    
+
+	public boolean isRotate() {
+		return rotate;
+	}
+
+	public void setRotate(boolean rotate) {
+		this.rotate = rotate;
+	} 
 }

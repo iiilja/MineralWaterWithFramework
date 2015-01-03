@@ -94,15 +94,10 @@ public class FileDtoConsumer implements Runnable {
 	}
 
 	public void handleMessage(FileDto fileDto) {
-		log.info("Converting file:");
-
-		log.info("Campaign File id: " + fileDto.getCampaignFileId());
-		log.info("File extention: " + fileDto.getExtention());
 
 		CampaignsFiles cFile = userService.findCampaignFileById(fileDto
 				.getCampaignFileId());
-		log.info(" cFile: " + cFile);
-		log.info(" File id: " + cFile.getFileId());
+
 		fileDto.setFileId(cFile.getFileId());
 
 		boolean result = convertFile(fileDto);
@@ -145,18 +140,6 @@ public class FileDtoConsumer implements Runnable {
 		boolean result = false;
 
 		switch (type.toUpperCase()) {
-		case "DOC":
-			result = convertOfficeDocument(f);
-			break;
-		case "DOCX":
-			result = convertOfficeDocument(f);
-			break;
-		case "PPT":
-			result = convertOfficeDocument(f);
-			break;
-		case "XLS":
-			result = convertOfficeDocument(f);
-			break;
 		case "JPG":
 			result = convertImage(f);
 			break;
@@ -194,6 +177,7 @@ public class FileDtoConsumer implements Runnable {
 			result = convertPdf(f);
 			break;
 		default:
+			result = convertOfficeDocument(f);
 			break;
 		}
 
@@ -233,7 +217,7 @@ public class FileDtoConsumer implements Runnable {
 		imageConvert.page(0);
 		imageConvert.background("white");
 		imageConvert.resize(1920, 1920);
-		imageConvert.rotate(f.getRotate());
+		imageConvert.rotate(f.getAngle());
 
 		imageConvert.outputFormat("png");
 
@@ -243,7 +227,7 @@ public class FileDtoConsumer implements Runnable {
 
 			imageConvert.input(rawFile);
 
-			imageConvert.rotate(270 + f.getRotate());
+			imageConvert.rotate(270 + f.getAngle());
 
 			imageConvert.outputFormat("png");
 
@@ -284,7 +268,7 @@ public class FileDtoConsumer implements Runnable {
 		imageConvert.page(0);
 		imageConvert.background("white");
 		imageConvert.resize(1920, 1920);
-		imageConvert.rotate(f.getRotate());
+		imageConvert.rotate(f.getAngle());
 
 		imageConvert.outputFormat("png");
 
@@ -294,7 +278,7 @@ public class FileDtoConsumer implements Runnable {
 
 			imageConvert.input(rawFile);
 
-			imageConvert.rotate(270 + f.getRotate());
+			imageConvert.rotate(270 + f.getAngle());
 
 			imageConvert.outputFormat("png");
 
@@ -349,7 +333,7 @@ public class FileDtoConsumer implements Runnable {
 		imageConvert.input(rawFile);
 		imageConvert.outputFormat("png");
 		imageConvert.resize(1920, 1920);
-		imageConvert.rotate(f.getRotate());
+		imageConvert.rotate(f.getAngle());
 
 		imageConvert.processToFile(outputFile);
 
@@ -357,7 +341,7 @@ public class FileDtoConsumer implements Runnable {
 
 		imageConvert.input(rawFile);
 		imageConvert.outputFormat("png");
-		imageConvert.rotate(270 + f.getRotate());
+		imageConvert.rotate(270 + f.getAngle());
 
 		imageConvert.processToFile(outputPortFile);
 
@@ -366,7 +350,7 @@ public class FileDtoConsumer implements Runnable {
 		imageConvert.input(rawFile);
 		imageConvert.outputFormat("png");
 		imageConvert.resize(250, 250);
-		imageConvert.rotate(f.getRotate());
+		imageConvert.rotate(f.getAngle());
 
 		imageConvert.background("white");
 		imageConvert.gravity("center");
@@ -402,8 +386,8 @@ public class FileDtoConsumer implements Runnable {
 		imageConvert.gravity("center");
 		imageConvert.extent("250x250");
 
-		if (f.getRotate() != 0) {
-			imageConvert.rotate(f.getRotate());
+		if (f.getAngle() != 0) {
+			imageConvert.rotate(f.getAngle());
 		}
 
 		imageConvert.processToFile(thumbFile);
@@ -411,7 +395,7 @@ public class FileDtoConsumer implements Runnable {
 		boolean result = false;
 		videoConvert = new VideoOP(config.getAvconv());
 
-		if (f.getRotate() == 0) {
+		if (f.getAngle() == 0) {
 			videoConvert.input(rawFile).codecVideo("libvpx").scale("-1:720")
 					.bitrateVideo("1M").maxrate("1M").format("webm");
 
@@ -422,11 +406,11 @@ public class FileDtoConsumer implements Runnable {
 			videoConvert.input(rawFile).codecVideo("libvpx").bitrateVideo("1M")
 					.maxrate("1M").format("webm").overwrite();
 
-			if (f.getRotate() == 90) {
+			if (f.getAngle() == 90) {
 				videoConvert.vf("scale=-1:720", "transpose=1");
-			} else if (f.getRotate() == 180) {
+			} else if (f.getAngle() == 180) {
 				videoConvert.vf("scale=-1:720", "transpose=1,transpose=1");
-			} else if (f.getRotate() == 270) {
+			} else if (f.getAngle() == 270) {
 				videoConvert.vf("scale=-1:720", "transpose=2");
 			}
 

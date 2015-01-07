@@ -141,15 +141,18 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
 
                         // NB! Reusing variable to store if we should update current campaign in main activity.
                         // If new campaign was assigned instead of missing one.
-
-                        campaignsUpdated = oldCampaign == null && service.getCurrentCampaign() != null;
-
-                        // If campaign stopped.
-                        if (!campaignsUpdated)
-                            campaignsUpdated = oldCampaign != null && service.getCurrentCampaign() == null;
+                        // If campaign stopped(Old Campaign exists or No next campaign)
                         // If campaign simply changed to another one.
-                        if (!campaignsUpdated)
-                            campaignsUpdated = oldCampaign != null && service.getCurrentCampaign() != null && oldCampaign.getCampaignId() != service.getCurrentCampaign().getCampaignId();
+                        campaignsUpdated = oldCampaign == null && service.getCurrentCampaign() != null
+                                        || oldCampaign != null && service.getCurrentCampaign() == null
+                                        || oldCampaign != null && service.getCurrentCampaign() != null
+                                            && oldCampaign.getCampaignId() != service.getCurrentCampaign().getCampaignId();
+//                        // If campaign stopped(Old Campaign exists or No next campaign)
+//                        if (!campaignsUpdated)
+//                            campaignsUpdated = oldCampaign != null && service.getCurrentCampaign() == null;
+//                        // If campaign simply changed to another one.
+//                        if (!campaignsUpdated)
+//                            campaignsUpdated = oldCampaign != null && service.getCurrentCampaign() != null && oldCampaign.getCampaignId() != service.getCurrentCampaign().getCampaignId();
 
                         if (campaignsUpdated) {
 
@@ -300,7 +303,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
 
         json.put("cache", dirSize(MainService.ROOT.getAbsoluteFile()));
         json.put("currentFileId", service.getCurrentFileId());
-        json.put("currentCampaignId", service.getCurrentCampaign().getCampaignId());
+        json.put("currentCampaignId", service.getCurrentCampaign()!= null ?service.getCurrentCampaign().getCampaignId(): 0 );
 
         if (service.getLoadingCampaign() != null) {
             json.put("loadingCampaingId", service.getLoadingCampaign().getCampaignId());

@@ -91,6 +91,9 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
 
             } catch (Exception ex) {
                 Log.e("VideoActivity", ex.getMessage(), ex);
+                Intent intent = new Intent(MainActivity.MAKE_TOAST);
+                intent.putExtra("Toast", ex.toString());
+                bManager.sendBroadcast(intent);
 
                 Intent returnIntent = new Intent();
 

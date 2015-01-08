@@ -19,9 +19,12 @@ import java.io.FileInputStream;
 import java.util.ArrayList;
 
 import ee.promobox.promoboxandroid.util.SoundFadeAnimation;
+import ee.promobox.promoboxandroid.util.ToastIntent;
 
 //https://github.com/felixpalmer/android-visualizer
 public class AudioActivity extends Activity {
+
+    private final String AUDIO_ACTIVITY = "AudioActivity ";
 
     private MediaPlayer mPlayer;
     private MediaPlayer previousPlayer;
@@ -156,7 +159,8 @@ public class AudioActivity extends Activity {
             position++;
 
         } catch (Exception ex) {
-            Log.e("AudioActivity", ex.getMessage(), ex);
+            Log.e(AUDIO_ACTIVITY, ex.getMessage(), ex);
+            bManager.sendBroadcast(new ToastIntent(AUDIO_ACTIVITY + ex.getMessage()));
             cleanUp();
 
             Intent returnIntent = new Intent();

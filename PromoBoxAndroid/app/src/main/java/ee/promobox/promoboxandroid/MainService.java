@@ -24,6 +24,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MainService extends Service {
 
+    public final static String MAIN_SERVICE_STRING = "MainService ";
+
     public final static String DEFAULT_SERVER = "http://46.182.31.101:8080"; //"http://api.promobox.ee/";
     public final static String DEFAULT_SERVER_JSON = DEFAULT_SERVER + "/service/device/%s/pull";
 
@@ -58,7 +60,7 @@ public class MainService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        Log.i("MainService", "Start command");
+        Log.i(MAIN_SERVICE_STRING, "Start command");
 
         setUuid(getSharedPref().getString("uuid", "fail"));
         setOrientation(getSharedPref().getInt("orientation", MainActivity.ORIENTATION_LANDSCAPE));
@@ -82,17 +84,18 @@ public class MainService extends Service {
     }
 
     public void checkAndDownloadCampaign() {
+        Log.d(MAIN_SERVICE_STRING, "checkAndDownloadCampaign()");
         try {
             File data = new File(ROOT, "data.json");
 
             if (data.exists()) {
                 String dataString = FileUtils.readFileToString(data);
-                Log.d("MainService", "Data from file: " + dataString);
+//                Log.d(MAIN_SERVICE_STRING, "Data from file: " + dataString);
                 setCampaigns(new CampaignList(new JSONObject(dataString).getJSONArray("campaigns")));
                 selectNextCampaign();
             }
         } catch (Exception ex) {
-            Log.e("MainService", ex.getMessage(), ex);
+            Log.e(MAIN_SERVICE_STRING, ex.getMessage(), ex);
         }
 
         if (getUuid() != null) {
@@ -109,11 +112,8 @@ public class MainService extends Service {
 
         ComponentName componentInfo = runningTaskInfo.get(0).topActivity;
 
-        if (componentInfo.getPackageName().startsWith("ee.promobox.promoboxandroid")) {
-            return true;
-        }
+        return componentInfo.getPackageName().startsWith("ee.promobox.promoboxandroid");
 
-        return false;
     }
 
     public Campaign getCurrentCampaign() {
@@ -135,17 +135,17 @@ public class MainService extends Service {
                 }
             }
 
-            Log.d("MainService", "Current Date: " + currentDate);
+            Log.d(MAIN_SERVICE_STRING, "Current Date: " + currentDate);
 
             for(Campaign camp: getCampaigns()) {
                 // Current date between start and end dates of currentCampaign.
-                Log.d("MainService", "Campaign: " +camp.getCampaignName()+" Start: " + camp.getStartDate().toString() + " End: " + camp.getEndDate().toString());
+//                Log.d(MAIN_SERVICE_STRING, "Campaign: " +camp.getCampaignName()+" Start: " + camp.getStartDate().toString() + " End: " + camp.getEndDate().toString());
                 if(currentDate.after(camp.getStartDate()) && currentDate.before(camp.getEndDate())) {
-                    Log.d("MainService", "Date bounds for currentCampaign: " + camp.getCampaignName());
+                    Log.d(MAIN_SERVICE_STRING, "Date bounds for currentCampaign: " + camp.getCampaignName());
                     setCurrentCampaign(camp);
                     break;
                 } else {
-                    Log.d("MainService", "Not in date bounds");
+                    Log.d(MAIN_SERVICE_STRING, "Not in date bounds");
                 }
             }
         }

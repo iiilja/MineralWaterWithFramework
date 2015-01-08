@@ -21,7 +21,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
 
+import ee.promobox.promoboxandroid.util.ToastIntent;
+
 public class ImageActivity extends Activity {
+
+    private final String IMAGE_ACTIVITY_STRING = "ImageActivity ";
 
     private ImageView slide;
     private LocalBroadcastManager bManager;
@@ -49,7 +53,8 @@ public class ImageActivity extends Activity {
 
 
         } catch (Exception ex) {
-            Log.e("ImageActivity", ex.getMessage(), ex);
+            Log.e(IMAGE_ACTIVITY_STRING, ex.getMessage(), ex);
+            bManager.sendBroadcast(new ToastIntent(ex.toString()));
         }
 
         return bm;
@@ -86,7 +91,7 @@ public class ImageActivity extends Activity {
     protected void onResume() {
         super.onResume();
 
-        Log.i("ImageActivity", "Orientation: " + getIntent().getExtras().getInt("orientation"));
+        Log.i(IMAGE_ACTIVITY_STRING, "Orientation: " + getIntent().getExtras().getInt("orientation"));
 
         if (getIntent().getExtras().getInt("orientation") == MainActivity.ORIENTATION_PORTRAIT) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -116,7 +121,6 @@ public class ImageActivity extends Activity {
         bManager = LocalBroadcastManager.getInstance(this);
 
         IntentFilter intentFilter = new IntentFilter();
-
         intentFilter.addAction(MainActivity.ACTIVITY_FINISH);
 
         bManager.registerReceiver(bReceiver, intentFilter);
@@ -164,10 +168,13 @@ public class ImageActivity extends Activity {
 
             final long delay = getIntent().getExtras().getInt("delay") * 1000;
 
+            Log.d(IMAGE_ACTIVITY_STRING,"DELAY_MILLIS = " + delay);
+
             slide.postDelayed(r, delay);
 
         } catch (Exception ex) {
-            Log.e("ImageActivity", ex.getMessage(), ex);
+            Log.e(IMAGE_ACTIVITY_STRING, ex.getMessage(), ex);
+            bManager.sendBroadcast(new ToastIntent(ex.toString()));
 
             Intent returnIntent = new Intent();
             returnIntent.putExtra("result", MainActivity.RESULT_FINISH_PLAY);

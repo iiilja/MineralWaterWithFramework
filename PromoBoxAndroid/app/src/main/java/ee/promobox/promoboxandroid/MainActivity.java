@@ -186,7 +186,7 @@ public class MainActivity extends Activity {
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
+        Log.d(MAIN_ACTIVITY_STRING," onActivityResult() ,requestCode = " + requestCode);
         if (requestCode == RESULT_FINISH_PLAY) {
             startNextFile();
         } else if (requestCode == RESULT_FINISH_FIRST_START) {

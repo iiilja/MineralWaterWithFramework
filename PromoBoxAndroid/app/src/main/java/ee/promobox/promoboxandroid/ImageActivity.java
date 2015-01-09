@@ -175,6 +175,9 @@ public class ImageActivity extends Activity {
 
         } catch (Exception ex) {
             Log.e(IMAGE_ACTIVITY_STRING, ex.getMessage(), ex);
+            Log.e(IMAGE_ACTIVITY_STRING, "Path = " + path +
+                    " , decodeBitmap(file) = " + (decodeBitmap(file) == null));
+
             bManager.sendBroadcast(new ToastIntent(ex.toString()));
 
             Intent returnIntent = new Intent();

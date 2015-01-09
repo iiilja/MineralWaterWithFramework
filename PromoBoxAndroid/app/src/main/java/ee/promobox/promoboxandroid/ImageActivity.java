@@ -122,6 +122,7 @@ public class ImageActivity extends Activity {
 
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(MainActivity.ACTIVITY_FINISH);
+        intentFilter.addAction(MainActivity.NO_NETWORK);
 
         bManager.registerReceiver(bReceiver, intentFilter);
 
@@ -206,15 +207,23 @@ public class ImageActivity extends Activity {
 
 
     private BroadcastReceiver bReceiver = new BroadcastReceiver() {
+        private final String RECEIVER_STRING = IMAGE_ACTIVITY_STRING + "BroadcastReceiver";
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(MainActivity.ACTIVITY_FINISH)) {
+            String action = intent.getAction();
+            if (action.equals(MainActivity.ACTIVITY_FINISH)) {
                 Intent returnIntent = new Intent();
 
                 returnIntent.putExtra("result", MainActivity.RESULT_FINISH_PLAY);
                 ImageActivity.this.setResult(RESULT_OK, returnIntent);
 
                 ImageActivity.this.finish();
+            } else if (action.equals(MainActivity.NO_NETWORK)){
+                Log.d(RECEIVER_STRING, "NO NETWORK");
+                try {
+                    DownloadFilesTask.getNoNetworkDialogFragment().show(getFragmentManager(),"NO_NETWORK");
+                } catch (IllegalStateException ex){
+                }
             }
         }
     };

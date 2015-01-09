@@ -1,11 +1,23 @@
 package ee.promobox.promoboxandroid;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.os.Environment;
 import android.os.StatFs;
+import android.provider.Settings;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -47,6 +59,11 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
 
     protected File doInBackground(String... urls) {
 
+        if (!isNetworkConnected()) {
+            Intent intent = new Intent(MainActivity.NO_NETWORK);
+            LocalBroadcastManager.getInstance(service).sendBroadcast(intent);
+            return null;
+        }
         try {
 
             CampaignList oldCampaigns = service.getCampaigns();
@@ -148,9 +165,9 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
                         // If campaign stopped
                         // If campaign simply changed to another one.
                         campaignsUpdated = oldCampaign == null && service.getCurrentCampaign() != null
-                                        || oldCampaign != null && service.getCurrentCampaign() == null
-                                        || oldCampaign != null//&& service.getCurrentCampaign() != null
-                                            && oldCampaign.getCampaignId() != service.getCurrentCampaign().getCampaignId();
+                                || oldCampaign != null && service.getCurrentCampaign() == null
+                                || oldCampaign != null//&& service.getCurrentCampaign() != null
+                                && oldCampaign.getCampaignId() != service.getCurrentCampaign().getCampaignId();
                         if (campaignsUpdated) {
 
                             Intent finish = new Intent(MainActivity.ACTIVITY_FINISH);
@@ -374,5 +391,52 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
             return result; // return the file size
         }
         return 0;
+    }
+
+    private boolean isNetworkConnected() {
+        ConnectivityManager cm = (ConnectivityManager) service.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo ni = cm.getActiveNetworkInfo();
+        boolean result = true;
+        if (ni == null) {
+            // There are no active networks.
+            result = false;
+        }
+        try {
+            InetAddress ipAddress = InetAddress.getByName("google.com");
+
+            if (ipAddress.equals("")) {
+                result = false;
+            }
+
+        } catch (Exception e) {
+            return false;
+        }
+        return result;
+    }
+
+    public static DialogFragment getNoNetworkDialogFragment() {
+        DialogFragment fragment = new DialogFragment(){
+            @Override
+            public Dialog onCreateDialog(Bundle savedInstanceState) {
+                // Use the Builder class for convenient dialog construction
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setMessage("Connection lost")
+                        .setPositiveButton("Network Settings", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                Intent intent = new Intent(Settings.ACTION_WIRELESS_SETTINGS);
+                                startActivity(intent);
+                            }
+                        });
+                // Create the AlertDialog object and return it
+                return builder.create();
+            }
+
+            @Override
+            public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+                return super.onCreateView(inflater, container, savedInstanceState);
+            }
+        };
+
+        return fragment;
     }
 }

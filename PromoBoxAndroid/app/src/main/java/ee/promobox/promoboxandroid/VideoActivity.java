@@ -20,7 +20,7 @@ import java.util.ArrayList;
 
 
 public class VideoActivity extends Activity implements TextureView.SurfaceTextureListener {
-
+    private final String VIDEO_ACTIVITY = "VideoActivity ";
 
     private TextureView videoView;
     private LocalBroadcastManager bManager;
@@ -179,25 +179,6 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
         super.onDestroy();
     }
 
-
-    private BroadcastReceiver bReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(MainActivity.ACTIVITY_FINISH)) {
-                Intent returnIntent = new Intent();
-
-                returnIntent.putExtra("result", MainActivity.RESULT_FINISH_PLAY);
-
-                VideoActivity.this.setResult(RESULT_OK, returnIntent);
-
-                VideoActivity.this.finish();
-            }
-        }
-    };
-
-
-
-
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture, int width, int height) {
         playVideo();
@@ -217,4 +198,27 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
     public void onSurfaceTextureUpdated(SurfaceTexture surface) {
 
     }
+
+    private BroadcastReceiver bReceiver = new BroadcastReceiver() {
+        private final String RECEIVER_STRING = VIDEO_ACTIVITY + "BroadcastReceiver";
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (action.equals(MainActivity.ACTIVITY_FINISH)) {
+                Intent returnIntent = new Intent();
+
+                returnIntent.putExtra("result", MainActivity.RESULT_FINISH_PLAY);
+
+                VideoActivity.this.setResult(RESULT_OK, returnIntent);
+
+                VideoActivity.this.finish();
+            }  else if (action.equals(MainActivity.NO_NETWORK)){
+                Log.d(RECEIVER_STRING, "NO NETWORK");
+                try {
+                    DownloadFilesTask.getNoNetworkDialogFragment().show(getFragmentManager(),"NO_NETWORK");
+                } catch (IllegalStateException ex){
+            }
+            }
+        }
+    };
 }

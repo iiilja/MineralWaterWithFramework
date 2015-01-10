@@ -203,7 +203,7 @@ public class Campaign {
     private Integer getCalendarDayOfWeek(String day) throws Exception {
         for (int i = 0; i < serverDaysOfWeek.length; i++) {
             if (day.equals(serverDaysOfWeek[i])) {
-                return i;
+                return i+1;
             }
         }
         throw new Exception("Day " + day + " not in days list");

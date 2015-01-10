@@ -26,6 +26,7 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
     private LocalBroadcastManager bManager;
     private ArrayList<CampaignFile> files;
     private int position = 0;
+    private boolean active = true;
     private MoviePlayer player;
 
     @Override
@@ -67,7 +68,7 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
                 MoviePlayer.PlayTask mPlayTask = new MoviePlayer.PlayTask(player, new MoviePlayer.PlayerFeedback() {
                     @Override
                     public void playbackStopped() {
-                        if (position < files.size()) {
+                        if (position < files.size() && active) {
                             playVideo();
                         } else {
 
@@ -135,6 +136,8 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
     protected void onResume() {
         super.onResume();
 
+        active = true;
+
         hideSystemUI();
 
         if (getIntent().getExtras().getInt("orientation") == MainActivity.ORIENTATION_PORTRAIT) {
@@ -157,6 +160,7 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
     protected void onPause() {
         super.onPause();
         cleanUp();
+        active = false;
 
     }
 

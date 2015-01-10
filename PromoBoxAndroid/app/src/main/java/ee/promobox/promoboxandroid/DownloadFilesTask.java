@@ -170,9 +170,6 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
                                 && oldCampaign.getCampaignId() != service.getCurrentCampaign().getCampaignId();
                         if (campaignsUpdated) {
 
-                            Intent finish = new Intent(MainActivity.ACTIVITY_FINISH);
-                            LocalBroadcastManager.getInstance(service).sendBroadcast(finish);
-
                             Intent update = new Intent(MainActivity.CAMPAIGN_UPDATE);
                             LocalBroadcastManager.getInstance(service).sendBroadcast(update);
 

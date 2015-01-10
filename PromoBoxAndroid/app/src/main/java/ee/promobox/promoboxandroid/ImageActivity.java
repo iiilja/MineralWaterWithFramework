@@ -31,6 +31,7 @@ public class ImageActivity extends Activity {
     private LocalBroadcastManager bManager;
     private ArrayList<CampaignFile> files;
     private int position = 0;
+    private boolean active = true;
 
     private Bitmap decodeBitmap(File file) {
         Bitmap bm = null;
@@ -91,6 +92,8 @@ public class ImageActivity extends Activity {
     protected void onResume() {
         super.onResume();
 
+        active = true;
+
         Log.i(IMAGE_ACTIVITY_STRING, "Orientation: " + getIntent().getExtras().getInt("orientation"));
 
         if (getIntent().getExtras().getInt("orientation") == MainActivity.ORIENTATION_PORTRAIT) {
@@ -111,6 +114,11 @@ public class ImageActivity extends Activity {
 
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        active = false;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,7 +145,7 @@ public class ImageActivity extends Activity {
     final Runnable r = new Runnable() {
         @Override
         public void run() {
-            if (position == files.size()) {
+            if (position == files.size() || !active) {
 
                 Intent returnIntent = new Intent();
                 returnIntent.putExtra("result", MainActivity.RESULT_FINISH_PLAY);

@@ -164,12 +164,11 @@ public class MainService extends Service {
             if( counter == 1){
                 setCurrentCampaign(campaignToSetCurrent);
                 return;
-            } else {
-                Log.e(MAIN_SERVICE_STRING, " Two campaigns int time");
+            } else if (counter > 1){
+                Log.e(MAIN_SERVICE_STRING, " More than one current campaign");
                 bManager.sendBroadcast(new ToastIntent(" Two campaigns int time"));
             }
-            Intent finish = new Intent(MainActivity.ACTIVITY_FINISH);
-            bManager.sendBroadcast(finish);
+            setCurrentCampaign(null);
         }
     }
 
@@ -233,10 +232,10 @@ public class MainService extends Service {
     }
 
     public void setCurrentCampaign(Campaign currentCampaign) {
-        if (this.currentCampaign != null && !this.currentCampaign.equals(currentCampaign)){
-            Log.d(MAIN_SERVICE_STRING, "ACTIVITY_FINISH to set NEW campaign");
-            Intent intent = new Intent(MainActivity.ACTIVITY_FINISH);
-            bManager.sendBroadcast(intent);
+        if (this.currentCampaign != null
+                && !this.currentCampaign.equals(currentCampaign)){
+            Intent update = new Intent(MainActivity.CAMPAIGN_UPDATE);
+            bManager.sendBroadcast(update);
         }
         this.currentCampaign = currentCampaign;
     }

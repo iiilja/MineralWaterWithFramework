@@ -47,6 +47,7 @@ public class MainActivity extends Activity {
     private int position;
     private Campaign campaign;
     private boolean mBound = false;
+    private boolean active = true;
 
     private void hideSystemUI() {
 
@@ -182,6 +183,8 @@ public class MainActivity extends Activity {
             }
 
 
+        } else {
+            Log.i(MAIN_ACTIVITY_STRING, "CAMPAIGN = NULL");
         }
     }
 
@@ -206,6 +209,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+        active = true;
 
         hideSystemUI();
 
@@ -234,6 +238,12 @@ public class MainActivity extends Activity {
         } else {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        active = false;
     }
 
     private void setAudioDeviceFromPrefs() {
@@ -292,9 +302,14 @@ public class MainActivity extends Activity {
             String action = intent.getAction();
             if (action.equals(CAMPAIGN_UPDATE)) {
                 campaign = mainService.getCurrentCampaign();
-                Log.d(RECEIVER_STRING, "CAMPAIGN_UPDATE to " + campaign.getCampaignName());
+                Log.d(RECEIVER_STRING, "CAMPAIGN_UPDATE to " + (campaign != null ? campaign.getCampaignName() : "NONE"));
                 position = 0;
-                startNextFile();
+                if (active){
+                    startNextFile();
+                } else {
+                    Intent intentFinish = new Intent(ACTIVITY_FINISH);
+                    LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intentFinish);
+                }
             } else if (action.equals(CURRENT_FILE_ID)) {
                 mainService.setCurrentFileId(intent.getExtras().getInt("fileId"));
                 Log.d(RECEIVER_STRING, "CURRENT_FILE_ID = " + mainService.getCurrentFileId());

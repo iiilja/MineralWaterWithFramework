@@ -4,12 +4,15 @@ import android.os.Environment;
 import android.util.Log;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.ArrayList;
+import java.util.IllegalFormatException;
 import java.util.List;
 
 /**
@@ -31,6 +34,11 @@ public class Campaign {
     private int delay;
     private int sequence;
 
+    private ArrayList<Integer> days = new ArrayList<Integer>();
+    private ArrayList<Integer> hours = new ArrayList<Integer>();
+
+    private final String[] serverDaysOfWeek = {"su","mo","tu","we","th","fr","sa"};
+
     private List<CampaignFile> files = new ArrayList<CampaignFile>();
 
     public Campaign() {
@@ -48,10 +56,11 @@ public class Campaign {
             setSequence(json.getInt("sequence"));
             setStartDate(new Date(json.getLong("startDate")));
             setEndDate(new Date(json.getLong("endDate")));
+            setDays(json.getJSONArray("days"));
+            setHours(json.getJSONArray("hours"));
+            JSONArray ar = json.getJSONArray("files");
 
-            JSONArray ar  = json.getJSONArray("files");
-
-            for (int i=0; i<ar.length(); i++) {
+            for (int i = 0; i < ar.length(); i++) {
                 JSONObject obj = ar.getJSONObject(i);
 
                 CampaignFile f = new CampaignFile();
@@ -160,5 +169,43 @@ public class Campaign {
 
     public void setSequence(int sequence) {
         this.sequence = sequence;
+    }
+
+    public void setHours(JSONArray hoursJSON) throws JSONException {
+        for (int i = 0; i < hoursJSON.length(); i++){
+            hours.add(hoursJSON.getInt(i));
+        }
+    }
+
+    public void setDays(JSONArray daysJSON) throws Exception {
+        for (int i = 0; i < daysJSON.length(); i++){
+            days.add(getCalendarDayOfWeek(daysJSON.getString(i)));
+        }
+    }
+
+    public boolean hasToBePlayed(){
+        Calendar cal = Calendar.getInstance();
+        Date currentDate = cal.getTime();
+        if(currentDate.after(getStartDate()) && currentDate.before(getEndDate())) {
+            Integer dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
+            Integer hourOfDay = cal.get(Calendar.HOUR_OF_DAY);
+//            Log.d("Campaign","Between dates");
+//            Log.d("Campaign","dayOfWeek = " + dayOfWeek +", hourOfDay = " + hourOfDay);
+//            Log.d("Campaign","days.contains(dayOfWeek) = " + days.contains(dayOfWeek));
+//            Log.d("Campaign","hours.contains(hourOfDay) = " + hours.contains(hourOfDay));
+            if(days.contains(dayOfWeek) && hours.contains(hourOfDay)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private Integer getCalendarDayOfWeek(String day) throws Exception {
+        for (int i = 0; i < serverDaysOfWeek.length; i++) {
+            if (day.equals(serverDaysOfWeek[i])) {
+                return i+1;
+            }
+        }
+        throw new Exception("Day " + day + " not in days list");
     }
 }

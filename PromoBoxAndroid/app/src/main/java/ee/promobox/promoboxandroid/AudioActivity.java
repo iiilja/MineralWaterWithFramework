@@ -19,9 +19,12 @@ import java.io.FileInputStream;
 import java.util.ArrayList;
 
 import ee.promobox.promoboxandroid.util.SoundFadeAnimation;
+import ee.promobox.promoboxandroid.util.ToastIntent;
 
 //https://github.com/felixpalmer/android-visualizer
 public class AudioActivity extends Activity {
+
+    private final String AUDIO_ACTIVITY = "AudioActivity ";
 
     private MediaPlayer mPlayer;
     private MediaPlayer previousPlayer;
@@ -74,6 +77,7 @@ public class AudioActivity extends Activity {
         IntentFilter intentFilter = new IntentFilter();
 
         intentFilter.addAction(MainActivity.ACTIVITY_FINISH);
+        intentFilter.addAction(MainActivity.NO_NETWORK);
 
         bManager.registerReceiver(bReceiver, intentFilter);
 
@@ -156,9 +160,7 @@ public class AudioActivity extends Activity {
             position++;
 
         } catch (Exception ex) {
-            Log.e("AudioActivity", ex.getMessage(), ex);
-            cleanUp();
-
+            Log.e(AUDIO_ACTIVITY, ex.getMessage(), ex);
             Intent returnIntent = new Intent();
 
             returnIntent.putExtra("result", MainActivity.RESULT_FINISH_PLAY);
@@ -216,28 +218,10 @@ public class AudioActivity extends Activity {
     }
 
 
-    private BroadcastReceiver bReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(MainActivity.ACTIVITY_FINISH)) {
-                cleanUp();
-                Intent returnIntent = new Intent();
-
-                returnIntent.putExtra("result", MainActivity.RESULT_FINISH_PLAY);
-
-                AudioActivity.this.setResult(RESULT_OK, returnIntent);
-
-                AudioActivity.this.finish();
-            }
-        }
-    };
-
-
     private class OnTrackFinished implements MediaPlayer.OnCompletionListener {
 
         private FileInputStream iStream;
         private SoundFadeAnimation fadeAnimation;
-
         public OnTrackFinished(FileInputStream stream, SoundFadeAnimation fadeAnimation) {
             this.iStream = stream;
             this.fadeAnimation = fadeAnimation;
@@ -261,6 +245,32 @@ public class AudioActivity extends Activity {
                 AudioActivity.this.finish();
             }
         }
+
     }
+
+
+    private BroadcastReceiver bReceiver = new BroadcastReceiver() {
+        private final String RECEIVER_STRING = AUDIO_ACTIVITY + "BroadcastReceiver";
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (action.equals(MainActivity.ACTIVITY_FINISH)) {
+                cleanUp();
+                Intent returnIntent = new Intent();
+
+                returnIntent.putExtra("result", MainActivity.RESULT_FINISH_PLAY);
+
+                AudioActivity.this.setResult(RESULT_OK, returnIntent);
+
+                AudioActivity.this.finish();
+            } else if (action.equals(MainActivity.NO_NETWORK)){
+                Log.d(RECEIVER_STRING, "NO NETWORK");
+                try {
+                    DownloadFilesTask.getNoNetworkDialogFragment().show(getFragmentManager(),"NO_NETWORK");
+                } catch (IllegalStateException ex){
+                }
+            }
+        }
+    };
 
 }

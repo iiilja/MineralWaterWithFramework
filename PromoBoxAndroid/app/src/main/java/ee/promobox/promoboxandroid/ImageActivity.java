@@ -21,12 +21,17 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
 
+import ee.promobox.promoboxandroid.util.ToastIntent;
+
 public class ImageActivity extends Activity {
+
+    private final String IMAGE_ACTIVITY_STRING = "ImageActivity ";
 
     private ImageView slide;
     private LocalBroadcastManager bManager;
     private ArrayList<CampaignFile> files;
     private int position = 0;
+    private boolean active = true;
 
     private Bitmap decodeBitmap(File file) {
         Bitmap bm = null;
@@ -49,7 +54,8 @@ public class ImageActivity extends Activity {
 
 
         } catch (Exception ex) {
-            Log.e("ImageActivity", ex.getMessage(), ex);
+            Log.e(IMAGE_ACTIVITY_STRING, ex.getMessage(), ex);
+            bManager.sendBroadcast(new ToastIntent(ex.toString()));
         }
 
         return bm;
@@ -86,7 +92,9 @@ public class ImageActivity extends Activity {
     protected void onResume() {
         super.onResume();
 
-        Log.i("ImageActivity", "Orientation: " + getIntent().getExtras().getInt("orientation"));
+        active = true;
+
+        Log.i(IMAGE_ACTIVITY_STRING, "Orientation: " + getIntent().getExtras().getInt("orientation"));
 
         if (getIntent().getExtras().getInt("orientation") == MainActivity.ORIENTATION_PORTRAIT) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -106,6 +114,11 @@ public class ImageActivity extends Activity {
 
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        active = false;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,8 +129,8 @@ public class ImageActivity extends Activity {
         bManager = LocalBroadcastManager.getInstance(this);
 
         IntentFilter intentFilter = new IntentFilter();
-
         intentFilter.addAction(MainActivity.ACTIVITY_FINISH);
+        intentFilter.addAction(MainActivity.NO_NETWORK);
 
         bManager.registerReceiver(bReceiver, intentFilter);
 
@@ -132,7 +145,7 @@ public class ImageActivity extends Activity {
     final Runnable r = new Runnable() {
         @Override
         public void run() {
-            if (position == files.size()) {
+            if (position == files.size() || !active) {
 
                 Intent returnIntent = new Intent();
                 returnIntent.putExtra("result", MainActivity.RESULT_FINISH_PLAY);
@@ -164,10 +177,16 @@ public class ImageActivity extends Activity {
 
             final long delay = getIntent().getExtras().getInt("delay") * 1000;
 
+            Log.d(IMAGE_ACTIVITY_STRING,"DELAY_MILLIS = " + delay);
+
             slide.postDelayed(r, delay);
 
         } catch (Exception ex) {
-            Log.e("ImageActivity", ex.getMessage(), ex);
+            Log.e(IMAGE_ACTIVITY_STRING, ex.getMessage(), ex);
+            Log.e(IMAGE_ACTIVITY_STRING, "Path = " + path +
+                    " , decodeBitmap(file) = " + (decodeBitmap(file) == null));
+
+            bManager.sendBroadcast(new ToastIntent(ex.toString()));
 
             Intent returnIntent = new Intent();
             returnIntent.putExtra("result", MainActivity.RESULT_FINISH_PLAY);
@@ -199,15 +218,23 @@ public class ImageActivity extends Activity {
 
 
     private BroadcastReceiver bReceiver = new BroadcastReceiver() {
+        private final String RECEIVER_STRING = IMAGE_ACTIVITY_STRING + "BroadcastReceiver";
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(MainActivity.ACTIVITY_FINISH)) {
+            String action = intent.getAction();
+            if (action.equals(MainActivity.ACTIVITY_FINISH)) {
                 Intent returnIntent = new Intent();
 
                 returnIntent.putExtra("result", MainActivity.RESULT_FINISH_PLAY);
                 ImageActivity.this.setResult(RESULT_OK, returnIntent);
 
                 ImageActivity.this.finish();
+            } else if (action.equals(MainActivity.NO_NETWORK)){
+                Log.d(RECEIVER_STRING, "NO NETWORK");
+                try {
+                    DownloadFilesTask.getNoNetworkDialogFragment().show(getFragmentManager(),"NO_NETWORK");
+                } catch (IllegalStateException ex){
+                }
             }
         }
     };

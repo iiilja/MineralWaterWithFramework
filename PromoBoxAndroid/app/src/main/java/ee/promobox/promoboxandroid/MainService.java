@@ -10,9 +10,11 @@ import android.os.Binder;
 import android.os.Environment;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import org.apache.commons.io.FileUtils;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -21,8 +23,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import ee.promobox.promoboxandroid.util.ToastIntent;
+
 
 public class MainService extends Service {
+
+    public final static String MAIN_SERVICE_STRING = "MainService ";
 
     public final static String DEFAULT_SERVER = "http://46.182.31.101:8080"; //"http://api.promobox.ee/";
     public final static String DEFAULT_SERVER_JSON = DEFAULT_SERVER + "/service/device/%s/pull";
@@ -33,6 +39,8 @@ public class MainService extends Service {
     private String audioDevice; // which audio interface is used for output
     private int orientation;
     private int currentFileId;
+
+    private String previousCampaignsJSON = new String();
 
     private boolean alwaysOnTop = false;
 
@@ -46,19 +54,20 @@ public class MainService extends Service {
     public final static File ROOT = new File(Environment.getExternalStorageDirectory().getAbsoluteFile() + "/promobox/");
 
     private final IBinder mBinder = new MainServiceBinder();
-
+    private LocalBroadcastManager bManager;
     private DownloadFilesTask dTask = new DownloadFilesTask(this);
 
     @Override
     public void onCreate() {
         setSharedPref(PreferenceManager.getDefaultSharedPreferences(this));
+        bManager = LocalBroadcastManager.getInstance(this);
     }
 
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        Log.i("MainService", "Start command");
+        Log.i(MAIN_SERVICE_STRING, "Start command");
 
         setUuid(getSharedPref().getString("uuid", "fail"));
         setOrientation(getSharedPref().getInt("orientation", MainActivity.ORIENTATION_LANDSCAPE));
@@ -82,17 +91,24 @@ public class MainService extends Service {
     }
 
     public void checkAndDownloadCampaign() {
+        Log.d(MAIN_SERVICE_STRING, "checkAndDownloadCampaign()");
         try {
             File data = new File(ROOT, "data.json");
 
             if (data.exists()) {
                 String dataString = FileUtils.readFileToString(data);
-                Log.d("MainService", "Data from file: " + dataString);
-                setCampaigns(new CampaignList(new JSONObject(dataString).getJSONArray("campaigns")));
+                JSONArray campaignsJSON = new JSONObject(dataString).getJSONArray("campaigns");
+
+                if (!previousCampaignsJSON.equals(campaignsJSON.toString())){
+                    Log.d(MAIN_SERVICE_STRING, previousCampaignsJSON + "\n" + dataString);
+                    previousCampaignsJSON = campaignsJSON.toString();
+                    setCampaigns(new CampaignList(campaignsJSON));
+                }
                 selectNextCampaign();
             }
         } catch (Exception ex) {
-            Log.e("MainService", ex.getMessage(), ex);
+            Log.e(MAIN_SERVICE_STRING, ex.getMessage(), ex);
+            bManager.sendBroadcast(new ToastIntent(ex.getMessage()));
         }
 
         if (getUuid() != null) {
@@ -109,11 +125,8 @@ public class MainService extends Service {
 
         ComponentName componentInfo = runningTaskInfo.get(0).topActivity;
 
-        if (componentInfo.getPackageName().startsWith("ee.promobox.promoboxandroid")) {
-            return true;
-        }
+        return componentInfo.getPackageName().startsWith("ee.promobox.promoboxandroid");
 
-        return false;
     }
 
     public Campaign getCurrentCampaign() {
@@ -135,19 +148,27 @@ public class MainService extends Service {
                 }
             }
 
-            Log.d("MainService", "Current Date: " + currentDate);
+            Log.d(MAIN_SERVICE_STRING, "Current Date: " + currentDate);
 
+            Campaign campaignToSetCurrent = null;
+            int counter = 0;
             for(Campaign camp: getCampaigns()) {
                 // Current date between start and end dates of currentCampaign.
-                Log.d("MainService", "Campaign: " +camp.getCampaignName()+" Start: " + camp.getStartDate().toString() + " End: " + camp.getEndDate().toString());
-                if(currentDate.after(camp.getStartDate()) && currentDate.before(camp.getEndDate())) {
-                    Log.d("MainService", "Date bounds for currentCampaign: " + camp.getCampaignName());
-                    setCurrentCampaign(camp);
-                    break;
-                } else {
-                    Log.d("MainService", "Not in date bounds");
+//                Log.d(MAIN_SERVICE_STRING, "Campaign: " +camp.getCampaignName()+" Start: " + camp.getStartDate().toString() + " End: " + camp.getEndDate().toString());
+                if(camp.hasToBePlayed()) {
+                    Log.d(MAIN_SERVICE_STRING, "Date bounds for currentCampaign: " + camp.getCampaignName());
+                    campaignToSetCurrent  = camp;
+                    counter ++;
                 }
             }
+            if( counter == 1){
+                setCurrentCampaign(campaignToSetCurrent);
+                return;
+            } else if (counter > 1){
+                Log.e(MAIN_SERVICE_STRING, " More than one current campaign");
+                bManager.sendBroadcast(new ToastIntent(" Two campaigns int time"));
+            }
+            setCurrentCampaign(null);
         }
     }
 
@@ -211,6 +232,11 @@ public class MainService extends Service {
     }
 
     public void setCurrentCampaign(Campaign currentCampaign) {
+        if (this.currentCampaign != null
+                && !this.currentCampaign.equals(currentCampaign)){
+            Intent update = new Intent(MainActivity.CAMPAIGN_UPDATE);
+            bManager.sendBroadcast(update);
+        }
         this.currentCampaign = currentCampaign;
     }
 

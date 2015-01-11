@@ -18,13 +18,15 @@
                 <div class="load-file"
                      ng-class="promofile.fileType == 2 ? 'audio-file' : 'video-file'"
                      ng-repeat="promofile in campaign_form.filesArray">
-                    <div class="load-wrap img-thumbnail" >
+                    <div class="load-wrap img-thumbnail">
                         <div>
-                            <img ng-click="openPlayer($index)" ng-src="{{apiEndpoint}}files/thumb/{{promofile.id}}?t={{promofile.t}}" alt="">
+                            <img ng-click="isFileConverting(promofile) ? false : openPlayer($index)" 
+                                ng-src="{{apiEndpoint}}files/thumb/{{promofile.id}}?t={{promofile.t}}" alt="">
                         </div>
                                                     
                         <ul class="controll-block" ng-if="promofile.fileType == 2">
-                            <li class="Play-audio">
+                            <li class="Play-audio" 
+                                ng-if="!isFileConverting(promofile)">
                                 <a ng-click="openPlayer($index)"></a>
                             </li>
                             <li class="Play-on-device">
@@ -43,10 +45,12 @@
                     </div>
                     <div class="Video-picture-wrap img-thumbnail" ng-if="promofile.fileType != 2">
                         <div class="cont">
-                            <img ng-click="openPlayer($index)"
+                            <img ng-click="isFileConverting(promofile) ? false : openPlayer($index)"
                                  ng-src="{{apiEndpoint}}files/thumb/{{promofile.id}}?t={{promofile.t}}"  alt="">
 
-                            <a ng-click="openPlayer($index)" class="play"></a>
+                            <a  ng-if="!isFileConverting(promofile)"
+                                ng-click="openPlayer($index)"
+                                class="play"></a>
 
                             <div class="bottom-block">
                                 <span></span>
@@ -68,7 +72,10 @@
                 </div>
                 
                 <ul id="playlist" style="list-style: none;">
-                    <li ng-repeat="promofile in campaign_form.filesArray" data-url="{{apiEndpoint}}files/{{promofile.id}}{{promofile.ext}}?t={{promofile.t}}" data-thumbnail-path="{{apiEndpoint}}files/thumb/{{promofile.Id}}"></li>
+                    <li ng-repeat="promofile in campaign_form.filesArray" 
+                        ng-if="!isFileConverting(promofile)"
+                        data-url="{{apiEndpoint}}files/{{promofile.id}}{{promofile.ext}}?t={{promofile.t}}"
+                        data-thumbnail-path="{{apiEndpoint}}files/thumb/{{promofile.Id}}"></li>
                 </ul>
             </div>
 

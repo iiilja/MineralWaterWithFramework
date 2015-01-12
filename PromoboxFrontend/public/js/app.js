@@ -273,30 +273,30 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         
         
 
-        $scope.workhours = ['0', '0:30',
-                            '1', '1:30',
-                            '2', '2:30',
-                            '3', '3:30',
-                            '4', '4:30',
-                            '5', '5:30',
-                            '6', '6:30',
-                            '7', '7:30',
-                            '8', '8:30',
-                            '9', '9:30',
-                            '10', '10:30',
-                            '11', '11:30',
-                            '12', '12:30',
-                            '13', '13:30',
-                            '14', '14:30',
-                            '15', '15:30',
-                            '16', '16:30',
-                            '17', '17:30',
-                            '18', '18:30',
-                            '19', '19:30',
-                            '20', '20:30',
-                            '21', '21:30',
-                            '22', '22:30',
-                            '23', '23:30'];
+        $scope.workhours = ['0', 
+                            '1',
+                            '2',
+                            '3',
+                            '4',
+                            '5',
+                            '6',
+                            '7',
+                            '8',
+                            '9',
+                            '10',
+                            '11',
+                            '12',
+                            '13',
+                            '14',
+                            '15',
+                            '16',
+                            '17',
+                            '18',
+                            '19',
+                            '20',
+                            '21',
+                            '22',
+                            '23'];
         
         $scope.addWorkhours = [];
         $scope.removeWorkhours = [];
@@ -738,6 +738,7 @@ app.controller('DevicesController', ['$scope', 'token', 'Device', 'sysMessage', 
             $scope.workhours = [];
             for (var i = 0; i < 24; i++) {
                  $scope.workhours.push(i + ":00");
+                 $scope.workhours.push(i + ":30");
             }
             
             $scope.visibleDeviceSettings = 0;

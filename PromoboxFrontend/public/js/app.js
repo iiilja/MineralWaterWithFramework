@@ -214,22 +214,23 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
             //    $scope.campaign.files = orderByFilter($scope.campaign.files, ['orderId','name']);
             //});
         });
+
+        $scope.isFileConverting = function (file) {
+            return file.status == 0 || file.status == 4;
+        }
         
         var extstsConvertingFiles = function(id) {
-            for (var i = 0; i < $scope.campaign.files.length; i++) {
-                if ($scope.campaign.files[i].status == 0 || 
-                        $scope.campaign.files[i].status == 4) {
-                    return true;
-                }
+            for (var i = 0; file = $scope.campaign.files[i]; i++) {
+                return $scope.isFileConverting(file);
             }
             
             return false;
         }
         
         var findFileById = function(id) {
-            for (var i = 0; i < $scope.campaign.files.length; i++) {
-                if (id == $scope.campaign.files[i].id) {
-                    return $scope.campaign.files[i];
+            for (var i = 0; file = $scope.campaign.files[i]; i++) {
+                if (id == file.id) {
+                    return file;
                 }
             }
             
@@ -450,7 +451,17 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         };
 
         $scope.openPlayer = function(key) {
-            FWDRL.show('playlist', key);
+            var index = key;
+            for (var i = 0; file = $scope.campaign.files[i]; i++) {
+                if (i >= key) {
+                    break;
+                }
+
+                if ($scope.isFileConverting(file)) {
+                    index = index - 1;
+                }
+            }
+            FWDRL.show('playlist', index);
         };
 
         $scope.inArchive = function (id) {

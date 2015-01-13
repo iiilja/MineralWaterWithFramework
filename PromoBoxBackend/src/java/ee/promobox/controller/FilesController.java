@@ -301,7 +301,6 @@ public class FilesController {
                             FileDto fileDto = new FileDto(campaignFile.getId(),
                                     session.getClientId(), fileTypeNumber, fileType);
 
-                            log.info("convert");
                             FileDtoProducer producer = new FileDtoProducer(fileDto);
                             FileDtoConsumer consumer = new FileDtoConsumer(session.getClientId(), config, userService, fileService);
                             
@@ -326,7 +325,7 @@ public class FilesController {
     }
     
     @RequestMapping(value = "token/{token}/campaigns/{id}/files/{file}/rotate/{angle}", method = RequestMethod.PUT)
-    public void rotwteFile(
+    public void rotateFile(
             @PathVariable("token") String token,
             @PathVariable("id") int campaignId,
             @PathVariable("file") int fileId,

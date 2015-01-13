@@ -319,7 +319,7 @@ public class MainActivity extends Activity {
             } else if (action.equals(NO_NETWORK)){
                 Log.d(RECEIVER_STRING, "NO NETWORK");
                 try {
-                    DownloadFilesTask.getNoNetworkDialogFragment().show(getFragmentManager(),"NO_NETWORK");
+                    new NoNetworkDialog().show(getFragmentManager(),"NO_NETWORK");
                 } catch (IllegalStateException ex){
                 }
             }

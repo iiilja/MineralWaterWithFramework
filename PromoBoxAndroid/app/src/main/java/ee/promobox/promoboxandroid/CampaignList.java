@@ -33,4 +33,13 @@ public class CampaignList extends ArrayList<Campaign> {
         }
     }
 
+    public Campaign getCampaignWithId(int id){
+        for (Campaign campaign: this){
+            if (campaign.getCampaignId() == id){
+                return campaign;
+            }
+        }
+        return null;
+    }
+
 }

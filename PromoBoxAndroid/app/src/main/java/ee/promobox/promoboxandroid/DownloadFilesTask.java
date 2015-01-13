@@ -66,8 +66,6 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
         }
         try {
 
-            CampaignList oldCampaigns = service.getCampaigns();
-
             JSONObject data = loadData(urls[0]);
 
             if (service.getIsDownloading().get()) return null;
@@ -98,87 +96,42 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
                 }
 
                 if (data.has("campaigns")) {
-
-                    CampaignList newCampaigns = new CampaignList(data.getJSONArray("campaigns"));
-
                     service.setOrientation(data.optInt("orientation", MainActivity.ORIENTATION_LANDSCAPE));
                     service.getSharedPref().edit().putInt("orientation", service.getOrientation()).commit();
 
-                    boolean campaignsUpdated = false;
-
-                    if (oldCampaigns == null) { // Campaigns are not yet initialised.
-                        service.setCampaigns(newCampaigns);
-
-                        for (Campaign camp : newCampaigns) {
-                            downloadFiles(camp);
-                        }
-
-                        campaignsUpdated = true;
-
-                    } else { // Have previous campaigns.
-                        int oldCampaignsCount = oldCampaigns.size();
-
-                        service.setCampaigns(new CampaignList(newCampaigns.size()));
-
-                        Campaign oldCampaign;
-                        Campaign bufCampaign;
-
-                        int oldCampaignIndex = -1;
-                        int newCampaignId;
-
-                        for (Campaign newCampaign : newCampaigns) {
-
-                            newCampaignId = newCampaign.getCampaignId();
-                            oldCampaign = null;
-
-                            // Find old campaign with same id.
-                            // note: size might change every iteration of newCampaigns.
-                            for (int i = 0; i < oldCampaignsCount; i++) {
-                                bufCampaign = oldCampaigns.get(i);
-
-                                if (newCampaignId == bufCampaign.getCampaignId()) {
-                                    oldCampaign = bufCampaign;
-                                    oldCampaignIndex = i;
-                                    break;
-                                }
-                            }
-                            // If campaign not in list or needs to be updated add new one.
-                            if (oldCampaign == null || (newCampaign.getUpdateDate() > oldCampaign.getUpdateDate())) {
-                                service.getCampaigns().add(newCampaign);
-
-                                downloadFiles(newCampaign);
-
-                                campaignsUpdated = true;
-                            } else { // Otherwise just add old one.
-                                service.getCampaigns().add(oldCampaign);
-                            }
-                        }
-                    }
-
-                    if (campaignsUpdated) {
-                        Campaign oldCampaign = service.getCurrentCampaign();
-
-                        service.selectNextCampaign();
-
-                        // NB! Reusing variable to store if we should update current campaign in main activity.
-                        // If new campaign was assigned instead of missing one.
-                        // If campaign stopped
-                        // If campaign simply changed to another one.
-                        campaignsUpdated = oldCampaign == null && service.getCurrentCampaign() != null
-                                || oldCampaign != null && service.getCurrentCampaign() == null
-                                || oldCampaign != null//&& service.getCurrentCampaign() != null
-                                && oldCampaign.getCampaignId() != service.getCurrentCampaign().getCampaignId();
-                        if (campaignsUpdated) {
-
-                            Intent update = new Intent(MainActivity.CAMPAIGN_UPDATE);
-                            LocalBroadcastManager.getInstance(service).sendBroadcast(update);
-
-                            Log.i(DOWNLOAD_FILE_TASK, "Send intent about update");
-
-                        }
-                    }
+                    handleCampaigns(data.getJSONArray("campaigns"));
                 } else {
                     Log.w(DOWNLOAD_FILE_TASK, "Data has no campaigns.");
+                }
+                if (data.has("clearCache") && data.getBoolean("clearCache")){
+                    String directoryString = MainService.ROOT.getAbsolutePath() + "/";
+                    File directory = new File(directoryString);
+                    CampaignList campaignList = service.getCampaigns();
+                    for (File folder : directory.listFiles()){
+                        try{
+                            int id = Integer.parseInt(folder.getName());
+                            Log.d(DOWNLOAD_FILE_TASK,"Am in folder " + id);
+                            Campaign campaign = campaignList.getCampaignWithId(id);
+                            if (campaign == null){
+                                FileUtils.deleteDirectory(folder);
+                                Log.d(DOWNLOAD_FILE_TASK,"Removing folder " + id);
+                            }
+                            else {
+                                for (File file: folder.listFiles()){
+                                    String fileName = file.getName();
+                                    if (!campaign.containsFile(fileName)){
+                                        FileUtils.deleteQuietly(file);
+                                        Log.d(DOWNLOAD_FILE_TASK,"Removing file \t" + fileName);
+                                    }
+                                    else {
+                                        Log.d(DOWNLOAD_FILE_TASK,"File is needed \t" + fileName);
+                                    }
+                                }
+                            }
+                        } catch (NumberFormatException ignored){
+                            Log.e(DOWNLOAD_FILE_TASK,ignored.getMessage());
+                        }
+                    }
                 }
             } else {
                 Log.w(DOWNLOAD_FILE_TASK, "No data.");
@@ -191,7 +144,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
         return null;
     }
 
-    public void downloadFiles(Campaign camp) {
+    private void downloadFiles(Campaign camp) {
 
         Log.i("MainService", "Download files");
 
@@ -411,29 +364,83 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
         return result;
     }
 
-    public static DialogFragment getNoNetworkDialogFragment() {
-        DialogFragment fragment = new DialogFragment(){
-            @Override
-            public Dialog onCreateDialog(Bundle savedInstanceState) {
-                // Use the Builder class for convenient dialog construction
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setMessage("Connection lost")
-                        .setPositiveButton("Network Settings", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                Intent intent = new Intent(Settings.ACTION_WIRELESS_SETTINGS);
-                                startActivity(intent);
-                            }
-                        });
-                // Create the AlertDialog object and return it
-                return builder.create();
+    private void handleCampaigns(JSONArray campaigns){
+
+        CampaignList oldCampaigns = service.getCampaigns();
+        CampaignList newCampaigns = new CampaignList(campaigns);
+
+        boolean campaignsUpdated = false;
+
+        if (oldCampaigns == null) { // Campaigns are not yet initialised.
+            service.setCampaigns(newCampaigns);
+
+            for (Campaign camp : newCampaigns) {
+                downloadFiles(camp);
             }
 
-            @Override
-            public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-                return super.onCreateView(inflater, container, savedInstanceState);
-            }
-        };
+            campaignsUpdated = true;
 
-        return fragment;
+        } else { // Have previous campaigns.
+            int oldCampaignsCount = oldCampaigns.size();
+
+            service.setCampaigns(new CampaignList(newCampaigns.size()));
+
+            Campaign oldCampaign;
+            Campaign bufCampaign;
+
+            int oldCampaignIndex = -1;
+            int newCampaignId;
+
+            for (Campaign newCampaign : newCampaigns) {
+
+                newCampaignId = newCampaign.getCampaignId();
+                oldCampaign = null;
+
+                // Find old campaign with same id.
+                // note: size might change every iteration of newCampaigns.
+                for (int i = 0; i < oldCampaignsCount; i++) {
+                    bufCampaign = oldCampaigns.get(i);
+
+                    if (newCampaignId == bufCampaign.getCampaignId()) {
+                        oldCampaign = bufCampaign;
+                        oldCampaignIndex = i;
+                        break;
+                    }
+                }
+                // If campaign not in list or needs to be updated add new one.
+                if (oldCampaign == null || (newCampaign.getUpdateDate() > oldCampaign.getUpdateDate())) {
+                    service.getCampaigns().add(newCampaign);
+
+                    downloadFiles(newCampaign);
+
+                    campaignsUpdated = true;
+                } else { // Otherwise just add old one.
+                    service.getCampaigns().add(oldCampaign);
+                }
+            }
+        }
+
+        if (campaignsUpdated) {
+            Campaign oldCampaign = service.getCurrentCampaign();
+
+            service.selectNextCampaign();
+
+            // NB! Reusing variable to store if we should update current campaign in main activity.
+            // If new campaign was assigned instead of missing one.
+            // If campaign stopped
+            // If campaign simply changed to another one.
+            campaignsUpdated = oldCampaign == null && service.getCurrentCampaign() != null
+                    || oldCampaign != null && service.getCurrentCampaign() == null
+                    || oldCampaign != null//&& service.getCurrentCampaign() != null
+                    && oldCampaign.getCampaignId() != service.getCurrentCampaign().getCampaignId();
+            if (campaignsUpdated) {
+
+                Intent update = new Intent(MainActivity.CAMPAIGN_UPDATE);
+                LocalBroadcastManager.getInstance(service).sendBroadcast(update);
+
+                Log.i(DOWNLOAD_FILE_TASK, "Send intent about update");
+
+            }
+        }
     }
 }

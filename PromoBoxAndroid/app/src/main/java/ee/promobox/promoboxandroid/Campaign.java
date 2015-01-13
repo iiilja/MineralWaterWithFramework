@@ -208,4 +208,20 @@ public class Campaign {
         }
         throw new Exception("Day " + day + " not in days list");
     }
+
+    public boolean containsFile(String fileName){
+        int fileId;
+        try{
+            fileId  = Integer.parseInt(fileName);
+        }
+        catch (NumberFormatException ex){
+            return false;
+        }
+        for (CampaignFile file : files) {
+            if (file.getId() == fileId){
+                return true;
+            }
+        }
+        return false;
+    }
 }

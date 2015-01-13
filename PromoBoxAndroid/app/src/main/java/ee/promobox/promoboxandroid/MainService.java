@@ -148,8 +148,6 @@ public class MainService extends Service {
                 }
             }
 
-            Log.d(MAIN_SERVICE_STRING, "Current Date: " + currentDate);
-
             Campaign campaignToSetCurrent = null;
             int counter = 0;
             for(Campaign camp: getCampaigns()) {

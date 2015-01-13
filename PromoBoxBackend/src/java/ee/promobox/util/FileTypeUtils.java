@@ -29,7 +29,11 @@ public class FileTypeUtils {
                 return FILE_TYPE_IMAGE;
             case "PPT":
                 return FILE_TYPE_IMAGE;
+            case "PPTX":
+            	return FILE_TYPE_IMAGE;
             case "XLS":
+                return FILE_TYPE_IMAGE;
+            case "XLSX":
                 return FILE_TYPE_IMAGE;
             case "JPG":
                 return FILE_TYPE_IMAGE;

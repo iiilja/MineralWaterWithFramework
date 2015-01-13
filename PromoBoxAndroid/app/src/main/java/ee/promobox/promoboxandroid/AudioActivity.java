@@ -6,17 +6,38 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
+import android.media.MediaExtractor;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.android.exoplayer.ExoPlaybackException;
+import com.google.android.exoplayer.ExoPlayer;
+import com.google.android.exoplayer.FrameworkSampleSource;
+import com.google.android.exoplayer.MediaCodecAudioTrackRenderer;
+import com.google.android.exoplayer.SampleSource;
+import com.google.android.exoplayer.chunk.ChunkSampleSource;
+import com.google.android.exoplayer.chunk.ChunkSource;
+import com.google.android.exoplayer.chunk.FormatEvaluator;
+import com.google.android.exoplayer.smoothstreaming.SmoothStreamingChunkSource;
+import com.google.android.exoplayer.smoothstreaming.SmoothStreamingManifest;
+import com.google.android.exoplayer.smoothstreaming.SmoothStreamingManifestParser;
+import com.google.android.exoplayer.upstream.DefaultBandwidthMeter;
+import com.google.android.exoplayer.upstream.HttpDataSource;
+import com.google.android.exoplayer.upstream.UriDataSource;
+import com.google.android.exoplayer.util.ManifestFetcher;
+
 import org.apache.commons.io.IOUtils;
 
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
+
+import javax.sql.DataSource;
 
 import ee.promobox.promoboxandroid.util.SoundFadeAnimation;
 import ee.promobox.promoboxandroid.util.ToastIntent;
@@ -28,6 +49,11 @@ public class AudioActivity extends Activity {
 
     private MediaPlayer mPlayer;
     private MediaPlayer previousPlayer;
+
+
+    ExoPlayer exoPlayer;
+    MediaCodecAudioTrackRenderer audioRenderer;
+
 
     private SoundFadeAnimation soundFadeAnimation;
     private SoundFadeAnimation previousFadeAnimation;
@@ -132,74 +158,91 @@ public class AudioActivity extends Activity {
     }
 
     private void playAudio() {
-        previousPlayer = mPlayer;
-        mPlayer = new MediaPlayer();
-
-        try {
-            previousInputStream = inputStream;
-            inputStream = new FileInputStream(files.get(position).getPath());
-
-            mPlayer.setDataSource(inputStream.getFD());
-            mPlayer.prepare();
-            mPlayer.start();
-
-            sendPlayCampaignFile();
-
-            previousFadeAnimation = soundFadeAnimation;
-            soundFadeAnimation = new SoundFadeAnimation(mPlayer);
-            soundFadeAnimation.setOnFadeCallback(new SoundFadeAnimation.FadeCallback() {
-                @Override
-                public void onFade() {
-                    if (position != files.size()) {
-                        playAudio();
-                    }
-                }
-            });
-
-            mPlayer.setOnCompletionListener(new OnTrackFinished(inputStream, soundFadeAnimation));
-            position++;
-
-        } catch (Exception ex) {
-            Log.e(AUDIO_ACTIVITY, ex.getMessage(), ex);
-            Intent returnIntent = new Intent();
-
-            returnIntent.putExtra("result", MainActivity.RESULT_FINISH_PLAY);
-
-            AudioActivity.this.setResult(RESULT_OK, returnIntent);
-
-            AudioActivity.this.finish();
-        }
+        Log.d(AUDIO_ACTIVITY,"playAudio()");
+        Uri uri = Uri.parse(files.get(position).getPath());
+        SampleSource source;
+        source = new FrameworkSampleSource(this,uri,null,1);
+        audioRenderer = new MediaCodecAudioTrackRenderer(
+                source, null, true);
+        exoPlayer = ExoPlayer.Factory.newInstance(1);
+        exoPlayer.prepare(audioRenderer);
+        exoPlayer.setPlayWhenReady(true);
+        sendPlayCampaignFile();
+        exoPlayer.addListener(new OnTrackFinished());
+        position++;
+//        previousPlayer = mPlayer;
+//        mPlayer = new MediaPlayer();
+//
+//        try {
+//            previousInputStream = inputStream;
+//            inputStream = new FileInputStream(files.get(position).getPath());
+//
+//            mPlayer.setDataSource(inputStream.getFD());
+//            mPlayer.prepare();
+//            mPlayer.start();
+//
+//            sendPlayCampaignFile();
+//
+//            previousFadeAnimation = soundFadeAnimation;
+//            soundFadeAnimation = new SoundFadeAnimation(mPlayer);
+//            soundFadeAnimation.setOnFadeCallback(new SoundFadeAnimation.FadeCallback() {
+//                @Override
+//                public void onFade() {
+//                    if (position != files.size()) {
+//                        playAudio();
+//                    }
+//                }
+//            });
+//
+//            mPlayer.setOnCompletionListener(new OnTrackFinished(inputStream, soundFadeAnimation));
+//            position++;
+//
+//        } catch (Exception ex) {
+//            Log.e(AUDIO_ACTIVITY, ex.getMessage(), ex);
+//            Intent returnIntent = new Intent();
+//
+//            returnIntent.putExtra("result", MainActivity.RESULT_FINISH_PLAY);
+//
+//            AudioActivity.this.setResult(RESULT_OK, returnIntent);
+//
+//            AudioActivity.this.finish();
+//        }
 
     }
 
     private void cleanUp() {
-        if (mPlayer != null) {
-            clearMediaPlayer(mPlayer);
-            mPlayer = null;
+        if (exoPlayer != null) {
+            exoPlayer.release();
+            exoPlayer = null;
         }
-
-        if (previousPlayer != null) {
-            clearMediaPlayer(previousPlayer);
-            previousPlayer = null;
-        }
-
-        if (soundFadeAnimation != null) {
-            clearFadeAnimation(soundFadeAnimation);
-            soundFadeAnimation = null;
-        }
-
-        if (previousFadeAnimation != null) {
-            clearFadeAnimation(previousFadeAnimation);
-            previousFadeAnimation = null;
-        }
-
-        if (inputStream != null) {
-            IOUtils.closeQuietly(inputStream);
-        }
-
-        if (previousInputStream != null) {
-            IOUtils.closeQuietly(previousInputStream);
-        }
+        audioRenderer = null;
+//        if (mPlayer != null) {
+//            clearMediaPlayer(mPlayer);
+//            mPlayer = null;
+//        }
+//
+//        if (previousPlayer != null) {
+//            clearMediaPlayer(previousPlayer);
+//            previousPlayer = null;
+//        }
+//
+//        if (soundFadeAnimation != null) {
+//            clearFadeAnimation(soundFadeAnimation);
+//            soundFadeAnimation = null;
+//        }
+//
+//        if (previousFadeAnimation != null) {
+//            clearFadeAnimation(previousFadeAnimation);
+//            previousFadeAnimation = null;
+//        }
+//
+//        if (inputStream != null) {
+//            IOUtils.closeQuietly(inputStream);
+//        }
+//
+//        if (previousInputStream != null) {
+//            IOUtils.closeQuietly(previousInputStream);
+//        }
     }
 
     private void clearMediaPlayer(MediaPlayer mediaPlayer) {
@@ -218,34 +261,68 @@ public class AudioActivity extends Activity {
     }
 
 
-    private class OnTrackFinished implements MediaPlayer.OnCompletionListener {
-
-        private FileInputStream iStream;
-        private SoundFadeAnimation fadeAnimation;
-        public OnTrackFinished(FileInputStream stream, SoundFadeAnimation fadeAnimation) {
-            this.iStream = stream;
-            this.fadeAnimation = fadeAnimation;
-        }
+//    private class OnTrackFinished implements MediaPlayer.OnCompletionListener {
+//
+//        private FileInputStream iStream;
+//        private SoundFadeAnimation fadeAnimation;
+//        public OnTrackFinished(FileInputStream stream, SoundFadeAnimation fadeAnimation) {
+//            this.iStream = stream;
+//            this.fadeAnimation = fadeAnimation;
+//        }
+//
+//        @Override
+//        public void onCompletion(MediaPlayer mp) {
+//            clearMediaPlayer(mp);
+//            clearFadeAnimation(fadeAnimation);
+//            IOUtils.closeQuietly(iStream);
+//
+//            if (position == files.size()) {
+//                cleanUp();
+//
+//                Intent returnIntent = new Intent();
+//
+//                returnIntent.putExtra("result", 1);
+//
+//                AudioActivity.this.setResult(RESULT_OK, returnIntent);
+//
+//                AudioActivity.this.finish();
+//            }
+//        }
+//
+//    }
+    private class OnTrackFinished implements ExoPlayer.Listener {
 
         @Override
-        public void onCompletion(MediaPlayer mp) {
-            clearMediaPlayer(mp);
-            clearFadeAnimation(fadeAnimation);
-            IOUtils.closeQuietly(iStream);
+        public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
 
-            if (position == files.size()) {
-                cleanUp();
+            if (playbackState == ExoPlayer.STATE_ENDED) {
 
-                Intent returnIntent = new Intent();
+                if (position == files.size()) {
+                    cleanUp();
 
-                returnIntent.putExtra("result", 1);
+                    Intent returnIntent = new Intent();
 
-                AudioActivity.this.setResult(RESULT_OK, returnIntent);
+                    returnIntent.putExtra("result", 1);
 
-                AudioActivity.this.finish();
+                    AudioActivity.this.setResult(RESULT_OK, returnIntent);
+
+                    AudioActivity.this.finish();
+                }
+                else {
+                    playAudio();
+                }
             }
         }
 
+        @Override
+        public void onPlayWhenReadyCommitted() {
+
+        }
+
+        @Override
+        public void onPlayerError(ExoPlaybackException e) {
+
+        }
     }
 
 

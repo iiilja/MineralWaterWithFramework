@@ -134,7 +134,7 @@ public class AudioActivity extends Activity {
         String pathToFile = files.get(position).getPath();
         Log.d(AUDIO_ACTIVITY,"playAudio() file = " + new File(pathToFile).getName());
         Uri uri = Uri.parse(pathToFile);
-        final SampleSource source;
+        SampleSource source;
         source = new FrameworkSampleSource(this,uri,null,1);
         audioRenderer = new MediaCodecAudioTrackRenderer(
                 source, null, true);

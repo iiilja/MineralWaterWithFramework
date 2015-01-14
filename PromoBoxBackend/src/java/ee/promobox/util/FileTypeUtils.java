@@ -35,6 +35,12 @@ public class FileTypeUtils {
                 return FILE_TYPE_IMAGE;
             case "XLSX":
                 return FILE_TYPE_IMAGE;
+            case "ODT":
+                return FILE_TYPE_IMAGE;
+            case "ODS":
+                return FILE_TYPE_IMAGE;
+            case "ODP":
+                return FILE_TYPE_IMAGE;
             case "JPG":
                 return FILE_TYPE_IMAGE;
             case "JPEG":

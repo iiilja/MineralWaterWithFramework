@@ -253,6 +253,7 @@ public class DevicesController {
                     jsonD.put("orientation", d.getOrientation());
                     jsonD.put("resolution", d.getResolution());
                     jsonD.put("audioOut", d.getAudioOut());
+                    jsonD.put("lastRequestDt", d.getLastDeviceRequestDt().getTime());
 
                     if (d.getCurrentCampaignId() != null) {
                         AdCampaigns campaign = userService.findCampaignByIdAndClientId(d.getCurrentCampaignId(), session.getClientId());

@@ -134,6 +134,7 @@ public class MainService extends Service {
     }
 
     public void selectNextCampaign() {
+        Log.d(MAIN_SERVICE_STRING, "selectNextCampaign()");
         if(getCampaigns() != null) {
             Date currentDate = new Date();
 
@@ -152,7 +153,6 @@ public class MainService extends Service {
             int counter = 0;
             for(Campaign camp: getCampaigns()) {
                 // Current date between start and end dates of currentCampaign.
-//                Log.d(MAIN_SERVICE_STRING, "Campaign: " +camp.getCampaignName()+" Start: " + camp.getStartDate().toString() + " End: " + camp.getEndDate().toString());
                 if(camp.hasToBePlayed()) {
                     Log.d(MAIN_SERVICE_STRING, "Date bounds for currentCampaign: " + camp.getCampaignName());
                     campaignToSetCurrent  = camp;

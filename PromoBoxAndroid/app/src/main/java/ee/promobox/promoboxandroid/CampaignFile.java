@@ -8,6 +8,7 @@ import android.os.Parcelable;
  */
 public class CampaignFile implements Comparable<CampaignFile>, Parcelable{
     private int id;
+    private int orderId;
     private String name;
     private CampaignFileType type;
     private int size;
@@ -19,6 +20,7 @@ public class CampaignFile implements Comparable<CampaignFile>, Parcelable{
 
     private CampaignFile(Parcel in) {
         this.id = in.readInt();
+        this.orderId = in.readInt();
         this.name = in.readString();
         this.type = CampaignFileType.valueOf(in.readInt());
         this.size = in.readInt();
@@ -57,12 +59,19 @@ public class CampaignFile implements Comparable<CampaignFile>, Parcelable{
         this.id = id;
     }
 
+    public int getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(int orderId) {
+        this.orderId = orderId;
+    }
 
     @Override
     public int compareTo(CampaignFile campaignFile) {
-        if (this.getId() > campaignFile.getId()) {
+        if (this.getOrderId() > campaignFile.getOrderId()) {
             return 1;
-        } else if (this.getId() < campaignFile.getId()){
+        } else if (this.getOrderId() < campaignFile.getOrderId()){
             return -1;
         }
 
@@ -77,6 +86,7 @@ public class CampaignFile implements Comparable<CampaignFile>, Parcelable{
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeInt(this.id);
+        parcel.writeInt(this.orderId);
         parcel.writeString(this.name);
         parcel.writeInt(this.getType().ordinal());
         parcel.writeInt(this.size);
@@ -100,4 +110,6 @@ public class CampaignFile implements Comparable<CampaignFile>, Parcelable{
     public void setPath(String path) {
         this.path = path;
     }
+
+
 }

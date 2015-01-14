@@ -51,10 +51,13 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
 
     private final String DOWNLOAD_FILE_TASK = "DownloadFilesTask ";
 
+    LocalBroadcastManager bManager;
+
     private MainService service;
 
     public DownloadFilesTask(MainService service) {
         this.service = service;
+        bManager = LocalBroadcastManager.getInstance(service);
     }
 
     protected File doInBackground(String... urls) {
@@ -132,22 +135,35 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
                         }
                     }
                 }
+                if (data.has("nextFile")){
+                    int nextFile = data.getInt("nextFile");
+                    playThisFile(nextFile);
+                }
             } else {
                 Log.w(DOWNLOAD_FILE_TASK, "No data.");
             }
         } catch (Exception ex) {
             Log.e(DOWNLOAD_FILE_TASK, ex.getMessage(), ex);
-            LocalBroadcastManager.getInstance(service).sendBroadcast(new ToastIntent(DOWNLOAD_FILE_TASK + ex.toString()));
+            bManager.sendBroadcast(new ToastIntent(DOWNLOAD_FILE_TASK + ex.toString()));
         }
 
         return null;
+    }
+
+    private void playThisFile(int nextFile) {
+        Log.d(DOWNLOAD_FILE_TASK,"playThisFile() file id = " + nextFile);
+        CampaignList campaignList = service.getCampaigns();
+        CampaignFile campaignFile = campaignList.getCampaignFileByFileId(nextFile);
+        Intent intent = new Intent(MainActivity.PLAY_SPECIFIC_FILE);
+        intent.putExtra("campaignFile",campaignFile);
+        bManager.sendBroadcast(intent);
     }
 
     private void downloadFiles(Campaign camp) {
 
         Log.i("MainService", "Download files");
 
-        LocalBroadcastManager.getInstance(service).sendBroadcast(new ToastIntent("Downloading " + camp.getCampaignName()));
+        bManager.sendBroadcast(new ToastIntent("Downloading " + camp.getCampaignName()));
 
         service.setLoadingCampaign(camp);
         service.setLoadingCampaignProgress(0);
@@ -220,7 +236,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
 
         } catch (Exception e) {
             Log.d(DOWNLOAD_FILE_TASK, e.getMessage(), e);
-            LocalBroadcastManager.getInstance(service).sendBroadcast(new ToastIntent(DOWNLOAD_FILE_TASK + e.toString()));
+            bManager.sendBroadcast(new ToastIntent(DOWNLOAD_FILE_TASK + e.toString()));
         }
 
         return null;
@@ -309,7 +325,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
         } else {
             String error = IOUtils.toString(response.getEntity().getContent());
             Log.e(DOWNLOAD_FILE_TASK, error);
-            LocalBroadcastManager.getInstance(service).sendBroadcast(new ToastIntent(DOWNLOAD_FILE_TASK + error));
+            bManager.sendBroadcast(new ToastIntent(DOWNLOAD_FILE_TASK + error));
         }
 
         return null;
@@ -426,7 +442,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
             if (campaignsUpdated) {
 
                 Intent update = new Intent(MainActivity.CAMPAIGN_UPDATE);
-                LocalBroadcastManager.getInstance(service).sendBroadcast(update);
+                bManager.sendBroadcast(update);
 
                 Log.i(DOWNLOAD_FILE_TASK, "Send intent about update");
 

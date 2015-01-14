@@ -31,6 +31,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import ee.promobox.promoboxandroid.util.ToastIntent;
+
 
 public class VideoActivity extends Activity implements TextureView.SurfaceTextureListener {
     private final String VIDEO_ACTIVITY = "VideoActivity ";
@@ -42,8 +44,8 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
     private boolean active = true;
 
     private ExoPlayer exoPlayer;
-    MediaCodecAudioTrackRenderer audioRenderer;
-    MediaCodecVideoTrackRenderer videoRenderer;
+    private MediaCodecAudioTrackRenderer audioRenderer;
+    private MediaCodecVideoTrackRenderer videoRenderer;
 
     @Override
     public void onCreate(Bundle b) {
@@ -69,9 +71,8 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
     public void playVideo() {
         if (files.size() > 0) {
             try {
-
+                cleanUp();
                 Surface surface = new Surface(videoView.getSurfaceTexture());
-
                 String pathToFile = files.get(position).getPath();
                 Log.d(VIDEO_ACTIVITY,"playVideo() file = " + new File(pathToFile).getName());
                 Uri uri = Uri.parse(pathToFile);
@@ -197,8 +198,8 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
         if(exoPlayer != null){
             exoPlayer.release();
             exoPlayer = null;
-            audioRenderer = null;
-            videoRenderer = null;
+//            audioRenderer = null;
+//            videoRenderer = null;
         }
     }
 
@@ -249,6 +250,8 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
 
         @Override
         public void onDecoderInitializationError(MediaCodecTrackRenderer.DecoderInitializationException e) {
+            bManager.sendBroadcast(new ToastIntent("DecoderInitializationError"));
+            cleanUp();
 
         }
 
@@ -288,7 +291,6 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
 
         @Override
         public void onPlayerError(ExoPlaybackException e) {
-
         }
     }
 

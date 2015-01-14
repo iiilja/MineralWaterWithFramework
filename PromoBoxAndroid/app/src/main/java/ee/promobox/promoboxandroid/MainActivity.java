@@ -31,7 +31,8 @@ public class MainActivity extends Activity {
     public static final String CURRENT_FILE_ID  = "ee.promobox.promoboxandroid.CURRENT_FILE_ID";
     public static final String MAKE_TOAST       = "ee.promobox.promoboxandroid.MAKE_TOAST";
     public static final String NO_NETWORK       = "ee.promobox.promoboxandroid.NO_NETWORK";
-    public static final  String APP_START        = "ee.promobox.promoboxandroid.START";
+    public static final  String APP_START       = "ee.promobox.promoboxandroid.START";
+    public static final  String PLAY_SPECIFIC_FILE       = "ee.promobox.promoboxandroid.PLAY_SPECIFIC_FILE";
 
     public final static String MAIN_ACTIVITY_STRING = "MainActivity";
 
@@ -42,10 +43,12 @@ public class MainActivity extends Activity {
     public static final int ORIENTATION_PORTRAIT = 2;
     public static final int ORIENTATION_PORTRAIT_EMULATION = 3;
 
+    LocalBroadcastManager bManager;
 
     private MainService mainService;
     private int position;
     private Campaign campaign;
+    private CampaignFile nextSpecificFile = null;
     private boolean mBound = false;
     private boolean active = true;
 
@@ -80,7 +83,7 @@ public class MainActivity extends Activity {
 
         setContentView(R.layout.activity_main);
 
-        LocalBroadcastManager bManager = LocalBroadcastManager.getInstance(this);
+        bManager = LocalBroadcastManager.getInstance(this);
 
         IntentFilter intentFilter = new IntentFilter();
 
@@ -88,6 +91,7 @@ public class MainActivity extends Activity {
         intentFilter.addAction(CURRENT_FILE_ID);
         intentFilter.addAction(MAKE_TOAST);
         intentFilter.addAction(NO_NETWORK);
+        intentFilter.addAction(PLAY_SPECIFIC_FILE);
 
         bManager.registerReceiver(bReceiver, intentFilter);
 
@@ -101,7 +105,8 @@ public class MainActivity extends Activity {
 
 
     private void startNextFile() {
-        if (campaign != null && campaign.getFiles() != null && campaign.getFiles().size() > 0) {
+        if (campaign != null && nextSpecificFile == null &&
+                campaign.getFiles() != null && campaign.getFiles().size() > 0) {
             Log.d(MAIN_ACTIVITY_STRING, "startNextFile() in " + campaign.getCampaignName());
 
             if (position == campaign.getFiles().size()) {
@@ -109,8 +114,6 @@ public class MainActivity extends Activity {
                 mainService.checkAndDownloadCampaign();
                 Log.i(MAIN_ACTIVITY_STRING, "Starting from position 0");
             }
-
-            //mainService.setCurrentFileId(campaign.getFiles().get(position).getId());
 
             CampaignFileType fileType = null;
             ArrayList<CampaignFile> filePack = new ArrayList<CampaignFile>();
@@ -121,7 +124,6 @@ public class MainActivity extends Activity {
                 if (fileType == null) {
                     fileType = cFile.getType();
                 }
-
                 if (cFile.getType() == fileType) {
 
                     filePack.add(cFile);
@@ -132,59 +134,53 @@ public class MainActivity extends Activity {
                     break;
                 }
             }
-
             if (campaign.getFiles().size() == 1) {
                 campaign.setDelay(60 * 60 * 12);
             }
 
-
-            if (fileType == CampaignFileType.IMAGE) {
-
-                Intent i = new Intent(this, ImageActivity.class);
-
-                i.putParcelableArrayListExtra("files", filePack);
-
-                i.putExtra("delay", campaign.getDelay());
-                i.putExtra("orientation", mainService.getOrientation());
-
-                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-                startActivityForResult(i, RESULT_FINISH_PLAY);
-
-                this.overridePendingTransition(0, 0);
+            startPlayingActivity(fileType,filePack);
 
 
-            } else if (fileType == CampaignFileType.AUDIO) {
-
-                Intent i = new Intent(this, AudioActivity.class);
-
-                i.putParcelableArrayListExtra("files", filePack);
-
-                i.putExtra("orientation", mainService.getOrientation());
-
-                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-                startActivityForResult(i, RESULT_FINISH_PLAY);
-
-            } else if (fileType == CampaignFileType.VIDEO) {
-
-                Intent i = new Intent(this, VideoActivity.class);
-
-                i.putParcelableArrayListExtra("files", filePack);
-
-                i.putExtra("orientation", mainService.getOrientation());
-
-                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-                startActivityForResult(i, RESULT_FINISH_PLAY);
-
-                this.overridePendingTransition(0, 0);
-
-            }
-
-
+        } else if (nextSpecificFile != null) {
+            ArrayList<CampaignFile> filePack = new ArrayList<CampaignFile>();
+            filePack.add(nextSpecificFile);
+            startPlayingActivity(nextSpecificFile.getType(), filePack);
+            nextSpecificFile = null;
         } else {
-            Log.i(MAIN_ACTIVITY_STRING, "CAMPAIGN = NULL");
+                Log.i(MAIN_ACTIVITY_STRING, "CAMPAIGN = NULL");
+        }
+    }
+
+    private void startPlayingActivity(CampaignFileType fileType, ArrayList<CampaignFile> filePack){
+        if (fileType == CampaignFileType.IMAGE) {
+            Intent i = new Intent(this, ImageActivity.class);
+            i.putParcelableArrayListExtra("files", filePack);
+            i.putExtra("delay", campaign.getDelay());
+            i.putExtra("orientation", mainService.getOrientation());
+            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+            startActivityForResult(i, RESULT_FINISH_PLAY);
+
+            this.overridePendingTransition(0, 0);
+
+        } else if (fileType == CampaignFileType.AUDIO) {
+            Intent i = new Intent(this, AudioActivity.class);
+            i.putParcelableArrayListExtra("files", filePack);
+            i.putExtra("orientation", mainService.getOrientation());
+            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+            startActivityForResult(i, RESULT_FINISH_PLAY);
+
+        } else if (fileType == CampaignFileType.VIDEO) {
+
+            Intent i = new Intent(this, VideoActivity.class);
+            i.putParcelableArrayListExtra("files", filePack);
+            i.putExtra("orientation", mainService.getOrientation());
+            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+            startActivityForResult(i, RESULT_FINISH_PLAY);
+
+            this.overridePendingTransition(0, 0);
         }
     }
 
@@ -307,8 +303,7 @@ public class MainActivity extends Activity {
                 if (active){
                     startNextFile();
                 } else {
-                    Intent intentFinish = new Intent(ACTIVITY_FINISH);
-                    LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intentFinish);
+                    bManager.sendBroadcast(new Intent(ACTIVITY_FINISH));
                 }
             } else if (action.equals(CURRENT_FILE_ID)) {
                 mainService.setCurrentFileId(intent.getExtras().getInt("fileId"));
@@ -321,6 +316,19 @@ public class MainActivity extends Activity {
                 try {
                     new NoNetworkDialog().show(getFragmentManager(),"NO_NETWORK");
                 } catch (IllegalStateException ex){
+                }
+            } else if (action.equals(PLAY_SPECIFIC_FILE)){
+                nextSpecificFile = intent.getParcelableExtra("campaignFile");
+                Log.d(RECEIVER_STRING, "PLAY_SPECIFIC_FILE with id " + nextSpecificFile.getId());
+                if (active){
+                    startNextFile();
+                } else {
+                    bManager.sendBroadcast(new Intent(ACTIVITY_FINISH));
+                    if (campaign != null){
+                        int fileId = mainService.getCurrentFileId();
+                        position = campaign.getCampaignFilePositionById(fileId);
+                        position ++;
+                    }
                 }
             }
         }

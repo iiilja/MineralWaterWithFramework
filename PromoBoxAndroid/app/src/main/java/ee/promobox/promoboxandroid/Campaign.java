@@ -58,6 +58,7 @@ public class Campaign {
             setEndDate(new Date(json.getLong("endDate")));
             setDays(json.getJSONArray("days"));
             setHours(json.getJSONArray("hours"));
+
             JSONArray ar = json.getJSONArray("files");
 
             for (int i = 0; i < ar.length(); i++) {
@@ -67,7 +68,7 @@ public class Campaign {
 
                 f.setId(obj.getInt("id"));
                 f.setType(CampaignFileType.valueOf(obj.getInt("type")));
-                f.setSize(obj.getInt("size"));
+                f.setOrderId(obj.getInt("orderId"));
                 f.setPath(new File(getRoot(), f.getId() + "").getAbsolutePath());
 
                 files.add(f);
@@ -223,5 +224,15 @@ public class Campaign {
             }
         }
         return false;
+    }
+
+    public int getCampaignFilePositionById(int fileId){
+        for (int i = 0; i < files.size(); i++) {
+            CampaignFile file = files.get(i);
+            if (file.getId() == fileId){
+                return i;
+            }
+        }
+        return 0;
     }
 }

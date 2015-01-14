@@ -113,6 +113,15 @@ app.filter('humanLength', function() {
     }
  });
 
+app.filter('deviceTime', function() {
+    return function(val) {
+        var date = new Date(val);
+        return date.getDay() + "." + (1 + date.getMonth()) + "." + date.getFullYear() + " " + 
+                date.getHours() + ":" + date.getMinutes();
+    }
+
+});
+
 app.controller('Exit', ['token',
     function (token) {
         token.remove();

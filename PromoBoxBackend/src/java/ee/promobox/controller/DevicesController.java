@@ -158,6 +158,7 @@ public class DevicesController {
                                     jsonCampaignFile.put("id", file.getId());
                                     jsonCampaignFile.put("type", file.getFileType().intValue());
                                     jsonCampaignFile.put("size", file.getSize());
+                                    jsonCampaignFile.put("orderId", file.getOrderId());
 
                                     jsonCampaignFiles.put(jsonCampaignFile);
                                 }
@@ -252,6 +253,7 @@ public class DevicesController {
                     jsonD.put("orientation", d.getOrientation());
                     jsonD.put("resolution", d.getResolution());
                     jsonD.put("audioOut", d.getAudioOut());
+                    jsonD.put("lastRequestDt", d.getLastDeviceRequestDt().getTime());
 
                     if (d.getCurrentCampaignId() != null) {
                         AdCampaigns campaign = userService.findCampaignByIdAndClientId(d.getCurrentCampaignId(), session.getClientId());

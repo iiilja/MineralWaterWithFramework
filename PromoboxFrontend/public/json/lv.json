@@ -52,6 +52,7 @@
     "device_addcampaign": "Добавить кампанию",
     "device_add": "Добавить",
     "device_time_intersection": "Пересечение времени кампаний",
+    "device_offtime": "Время выключения",
     "up": "Выше",
     "down": "Ниже",
     "toBegin": "В начало",

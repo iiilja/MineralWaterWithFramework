@@ -146,7 +146,7 @@ public class DevicesController {
                             log.error(ex.getMessage(), ex);
                         }
 
-                        List<CampaignsFiles> campaignFiles = userService.findUsersCampaignFiles(dc.getAdCampaignsId(), d.getClientId());
+                        List<CampaignsFiles> campaignFiles = userService.findUsersCampaignFiles(ad.getId(), d.getClientId());
 
                         if (!campaignFiles.isEmpty()) {
                             JSONArray jsonCampaignFiles = new JSONArray();

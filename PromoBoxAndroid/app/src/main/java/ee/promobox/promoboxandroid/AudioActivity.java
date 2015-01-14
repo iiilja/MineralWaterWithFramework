@@ -21,6 +21,7 @@ import com.google.android.exoplayer.FrameworkSampleSource;
 import com.google.android.exoplayer.MediaCodecAudioTrackRenderer;
 import com.google.android.exoplayer.SampleSource;
 
+import java.io.File;
 import java.util.ArrayList;
 
 
@@ -130,8 +131,9 @@ public class AudioActivity extends Activity {
 
     private void playAudio() {
         cleanUp();
-        Log.d(AUDIO_ACTIVITY,"playAudio()");
-        Uri uri = Uri.parse(files.get(position).getPath());
+        String pathToFile = files.get(position).getPath();
+        Log.d(AUDIO_ACTIVITY,"playAudio() file = " + new File(pathToFile).getName());
+        Uri uri = Uri.parse(pathToFile);
         final SampleSource source;
         source = new FrameworkSampleSource(this,uri,null,1);
         audioRenderer = new MediaCodecAudioTrackRenderer(
@@ -147,15 +149,16 @@ public class AudioActivity extends Activity {
             public void run() {
                 int counter = 0;
                 while(exoPlayer != null && exoPlayer.getPlaybackState()<4 && counter < 10){
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                     Log.d(AUDIO_ACTIVITY,"---------------------------------");
                     Log.d(AUDIO_ACTIVITY," PLAYBACK_STATE :\t" + exoPlayer.getPlaybackState());
                     Log.d(AUDIO_ACTIVITY, "---------------------------------");
                     counter++;
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+
                 }
             }
         });
@@ -227,7 +230,7 @@ public class AudioActivity extends Activity {
                 Log.d(RECEIVER_STRING, "NO NETWORK");
                 try {
                     new NoNetworkDialog().show(getFragmentManager(),"NO_NETWORK");
-                } catch (IllegalStateException ex){
+                } catch (IllegalStateException ignored){
                 }
             }
         }

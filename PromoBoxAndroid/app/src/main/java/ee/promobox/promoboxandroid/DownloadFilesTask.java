@@ -129,7 +129,6 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
                                 }
                             }
                         } catch (NumberFormatException ignored){
-                            Log.e(DOWNLOAD_FILE_TASK,ignored.getMessage());
                         }
                     }
                 }
@@ -386,7 +385,6 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
             service.setCampaigns(new CampaignList(newCampaigns.size()));
 
             Campaign oldCampaign;
-            Campaign bufCampaign;
 
             int oldCampaignIndex = -1;
             int newCampaignId;
@@ -394,19 +392,11 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
             for (Campaign newCampaign : newCampaigns) {
 
                 newCampaignId = newCampaign.getCampaignId();
-                oldCampaign = null;
 
                 // Find old campaign with same id.
                 // note: size might change every iteration of newCampaigns.
-                for (int i = 0; i < oldCampaignsCount; i++) {
-                    bufCampaign = oldCampaigns.get(i);
+                oldCampaign = oldCampaigns.getCampaignWithId(newCampaignId);
 
-                    if (newCampaignId == bufCampaign.getCampaignId()) {
-                        oldCampaign = bufCampaign;
-                        oldCampaignIndex = i;
-                        break;
-                    }
-                }
                 // If campaign not in list or needs to be updated add new one.
                 if (oldCampaign == null || (newCampaign.getUpdateDate() > oldCampaign.getUpdateDate())) {
                     service.getCampaigns().add(newCampaign);

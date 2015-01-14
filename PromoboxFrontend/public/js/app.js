@@ -114,10 +114,10 @@ app.filter('humanLength', function() {
  });
 
 app.filter('deviceTime', function() {
-    return function(sec) {
-        var date = new Date(sec);
-
-        return date.getDay() + "." + (1 + date.getMonth()) + "." + date.getFullYear() + " " + date.getHours() + ":" + date.getMinutes();
+    return function(val) {
+        var date = new Date(val);
+        return date.getDay() + "." + (1 + date.getMonth()) + "." + date.getFullYear() + " " + 
+                date.getHours() + ":" + date.getMinutes();
     }
 
 });

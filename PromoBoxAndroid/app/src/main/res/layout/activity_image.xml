@@ -6,14 +6,20 @@
     android:keepScreenOn="true"
     tools:context="ee.promobox.promoboxandroid.ImageActivity">
 
-        <ImageView
+        <ee.promobox.promoboxandroid.widgets.AspectRatioImageView
             android:id="@+id/slide_1"
-            android:layout_gravity="fill"
             android:adjustViewBounds="true"
-            android:scaleType="centerInside"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/promobox" />
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true" />
+        <!--<ee.promobox.promoboxandroid.widgets.AspectRatioImageView-->
+            <!--android:id="@+id/slide_1"-->
+            <!--android:adjustViewBounds="true"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="1" />-->
 
 
 </RelativeLayout>

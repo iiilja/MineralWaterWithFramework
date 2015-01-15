@@ -161,7 +161,8 @@ public class ImageActivity extends Activity {
     private void sendPlayCampaignFile() {
         Intent playFile = new Intent(MainActivity.CURRENT_FILE_ID);
         playFile.putExtra("fileId", files.get(position).getId());
-        LocalBroadcastManager.getInstance(this).sendBroadcast(playFile);
+        Log.d(IMAGE_ACTIVITY_STRING,files.get(position).getPath());
+        bManager.sendBroadcast(playFile);
     }
 
     private void playImage(String path) {

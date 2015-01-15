@@ -284,7 +284,7 @@ public class CampaignsController {
 
             int clientId = session.getClientId();
             AdCampaigns campaign = userService.findCampaignByIdAndClientId(id, clientId);
-
+            
             if (campaign != null) {
 
                 JSONObject objectGiven = new JSONObject(json);
@@ -307,10 +307,28 @@ public class CampaignsController {
 
                     campaign.setWorkTimeData(workTimeData.toString());
                 }
+                
+                // Check time intersection
+                boolean timeIntersection = false;
+                for (Devices d: userService.findDevicesByCampaing(id)) {
+                	for (AdCampaigns c: userService.findCampaignByDeviceId(d.getId())) {
+                		if (c.getId() == (int) campaign.getId()) {
+                			continue;
+                		}
+                		
+                		timeIntersection = DevicesController.checkTimeIntersection(campaign, c);
+                		
+                		if (timeIntersection) break;
+                	}
+                }
 
-                campaign.setUpdateDate(new Date());
-
-                userService.updateCampaign(campaign);
+                if (!timeIntersection) {
+	                campaign.setUpdateDate(new Date());
+	
+	                userService.updateCampaign(campaign);
+                } else {
+                	resp.put("ERROR", "time_intersection");
+                }
 
                 response.setStatus(HttpServletResponse.SC_OK);
                 RequestUtils.printResult(resp.toString(), response);

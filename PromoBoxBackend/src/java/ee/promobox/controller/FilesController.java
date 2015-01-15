@@ -325,7 +325,7 @@ public class FilesController {
     }
     
     @RequestMapping(value = "token/{token}/campaigns/{id}/files/{file}/rotate/{angle}", method = RequestMethod.PUT)
-    public void rotateFile(
+    public void rotteFile(
             @PathVariable("token") String token,
             @PathVariable("id") int campaignId,
             @PathVariable("file") int fileId,

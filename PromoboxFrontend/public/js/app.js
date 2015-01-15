@@ -359,7 +359,11 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
                 duration: $scope.campaign_form.campaign_time, 
                 days: $scope.checkedDays, 
                 hours: $scope.checkedHours}, function(response){
-                    sysMessage.update_s($filter('translate')('campaign_updated'));
+                    if (response.ERROR) {
+                        sysMessage.error($filter('translate')('system_device') + ' ' + $filter('translate')('time_intersection'));
+                    } else {
+                        sysMessage.update_s($filter('translate')('campaign_updated'));
+                    }
             });
         };
         

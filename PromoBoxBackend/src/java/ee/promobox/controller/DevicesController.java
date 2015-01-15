@@ -497,7 +497,7 @@ public class DevicesController {
         }
     }
 
-    private boolean checkTimeIntersection(AdCampaigns campaign1, AdCampaigns campaign2) {
+    public static boolean checkTimeIntersection(AdCampaigns campaign1, AdCampaigns campaign2) {
         try {
             JSONObject workTime1 = new JSONObject(campaign1.getWorkTimeData());
             JSONObject workTime2 = new JSONObject(campaign2.getWorkTimeData());

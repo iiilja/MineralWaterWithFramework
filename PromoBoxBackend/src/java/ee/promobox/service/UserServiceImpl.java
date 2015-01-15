@@ -80,7 +80,18 @@ public class UserServiceImpl implements UserService {
         return q.list();
     }
 
-    public CampaignsFiles findCampaignFile(int id, int clientId) {
+    @Override
+	public List<Devices> findDevicesByCampaing(int campaignId) {
+    	Session session = sessionFactory.getCurrentSession();
+
+        Query q = session.createQuery("SELECT d FROM Devices d, DevicesCampaigns dc  WHERE d.id = dc.deviceId "
+        		+ " AND dc.adCampaignsId = :campaignId");
+        q.setParameter("campaignId", campaignId);
+
+        return q.list();
+	}
+
+	public CampaignsFiles findCampaignFile(int id, int clientId) {
         Session session = sessionFactory.getCurrentSession();
 
         Query q = session.createQuery("from CampaignsFiles where id  = :id and clientId = :clientId");

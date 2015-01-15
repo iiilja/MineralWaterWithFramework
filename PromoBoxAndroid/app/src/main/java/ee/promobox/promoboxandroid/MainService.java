@@ -97,7 +97,12 @@ public class MainService extends Service {
 
             if (data.exists()) {
                 String dataString = FileUtils.readFileToString(data);
-                JSONArray campaignsJSON = new JSONObject(dataString).getJSONArray("campaigns");
+                JSONObject dataJSON =  new JSONObject(dataString);
+                JSONArray campaignsJSON = new JSONArray();
+
+                if (dataJSON.has("campaigns")){
+                    campaignsJSON = new JSONObject(dataString).getJSONArray("campaigns");
+                }
 
                 if (!previousCampaignsJSON.equals(campaignsJSON.toString())){
                     Log.d(MAIN_SERVICE_STRING, previousCampaignsJSON + "\n" + dataString);

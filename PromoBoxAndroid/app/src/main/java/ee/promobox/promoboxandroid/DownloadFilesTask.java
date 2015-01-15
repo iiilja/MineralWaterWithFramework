@@ -284,7 +284,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
         json.put("freeSpace", bytesAvailable);
         json.put("force", 1);
 
-        json.put("cache", dirSize(MainService.ROOT.getAbsoluteFile()));
+        json.put("cache", FileUtils.sizeOfDirectory(MainService.ROOT.getAbsoluteFile()));
         json.put("currentFileId", service.getCurrentFileId());
         json.put("currentCampaignId", service.getCurrentCampaign() != null ? service.getCurrentCampaign().getCampaignId() : 0);
 
@@ -305,22 +305,16 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
 
         if (response.getStatusLine().getStatusCode() == 200 && !service.getIsDownloading().get()) {
             HttpEntity entity = response.getEntity();
-
             if (entity != null) {
                 MainService.ROOT.mkdirs();
 
                 File file = new File(MainService.ROOT, "data.json");
 
-                FileOutputStream fileOutputStream = new FileOutputStream(file);
+                String jsonString = IOUtils.toString(response.getEntity().getContent());
 
-                InputStream in = entity.getContent();
+                FileUtils.writeStringToFile(file, jsonString, "UTF-8");
 
-                IOUtils.copy(in, fileOutputStream);
-
-                IOUtils.closeQuietly(fileOutputStream);
-                IOUtils.closeQuietly(in);
-
-                return new JSONObject(FileUtils.readFileToString(file));
+                return new JSONObject(jsonString);
             }
         } else {
             String error = IOUtils.toString(response.getEntity().getContent());
@@ -337,25 +331,6 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
     }
 
     protected void onPostExecute(File result) {
-    }
-
-    private long dirSize(File dir) {
-
-        if (dir.exists()) {
-            long result = 0;
-            File[] fileList = dir.listFiles();
-            for (int i = 0; i < fileList.length; i++) {
-                // Recursive call if it's a directory
-                if (fileList[i].isDirectory()) {
-                    result += dirSize(fileList[i]);
-                } else {
-                    // Sum the file size in bytes
-                    result += fileList[i].length();
-                }
-            }
-            return result; // return the file size
-        }
-        return 0;
     }
 
     private boolean isNetworkConnected() {

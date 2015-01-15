@@ -186,6 +186,13 @@ public class DevicesController {
 
                 RequestUtils.printResult(resp.toString(), response);
 
+            } else {
+            	resp.put("status", "error");
+                resp.put("error", "no_active_campaign");
+
+                response.setStatus(HttpServletResponse.SC_OK);
+
+                RequestUtils.printResult(resp.toString(), response);
             }
 
         } else {

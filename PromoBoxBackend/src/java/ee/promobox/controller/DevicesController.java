@@ -186,6 +186,13 @@ public class DevicesController {
 
                 RequestUtils.printResult(resp.toString(), response);
 
+            } else {
+            	resp.put("status", "error");
+                resp.put("error", "no_active_campaign");
+
+                response.setStatus(HttpServletResponse.SC_OK);
+
+                RequestUtils.printResult(resp.toString(), response);
             }
 
         } else {
@@ -497,7 +504,7 @@ public class DevicesController {
         }
     }
 
-    private boolean checkTimeIntersection(AdCampaigns campaign1, AdCampaigns campaign2) {
+    public static boolean checkTimeIntersection(AdCampaigns campaign1, AdCampaigns campaign2) {
         try {
             JSONObject workTime1 = new JSONObject(campaign1.getWorkTimeData());
             JSONObject workTime2 = new JSONObject(campaign2.getWorkTimeData());

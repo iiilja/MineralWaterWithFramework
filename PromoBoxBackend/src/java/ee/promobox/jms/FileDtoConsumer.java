@@ -154,6 +154,9 @@ public class FileDtoConsumer implements Runnable {
 		case "BMP":
 			result = convertImage(f);
 			break;
+		case "WAV":
+			result = copyFile(f);
+			break;
 		case "MP3":
 			result = copyFile(f);
 			break;

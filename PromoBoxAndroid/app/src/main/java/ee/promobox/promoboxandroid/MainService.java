@@ -42,8 +42,6 @@ public class MainService extends Service {
 
     private String previousCampaignsJSON = new String();
 
-    private boolean firstTime = true;
-
     private final AtomicBoolean isDownloading = new AtomicBoolean(false);
 
     private Campaign currentCampaign;
@@ -68,6 +66,8 @@ public class MainService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+
+        boolean firstTime = intent.getBooleanExtra("firstTime",false);
 
         Log.i(MAIN_SERVICE_STRING, "Start command");
 

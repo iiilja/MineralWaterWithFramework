@@ -1,23 +1,18 @@
 package ee.promobox.promoboxandroid;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.DialogFragment;
+import android.app.Activity;
+import android.app.ActivityManager;
+import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.os.Environment;
 import android.os.StatFs;
-import android.provider.Settings;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -279,6 +274,14 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
             listInterface.put(obj);
 
         }
+
+        ActivityManager am = (ActivityManager) service.getSystemService(Activity.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningTaskInfo> taskInfo = am.getRunningTasks(1);
+        ComponentName componentInfo = taskInfo.get(0).topActivity;
+        boolean onTop = componentInfo.getPackageName().startsWith(service.getPackageName());
+
+        json.put("isOnTop", onTop);
+        json.put("onTopActivity", componentInfo.getClassName());
 
         json.put("ip", listInterface);
         json.put("freeSpace", bytesAvailable);

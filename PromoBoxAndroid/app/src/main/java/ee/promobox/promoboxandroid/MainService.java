@@ -42,7 +42,6 @@ public class MainService extends Service {
 
     private String previousCampaignsJSON = new String();
 
-    private boolean alwaysOnTop = false;
     private boolean firstTime = true;
 
     private final AtomicBoolean isDownloading = new AtomicBoolean(false);
@@ -75,11 +74,9 @@ public class MainService extends Service {
         setUuid(getSharedPref().getString("uuid", "fail"));
         setOrientation(getSharedPref().getInt("orientation", MainActivity.ORIENTATION_LANDSCAPE));
 
-        setAlwaysOnTop(getSharedPref().getBoolean("always_on_top", false));
-
         checkAndDownloadCampaign();
 
-        if (!isActive() && (isAlwaysOnTop() || firstTime ) ) {
+        if ( firstTime ) {
             Intent mainActivity = new Intent(getBaseContext(), MainActivity.class);
 
             mainActivity.setAction(Intent.ACTION_MAIN);
@@ -223,14 +220,6 @@ public class MainService extends Service {
 
     public void setSharedPref(SharedPreferences sharedPref) {
         this.sharedPref = sharedPref;
-    }
-
-    public boolean isAlwaysOnTop() {
-        return alwaysOnTop;
-    }
-
-    public void setAlwaysOnTop(boolean alwaysOnTop) {
-        this.alwaysOnTop = alwaysOnTop;
     }
 
     public AtomicBoolean getIsDownloading() {

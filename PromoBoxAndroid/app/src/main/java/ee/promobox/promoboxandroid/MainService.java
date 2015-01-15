@@ -43,6 +43,7 @@ public class MainService extends Service {
     private String previousCampaignsJSON = new String();
 
     private boolean alwaysOnTop = false;
+    private boolean firstTime = true;
 
     private final AtomicBoolean isDownloading = new AtomicBoolean(false);
 
@@ -55,12 +56,14 @@ public class MainService extends Service {
 
     private final IBinder mBinder = new MainServiceBinder();
     private LocalBroadcastManager bManager;
-    private DownloadFilesTask dTask = new DownloadFilesTask(this);
+    private DownloadFilesTask dTask;
 
     @Override
     public void onCreate() {
+        Log.i(MAIN_SERVICE_STRING, "onCreate()");
         setSharedPref(PreferenceManager.getDefaultSharedPreferences(this));
         bManager = LocalBroadcastManager.getInstance(this);
+        dTask = new DownloadFilesTask(this);
     }
 
 
@@ -76,7 +79,7 @@ public class MainService extends Service {
 
         checkAndDownloadCampaign();
 
-        if (!isActive() && isAlwaysOnTop()) {
+        if (!isActive() && (isAlwaysOnTop() || firstTime ) ) {
             Intent mainActivity = new Intent(getBaseContext(), MainActivity.class);
 
             mainActivity.setAction(Intent.ACTION_MAIN);
@@ -85,8 +88,8 @@ public class MainService extends Service {
 
             getApplication().startActivity(mainActivity);
 
+            firstTime = false;
         }
-
         return Service.START_NOT_STICKY;
     }
 

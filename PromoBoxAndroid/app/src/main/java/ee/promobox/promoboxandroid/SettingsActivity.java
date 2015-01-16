@@ -55,13 +55,6 @@ public class SettingsActivity extends PreferenceActivity {
 
             addPreferencesFromResource(R.xml.pref_general);
 
-            findPreference("always_on_top").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object o) {
-                    Log.i("SettingsActivity", ((Boolean) o).toString());
-                    return true;
-                }
-            });
 
             findPreference("close").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 

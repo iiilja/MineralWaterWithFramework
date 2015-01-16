@@ -42,8 +42,6 @@ public class MainService extends Service {
 
     private String previousCampaignsJSON = new String();
 
-    private boolean alwaysOnTop = false;
-
     private final AtomicBoolean isDownloading = new AtomicBoolean(false);
 
     private Campaign currentCampaign;
@@ -55,28 +53,30 @@ public class MainService extends Service {
 
     private final IBinder mBinder = new MainServiceBinder();
     private LocalBroadcastManager bManager;
-    private DownloadFilesTask dTask = new DownloadFilesTask(this);
+    private DownloadFilesTask dTask;
 
     @Override
     public void onCreate() {
+        Log.i(MAIN_SERVICE_STRING, "onCreate()");
         setSharedPref(PreferenceManager.getDefaultSharedPreferences(this));
         bManager = LocalBroadcastManager.getInstance(this);
+        dTask = new DownloadFilesTask(this);
     }
 
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
+        boolean firstTime = intent.getBooleanExtra("firstTime",false);
+
         Log.i(MAIN_SERVICE_STRING, "Start command");
 
         setUuid(getSharedPref().getString("uuid", "fail"));
         setOrientation(getSharedPref().getInt("orientation", MainActivity.ORIENTATION_LANDSCAPE));
 
-        setAlwaysOnTop(getSharedPref().getBoolean("always_on_top", false));
-
         checkAndDownloadCampaign();
 
-        if (!isActive() && isAlwaysOnTop()) {
+        if ( firstTime ) {
             Intent mainActivity = new Intent(getBaseContext(), MainActivity.class);
 
             mainActivity.setAction(Intent.ACTION_MAIN);
@@ -85,8 +85,8 @@ public class MainService extends Service {
 
             getApplication().startActivity(mainActivity);
 
+            firstTime = false;
         }
-
         return Service.START_NOT_STICKY;
     }
 
@@ -97,7 +97,12 @@ public class MainService extends Service {
 
             if (data.exists()) {
                 String dataString = FileUtils.readFileToString(data);
-                JSONArray campaignsJSON = new JSONObject(dataString).getJSONArray("campaigns");
+                JSONObject dataJSON =  new JSONObject(dataString);
+                JSONArray campaignsJSON = new JSONArray();
+
+                if (dataJSON.has("campaigns")){
+                    campaignsJSON = new JSONObject(dataString).getJSONArray("campaigns");
+                }
 
                 if (!previousCampaignsJSON.equals(campaignsJSON.toString())){
                     Log.d(MAIN_SERVICE_STRING, previousCampaignsJSON + "\n" + dataString);
@@ -215,14 +220,6 @@ public class MainService extends Service {
 
     public void setSharedPref(SharedPreferences sharedPref) {
         this.sharedPref = sharedPref;
-    }
-
-    public boolean isAlwaysOnTop() {
-        return alwaysOnTop;
-    }
-
-    public void setAlwaysOnTop(boolean alwaysOnTop) {
-        this.alwaysOnTop = alwaysOnTop;
     }
 
     public AtomicBoolean getIsDownloading() {

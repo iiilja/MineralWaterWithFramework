@@ -246,7 +246,7 @@ public class FileDtoConsumer implements Runnable {
 
 			imageConvert.background("white");
 			imageConvert.gravity("center");
-			imageConvert.extent("250x250");
+			//imageConvert.extent("250x250");
 
 			imageConvert.processToFile(thumbFile);
 
@@ -297,7 +297,7 @@ public class FileDtoConsumer implements Runnable {
 
 			imageConvert.background("white");
 			imageConvert.gravity("center");
-			imageConvert.extent("250x250");
+			//imageConvert.extent("250x250");
 
 			imageConvert.processToFile(thumbFile);
 
@@ -389,7 +389,7 @@ public class FileDtoConsumer implements Runnable {
 
 		imageConvert.background("white");
 		imageConvert.gravity("center");
-		imageConvert.extent("250x250");
+		//imageConvert.extent("250x250");
 
 		if (f.getAngle() != 0) {
 			imageConvert.rotate(f.getAngle());

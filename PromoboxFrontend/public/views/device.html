@@ -53,6 +53,11 @@
                             </div>
                         </div>
                     </div>
+                    <div ng-if="device.status != 3">
+                        <a class="btn btn-default" ng-click="openApp(device.id)">
+                            {{ 'device_launch_promobox' | translate }}
+                        </a>
+                    </div>  
                 </div>
             </div>
 

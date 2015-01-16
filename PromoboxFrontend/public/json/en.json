@@ -60,6 +60,7 @@
     "device_add": "Добавить",
     "device_time_intersection": "Пересечение времени кампаний",
     "device_offtime": "Время выключения",
+    "device_launch_promobox": "Запустить PROMOBOX",
     "up": "Выше",
     "down": "Ниже",
     "toBegin": "В начало",

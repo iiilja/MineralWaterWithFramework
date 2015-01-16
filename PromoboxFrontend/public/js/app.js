@@ -722,6 +722,12 @@ app.controller('DevicesController', ['$scope', 'token', 'Device', 'sysMessage', 
                     sysMessage.update_s($filter('translate')('system_device_cachecleared'));
                 });
             }
+
+            $scope.openApp =  function(deviceId) {
+                Device.openApp({token: token.get() , id: deviceId}, function (response) {
+                    //sysMessage.update_s($filter('translate')('system_device_cachecleared'));
+                });
+            }
             
             $scope.workdays = ['mo', 'tu', 'we', 'th', 'fr', 'sa', 'su'];
             $scope.toggleWorkDay = function(device, day) {

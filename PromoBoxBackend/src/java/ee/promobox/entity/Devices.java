@@ -138,6 +138,12 @@ public class Devices implements Serializable {
     
     @Column(name = "next_file")
     private Integer nextFile; 
+    
+    @Column(name = "is_on_top")
+    private boolean onTop;
+    
+    @Column(name = "open_app")
+    private boolean openApp;
 
     public Devices() {
     }
@@ -393,5 +399,22 @@ public class Devices implements Serializable {
     public void setNextFile(Integer nextFile) {
         this.nextFile = nextFile;
     }
+
+	public boolean isOnTop() {
+		return onTop;
+	}
+
+	public void setOnTop(boolean onTop) {
+		this.onTop = onTop;
+	}
+
+	public boolean isOpenApp() {
+		return openApp;
+	}
+
+	public void setOpenApp(boolean openApp) {
+		this.openApp = openApp;
+	}
+	
     
 }

@@ -657,6 +657,7 @@ public class DevicesController {
             device.setUuid(UUID.randomUUID().toString().substring(0, 4));
             device.setDescription("");
             device.setNetworkData("");
+            device.setCreatedDt(new Date());
 
             device.setWorkStartAt(parseTimeString("0:00"));
             device.setWorkEndAt(parseTimeString("23:00"));

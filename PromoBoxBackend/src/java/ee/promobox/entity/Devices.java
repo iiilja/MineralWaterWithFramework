@@ -144,6 +144,10 @@ public class Devices implements Serializable {
     
     @Column(name = "open_app")
     private boolean openApp;
+    
+    @Column(name = "created_dt")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdDt;
 
     public Devices() {
     }
@@ -329,7 +333,15 @@ public class Devices implements Serializable {
         this.clearCache = clearCache;
     }
     
-    @Override
+    public Date getCreatedDt() {
+		return createdDt;
+	}
+
+	public void setCreatedDt(Date createdDt) {
+		this.createdDt = createdDt;
+	}
+
+	@Override
     public int hashCode() {
         int hash = 0;
         hash += (id != null ? id.hashCode() : 0);

@@ -61,6 +61,9 @@ public class MainService extends Service {
         setSharedPref(PreferenceManager.getDefaultSharedPreferences(this));
         bManager = LocalBroadcastManager.getInstance(this);
         dTask = new DownloadFilesTask(this);
+        if (!ROOT.exists()){
+            ROOT.mkdirs();
+        }
     }
 
 

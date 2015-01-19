@@ -27,6 +27,7 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
     private LocalBroadcastManager bManager;
     private ArrayList<CampaignFile> files;
     private int position = 0;
+    private int orientation;
     private boolean active = true;
     private MoviePlayer player;
 
@@ -56,6 +57,7 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
             try {
 
                 Surface surface = new Surface(videoView.getSurfaceTexture());
+
 
                 try {
                     player = new MoviePlayer(
@@ -139,7 +141,9 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
 
         hideSystemUI();
 
-        if (getIntent().getExtras().getInt("orientation") == MainActivity.ORIENTATION_PORTRAIT) {
+        orientation = getIntent().getExtras().getInt("orientation");
+
+        if (orientation == MainActivity.ORIENTATION_PORTRAIT) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         } else {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
@@ -150,6 +154,11 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
         }
 
         videoView = (TextureView) findViewById(R.id.videoview);
+
+        if (orientation == MainActivity.ORIENTATION_PORTRAIT_EMULATION){
+            videoView.setAlpha(.5f);
+            videoView.setRotation(270.0f);
+        }
 
         videoView.setSurfaceTextureListener(this);
 
@@ -170,7 +179,9 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
     }
 
     private void cleanUp() {
-        player.requestStop();
+        if (player != null){
+            player.requestStop();
+        }
     }
 
     @Override

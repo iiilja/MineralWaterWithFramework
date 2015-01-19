@@ -8,12 +8,14 @@ import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
+import android.view.animation.RotateAnimation;
+
 
 import org.apache.commons.io.IOUtils;
 
@@ -22,16 +24,19 @@ import java.io.FileInputStream;
 import java.util.ArrayList;
 
 import ee.promobox.promoboxandroid.util.ToastIntent;
+import ee.promobox.promoboxandroid.widgets.AspectRatioImageView;
 
 public class ImageActivity extends Activity {
 
     private final String IMAGE_ACTIVITY_STRING = "ImageActivity ";
 
-    private ImageView slide;
+    private AspectRatioImageView slide;
     private LocalBroadcastManager bManager;
     private ArrayList<CampaignFile> files;
     private int position = 0;
     private boolean active = true;
+    private int orientation;
+    private RotateAnimation animation;
 
     private Bitmap decodeBitmap(File file) {
         Bitmap bm = null;
@@ -59,6 +64,13 @@ public class ImageActivity extends Activity {
         }
 
         return bm;
+    }
+
+    public static Bitmap rotateBitmap(Bitmap source, float angle)
+    {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(angle);
+        return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
     }
 
     private void hideSystemUI() {
@@ -95,8 +107,9 @@ public class ImageActivity extends Activity {
         active = true;
 
         Log.i(IMAGE_ACTIVITY_STRING, "Orientation: " + getIntent().getExtras().getInt("orientation"));
+        orientation = getIntent().getExtras().getInt("orientation");
 
-        if (getIntent().getExtras().getInt("orientation") == MainActivity.ORIENTATION_PORTRAIT) {
+        if (orientation == MainActivity.ORIENTATION_PORTRAIT) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         } else {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
@@ -134,7 +147,7 @@ public class ImageActivity extends Activity {
 
         bManager.registerReceiver(bReceiver, intentFilter);
 
-        slide = (ImageView) findViewById(R.id.slide_1);
+        slide = (AspectRatioImageView) findViewById(R.id.slide_1);
 
         Bundle extras = getIntent().getExtras();
 
@@ -169,8 +182,11 @@ public class ImageActivity extends Activity {
         File file = new File(path);
 
         try {
-
-            slide.setImageBitmap(decodeBitmap(file));
+            Bitmap bitmap = decodeBitmap(file);
+            if (orientation == MainActivity.ORIENTATION_PORTRAIT_EMULATION){
+                bitmap = rotateBitmap(bitmap, 270);
+            }
+            slide.setImageBitmap(bitmap);
 
             sendPlayCampaignFile();
 
@@ -178,9 +194,8 @@ public class ImageActivity extends Activity {
 
             final long delay = getIntent().getExtras().getInt("delay") * 1000;
 
-            Log.d(IMAGE_ACTIVITY_STRING,"DELAY_MILLIS = " + delay);
-
             slide.postDelayed(r, delay);
+
 
         } catch (Exception ex) {
             Log.e(IMAGE_ACTIVITY_STRING, ex.getMessage(), ex);

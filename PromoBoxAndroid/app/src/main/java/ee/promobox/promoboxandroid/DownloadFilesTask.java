@@ -322,6 +322,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
         } else {
             String error = IOUtils.toString(response.getEntity().getContent());
             Log.e(DOWNLOAD_FILE_TASK, error);
+            Log.e(DOWNLOAD_FILE_TASK, "StatusCode = " + response.getStatusLine().getStatusCode());
             bManager.sendBroadcast(new ToastIntent(DOWNLOAD_FILE_TASK + error));
         }
 

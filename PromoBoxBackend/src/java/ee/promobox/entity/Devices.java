@@ -138,6 +138,16 @@ public class Devices implements Serializable {
     
     @Column(name = "next_file")
     private Integer nextFile; 
+    
+    @Column(name = "is_on_top")
+    private boolean onTop;
+    
+    @Column(name = "open_app")
+    private boolean openApp;
+    
+    @Column(name = "created_dt")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdDt;
 
     public Devices() {
     }
@@ -323,7 +333,15 @@ public class Devices implements Serializable {
         this.clearCache = clearCache;
     }
     
-    @Override
+    public Date getCreatedDt() {
+		return createdDt;
+	}
+
+	public void setCreatedDt(Date createdDt) {
+		this.createdDt = createdDt;
+	}
+
+	@Override
     public int hashCode() {
         int hash = 0;
         hash += (id != null ? id.hashCode() : 0);
@@ -393,5 +411,22 @@ public class Devices implements Serializable {
     public void setNextFile(Integer nextFile) {
         this.nextFile = nextFile;
     }
+
+	public boolean isOnTop() {
+		return onTop;
+	}
+
+	public void setOnTop(boolean onTop) {
+		this.onTop = onTop;
+	}
+
+	public boolean isOpenApp() {
+		return openApp;
+	}
+
+	public void setOpenApp(boolean openApp) {
+		this.openApp = openApp;
+	}
+	
     
 }

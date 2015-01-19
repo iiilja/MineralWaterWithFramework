@@ -93,13 +93,14 @@ public class DevicesController {
         if (d != null) {
             JSONObject objectGiven = new JSONObject(json);
 
-            d.setFreeSpace(objectGiven.getLong("freeSpace"));
-            d.setCache(objectGiven.getLong("cache"));
+            d.setFreeSpace(objectGiven.has("freeSpace") ? objectGiven.getLong("freeSpace") : 0);
+            d.setCache(objectGiven.has("cache") ? objectGiven.getLong("cache") : 0);
             d.setCurrentFileId(objectGiven.has("currentFileId") ? objectGiven.getInt("currentFileId") : null);
             d.setCurrentCampaignId(objectGiven.has("currentCampaignId") ? objectGiven.getInt("currentCampaignId") : null);
             d.setLoadingCampaignId(objectGiven.has("loadingCampaingId") ? objectGiven.getInt("loadingCampaingId") : null);
             d.setLoadingCampaignProgress(objectGiven.has("loadingCampaingProgress") ? objectGiven.getInt("loadingCampaingProgress") : null);
-
+            d.setOnTop(objectGiven.has("isOnTop") ? objectGiven.getBoolean("isOnTop") : false);
+            
             if (objectGiven.has("ip")) {
                 d.setNetworkData(objectGiven.getJSONArray("ip").toString());
             }
@@ -111,6 +112,7 @@ public class DevicesController {
             resp.put("lastUpdate", d.getLastDeviceRequestDt().getTime());
             resp.put("orientation", d.getOrientation());
             resp.put("clearCache", d.isClearCache());
+            resp.put("openApp", d.isOpenApp());
 
             d.setClearCache(false);
             d.setNextFile(null);
@@ -261,6 +263,7 @@ public class DevicesController {
                     jsonD.put("resolution", d.getResolution());
                     jsonD.put("audioOut", d.getAudioOut());
                     jsonD.put("lastRequestDt", d.getLastDeviceRequestDt().getTime());
+                    jsonD.put("onTop", d.isOnTop());
 
                     if (d.getCurrentCampaignId() != null) {
                         AdCampaigns campaign = userService.findCampaignByIdAndClientId(d.getCurrentCampaignId(), session.getClientId());
@@ -575,6 +578,39 @@ public class DevicesController {
         }
     }
     
+    @RequestMapping(value = "token/{token}/devices/{id}/openapp", method = RequestMethod.PUT)
+    public void openApp(
+            @PathVariable("token") String token,
+            @PathVariable("id") int id,
+            HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+
+        JSONObject resp = new JSONObject();
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+        Session session = sessionService.findSession(token);
+
+        if (session != null) {
+            int clientId = session.getClientId();
+
+            Devices device = userService.findDeviceByIdAndClientId(id, clientId);
+
+            if (device != null) {
+
+                device.setOpenApp(true);
+
+                userService.updateDevice(device);
+
+                response.setStatus(HttpServletResponse.SC_OK);
+
+                RequestUtils.printResult(resp.toString(), response);
+
+            } else {
+                RequestUtils.sendUnauthorized(response);
+            }
+        }
+    }
+    
     private Date parseTimeString(String timeString) {
         Calendar cal = GregorianCalendar.getInstance();
 
@@ -621,6 +657,7 @@ public class DevicesController {
             device.setUuid(UUID.randomUUID().toString().substring(0, 4));
             device.setDescription("");
             device.setNetworkData("");
+            device.setCreatedDt(new Date());
 
             device.setWorkStartAt(parseTimeString("0:00"));
             device.setWorkEndAt(parseTimeString("23:00"));

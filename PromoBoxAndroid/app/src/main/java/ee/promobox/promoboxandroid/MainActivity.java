@@ -297,6 +297,9 @@ public class MainActivity extends Activity {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (action.equals(CAMPAIGN_UPDATE)) {
+                if (mainService == null){
+                    return;
+                }
                 campaign = mainService.getCurrentCampaign();
                 Log.d(RECEIVER_STRING, "CAMPAIGN_UPDATE to " + (campaign != null ? campaign.getCampaignName() : "NONE"));
                 position = 0;

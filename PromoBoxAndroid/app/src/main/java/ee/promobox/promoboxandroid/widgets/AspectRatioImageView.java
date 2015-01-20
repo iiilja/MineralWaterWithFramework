@@ -1,13 +1,17 @@
 package ee.promobox.promoboxandroid.widgets;
 
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.widget.ImageView;
 
 /**
  * Created by ilja on 15.01.2015.
  */
 public class AspectRatioImageView extends ImageView {
+
     public AspectRatioImageView(Context context) {
         super(context);
     }
@@ -22,9 +26,33 @@ public class AspectRatioImageView extends ImageView {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        int width = MeasureSpec.getSize(widthMeasureSpec);
-        int height = width * getDrawable().getIntrinsicHeight() / getDrawable().getIntrinsicWidth();
-        setMeasuredDimension(width, height);
+        if (widthMeasureSpec == 0 || heightMeasureSpec == 0) {
+            Log.w("AspectRatioImageView","(widthMeasureSpec == 0 || heightMeasureSpec == 0" );
+            return;
+        }
+        try {
+            Drawable drawable = getDrawable();
+
+            if (drawable == null) {
+                setMeasuredDimension(0, 0);
+            } else {
+                float imageSideRatio = (float)drawable.getIntrinsicWidth() / (float)drawable.getIntrinsicHeight();
+                float viewSideRatio = (float)MeasureSpec.getSize(widthMeasureSpec) / (float)MeasureSpec.getSize(heightMeasureSpec);
+                if (imageSideRatio <= viewSideRatio) {
+                    // Image is taller than the display (ratio)
+                    int width = MeasureSpec.getSize(widthMeasureSpec);
+                    int height = (int)(width / imageSideRatio);
+                    setMeasuredDimension(width, height);
+                } else {
+                    // Image is wider than the display (ratio)
+                    int height = MeasureSpec.getSize(heightMeasureSpec);
+                    int width = (int)(height * imageSideRatio);
+                    setMeasuredDimension(width, height);
+                }
+            }
+        } catch (Exception e) {
+            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        }
     }
 
 

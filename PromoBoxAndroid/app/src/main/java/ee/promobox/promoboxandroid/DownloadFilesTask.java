@@ -178,16 +178,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
             File file = new File(dir, f.getId() + "");
 
             if (!file.exists() || file.length() != f.getSize()) {
-                if (service.getOrientation() != MainActivity.ORIENTATION_PORTRAIT_EMULATION) {
-                    downloadFile(String.format(MainService.DEFAULT_SERVER + "/service/files/%s", f.getId()), f.getId() + "", camp);
-                } else {
-
-                    File filePort = new File(dir, f.getId() + "_port");
-
-                    if (!filePort.exists()) {
-                        downloadFile(String.format(MainService.DEFAULT_SERVER + "/service/files/%s?orient=3", f.getId()), f.getId() + "_port", camp);
-                    }
-                }
+                downloadFile(String.format(MainService.DEFAULT_SERVER + "/service/files/%s", f.getId()), f.getId() + "", camp);
             }
         }
 
@@ -322,6 +313,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
         } else {
             String error = IOUtils.toString(response.getEntity().getContent());
             Log.e(DOWNLOAD_FILE_TASK, error);
+            Log.e(DOWNLOAD_FILE_TASK, "StatusCode = " + response.getStatusLine().getStatusCode());
             bManager.sendBroadcast(new ToastIntent(DOWNLOAD_FILE_TASK + error));
         }
 

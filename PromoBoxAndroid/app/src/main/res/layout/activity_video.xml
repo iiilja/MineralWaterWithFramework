@@ -6,13 +6,12 @@
     android:keepScreenOn="true"
     tools:context="ee.promobox.promoboxandroid.VideoActivity">
 
-    <TextureView
+    <ee.promobox.promoboxandroid.widgets.VideoTextureView
         android:id="@+id/videoview"
         android:layout_gravity="fill"
         android:adjustViewBounds="true"
         android:scaleType="centerInside"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
-        />
 
 </RelativeLayout>

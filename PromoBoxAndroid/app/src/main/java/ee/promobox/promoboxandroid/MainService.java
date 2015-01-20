@@ -61,6 +61,9 @@ public class MainService extends Service {
         setSharedPref(PreferenceManager.getDefaultSharedPreferences(this));
         bManager = LocalBroadcastManager.getInstance(this);
         dTask = new DownloadFilesTask(this);
+        if (!ROOT.exists()){
+            ROOT.mkdirs();
+        }
     }
 
 
@@ -227,8 +230,8 @@ public class MainService extends Service {
     }
 
     public void setCurrentCampaign(Campaign currentCampaign) {
-        if (this.currentCampaign != null
-                && !this.currentCampaign.equals(currentCampaign)){
+        if (this.currentCampaign == null && currentCampaign != null
+                || this.currentCampaign != null && !this.currentCampaign.equals(currentCampaign)){
             Intent update = new Intent(MainActivity.CAMPAIGN_UPDATE);
             bManager.sendBroadcast(update);
         }

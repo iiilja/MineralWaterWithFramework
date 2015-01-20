@@ -1,6 +1,7 @@
 package ee.promobox.jms;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.util.Date;
 
 import javax.jms.Connection;
@@ -92,6 +93,60 @@ public class FileDtoConsumer implements Runnable {
 		}
 
 	}
+	
+	public void createMultipageCampaingsFiles(CampaignsFiles cFile) {
+		File clientDir = fileService.getClientFolder(cFile.getClientId());
+		
+		final String outputFileName = fileService.getOutputFile(cFile.getClientId(), cFile.getFileId(), null)
+				.getName();
+		File[] pagesFiles = clientDir.listFiles(new FilenameFilter() {
+			
+			@Override
+			public boolean accept(File dir, String name) {
+				return name.startsWith(outputFileName + "-") 
+						&& !name.contains("port");
+			}
+		});
+		
+		log.info("Files sizes: " + pagesFiles.length);
+		if (pagesFiles.length > 1) {
+			for (int i = 0; i < pagesFiles.length; i++) {
+				try {
+					String filename = pagesFiles[i].getName();
+					log.info("Process file: " + filename);
+					String[] part = filename.split("-");
+					int page = Integer.parseInt(part[1]);
+					
+					if (page == 0) {
+						cFile.setPage(0);
+						cFile.setFilename(cFile.getFilename() + "[0]");
+						userService.updateCampaignFile(cFile);
+					} else {
+						CampaignsFiles pageCampaignsFiles = new CampaignsFiles();
+						pageCampaignsFiles.setAdCampaignsId(cFile.getAdCampaignsId());
+						pageCampaignsFiles.setClientId(cFile.getClientId());
+						pageCampaignsFiles.setCreatedDt(cFile.getCreatedDt());
+						pageCampaignsFiles.setFileId(cFile.getFileId());
+						pageCampaignsFiles.setFilename(cFile.getFilename() + "[" + page + "]");
+						pageCampaignsFiles.setFileType(cFile.getFileType());
+						pageCampaignsFiles.setPage(page);
+						pageCampaignsFiles.setSize(0);
+						pageCampaignsFiles.setStatus(cFile.getStatus());
+						
+						userService.addCampaignFile(pageCampaignsFiles);
+						pageCampaignsFiles.setOrderId(pageCampaignsFiles.getOrderId());
+						userService.updateCampaignFile(pageCampaignsFiles);
+						
+						log.info("Created new campaign file: " + pageCampaignsFiles.getId());
+					}
+					
+				} catch (Exception e) {
+					log.error(e.getMessage(), e);
+				}
+			}
+		}
+		
+	}
 
 	public void handleMessage(FileDto fileDto) {
 
@@ -104,8 +159,10 @@ public class FileDtoConsumer implements Runnable {
 
 		if (result) {
 			cFile.setStatus(CampaignsFiles.STATUS_ACTIVE);
+			
+			createMultipageCampaingsFiles(cFile);
 
-			File file = fileService.getOutputFile(fileDto.getClientId(),
+			File file = fileService.getRawFile(fileDto.getClientId(),
 					cFile.getFileId());
 			cFile.setSize((int) file.length());
 
@@ -194,9 +251,9 @@ public class FileDtoConsumer implements Runnable {
 		int fileId = f.getFileId();
 
 		File rawFile = fileService.getRawFile(clientId, fileId);
-		File outputFile = fileService.getOutputFile(clientId, fileId);
-		File outputPortFile = fileService.getOutputPortFile(clientId, fileId);
-		File thumbFile = fileService.getThumbFile(clientId, fileId);
+		File outputFile = fileService.getOutputFile(clientId, fileId, null);
+		File outputPortFile = fileService.getOutputPortFile(clientId, fileId, null);
+		File thumbFile = fileService.getThumbFile(clientId, fileId, null);
 
 		File rawFileWithExt = null;
 		try {
@@ -217,9 +274,9 @@ public class FileDtoConsumer implements Runnable {
 
 		ImageOP imageConvert = new ImageOP(config.getImageMagick());
 		imageConvert.density(300);
-		imageConvert.flatten();
+		//imageConvert.flatten();
 		imageConvert.input(outputFile);
-		imageConvert.page(0);
+		//imageConvert.page(0);
 		imageConvert.background("white");
 		imageConvert.resize(1920, 1920);
 		imageConvert.rotate(f.getAngle());
@@ -246,7 +303,8 @@ public class FileDtoConsumer implements Runnable {
 
 			imageConvert.background("white");
 			imageConvert.gravity("center");
-			//imageConvert.extent("250x250");
+			
+			imageConvert.outputFormat("png");
 
 			imageConvert.processToFile(thumbFile);
 
@@ -257,51 +315,59 @@ public class FileDtoConsumer implements Runnable {
 	}
 
 	private boolean convertPdf(FileDto f) {
-		int clientId = f.getClientId();
-		int fileId = f.getFileId();
-
-		File rawFile = fileService.getRawFile(clientId, fileId);
-		File outputFile = fileService.getOutputFile(clientId, fileId);
-		File outputPortFile = fileService.getOutputPortFile(clientId, fileId);
-		File thumbFile = fileService.getThumbFile(clientId, fileId);
-
-		ImageOP imageConvert = new ImageOP(config.getImageMagick());
-
-		imageConvert.density(300);
-		imageConvert.flatten();
-		imageConvert.input(rawFile);
-		imageConvert.page(0);
-		imageConvert.background("white");
-		imageConvert.resize(1920, 1920);
-		imageConvert.rotate(f.getAngle());
-
-		imageConvert.outputFormat("png");
-
-		if (imageConvert.processToFile(outputFile)) {
-
-			imageConvert = new ImageOP(config.getImageMagick());
-
+		try {
+			int clientId = f.getClientId();
+			int fileId = f.getFileId();
+	
+			File rawFile = fileService.getRawFile(clientId, fileId);
+			File outputFile = fileService.getOutputFile(clientId, fileId, null);
+			File outputPortFile = fileService.getOutputPortFile(clientId, fileId, null);
+			File thumbFile = fileService.getThumbFile(clientId, fileId, null);
+	
+			ImageOP imageConvert = new ImageOP(config.getImageMagick());
+	
+			imageConvert.density(300);
+			//imageConvert.flatten();
 			imageConvert.input(rawFile);
-
-			imageConvert.rotate(270 + f.getAngle());
-
-			imageConvert.outputFormat("png");
-
-			imageConvert.processToFile(outputPortFile);
-
-			imageConvert = new ImageOP(config.getImageMagick());
-
-			imageConvert.input(outputFile);
-
-			imageConvert.resize(250, 250);
-
+			//imageConvert.page(0);
 			imageConvert.background("white");
-			imageConvert.gravity("center");
-			//imageConvert.extent("250x250");
-
-			imageConvert.processToFile(thumbFile);
-
-			return true;
+			imageConvert.resize(1920, 1920);
+			imageConvert.rotate(f.getAngle());
+	
+			imageConvert.outputFormat("png");
+	
+			if (imageConvert.processToFile(outputFile)) {
+	
+				imageConvert = new ImageOP(config.getImageMagick());
+	
+				imageConvert.input(rawFile);
+	
+				imageConvert.rotate(270 + f.getAngle());
+				
+				imageConvert.background("white");
+	
+				imageConvert.outputFormat("png");
+	
+				imageConvert.processToFile(outputPortFile);
+	
+				imageConvert = new ImageOP(config.getImageMagick());
+	
+				imageConvert.input(rawFile);
+	
+				imageConvert.resize(250, 250);
+	
+				imageConvert.background("white");
+				imageConvert.gravity("center");
+				
+				imageConvert.outputFormat("png");
+				//imageConvert.extent("250x250");
+	
+				imageConvert.processToFile(thumbFile);
+	
+				return true;
+			}
+		} catch (Exception ex) {
+			log.error(ex.getMessage(), ex);
 		}
 
 		return false;
@@ -312,7 +378,7 @@ public class FileDtoConsumer implements Runnable {
 		int fileId = f.getFileId();
 
 		File rawFile = fileService.getRawFile(clientId, fileId);
-		File outputFile = fileService.getOutputFile(clientId, fileId);
+		File outputFile = fileService.getOutputFile(clientId, fileId, null);
 
 		try {
 			FileUtils.copyFile(rawFile, outputFile);
@@ -329,9 +395,9 @@ public class FileDtoConsumer implements Runnable {
 		int fileId = f.getFileId();
 
 		File rawFile = fileService.getRawFile(clientId, fileId);
-		File outputFile = fileService.getOutputFile(clientId, fileId);
-		File outputPortFile = fileService.getOutputPortFile(clientId, fileId);
-		File thumbFile = fileService.getThumbFile(clientId, fileId);
+		File outputFile = fileService.getOutputFile(clientId, fileId, null);
+		File outputPortFile = fileService.getOutputPortFile(clientId, fileId, null);
+		File thumbFile = fileService.getThumbFile(clientId, fileId, null);
 
 		ImageOP imageConvert = new ImageOP(config.getImageMagick());
 
@@ -369,8 +435,8 @@ public class FileDtoConsumer implements Runnable {
 		int fileId = f.getFileId();
 
 		File rawFile = fileService.getRawFile(clientId, fileId);
-		File outputFile = fileService.getOutputFile(clientId, fileId);
-		File thumbFile = fileService.getThumbFile(clientId, fileId);
+		File outputFile = fileService.getOutputFile(clientId, fileId, null);
+		File thumbFile = fileService.getThumbFile(clientId, fileId, null);
 
 		VideoOP videoConvert = new VideoOP(config.getAvconv());
 

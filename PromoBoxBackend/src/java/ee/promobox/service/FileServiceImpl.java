@@ -7,7 +7,12 @@
 package ee.promobox.service;
 
 import ee.promobox.KioskConfig;
+import ee.promobox.controller.DevicesController;
+
 import java.io.File;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +25,8 @@ public class FileServiceImpl implements FileService{
     
     @Autowired
     KioskConfig config;
+    
+    private final static Logger log = LoggerFactory.getLogger(FileServiceImpl.class);
 
     @Override
     public File getClientFolder(int clientId) {
@@ -37,18 +44,54 @@ public class FileServiceImpl implements FileService{
     }
 
     @Override
-    public File getOutputFile(int clientId, int fileId) {
-        return new File(getClientFolder(clientId), fileId + "_output");
+    public File getOutputFile(int clientId, int fileId, Integer page) {
+    	try {
+	    	String filename = getClientFolder(clientId).getCanonicalPath() + "/" + fileId + "_output";
+	    	
+	    	if (page != null) {
+	    		filename += "-" + page;
+	    	}
+	    	
+	        return new File(filename);
+    	} catch (Exception ex) {
+    		log.error(ex.getMessage(), ex);
+    	}
+    	
+    	return null;
     }
 
     @Override
-    public File getOutputPortFile(int clientId, int fileId) {
-        return new File(getClientFolder(clientId), fileId + "_output_port");
+    public File getOutputPortFile(int clientId, int fileId, Integer page) {
+    	try {
+	    	String filename = getClientFolder(clientId).getCanonicalPath() + "/" + fileId + "_output_port";
+	    	
+	    	if (page != null) {
+	    		filename += "-" + page;
+	    	}
+	    	
+	        return new File(filename);
+    	} catch (Exception ex) {
+    		log.error(ex.getMessage(), ex);
+    	}
+    	
+    	return null;
     }
     
     @Override
-    public File getThumbFile(int clientId, int fileId) {
-        return new File(getClientFolder(clientId), fileId + "_thumb");
+    public File getThumbFile(int clientId, int fileId, Integer page) {
+    	try {
+	    	String filename = getClientFolder(clientId).getCanonicalPath() + "/" + fileId + "_thumb";
+	    	
+	    	if (page != null) {
+	    		filename += "-" + page;
+	    	}
+	    	
+	        return new File(filename);
+    	} catch (Exception ex) {
+    		log.error(ex.getMessage(), ex);
+    	}
+    	
+    	return null;
     }
     
     

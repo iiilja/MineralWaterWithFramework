@@ -32,7 +32,7 @@ public interface UserService {
     
     public List<Devices> findDevicesByCampaing(int campaignId);
 
-    public List<Files> findCampaignFiles(int campgaignId);
+    public List<CampaignsFiles> findCampaignFiles(int campgaignId);
     
     public CampaignsFiles findCampaignFile(int fileId, int clientId);
     

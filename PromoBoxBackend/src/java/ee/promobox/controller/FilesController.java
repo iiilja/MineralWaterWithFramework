@@ -84,14 +84,15 @@ public class FilesController {
     @Scheduled(cron = "00 00 2 * * ?")
     public void moveArchivedCampaignFiles() throws Exception {
         for (AdCampaigns ac: userService.findCampaignsArchiveCandidates()) {
-            for (Files f: userService.findCampaignFiles(ac.getId())) {
+            for (CampaignsFiles f: userService.findCampaignFiles(ac.getId())) {
                 int clientId = f.getClientId();
                 int fileId = f.getId();
+                Integer page = f.getPage();
 
                 File rawFile = fileService.getRawFile(clientId, fileId);
-                File outputFile = fileService.getOutputFile(clientId, fileId);
-                File outputPortFile = fileService.getOutputPortFile(clientId, fileId);
-                File thumbFile = fileService.getThumbFile(clientId, fileId);
+                File outputFile = fileService.getOutputFile(clientId, fileId, page);
+                File outputPortFile = fileService.getOutputPortFile(clientId, fileId, page);
+                File thumbFile = fileService.getThumbFile(clientId, fileId, page);
                 
                 
                 moveFile(rawFile, clientId);
@@ -304,6 +305,7 @@ public class FilesController {
                             FileDtoProducer producer = new FileDtoProducer(fileDto);
                             FileDtoConsumer consumer = new FileDtoConsumer(session.getClientId(), config, userService, fileService);
                             
+                            log.info("Convert file: " + campaignFile.getId());
                             ThreadPool threadPool = clientThreadPool.getClientThreadPool(session.getClientId());
                             threadPool.execute(consumer);
                             threadPool.execute(producer);
@@ -325,7 +327,7 @@ public class FilesController {
     }
     
     @RequestMapping(value = "token/{token}/campaigns/{id}/files/{file}/rotate/{angle}", method = RequestMethod.PUT)
-    public void rotteFile(
+    public void rotateFile(
             @PathVariable("token") String token,
             @PathVariable("id") int campaignId,
             @PathVariable("file") int fileId,
@@ -482,10 +484,10 @@ public class FilesController {
             }
                         
             
-            File file = fileService.getOutputFile(dbFile.getClientId(), dbFile.getFileId());
+            File file = fileService.getOutputFile(dbFile.getClientId(), dbFile.getFileId(), dbFile.getPage());
                                     
             if (orient!=null && orient == Devices.ORIENTATION_PORTRAIT_EMULATION) {
-                File filePort = fileService.getOutputPortFile(dbFile.getClientId(), dbFile.getFileId());
+                File filePort = fileService.getOutputPortFile(dbFile.getClientId(), dbFile.getFileId(), dbFile.getPage());
                 
                 if (filePort.exists()) {
                     file = filePort;
@@ -527,7 +529,7 @@ public class FilesController {
 
             if (dbFile.getFileType() != FileTypeUtils.FILE_TYPE_AUDIO 
                     && !(dbFile.getStatus() == CampaignsFiles.STATUS_UPLOADED || dbFile.getStatus() == CampaignsFiles.STATUS_CONVERTING)) {
-                file = fileService.getThumbFile(dbFile.getClientId(), dbFile.getFileId());
+                file = fileService.getThumbFile(dbFile.getClientId(), dbFile.getFileId(), dbFile.getPage());
 
                 FileInputStream fileInputStream = new FileInputStream(file);
                 

@@ -144,27 +144,6 @@ public class AudioActivity extends Activity {
         sendPlayCampaignFile();
         exoPlayer.addListener(new OnTrackFinished());
         position++;
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                int counter = 0;
-                while(exoPlayer != null && exoPlayer.getPlaybackState()<4 && counter < 10){
-                    try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    Log.d(AUDIO_ACTIVITY,"---------------------------------");
-                    Log.d(AUDIO_ACTIVITY," PLAYBACK_STATE :\t" + exoPlayer.getPlaybackState());
-                    Log.d(AUDIO_ACTIVITY, "---------------------------------");
-                    counter++;
-
-                }
-            }
-        });
-        thread.start();
-
-
     }
 
     private void cleanUp() {

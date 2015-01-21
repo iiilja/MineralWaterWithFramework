@@ -212,10 +212,10 @@ public class FileDtoConsumer implements Runnable {
 			result = convertImage(f);
 			break;
 		case "WAV":
-			result = copyFile(f);
+			result = convertAudio(f);
 			break;
 		case "MP3":
-			result = copyFile(f);
+			result = convertAudio(f);
 			break;
 		case "MP4":
 			result = convertVideo(f);
@@ -224,7 +224,7 @@ public class FileDtoConsumer implements Runnable {
 			result = convertVideo(f);
 			break;
 		case "AAC":
-			result = copyFile(f);
+			result = convertAudio(f);
 			break;
 		case "AVI":
 			result = convertVideo(f);
@@ -430,12 +430,31 @@ public class FileDtoConsumer implements Runnable {
 		return imageConvert.processToFile(thumbFile);
 	}
 
+
+	private boolean convertAudio(FileDto f) {
+		int clientId = f.getClientId();
+		int fileId = f.getFileId();
+
+		File rawFile = fileService.getRawFile(clientId, fileId);
+		File outputFile = fileService.getOutputFile(clientId, fileId, null);
+		
+		VideoOP videoConvert = new VideoOP(config.getAvconv());
+		return videoConvert.input(rawFile)
+			.codecAudio("aac")
+			.maxrate("1M")
+			.format("adts")
+			.strict("experimental")
+			.overwrite()
+			.processToFile(outputFile);
+	}
+	
 	private boolean convertVideo(FileDto f) {
 		int clientId = f.getClientId();
 		int fileId = f.getFileId();
 
 		File rawFile = fileService.getRawFile(clientId, fileId);
 		File outputFile = fileService.getOutputFile(clientId, fileId, null);
+		File outputMp4File = fileService.getOutputMp4File(clientId, fileId);
 		File thumbFile = fileService.getThumbFile(clientId, fileId, null);
 
 		VideoOP videoConvert = new VideoOP(config.getAvconv());
@@ -463,32 +482,40 @@ public class FileDtoConsumer implements Runnable {
 
 		imageConvert.processToFile(thumbFile);
 
-		boolean result = false;
-		videoConvert = new VideoOP(config.getAvconv());
-
-		if (f.getAngle() == 0) {
-			videoConvert.input(rawFile).codecVideo("libvpx").scale("-1:720")
-					.bitrateVideo("1M").maxrate("1M").format("webm");
-
-			result = videoConvert.processToFile(outputFile);
-
-		} else {
-			videoConvert = new VideoOP(config.getAvconv());
-			videoConvert.input(rawFile).codecVideo("libvpx").bitrateVideo("1M")
-					.maxrate("1M").format("webm").overwrite();
-
-			if (f.getAngle() == 90) {
-				videoConvert.vf("scale=-1:720", "transpose=1");
-			} else if (f.getAngle() == 180) {
-				videoConvert.vf("scale=-1:720", "transpose=1,transpose=1");
-			} else if (f.getAngle() == 270) {
-				videoConvert.vf("scale=-1:720", "transpose=2");
-			}
-
-			result = videoConvert.processToFile(outputFile);
+		boolean result = convertVideo(rawFile, outputFile, f.getAngle(), "libvpx", "webm");
+		if (result) {
+			result = convertVideo(rawFile, outputMp4File, f.getAngle(), "libx264", "mp4");
 		}
 
 		return result;
+	}
+	
+	
+	private boolean convertVideo(File raw, File output, int angle, String codec, String format) {
+		VideoOP videoConvert = new VideoOP(config.getAvconv());
+
+		if (angle == 0) {
+			videoConvert.input(raw).codecVideo(codec).scale("-1:720")
+					.bitrateVideo("1M").maxrate("1M").format(format)
+					.strict("experimental").overwrite();
+
+			return videoConvert.processToFile(output);
+
+		} else {
+			videoConvert = new VideoOP(config.getAvconv());
+			videoConvert.input(raw).codecVideo(codec).bitrateVideo("1M")
+					.maxrate("1M").format(format).strict("experimental").overwrite();
+
+			if (angle == 90) {
+				videoConvert.vf("scale=-1:720", "transpose=1");
+			} else if (angle == 180) {
+				videoConvert.vf("scale=-1:720", "transpose=1,transpose=1");
+			} else if (angle == 270) {
+				videoConvert.vf("scale=-1:720", "transpose=2");
+			}
+
+			return videoConvert.processToFile(output);
+		}
 	}
 
 }

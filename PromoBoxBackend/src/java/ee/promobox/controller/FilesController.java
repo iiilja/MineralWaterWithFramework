@@ -465,18 +465,21 @@ public class FilesController {
     public void getFile(
             @PathVariable("id") int id,
             @RequestParam(required = false) Integer orient,
+            @RequestParam(required = false) Boolean webm, 
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
         CampaignsFiles dbFile = userService.findCampaignFileById(id);
+        
+        webm = webm == null ? false : webm; 
 
         if (dbFile != null && dbFile.getStatus() == CampaignsFiles.STATUS_ACTIVE) {
             response.setStatus(HttpServletResponse.SC_OK);
 
             if (dbFile.getFileType() == FileTypeUtils.FILE_TYPE_VIDEO) {
-                response.setContentType("video/webm");
+            	response.setContentType("video/webm");
             } else if (dbFile.getFileType() == FileTypeUtils.FILE_TYPE_AUDIO) {
                 response.setContentType("audio/mpeg");
             } else if (dbFile.getFileType() == FileTypeUtils.FILE_TYPE_IMAGE) {
@@ -485,6 +488,14 @@ public class FilesController {
                         
             
             File file = fileService.getOutputFile(dbFile.getClientId(), dbFile.getFileId(), dbFile.getPage());
+            if (!webm && dbFile.getFileType() == FileTypeUtils.FILE_TYPE_VIDEO) {
+            	File mp4File = fileService.getOutputMp4File(dbFile.getClientId(), dbFile.getFileId());
+            		
+            	if (mp4File.exists()) {
+            		file = mp4File;
+            		response.setContentType("video/mpeg");
+            	}
+            }
                                     
             if (orient!=null && orient == Devices.ORIENTATION_PORTRAIT_EMULATION) {
                 File filePort = fileService.getOutputPortFile(dbFile.getClientId(), dbFile.getFileId(), dbFile.getPage());

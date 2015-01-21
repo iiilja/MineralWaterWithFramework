@@ -93,6 +93,12 @@ public class FileServiceImpl implements FileService{
     	
     	return null;
     }
+
+	@Override
+	public File getOutputMp4File(int clientId, int fileId) {
+		
+		return new File(getClientFolder(clientId), fileId + "_mp4");
+	}
     
     
     

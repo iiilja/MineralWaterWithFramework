@@ -252,7 +252,6 @@ public class FileDtoConsumer implements Runnable {
 
 		File rawFile = fileService.getRawFile(clientId, fileId);
 		File outputFile = fileService.getOutputFile(clientId, fileId, null);
-		File outputPortFile = fileService.getOutputPortFile(clientId, fileId, null);
 		File thumbFile = fileService.getThumbFile(clientId, fileId, null);
 
 		File rawFileWithExt = null;
@@ -287,16 +286,6 @@ public class FileDtoConsumer implements Runnable {
 
 			imageConvert = new ImageOP(config.getImageMagick());
 
-			imageConvert.input(rawFile);
-
-			imageConvert.rotate(270 + f.getAngle());
-
-			imageConvert.outputFormat("png");
-
-			imageConvert.processToFile(outputPortFile);
-
-			imageConvert = new ImageOP(config.getImageMagick());
-
 			imageConvert.input(outputFile);
 
 			imageConvert.resize(250, 250);
@@ -321,7 +310,6 @@ public class FileDtoConsumer implements Runnable {
 	
 			File rawFile = fileService.getRawFile(clientId, fileId);
 			File outputFile = fileService.getOutputFile(clientId, fileId, null);
-			File outputPortFile = fileService.getOutputPortFile(clientId, fileId, null);
 			File thumbFile = fileService.getThumbFile(clientId, fileId, null);
 	
 			ImageOP imageConvert = new ImageOP(config.getImageMagick());
@@ -337,18 +325,6 @@ public class FileDtoConsumer implements Runnable {
 			imageConvert.outputFormat("png");
 	
 			if (imageConvert.processToFile(outputFile)) {
-	
-				imageConvert = new ImageOP(config.getImageMagick());
-	
-				imageConvert.input(rawFile);
-	
-				imageConvert.rotate(270 + f.getAngle());
-				
-				imageConvert.background("white");
-	
-				imageConvert.outputFormat("png");
-	
-				imageConvert.processToFile(outputPortFile);
 	
 				imageConvert = new ImageOP(config.getImageMagick());
 	
@@ -396,7 +372,6 @@ public class FileDtoConsumer implements Runnable {
 
 		File rawFile = fileService.getRawFile(clientId, fileId);
 		File outputFile = fileService.getOutputFile(clientId, fileId, null);
-		File outputPortFile = fileService.getOutputPortFile(clientId, fileId, null);
 		File thumbFile = fileService.getThumbFile(clientId, fileId, null);
 
 		ImageOP imageConvert = new ImageOP(config.getImageMagick());
@@ -407,14 +382,6 @@ public class FileDtoConsumer implements Runnable {
 		imageConvert.rotate(f.getAngle());
 
 		imageConvert.processToFile(outputFile);
-
-		imageConvert = new ImageOP(config.getImageMagick());
-
-		imageConvert.input(rawFile);
-		imageConvert.outputFormat("png");
-		imageConvert.rotate(270 + f.getAngle());
-
-		imageConvert.processToFile(outputPortFile);
 
 		imageConvert = new ImageOP(config.getImageMagick());
 

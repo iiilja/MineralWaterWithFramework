@@ -59,23 +59,6 @@ public class FileServiceImpl implements FileService{
     	
     	return null;
     }
-
-    @Override
-    public File getOutputPortFile(int clientId, int fileId, Integer page) {
-    	try {
-	    	String filename = getClientFolder(clientId).getCanonicalPath() + "/" + fileId + "_output_port";
-	    	
-	    	if (page != null) {
-	    		filename += "-" + page;
-	    	}
-	    	
-	        return new File(filename);
-    	} catch (Exception ex) {
-    		log.error(ex.getMessage(), ex);
-    	}
-    	
-    	return null;
-    }
     
     @Override
     public File getThumbFile(int clientId, int fileId, Integer page) {

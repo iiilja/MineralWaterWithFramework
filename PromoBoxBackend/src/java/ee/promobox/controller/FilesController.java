@@ -91,13 +91,13 @@ public class FilesController {
 
                 File rawFile = fileService.getRawFile(clientId, fileId);
                 File outputFile = fileService.getOutputFile(clientId, fileId, page);
-                File outputPortFile = fileService.getOutputPortFile(clientId, fileId, page);
+                File mp4File = fileService.getOutputMp4File(clientId, fileId);
                 File thumbFile = fileService.getThumbFile(clientId, fileId, page);
                 
                 
                 moveFile(rawFile, clientId);
                 moveFile(outputFile, clientId);
-                moveFile(outputPortFile, clientId);
+                moveFile(mp4File, clientId);
                 moveFile(thumbFile, clientId);
             }
             
@@ -495,14 +495,6 @@ public class FilesController {
             		file = mp4File;
             		response.setContentType("video/mpeg");
             	}
-            }
-                                    
-            if (orient!=null && orient == Devices.ORIENTATION_PORTRAIT_EMULATION) {
-                File filePort = fileService.getOutputPortFile(dbFile.getClientId(), dbFile.getFileId(), dbFile.getPage());
-                
-                if (filePort.exists()) {
-                    file = filePort;
-                }
             }
             
             response.setContentLength((int)file.length());

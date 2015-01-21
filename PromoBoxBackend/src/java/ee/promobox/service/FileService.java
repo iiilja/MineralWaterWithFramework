@@ -20,6 +20,5 @@ public interface FileService {
     public File getRawFile(int clientId, int fileId);
     public File getOutputFile(int clientId, int fileId, Integer page);
     public File getOutputMp4File(int clientId, int fileId);
-    public File getOutputPortFile(int clientId, int fileId, Integer page);
     public File getThumbFile(int clientId, int fileId, Integer page);
 }

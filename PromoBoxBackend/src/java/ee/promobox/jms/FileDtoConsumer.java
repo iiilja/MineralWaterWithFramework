@@ -407,9 +407,9 @@ public class FileDtoConsumer implements Runnable {
 		
 		VideoOP videoConvert = new VideoOP(config.getAvconv());
 		return videoConvert.input(rawFile)
-			.codecAudio("aac")
-			.maxrate("1M")
-			.format("adts")
+			.codecAudio("libmp3lame")
+			.bitrateAudio("128k")
+			.format("mp3")
 			.strict("experimental")
 			.overwrite()
 			.processToFile(outputFile);
@@ -463,15 +463,15 @@ public class FileDtoConsumer implements Runnable {
 
 		if (angle == 0) {
 			videoConvert.input(raw).codecVideo(codec).scale("-1:720")
-					.bitrateVideo("1M").maxrate("1M").format(format)
+					.bitrateVideo("2M").maxrate("2M").format(format)
 					.strict("experimental").overwrite();
 
 			return videoConvert.processToFile(output);
 
 		} else {
 			videoConvert = new VideoOP(config.getAvconv());
-			videoConvert.input(raw).codecVideo(codec).bitrateVideo("1M")
-					.maxrate("1M").format(format).strict("experimental").overwrite();
+			videoConvert.input(raw).codecVideo(codec).bitrateVideo("2M")
+					.maxrate("2M").format(format).strict("experimental").overwrite();
 
 			if (angle == 90) {
 				videoConvert.vf("scale=-1:720", "transpose=1");

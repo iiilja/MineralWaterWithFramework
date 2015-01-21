@@ -23,6 +23,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
@@ -178,6 +179,8 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
             File file = new File(dir, f.getId() + "");
 
             if (!file.exists() || file.length() != f.getSize()) {
+                Log.d(DOWNLOAD_FILE_TASK, "CampaignFIle f.getSize() = " + f.getSize()
+                        + " real FILE f.getsize = " +  file.length() + " and directiry :" + file.getAbsolutePath() );
                 downloadFile(String.format(MainService.DEFAULT_SERVER + "/service/files/%s", f.getId()), f.getId() + "", camp);
             }
         }
@@ -294,8 +297,14 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
         httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 
         Log.i(DOWNLOAD_FILE_TASK, httppost.getRequestLine().toString());
-
-        HttpResponse response = httpclient.execute(httppost);
+        HttpResponse response = null;
+        try{
+            response = httpclient.execute(httppost);
+        }
+        catch (HttpHostConnectException ex){
+            bManager.sendBroadcast(new ToastIntent("loadData HttpHostConnectException"));
+            return null;
+        }
 
         if (response.getStatusLine().getStatusCode() == 200 && !service.getIsDownloading().get()) {
             HttpEntity entity = response.getEntity();

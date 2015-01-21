@@ -6,20 +6,30 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
-import android.content.res.AssetFileDescriptor;
 import android.graphics.Point;
 import android.graphics.SurfaceTexture;
+import android.media.MediaCodec;
 import android.media.MediaMetadataRetriever;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
-import android.text.Layout;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.RelativeLayout;
+
+
+import com.google.android.exoplayer.ExoPlaybackException;
+import com.google.android.exoplayer.ExoPlayer;
+import com.google.android.exoplayer.FrameworkSampleSource;
+import com.google.android.exoplayer.MediaCodecAudioTrackRenderer;
+import com.google.android.exoplayer.MediaCodecTrackRenderer;
+import com.google.android.exoplayer.MediaCodecVideoTrackRenderer;
+import com.google.android.exoplayer.SampleSource;
+
 
 import java.io.File;
 import java.io.IOException;
@@ -27,16 +37,22 @@ import java.util.ArrayList;
 
 import ee.promobox.promoboxandroid.util.ToastIntent;
 
+
 public class VideoActivity extends Activity implements TextureView.SurfaceTextureListener {
     private final String VIDEO_ACTIVITY = "VideoActivity ";
 
     private TextureView videoView;
+
+
     private LocalBroadcastManager bManager;
     private ArrayList<CampaignFile> files;
     private int position = 0;
     private int orientation;
     private boolean active = true;
-    private MoviePlayer player;
+
+    private ExoPlayer exoPlayer;
+    private MediaCodecAudioTrackRenderer audioRenderer;
+    private MediaCodecVideoTrackRenderer videoRenderer;
 
     @Override
     public void onCreate(Bundle b) {
@@ -62,11 +78,7 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
     public void playVideo() {
         if (files.size() > 0) {
             try {
-
-                Surface surface = new Surface(videoView.getSurfaceTexture());
-
                 if (orientation == MainActivity.ORIENTATION_PORTRAIT_EMULATION){
-                    videoView.setRotation(270.0f);
                     Point videoSize = calculateVideoSize();
                     int height = videoView.getMeasuredHeight();
                     int width = videoView.getMeasuredWidth();
@@ -76,35 +88,23 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
                     videoView.setLayoutParams(params);
                 }
 
-
-                try {
-                    player = new MoviePlayer(
-                            new File(files.get(position).getPath()), surface, new SpeedControlCallback());
-                } catch (IOException ioe) {
-                    Log.e("Vi", "Unable to play movie", ioe);
-                    surface.release();
-                    return;
-                }
-
-                MoviePlayer.PlayTask mPlayTask = new MoviePlayer.PlayTask(player, new MoviePlayer.PlayerFeedback() {
-                    @Override
-                    public void playbackStopped() {
-                        if (position < files.size() && active) {
-                            playVideo();
-                        } else {
-
-                            Intent returnIntent = new Intent();
-
-                            returnIntent.putExtra("result", MainActivity.RESULT_FINISH_PLAY);
-
-                            setResult(RESULT_OK, returnIntent);
-
-                            VideoActivity.this.finish();
-                        }
-                    }
-                });
-
-                mPlayTask.execute();
+                cleanUp();
+                Surface surface = new Surface(videoView.getSurfaceTexture());
+                String pathToFile = files.get(position).getPath();
+                Log.d(VIDEO_ACTIVITY,"playVideo() file = " + new File(pathToFile).getName());
+                Log.d(VIDEO_ACTIVITY,new File(pathToFile).getPath());
+                Uri uri = Uri.parse(pathToFile);
+                SampleSource source = new FrameworkSampleSource(this,uri,null,2);
+                audioRenderer = new MediaCodecAudioTrackRenderer(
+                        source, null, true);
+                videoRenderer = new MediaCodecVideoTrackRenderer(source,
+                        MediaCodec.VIDEO_SCALING_MODE_SCALE_TO_FIT, 0, new Handler(getMainLooper()),
+                        new MediaCodecVideoTrackRendererEventListener(), 50);
+                exoPlayer = ExoPlayer.Factory.newInstance(2);
+                exoPlayer.prepare(audioRenderer,videoRenderer);
+                exoPlayer.addListener(new OnTrackFinished());
+                exoPlayer.sendMessage(videoRenderer, MediaCodecVideoTrackRenderer.MSG_SET_SURFACE, surface);
+                exoPlayer.setPlayWhenReady(true);
 
                 sendPlayCampaignFile();
 
@@ -172,6 +172,11 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
         }
 
         videoView = (TextureView) findViewById(R.id.videoview);
+
+        if (orientation == MainActivity.ORIENTATION_PORTRAIT_EMULATION){
+            videoView.setRotation(270.0f);
+        }
+
         videoView.setSurfaceTextureListener(this);
 
     }
@@ -191,8 +196,12 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
     }
 
     private void cleanUp() {
-        if (player != null){
-            player.requestStop();
+
+        if(exoPlayer != null){
+            exoPlayer.release();
+            exoPlayer = null;
+            audioRenderer = null;
+            videoRenderer = null;
         }
     }
 
@@ -224,6 +233,70 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
     public void onSurfaceTextureUpdated(SurfaceTexture surface) {
 
     }
+
+    private class MediaCodecVideoTrackRendererEventListener implements MediaCodecVideoTrackRenderer.EventListener {
+        private final String TAG = "MediaCodecVideoTrackRendererEventListener" ;
+        @Override
+        public void onDroppedFrames(int i, long l) {
+            Log.d(TAG,"onDroppedFrames");
+        }
+
+        @Override
+        public void onVideoSizeChanged(int i, int i2, float v) {
+            Log.d(TAG,"onVideoSizeChanged");
+        }
+
+        @Override
+        public void onDrawnToSurface(Surface surface) {
+            Log.d(TAG,"onDrawnToSurface");
+        }
+
+        @Override
+        public void onDecoderInitializationError(MediaCodecTrackRenderer.DecoderInitializationException e) {
+            bManager.sendBroadcast(new ToastIntent("DecoderInitializationError"));
+            cleanUp();
+            Log.e(TAG, "onDecoderInitializationError");
+        }
+
+        @Override
+        public void onCryptoError(MediaCodec.CryptoException e) {
+            Log.e(TAG,"onCryptoError");
+        }
+    };
+
+    private class OnTrackFinished implements ExoPlayer.Listener {
+
+        @Override
+        public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+            Log.d(VIDEO_ACTIVITY,"STATE CHANGED , state = " + playbackState);
+
+            if (playbackState == ExoPlayer.STATE_ENDED) {
+
+                if (position == files.size()) {
+                    cleanUp();
+                    Log.d(VIDEO_ACTIVITY, "POSITION == files.size");
+
+                    Intent returnIntent = new Intent();
+                    returnIntent.putExtra("result", 1);
+                    VideoActivity.this.setResult(RESULT_OK, returnIntent);
+
+                    VideoActivity.this.finish();
+                } else {
+                    playVideo();
+                }
+            }
+        }
+
+        @Override
+        public void onPlayWhenReadyCommitted() {
+
+        }
+
+        @Override
+        public void onPlayerError(ExoPlaybackException e) {
+        }
+    }
+
 
     private Point calculateVideoSize() {
         try {

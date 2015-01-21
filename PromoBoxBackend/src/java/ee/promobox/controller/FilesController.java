@@ -178,7 +178,7 @@ public class FilesController {
                     jsonCampaignFile.put("id", file.getId());
                     jsonCampaignFile.put("orderId", file.getOrderId());
                     jsonCampaignFile.put("name", file.getFilename());
-                    jsonCampaignFile.put("ext", "." + FilenameUtils.getExtension(file.getFilename()));
+                    jsonCampaignFile.put("ext", getExtForFile(file));
                     jsonCampaignFile.put("status", file.getStatus());
                     jsonCampaignFile.put("created", file.getCreatedDt());
                     jsonCampaignFile.put("fileType", file.getFileType());
@@ -479,7 +479,7 @@ public class FilesController {
             response.setStatus(HttpServletResponse.SC_OK);
 
             if (dbFile.getFileType() == FileTypeUtils.FILE_TYPE_VIDEO) {
-            	response.setContentType("video/webm");
+            	response.setContentType("video/mp4");
             } else if (dbFile.getFileType() == FileTypeUtils.FILE_TYPE_AUDIO) {
                 response.setContentType("audio/mpeg");
             } else if (dbFile.getFileType() == FileTypeUtils.FILE_TYPE_IMAGE) {
@@ -573,12 +573,26 @@ public class FilesController {
             jsonCampaignFile.put("fileType", file.getFileType());
             jsonCampaignFile.put("created", file.getCreatedDt());
             jsonCampaignFile.put("status", file.getStatus());
-            jsonCampaignFile.put("ext", "." + FilenameUtils.getExtension(file.getFilename()));
+            
+            jsonCampaignFile.put("ext", getExtForFile(file));
 
             fileInformation.put(jsonCampaignFile);
         }
 
         return fileInformation;
+    }
+    
+    
+    private static String getExtForFile(CampaignsFiles file) {
+        String ext = ".png";
+
+        if (file.getFileType() == FileTypeUtils.FILE_TYPE_AUDIO) {
+            ext = ".mp3";
+        } else if (file.getFileType() == FileTypeUtils.FILE_TYPE_VIDEO) {
+            ext = ".mp4";
+        }
+
+        return ext;
     }
 
 

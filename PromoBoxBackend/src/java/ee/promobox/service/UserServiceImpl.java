@@ -50,8 +50,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Clients findClientById(int clientId) {
-        //
-        
         Session session = sessionFactory.getCurrentSession();
 
         Query q = session.getNamedQuery("Clients.findById");
@@ -122,10 +120,10 @@ public class UserServiceImpl implements UserService {
 
     }
 
-    public List<Files> findCampaignFiles(int campgaignId) {
+    public List<CampaignsFiles> findCampaignFiles(int campgaignId) {
         Session session = sessionFactory.getCurrentSession();
 
-        Query q = session.createQuery("select f from Files f, CampaignsFiles cf where cf.campgainId = :campaignId and f.id = cf.fileId");
+        Query q = session.createQuery("select cf from Files f, CampaignsFiles cf where cf.campgainId = :campaignId and f.id = cf.fileId");
         q.setParameter("campaignId", campgaignId);
 
         return q.list();

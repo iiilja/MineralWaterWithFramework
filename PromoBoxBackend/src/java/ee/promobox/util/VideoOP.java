@@ -112,6 +112,13 @@ public class VideoOP {
         return this;
     }
     
+    public VideoOP strict(String strict) {
+    	args.add("-strict");
+    	args.add(strict);
+    	
+    	return this;
+    }
+    
      public VideoOP thumbnail() {
         args.add("-ss");
         args.add(String.valueOf(2));

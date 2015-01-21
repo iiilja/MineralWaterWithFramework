@@ -56,6 +56,8 @@ public class CampaignsFiles implements Serializable {
     private Integer clientId;
     @Column(name = "file_id")
     private Integer fileId;
+    @Column(name = "page")
+    private Integer page;
     @Column(name = "file_type")
     private Integer fileType;
     @Column(name = "order_id")
@@ -202,5 +204,14 @@ public class CampaignsFiles implements Serializable {
     public void setFilename(String filename) {
         this.filename = filename;
     }
+
+	public Integer getPage() {
+		return page;
+	}
+
+	public void setPage(Integer page) {
+		this.page = page;
+	}
+
     
 }

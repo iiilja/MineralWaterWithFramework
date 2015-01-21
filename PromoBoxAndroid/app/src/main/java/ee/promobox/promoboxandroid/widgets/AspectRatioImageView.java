@@ -38,7 +38,7 @@ public class AspectRatioImageView extends ImageView {
             } else {
                 float imageSideRatio = (float)drawable.getIntrinsicWidth() / (float)drawable.getIntrinsicHeight();
                 float viewSideRatio = (float)MeasureSpec.getSize(widthMeasureSpec) / (float)MeasureSpec.getSize(heightMeasureSpec);
-                if (imageSideRatio <= viewSideRatio) {
+                if (imageSideRatio <= viewSideRatio && imageSideRatio > 1) {
                     // Image is taller than the display (ratio)
                     int width = MeasureSpec.getSize(widthMeasureSpec);
                     int height = (int)(width / imageSideRatio);

@@ -6,13 +6,20 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
+import android.content.res.AssetFileDescriptor;
+import android.graphics.Point;
 import android.graphics.SurfaceTexture;
+import android.media.MediaMetadataRetriever;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
+import android.text.Layout;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 
 import java.io.File;
 import java.io.IOException;
@@ -57,6 +64,17 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
             try {
 
                 Surface surface = new Surface(videoView.getSurfaceTexture());
+
+                if (orientation == MainActivity.ORIENTATION_PORTRAIT_EMULATION){
+                    videoView.setRotation(270.0f);
+                    Point videoSize = calculateVideoSize();
+                    int height = videoView.getMeasuredHeight();
+                    int width = videoView.getMeasuredWidth();
+                    videoSize = calculateNeededVideoSize(videoSize,width,height);
+                    FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(videoSize.x, videoSize.y);
+                    params.gravity = Gravity.CENTER;
+                    videoView.setLayoutParams(params);
+                }
 
 
                 try {
@@ -154,12 +172,6 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
         }
 
         videoView = (TextureView) findViewById(R.id.videoview);
-
-        if (orientation == MainActivity.ORIENTATION_PORTRAIT_EMULATION){
-            videoView.setAlpha(.5f);
-            videoView.setRotation(270.0f);
-        }
-
         videoView.setSurfaceTextureListener(this);
 
     }
@@ -211,6 +223,43 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
     @Override
     public void onSurfaceTextureUpdated(SurfaceTexture surface) {
 
+    }
+
+    private Point calculateVideoSize() {
+        try {
+            File file = new File(files.get(position).getPath());
+            MediaMetadataRetriever metaRetriever = new MediaMetadataRetriever();
+            metaRetriever.setDataSource(file.getAbsolutePath());
+            String height = metaRetriever
+                    .extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT);
+            String width = metaRetriever
+                    .extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH);
+            Log.d(VIDEO_ACTIVITY, height + "h , w = " + width);
+            Point size = new Point();
+            size.set(Integer.parseInt(width), Integer.parseInt(height));
+            return size;
+
+        } catch (NumberFormatException e) {
+            Log.e(VIDEO_ACTIVITY, e.getMessage());
+        }
+        return null;
+    }
+
+    private Point calculateNeededVideoSize(Point videoSize, int viewHeight, int viewWidth) {
+        int videoHeight = videoSize.y;
+        int videoWidth = videoSize.x;
+        float imageSideRatio = (float)videoWidth / (float)videoHeight;
+        float viewSideRatio = (float) viewWidth / (float) viewHeight;
+        if (imageSideRatio > viewSideRatio) {
+            // Image is taller than the display (ratio)
+            int height = (int)(viewWidth / imageSideRatio);
+            videoSize.set(viewWidth, height);
+        } else {
+            // Image is wider than the display (ratio)
+            int width = (int)(viewHeight * imageSideRatio);
+            videoSize.set(width, viewHeight);
+        }
+        return videoSize;
     }
 
     private BroadcastReceiver bReceiver = new BroadcastReceiver() {

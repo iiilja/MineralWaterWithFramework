@@ -70,6 +70,7 @@ public class Campaign {
                 f.setType(CampaignFileType.valueOf(obj.getInt("type")));
                 f.setOrderId(obj.getInt("orderId"));
                 f.setPath(new File(getRoot(), f.getId() + "").getAbsolutePath());
+                f.setSize(obj.getInt("size"));
 
                 files.add(f);
 

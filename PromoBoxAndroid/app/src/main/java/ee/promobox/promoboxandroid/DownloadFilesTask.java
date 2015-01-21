@@ -167,7 +167,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
         service.getIsDownloading().set(true);
 
         List<CampaignFile> campaignFiles = camp.getFiles();
-        int loadStep = 100 / campaignFiles.size();
+        int loadStep = 100 / campaignFiles.size()!= 0 ? campaignFiles.size() : 1;
 
         for (CampaignFile f : campaignFiles) {
             service.setLoadingCampaignProgress(service.getLoadingCampaignProgress() + loadStep);

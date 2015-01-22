@@ -53,7 +53,7 @@
                             </div>
                         </div>
                     </div>
-                    <div ng-if="device.onTop == false && device.status != 2">
+                    <div ng-if="device.onTop == false && device.status == 1">
                         <a class="btn btn-default" ng-click="openApp(device.id)">
                             {{ 'device_launch_promobox' | translate }}
                         </a>

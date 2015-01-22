@@ -1,0 +1,14 @@
+server {
+        listen [::]:80;
+        listen   80;
+
+        server_name dev.promobox.ee admin.promobox.ee;
+
+        access_log /var/log/nginx/access.log;
+        error_log /var/log/nginx/error.log;
+
+        root /opt/promobox.ee;
+
+
+}
+

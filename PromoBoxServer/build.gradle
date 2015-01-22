@@ -1,0 +1,80 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+    dependencies {
+        classpath 'org.hidetake:gradle-ssh-plugin:1.0.1'
+        classpath 'org.gradle.api.plugins:gradle-tomcat-plugin:1.2.4'
+    }
+}
+
+apply plugin: 'org.hidetake.ssh'
+apply plugin: 'groovy'
+
+
+remotes {
+    webServer {
+        host = '46.182.31.101'
+        user = 'root'
+    }
+}
+
+ssh.settings {
+    identity = file("${System.properties['user.home']}/.ssh/gradle/id_rsa")
+    knownHosts = allowAnyHosts    // Disable host key verification
+}
+
+task install_server() << {
+    description = 'Install server.'
+  
+    ssh.run {
+        session(remotes.webServer) {
+            execute 'apt-get update'
+            execute 'apt-get -y install vim'
+            execute 'apt-get -y install nginx'
+            execute 'apt-get -y install postgresql-9.3'
+            execute 'apt-get -y install openjdk-7-jdk'
+            execute 'apt-get -y install tomcat7'
+            execute 'apt-get -y install imagemagick'
+            execute 'apt-get -y install libav-tools'
+            execute 'apt-get -y install unoconv'
+            execute 'ufw allow "Nginx Full"'
+            execute 'ufw allow "OpenSSH"'
+            execute 'ufw logging off'
+            execute 'ufw enable'
+            execute 'echo "*       soft    nofile  65000" >> /etc/security/limits.conf'
+            execute 'echo "*       hard    nofile  65000" >> /etc/security/limits.conf'
+            execute 'echo "root    soft    nofile  65000" >> /etc/security/limits.conf'
+            execute 'echo "root    hard    nofile  65000" >> /etc/security/limits.conf'
+            execute 'mkdir -p /opt/amq'
+            execute 'mkdir -p /opt/api.promobox.ee'
+            execute 'mkdir -p /opt/data'
+            execute 'mkdir -p /opt/promobox.ee'
+            execute 'chown -R tomcat7.tomcat7 /opt/*'
+            execute 'apt-get -y install ntp'
+        }
+    }
+}
+
+task update_configs() << {
+    description = 'Update configs'
+  
+    ssh.run {
+        session(remotes.webServer) {
+
+            put "postgresql/postgresql.conf" , '/etc/postgresql/9.3/main/postgresql.conf'
+            put "postgresql/pg_hba.conf" , '/etc/postgresql/9.3/main/pg_hba.conf'
+            execute 'service postgresql restart'
+            
+            put "postgresql/postgresql.conf" , '/etc/postgresql/9.3/main/postgresql.conf'
+            put "postgresql/pg_hba.conf" , '/etc/postgresql/9.3/main/pg_hba.conf'
+            execute 'service postgresql restart'
+            
+            put "postgresql/postgresql.conf" , '/etc/postgresql/9.3/main/postgresql.conf'
+            put "postgresql/pg_hba.conf" , '/etc/postgresql/9.3/main/pg_hba.conf'
+            execute 'service postgresql restart'
+            
+        }
+    }
+}

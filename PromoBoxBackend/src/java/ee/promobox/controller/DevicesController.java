@@ -99,7 +99,10 @@ public class DevicesController {
             d.setCurrentCampaignId(objectGiven.has("currentCampaignId") ? objectGiven.getInt("currentCampaignId") : null);
             d.setLoadingCampaignId(objectGiven.has("loadingCampaingId") ? objectGiven.getInt("loadingCampaingId") : null);
             d.setLoadingCampaignProgress(objectGiven.has("loadingCampaingProgress") ? objectGiven.getInt("loadingCampaingProgress") : null);
-            d.setOnTop(objectGiven.has("isOnTop") ? objectGiven.getBoolean("isOnTop") : false);
+            
+            boolean onTop = objectGiven.has("isOnTop") ? objectGiven.getBoolean("isOnTop") : true;
+            d.setOnTop(onTop);
+            d.setStatus(onTop ? Devices.STATUS_ONLINE : Devices.STATUS_USED);
             
             if (objectGiven.has("ip")) {
                 d.setNetworkData(objectGiven.getJSONArray("ip").toString());

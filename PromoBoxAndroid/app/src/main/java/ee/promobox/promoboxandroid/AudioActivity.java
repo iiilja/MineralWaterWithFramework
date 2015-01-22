@@ -138,7 +138,7 @@ public class AudioActivity extends Activity {
         source = new FrameworkSampleSource(this,uri,null,1);
         audioRenderer = new MediaCodecAudioTrackRenderer(
                 source, null, true);
-        exoPlayer = ExoPlayer.Factory.newInstance(1,0,0);
+        exoPlayer = ExoPlayer.Factory.newInstance(1);
         exoPlayer.prepare(audioRenderer);
         exoPlayer.setPlayWhenReady(true);
         sendPlayCampaignFile();
@@ -198,11 +198,8 @@ public class AudioActivity extends Activity {
             String action = intent.getAction();
             if (action.equals(MainActivity.ACTIVITY_FINISH)) {
                 cleanUp();
-                Intent returnIntent = new Intent();
 
-                returnIntent.putExtra("result", MainActivity.RESULT_FINISH_PLAY);
-
-                AudioActivity.this.setResult(RESULT_OK, returnIntent);
+                AudioActivity.this.setResult(RESULT_OK);
 
                 AudioActivity.this.finish();
             } else if (action.equals(MainActivity.NO_NETWORK)){

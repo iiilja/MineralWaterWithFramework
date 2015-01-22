@@ -100,8 +100,20 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
 
                     handleCampaigns(data.getJSONArray("campaigns"));
                 } else {
+                    service.setCampaigns(null);
                     Log.w(DOWNLOAD_FILE_TASK, "Data has no campaigns.");
                 }
+                /*
+                Campigns are loaded to device and are set to campaigns in service.
+                Device is playing new campaign if was updated.
+
+                Now, when campains are updated and new are set playing we may clear cache.
+                And then try play next file
+                 */
+                MainService.ROOT.mkdirs();
+                File jsonDataFile = new File(MainService.ROOT, "data.json");
+                FileUtils.writeStringToFile(jsonDataFile, data.toString(), "UTF-8");
+
                 if (data.has("clearCache") && data.getBoolean("clearCache")){
                     String directoryString = MainService.ROOT.getAbsolutePath() + "/";
                     File directory = new File(directoryString);
@@ -110,7 +122,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
                         try{
                             int id = Integer.parseInt(folder.getName());
                             Log.d(DOWNLOAD_FILE_TASK,"Am in folder " + id);
-                            Campaign campaign = campaignList.getCampaignWithId(id);
+                            Campaign campaign = campaignList != null ? campaignList.getCampaignWithId(id) : null;
                             if (campaign == null){
                                 FileUtils.deleteDirectory(folder);
                                 Log.d(DOWNLOAD_FILE_TASK,"Removing folder " + id);
@@ -179,8 +191,8 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
             File file = new File(dir, f.getId() + "");
 
             if (!file.exists() || file.length() != f.getSize()) {
-                Log.d(DOWNLOAD_FILE_TASK, "CampaignFIle f.getSize() = " + f.getSize()
-                        + " real FILE f.getsize = " +  file.length() + " and directiry :" + file.getAbsolutePath() );
+                Log.d(DOWNLOAD_FILE_TASK, "CampaignFIle "+f.getId()+" f.getSize() = " + f.getSize()
+                        + " real FILE length = " +  file.length()+" getTotalSpace = " +  file.getTotalSpace() + " and directiry :" + file.getAbsolutePath() );
                 downloadFile(String.format(MainService.DEFAULT_SERVER + "/service/files/%s", f.getId()), f.getId() + "", camp);
             }
         }
@@ -309,14 +321,8 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
         if (response.getStatusLine().getStatusCode() == 200 && !service.getIsDownloading().get()) {
             HttpEntity entity = response.getEntity();
             if (entity != null) {
-                MainService.ROOT.mkdirs();
-
-                File file = new File(MainService.ROOT, "data.json");
 
                 String jsonString = IOUtils.toString(response.getEntity().getContent());
-
-                FileUtils.writeStringToFile(file, jsonString, "UTF-8");
-
                 return new JSONObject(jsonString);
             }
         } else {
@@ -362,22 +368,22 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
 
         CampaignList oldCampaigns = service.getCampaigns();
         CampaignList newCampaigns = new CampaignList(campaigns);
+        CampaignList campaignsToBeSet = new CampaignList(newCampaigns.size());
 
         boolean campaignsUpdated = false;
 
         if (oldCampaigns == null) { // Campaigns are not yet initialised.
-            service.setCampaigns(newCampaigns);
 
             for (Campaign camp : newCampaigns) {
                 downloadFiles(camp);
             }
+            service.setCampaigns(newCampaigns);
 
             campaignsUpdated = true;
 
         } else { // Have previous campaigns.
-            int oldCampaignsCount = oldCampaigns.size();
 
-            service.setCampaigns(new CampaignList(newCampaigns.size()));
+//            service.setCampaigns(new CampaignList(newCampaigns.size()));
 
             Campaign oldCampaign;
 
@@ -394,15 +400,17 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
 
                 // If campaign not in list or needs to be updated add new one.
                 if (oldCampaign == null || (newCampaign.getUpdateDate() > oldCampaign.getUpdateDate())) {
-                    service.getCampaigns().add(newCampaign);
+                    campaignsToBeSet.add(newCampaign);
 
                     downloadFiles(newCampaign);
 
                     campaignsUpdated = true;
-                } else { // Otherwise just add old one.
-                    service.getCampaigns().add(oldCampaign);
+                }
+                else { // Otherwise just add old one.
+                    campaignsToBeSet.add(oldCampaign);
                 }
             }
+            service.setCampaigns(campaignsToBeSet);
         }
 
         if (campaignsUpdated) {

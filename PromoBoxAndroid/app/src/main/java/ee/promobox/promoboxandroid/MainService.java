@@ -218,12 +218,22 @@ public class MainService extends Service {
     }
 
     public void setCurrentCampaign(Campaign currentCampaign) {
+
+        // Broadcasting only if campaign is really updated or new.
         if (this.currentCampaign == null && currentCampaign != null
-                || this.currentCampaign != null && !this.currentCampaign.equals(currentCampaign)){
+                || this.currentCampaign != null && !this.currentCampaign.equals(currentCampaign)
+                || this.currentCampaign.getUpdateDate() < currentCampaign.getUpdateDate()){
+            Log.d(MAIN_SERVICE_STRING, " UPDATING CURRENT CAMPAIGN FROM setCurrentCampaign");
+            this.currentCampaign = currentCampaign;
             Intent update = new Intent(MainActivity.CAMPAIGN_UPDATE);
             bManager.sendBroadcast(update);
         }
-        this.currentCampaign = currentCampaign;
+        else {
+            this.currentCampaign = currentCampaign;
+        }
+        if (currentCampaign == null){
+            setCurrentFileId(0);
+        }
     }
 
     public Campaign getLoadingCampaign() {

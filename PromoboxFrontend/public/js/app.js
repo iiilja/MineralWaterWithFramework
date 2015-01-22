@@ -184,8 +184,8 @@ app.controller('CampaignNewController', ['token', 'Campaign', 'sysLocation',
         });
     }]);
 
-app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Campaign', '$location', '$http', 'toaster', 'Files','sysMessage', 'sysLocation', 'FileUploader', '$rootScope', '$filter', 'orderByFilter', '$timeout',
-    function ($scope, $stateParams, token, Campaign, $location, $http, toaster, Files, sysMessage, sysLocation, FileUploader, $rootScope, $filter, orderByFilter, $timeout) {
+app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Campaign', '$location', '$http', 'toaster', 'Files','sysMessage', 'sysLocation', 'FileUploader', '$rootScope', '$filter', 'orderByFilter', '$timeout', 'browser',
+    function ($scope, $stateParams, token, Campaign, $location, $http, toaster, Files, sysMessage, sysLocation, FileUploader, $rootScope, $filter, orderByFilter, $timeout, browser) {
         $rootScope.top_link_active_list = 'top_link_active';
         $scope.filesArray = [];
         $scope.checkedDays = [];
@@ -223,6 +223,11 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
             //    $scope.campaign.files = orderByFilter($scope.campaign.files, ['orderId','name']);
             //});
         });
+
+        $scope.isWebmVideo = function() {
+            var browserName = browser.detectBrowser();
+            return browserName == "chrome" || browserName == "firefox" || browserName == "opera";
+        }
 
         $scope.isFileConverting = function (file) {
             return file.status == 0 || file.status == 4;

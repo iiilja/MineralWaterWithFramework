@@ -101,51 +101,58 @@ public class FilesController {
         }
     }
     
-    @RequestMapping(value = "converAllFiles/{secret}", method = RequestMethod.GET)
-    public void saveFilesOrder(
+    @RequestMapping(value = "convertAllFiles/{secret}", method = RequestMethod.GET)
+    public void convertAllFiles(
             @PathVariable("secret") String secret,
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
     	
+    	log.info("secret: " + secret);
+    	
     	if (secret.equals("gZ34sGxjUwWkuTbCLP8h45Qsju82dbmzg6Zxk9Jw")) {
     		for (CampaignsFiles cFile: userService.findAllFiles()) {
-				File clientDir = fileService.getClientFolder(cFile.getClientId());
-				
-				final String outputFileName = fileService.getOutputFile(cFile.getClientId(), cFile.getFileId(), null)
-						.getName();
-				File[] partFiles = clientDir.listFiles(new FilenameFilter() {
+    			try {
+	    			log.info("Convert: " + cFile.getId());
+					File clientDir = fileService.getClientFolder(cFile.getClientId());
 					
-					@Override
-					public boolean accept(File dir, String name) {
-						return name.startsWith(outputFileName + "-") 
-								&& !name.contains("port");
-					}
-				});
-				
-				if (partFiles.length > 1) {
-					for (int i = 0; i < partFiles.length; i++) {
-						File file = partFiles[i];
-						if (file.exists()) {
-							file.delete();
+					final String outputFileName = fileService.getOutputFile(cFile.getClientId(), cFile.getFileId(), null)
+							.getName();
+					File[] partFiles = clientDir.listFiles(new FilenameFilter() {
+						
+						@Override
+						public boolean accept(File dir, String name) {
+							return name.startsWith(outputFileName + "-") 
+									&& !name.contains("port");
+						}
+					});
+					
+					if (partFiles.length > 1) {
+						for (int i = 0; i < partFiles.length; i++) {
+							File file = partFiles[i];
+							if (file.exists()) {
+								file.delete();
+							}
 						}
 					}
-				}
-				
-				String fileName = cFile.getFilename();
-				String fileType = FilenameUtils.getExtension(fileName);
-				
-				FileDto fileDto = new FileDto(cFile.getId(), cFile.getClientId(), cFile.getFileType(), fileType);
-
-				cFile.setStatus(CampaignsFiles.STATUS_CONVERTING);
-				cFile.setUpdatedDt(new Date());
-				userService.updateCampaignFile(cFile);
- 
-				FileDtoProducer producer = new FileDtoProducer(fileDto);
-				FileDtoConsumer consumer = new FileDtoConsumer(cFile.getClientId(), config, userService, fileService);
- 
-				ThreadPool threadPool = clientThreadPool.getClientThreadPool(Integer.MAX_VALUE);
-				threadPool.execute(consumer);
-				threadPool.execute(producer);
+					
+					String fileName = cFile.getFilename();
+					String fileType = FilenameUtils.getExtension(fileName);
+					
+					FileDto fileDto = new FileDto(cFile.getId(), cFile.getClientId(), cFile.getFileType(), fileType);
+	
+					cFile.setStatus(CampaignsFiles.STATUS_CONVERTING);
+					cFile.setUpdatedDt(new Date());
+					userService.updateCampaignFile(cFile);
+	 
+					FileDtoProducer producer = new FileDtoProducer(fileDto);
+					FileDtoConsumer consumer = new FileDtoConsumer(cFile.getClientId(), config, userService, fileService);
+	 
+					ThreadPool threadPool = clientThreadPool.getClientThreadPool(Integer.MAX_VALUE);
+					threadPool.execute(consumer);
+					threadPool.execute(producer);
+    			} catch (Exception e) {
+    				log.error(e.getMessage(), e);
+    			}
     		}
     	}
     }

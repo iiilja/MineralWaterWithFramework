@@ -112,7 +112,8 @@ public class FileDtoConsumer implements Runnable {
 		if (pagesFiles.length > 1) {
 			for (int i = 0; i < pagesFiles.length; i++) {
 				try {
-					String filename = pagesFiles[i].getName();
+					File pageFile = pagesFiles[i];
+					String filename = pageFile.getName();
 					log.info("Process file: " + filename);
 					String[] part = filename.split("-");
 					int page = Integer.parseInt(part[1]);
@@ -133,11 +134,11 @@ public class FileDtoConsumer implements Runnable {
 							pageCampaignsFiles.setFilename(name + "[" + page + "]");
 							pageCampaignsFiles.setFileType(cFile.getFileType());
 							pageCampaignsFiles.setPage(page);
-							pageCampaignsFiles.setSize(0);
+							pageCampaignsFiles.setSize( (int) pageFile.length());
 							pageCampaignsFiles.setStatus(cFile.getStatus());
 							
 							userService.addCampaignFile(pageCampaignsFiles);
-							pageCampaignsFiles.setOrderId(pageCampaignsFiles.getOrderId());
+							pageCampaignsFiles.setOrderId(pageCampaignsFiles.getId());
 							userService.updateCampaignFile(pageCampaignsFiles);
 							
 							log.info("Created new campaign file: " + pageCampaignsFiles.getId());

@@ -102,7 +102,7 @@ public class DevicesController {
             
             boolean onTop = objectGiven.has("isOnTop") ? objectGiven.getBoolean("isOnTop") : true;
             d.setOnTop(onTop);
-            d.setStatus(onTop ? Devices.STATUS_ONLINE : Devices.STATUS_USED);
+            
             
             if (objectGiven.has("ip")) {
                 d.setNetworkData(objectGiven.getJSONArray("ip").toString());
@@ -187,7 +187,7 @@ public class DevicesController {
                 }
 
                 d.setLastDeviceRequestDt(new Date());
-                d.setStatus(Devices.STATUS_ONLINE);
+                d.setStatus(onTop ? Devices.STATUS_ONLINE : Devices.STATUS_USED);
 
                 userService.updateDevice(d);
 

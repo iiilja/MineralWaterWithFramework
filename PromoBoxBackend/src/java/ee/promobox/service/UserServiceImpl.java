@@ -119,8 +119,33 @@ public class UserServiceImpl implements UserService {
         return q.list();
 
     }
+    
+    
 
-    public List<CampaignsFiles> findCampaignFiles(int campgaignId) {
+    @Override
+	public List<CampaignsFiles> findAllFiles() {
+        Session session = sessionFactory.getCurrentSession();
+
+        Query q = session.createQuery("FROM CampaignsFiles");
+
+        return q.list();
+	}
+    
+    
+
+	@Override
+	public CampaignsFiles findFileByIdAndPage(int fileId, int page) {
+		Session session = sessionFactory.getCurrentSession();
+
+        Query q = session.createQuery("select cf CampaignsFiles cf where cf.page = :page and cf.fileId = :fileId");
+        q.setParameter("fileId", fileId);
+        q.setParameter("page", page);
+        q.setMaxResults(1);
+
+        return (CampaignsFiles) q.uniqueResult();
+	}
+
+	public List<CampaignsFiles> findCampaignFiles(int campgaignId) {
         Session session = sessionFactory.getCurrentSession();
 
         Query q = session.createQuery("select cf from Files f, CampaignsFiles cf where cf.campgainId = :campaignId and f.id = cf.fileId");

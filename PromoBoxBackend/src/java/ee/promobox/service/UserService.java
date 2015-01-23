@@ -32,11 +32,15 @@ public interface UserService {
     
     public List<Devices> findDevicesByCampaing(int campaignId);
 
+    public List<CampaignsFiles> findAllFiles();
+    
     public List<CampaignsFiles> findCampaignFiles(int campgaignId);
     
     public CampaignsFiles findCampaignFile(int fileId, int clientId);
     
     public List<CampaignsFiles> findUsersCampaignFiles(int campaignId, int clientId);
+    
+    public CampaignsFiles findFileByIdAndPage(int fileId, int page);
     
     public AdCampaigns findCampaignByIdAndClientId(int id, int clientId);
     

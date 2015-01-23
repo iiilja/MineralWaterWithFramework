@@ -13,8 +13,6 @@ import java.io.File;
  * @author vitalispiridonov
  */
 public interface FileService {
-    
-    
     public File getClientFolder(int clientId);
     public File getArchiveClientFolder(int clientId);
     public File getRawFile(int clientId, int fileId);

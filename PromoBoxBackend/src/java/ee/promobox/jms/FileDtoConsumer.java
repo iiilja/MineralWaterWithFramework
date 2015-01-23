@@ -120,7 +120,8 @@ public class FileDtoConsumer implements Runnable {
 					
 					String name = cFile.getFilename();
 					
-					if (userService.findFileByIdAndPage(cFile.getFileId(), cFile.getPage()) == null) {
+					if (cFile.getPage() == null || // Means that file was not before proccessed to create pages from it
+							userService.findFileByIdAndPage(cFile.getFileId(), cFile.getPage()) == null) {
 						if (page == 0) {
 							cFile.setPage(0);
 							cFile.setFilename(name + "[0]");

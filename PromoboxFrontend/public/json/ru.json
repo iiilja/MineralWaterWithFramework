@@ -38,6 +38,7 @@
     "device_selectcompany": "Выберите Кампанию",
     "device_horizontalorientation": "Горизонтальная ориентация",
     "device_verticalorientation": "Вертикальная ориентация",
+    "device_verticalorientation_emu": "Эмуляция портретного режима",
     "device_sound": "Звук",
     "device_space": "Свободное место",
     "device_clearthecache": "Очистить кэш",

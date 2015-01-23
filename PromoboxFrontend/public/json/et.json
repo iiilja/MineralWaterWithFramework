@@ -38,6 +38,7 @@
     "device_selectcompany": "Vali kampaania",
     "device_horizontalorientation": "Horisontalne asendis",
     "device_verticalorientation": "Vertikaalne asendis",
+    "device_verticalorientation_emu": "Эмуляция портретного режима",
     "device_sound": "Heli",
     "device_space": "Vaba mälu",
     "device_clearthecache": "Puhasta mälu",

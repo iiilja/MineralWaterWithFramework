@@ -303,6 +303,8 @@ public class FilesController {
                         } catch (Exception ex) {
                             log.error(ex.getMessage(), ex);
                         }
+                        
+                        Date createdDt = new Date();
 
                         if (physicalFile.exists() && physicalFile.length() > 0) {
                             Files databaseFile = new Files();
@@ -310,7 +312,7 @@ public class FilesController {
                             databaseFile.setFilename(fileName);
                             databaseFile.setFileType(fileTypeNumber);
                             databaseFile.setPath(userFolder.getCanonicalPath());
-                            databaseFile.setCreatedDt(new Date(System.currentTimeMillis()));
+                            databaseFile.setCreatedDt(createdDt);
                             databaseFile.setSize(fileSize);
                             databaseFile.setClientId(session.getClientId());
                             databaseFile.setContentLength(0L);
@@ -331,7 +333,8 @@ public class FilesController {
                             campaignFile.setFileType(fileTypeNumber);
                             campaignFile.setOrderId(databaseFile.getId());
                             campaignFile.setStatus(CampaignsFiles.STATUS_UPLOADED);
-                            campaignFile.setCreatedDt(new Date());
+                            campaignFile.setCreatedDt(createdDt);
+                            campaignFile.setUpdatedDt(createdDt);
                             campaignFile.setFilename(fileName);
 
                             userService.addCampaignFile(campaignFile);

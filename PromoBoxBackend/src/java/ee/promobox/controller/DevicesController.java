@@ -164,6 +164,10 @@ public class DevicesController {
                                     jsonCampaignFile.put("type", file.getFileType().intValue());
                                     jsonCampaignFile.put("size", file.getSize());
                                     jsonCampaignFile.put("orderId", file.getOrderId());
+                                    
+                                    if (file.getUpdatedDt() != null) {
+                                    	jsonCampaignFile.put("updatedDt", file.getUpdatedDt().getTime());
+                                    }
 
                                     jsonCampaignFiles.put(jsonCampaignFile);
                                 }

@@ -83,26 +83,21 @@ public class FilesController {
     
     @Scheduled(cron = "00 00 2 * * ?")
     public void moveArchivedCampaignFiles() throws Exception {
-        for (AdCampaigns ac: userService.findCampaignsArchiveCandidates()) {
-            for (CampaignsFiles f: userService.findCampaignFiles(ac.getId())) {
-                int clientId = f.getClientId();
-                int fileId = f.getId();
-                Integer page = f.getPage();
+        for (CampaignsFiles f: userService.findFilesArchiveCandidates()) {
+            int clientId = f.getClientId();
+            int fileId = f.getId();
+            Integer page = f.getPage();
 
-                File rawFile = fileService.getRawFile(clientId, fileId);
-                File outputFile = fileService.getOutputFile(clientId, fileId, page);
-                File mp4File = fileService.getOutputMp4File(clientId, fileId);
-                File thumbFile = fileService.getThumbFile(clientId, fileId, page);
-                
-                
-                moveFile(rawFile, clientId);
-                moveFile(outputFile, clientId);
-                moveFile(mp4File, clientId);
-                moveFile(thumbFile, clientId);
-            }
+            File rawFile = fileService.getRawFile(clientId, fileId);
+            File outputFile = fileService.getOutputFile(clientId, fileId, page);
+            File mp4File = fileService.getOutputMp4File(clientId, fileId);
+            File thumbFile = fileService.getThumbFile(clientId, fileId, page);
             
-            ac.setFilesArchived(true);
-            userService.updateCampaign(ac);
+            
+            moveFile(rawFile, clientId);
+            moveFile(outputFile, clientId);
+            moveFile(mp4File, clientId);
+            moveFile(thumbFile, clientId);
         }
     }
     
@@ -159,7 +154,11 @@ public class FilesController {
     private void moveFile(File f, int clientId) {
         if (f.exists()) {
             try {
-                f.renameTo(new File(fileService.getArchiveClientFolder(clientId), f.getName()));
+            	File archiveFolder = fileService.getArchiveClientFolder(clientId);
+            	if (!archiveFolder.exists()) {
+            		archiveFolder.mkdirs();
+            	}
+                f.renameTo(new File(archiveFolder, f.getName()));
             } catch(Exception ex) {
                 log.error(ex.getMessage(), ex);
             }
@@ -485,6 +484,7 @@ public class FilesController {
             if (campaignsFile != null && dbFile != null) {
                 
                 campaignsFile.setStatus(CampaignsFiles.STATUS_ARCHIVED);
+                campaignsFile.setUpdatedDt(new Date());
 
                 userService.updateCampaignFile(campaignsFile);
 

@@ -60,7 +60,7 @@ public interface UserService {
 
     public List<AdCampaigns> findCampaignByDeviceId(int deviceId);
     
-    public List<AdCampaigns> findCampaignsArchiveCandidates();
+    public List<CampaignsFiles> findFilesArchiveCandidates();
     
     public AdCampaigns findCampaignByCampaignId(int campaignId);
     

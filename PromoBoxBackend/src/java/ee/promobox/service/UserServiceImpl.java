@@ -12,7 +12,11 @@ import ee.promobox.entity.Devices;
 import ee.promobox.entity.DevicesCampaigns;
 import ee.promobox.entity.Files;
 import ee.promobox.entity.Users;
+
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
+
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -244,11 +248,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<AdCampaigns> findCampaignsArchiveCandidates() {
+    public List<CampaignsFiles> findFilesArchiveCandidates() {
         Session session = sessionFactory.getCurrentSession();
         
-        Query q = session.createQuery("FROM AdCampaigns ad WHERE ad.status = :statusArchived AND ad.filesArchived IS TRUE")
-                .setInteger("statusArchived", AdCampaigns.STATUS_AHRCHIVED);
+        Calendar cal = GregorianCalendar.getInstance();
+        cal.add(Calendar.DAY_OF_YEAR, -2);
+        
+        Query q = session.createQuery("FROM CampaignsFiles cf WHERE cf.status = :statusArchived AND cf.updateDt > :updatedDt")
+                .setInteger("statusArchived", CampaignsFiles.STATUS_ARCHIVED)
+                .setDate("updatedDt", cal.getTime());
         
         return q.list();
     }

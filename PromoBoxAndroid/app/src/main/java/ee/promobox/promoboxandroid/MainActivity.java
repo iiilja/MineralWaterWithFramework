@@ -1,6 +1,7 @@
 package ee.promobox.promoboxandroid;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -19,6 +20,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class MainActivity extends Activity {
@@ -31,8 +33,8 @@ public class MainActivity extends Activity {
     public static final String CURRENT_FILE_ID  = "ee.promobox.promoboxandroid.CURRENT_FILE_ID";
     public static final String MAKE_TOAST       = "ee.promobox.promoboxandroid.MAKE_TOAST";
     public static final String NO_NETWORK       = "ee.promobox.promoboxandroid.NO_NETWORK";
-    public static final  String APP_START       = "ee.promobox.promoboxandroid.START";
-    public static final  String PLAY_SPECIFIC_FILE       = "ee.promobox.promoboxandroid.PLAY_SPECIFIC_FILE";
+    public static final String APP_START       = "ee.promobox.promoboxandroid.START";
+    public static final String PLAY_SPECIFIC_FILE       = "ee.promobox.promoboxandroid.PLAY_SPECIFIC_FILE";
 
     public final static String MAIN_ACTIVITY_STRING = "MainActivity";
 
@@ -48,9 +50,11 @@ public class MainActivity extends Activity {
     private MainService mainService;
     private int position;
     private Campaign campaign;
+
     private CampaignFile nextSpecificFile = null;
+    private boolean nextSpecificFilePlaying = false;
+
     private boolean mBound = false;
-    private boolean active = true;
 
     private void hideSystemUI() {
 
@@ -107,16 +111,20 @@ public class MainActivity extends Activity {
     private void startNextFile() {
         if (campaign != null && nextSpecificFile == null &&
                 campaign.getFiles() != null && campaign.getFiles().size() > 0) {
+
             Log.d(MAIN_ACTIVITY_STRING, "startNextFile() in " + campaign.getCampaignName());
+            if (nextSpecificFilePlaying) nextSpecificFilePlaying = false;
+
 
             if (position == campaign.getFiles().size()) {
                 position = 0;
-                mainService.checkAndDownloadCampaign();
                 Log.i(MAIN_ACTIVITY_STRING, "Starting from position 0");
             }
 
             CampaignFileType fileType = null;
             ArrayList<CampaignFile> filePack = new ArrayList<CampaignFile>();
+
+            Log.d(MAIN_ACTIVITY_STRING, "POSITION ON START = " + position);
 
             for (int i = position; i < campaign.getFiles().size(); i++) {
                 CampaignFile cFile = campaign.getFiles().get(i);
@@ -146,9 +154,11 @@ public class MainActivity extends Activity {
             filePack.add(nextSpecificFile);
             startPlayingActivity(nextSpecificFile.getType(), filePack);
             nextSpecificFile = null;
+            nextSpecificFilePlaying = true;
         } else {
                 Log.i(MAIN_ACTIVITY_STRING, "CAMPAIGN = NULL");
         }
+        Log.d(MAIN_ACTIVITY_STRING, "POSITION ON END = " + position);
     }
 
     private void startPlayingActivity(CampaignFileType fileType, ArrayList<CampaignFile> filePack){
@@ -187,7 +197,9 @@ public class MainActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d(MAIN_ACTIVITY_STRING," onActivityResult() ,requestCode = " + requestCode);
         if (requestCode == RESULT_FINISH_PLAY) {
+
             startNextFile();
+
         } else if (requestCode == RESULT_FINISH_FIRST_START) {
             try {
 
@@ -204,14 +216,12 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onResume() {
+        Log.d(MAIN_ACTIVITY_STRING, "onResume");
         super.onResume();
-        active = true;
 
         hideSystemUI();
 
         Intent intent = new Intent(this, MainService.class);
-
-        startService(intent);
 
         if (!mBound) {
             bindService(intent, mConnection,
@@ -239,7 +249,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
-        active = false;
+        Log.d(MAIN_ACTIVITY_STRING, "onPause");
     }
 
     private void setAudioDeviceFromPrefs() {
@@ -272,6 +282,7 @@ public class MainActivity extends Activity {
         public void onServiceConnected(ComponentName className,
                                        IBinder binder) {
 
+            Log.d(MAIN_ACTIVITY_STRING, "onServiceConnected");
             MainService.MainServiceBinder b = (MainService.MainServiceBinder) binder;
 
             mainService = b.getService();
@@ -291,6 +302,19 @@ public class MainActivity extends Activity {
         }
     };
 
+    public boolean activityIsActive(String className) {
+        ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+
+        List<ActivityManager.RunningTaskInfo> runningTaskInfo = manager.getRunningTasks(1);
+
+        ComponentName componentInfo = runningTaskInfo.get(0).topActivity;
+
+        String openClassName = componentInfo.getClassName();
+        Log.d(MAIN_ACTIVITY_STRING, "openClassName = " + openClassName + " className  =" +className);
+        return openClassName.equals(className) ;
+
+    }
+
     private BroadcastReceiver bReceiver = new BroadcastReceiver() {
         private final String RECEIVER_STRING = MAIN_ACTIVITY_STRING + "BroadcastReceiver";
         @Override
@@ -303,9 +327,11 @@ public class MainActivity extends Activity {
                 campaign = mainService.getCurrentCampaign();
                 Log.d(RECEIVER_STRING, "CAMPAIGN_UPDATE to " + (campaign != null ? campaign.getCampaignName() : "NONE"));
                 position = 0;
-                if (active){
+                if (activityIsActive(MainActivity.class.getName())){
+                    Log.d(RECEIVER_STRING, MAIN_ACTIVITY_STRING +" active, start next file from receiver");
                     startNextFile();
                 } else {
+                    Log.d(RECEIVER_STRING, "Broadcasting to finish active activity");
                     bManager.sendBroadcast(new Intent(ACTIVITY_FINISH));
                 }
             } else if (action.equals(CURRENT_FILE_ID)) {
@@ -323,15 +349,17 @@ public class MainActivity extends Activity {
             } else if (action.equals(PLAY_SPECIFIC_FILE)){
                 nextSpecificFile = intent.getParcelableExtra("campaignFile");
                 Log.d(RECEIVER_STRING, "PLAY_SPECIFIC_FILE with id " + nextSpecificFile.getId());
-                if (active){
+                if (activityIsActive(MainActivity.class.toString())){
                     startNextFile();
                 } else {
-                    bManager.sendBroadcast(new Intent(ACTIVITY_FINISH));
                     if (campaign != null){
-                        int fileId = mainService.getCurrentFileId();
-                        position = campaign.getCampaignFilePositionById(fileId);
-                        position ++;
+                        if ( !nextSpecificFilePlaying ) {
+                            int fileId = mainService.getCurrentFileId();
+                            position = campaign.getCampaignFilePositionById(fileId);
+                            position ++;
+                        }
                     }
+                    bManager.sendBroadcast(new Intent(ACTIVITY_FINISH));
                 }
             }
         }

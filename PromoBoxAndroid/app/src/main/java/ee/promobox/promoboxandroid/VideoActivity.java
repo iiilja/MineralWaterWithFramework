@@ -54,6 +54,10 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
     private MediaCodecAudioTrackRenderer audioRenderer;
     private MediaCodecVideoTrackRenderer videoRenderer;
 
+    private int viewOriginalHeight = 0;
+    private int viewOriginalWidth = 0;
+
+
     @Override
     public void onCreate(Bundle b) {
         super.onCreate(b);
@@ -80,9 +84,11 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
             try {
                 if (orientation == MainActivity.ORIENTATION_PORTRAIT_EMULATION){
                     Point videoSize = calculateVideoSize();
-                    int height = videoView.getMeasuredHeight();
-                    int width = videoView.getMeasuredWidth();
-                    videoSize = calculateNeededVideoSize(videoSize,width,height);
+                    if (position == 0){
+                        viewOriginalHeight =  videoView.getMeasuredHeight();
+                        viewOriginalWidth =  videoView.getMeasuredWidth();
+                    }
+                    videoSize = calculateNeededVideoSize(videoSize,viewOriginalWidth,viewOriginalHeight);
                     FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(videoSize.x, videoSize.y);
                     params.gravity = Gravity.CENTER;
                     videoView.setLayoutParams(params);

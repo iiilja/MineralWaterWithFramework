@@ -70,7 +70,7 @@ public class MainService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        boolean firstTime = intent.getBooleanExtra("firstTime",false);
+        boolean firstTime =  intent == null || intent.getBooleanExtra("firstTime",false);
 
         Log.i(MAIN_SERVICE_STRING, "Start command");
 
@@ -87,8 +87,6 @@ public class MainService extends Service {
             mainActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY);
 
             getApplication().startActivity(mainActivity);
-
-            firstTime = false;
         }
         return Service.START_NOT_STICKY;
     }
@@ -126,16 +124,6 @@ public class MainService extends Service {
 
     }
 
-    public boolean isActive() {
-        ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
-
-        List<ActivityManager.RunningTaskInfo> runningTaskInfo = manager.getRunningTasks(1);
-
-        ComponentName componentInfo = runningTaskInfo.get(0).topActivity;
-
-        return componentInfo.getPackageName().startsWith("ee.promobox.promoboxandroid");
-
-    }
 
     public Campaign getCurrentCampaign() {
         return currentCampaign;
@@ -230,12 +218,22 @@ public class MainService extends Service {
     }
 
     public void setCurrentCampaign(Campaign currentCampaign) {
+
+        // Broadcasting only if campaign is really updated or new.
         if (this.currentCampaign == null && currentCampaign != null
-                || this.currentCampaign != null && !this.currentCampaign.equals(currentCampaign)){
+                || this.currentCampaign != null && !this.currentCampaign.equals(currentCampaign)
+                || this.currentCampaign.getUpdateDate() < currentCampaign.getUpdateDate()){
+            Log.d(MAIN_SERVICE_STRING, " UPDATING CURRENT CAMPAIGN FROM setCurrentCampaign");
+            this.currentCampaign = currentCampaign;
             Intent update = new Intent(MainActivity.CAMPAIGN_UPDATE);
             bManager.sendBroadcast(update);
         }
-        this.currentCampaign = currentCampaign;
+        else {
+            this.currentCampaign = currentCampaign;
+        }
+        if (currentCampaign == null){
+            setCurrentFileId(0);
+        }
     }
 
     public Campaign getLoadingCampaign() {

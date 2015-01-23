@@ -1,0 +1,2 @@
+V	240808094509Z		01	unknown	/C=EE/ST=HA/L=Tallinn/O=Promobox/OU=Promobox/CN=server/name=EasyRSA/emailAddress=info@promobox.ee
+V	240808095817Z		02	unknown	/C=EE/ST=HA/L=Tallinn/O=Promobox/OU=Promobox/CN=c1/name=EasyRSA/emailAddress=info@promobox.ee

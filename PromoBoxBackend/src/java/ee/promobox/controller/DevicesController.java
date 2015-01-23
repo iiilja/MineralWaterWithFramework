@@ -117,6 +117,7 @@ public class DevicesController {
             resp.put("clearCache", d.isClearCache());
             resp.put("openApp", d.isOpenApp());
 
+            d.setOpenApp(false);
             d.setClearCache(false);
             d.setNextFile(null);
 

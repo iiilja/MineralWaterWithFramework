@@ -43,4 +43,9 @@ ALTER TABLE files ADD COLUMN angle INTEGER NOT NULL DEFAULT 0;
 
 UPDATE campaigns_files SET order_id = file_id;
 
+ALTER TABLE campaigns_files ADD COLUMN page INTEGER;
+ALTER TABLE campaigns_files ADD COLUMN updated_dt TIMESTAMP WITHOUT TIME ZONE;
+
+UPDATE campaigns_files SET updated_dt = created_dt;
+
 COMMIT;

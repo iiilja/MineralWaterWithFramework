@@ -117,27 +117,31 @@ public class FileDtoConsumer implements Runnable {
 					String[] part = filename.split("-");
 					int page = Integer.parseInt(part[1]);
 					
-					if (page == 0) {
-						cFile.setPage(0);
-						cFile.setFilename(cFile.getFilename() + "[0]");
-						userService.updateCampaignFile(cFile);
-					} else {
-						CampaignsFiles pageCampaignsFiles = new CampaignsFiles();
-						pageCampaignsFiles.setAdCampaignsId(cFile.getAdCampaignsId());
-						pageCampaignsFiles.setClientId(cFile.getClientId());
-						pageCampaignsFiles.setCreatedDt(cFile.getCreatedDt());
-						pageCampaignsFiles.setFileId(cFile.getFileId());
-						pageCampaignsFiles.setFilename(cFile.getFilename() + "[" + page + "]");
-						pageCampaignsFiles.setFileType(cFile.getFileType());
-						pageCampaignsFiles.setPage(page);
-						pageCampaignsFiles.setSize(0);
-						pageCampaignsFiles.setStatus(cFile.getStatus());
-						
-						userService.addCampaignFile(pageCampaignsFiles);
-						pageCampaignsFiles.setOrderId(pageCampaignsFiles.getOrderId());
-						userService.updateCampaignFile(pageCampaignsFiles);
-						
-						log.info("Created new campaign file: " + pageCampaignsFiles.getId());
+					String name = cFile.getFilename();
+					
+					if (userService.findFileByIdAndPage(cFile.getFileId(), cFile.getPage()) == null) {
+						if (page == 0) {
+							cFile.setPage(0);
+							cFile.setFilename(name + "[0]");
+							userService.updateCampaignFile(cFile);
+						} else {
+							CampaignsFiles pageCampaignsFiles = new CampaignsFiles();
+							pageCampaignsFiles.setAdCampaignsId(cFile.getAdCampaignsId());
+							pageCampaignsFiles.setClientId(cFile.getClientId());
+							pageCampaignsFiles.setCreatedDt(cFile.getCreatedDt());
+							pageCampaignsFiles.setFileId(cFile.getFileId());
+							pageCampaignsFiles.setFilename(name + "[" + page + "]");
+							pageCampaignsFiles.setFileType(cFile.getFileType());
+							pageCampaignsFiles.setPage(page);
+							pageCampaignsFiles.setSize(0);
+							pageCampaignsFiles.setStatus(cFile.getStatus());
+							
+							userService.addCampaignFile(pageCampaignsFiles);
+							pageCampaignsFiles.setOrderId(pageCampaignsFiles.getOrderId());
+							userService.updateCampaignFile(pageCampaignsFiles);
+							
+							log.info("Created new campaign file: " + pageCampaignsFiles.getId());
+						}
 					}
 					
 				} catch (Exception e) {

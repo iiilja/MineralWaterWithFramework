@@ -71,9 +71,15 @@ public class CampaignsFiles implements Serializable {
     @Column(name = "filename")
     private String filename;
     
+    @Column(name = "updated_dt")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date updatedDt;
+    
     @Column(name = "created_dt")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDt;
+    
+    
 
     public CampaignsFiles() {
     }
@@ -213,5 +219,12 @@ public class CampaignsFiles implements Serializable {
 		this.page = page;
 	}
 
-    
+	public Date getUpdatedDt() {
+		return updatedDt;
+	}
+
+	public void setUpdatedDt(Date updatedDt) {
+		this.updatedDt = updatedDt;
+	}
+
 }

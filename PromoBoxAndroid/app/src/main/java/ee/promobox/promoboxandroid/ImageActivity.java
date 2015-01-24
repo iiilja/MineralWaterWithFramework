@@ -195,7 +195,7 @@ public class ImageActivity extends Activity {
 
             position++;
 
-            final long delay = getIntent().getExtras().getInt("delay") * 50;
+            final long delay = getIntent().getExtras().getInt("delay") * 1000;
 
             slide.postDelayed(r, delay);
 

@@ -70,7 +70,9 @@ public class ImageActivity extends Activity {
     {
         Matrix matrix = new Matrix();
         matrix.postRotate(angle);
-        return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
+        Bitmap newBitmap = Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
+        source.recycle();
+        return newBitmap;
     }
 
     private void hideSystemUI() {
@@ -186,21 +188,21 @@ public class ImageActivity extends Activity {
             if (orientation == MainActivity.ORIENTATION_PORTRAIT_EMULATION){
                 bitmap = rotateBitmap(bitmap, 270);
             }
+            recycleBitmap();
             slide.setImageBitmap(bitmap);
 
             sendPlayCampaignFile();
 
             position++;
 
-            final long delay = getIntent().getExtras().getInt("delay") * 1000;
+            final long delay = getIntent().getExtras().getInt("delay") * 50;
 
             slide.postDelayed(r, delay);
 
 
         } catch (Exception ex) {
             Log.e(IMAGE_ACTIVITY_STRING, ex.getMessage(), ex);
-            Log.e(IMAGE_ACTIVITY_STRING, "Path = " + path +
-                    " , decodeBitmap(file) = " + (decodeBitmap(file) == null));
+            Log.e(IMAGE_ACTIVITY_STRING, "Path = " + path );
 
             bManager.sendBroadcast(new ToastIntent(ex.toString()));
 
@@ -216,18 +218,21 @@ public class ImageActivity extends Activity {
 
     @Override
     protected void onDestroy() {
-        BitmapDrawable toRecycle = (BitmapDrawable)slide.getDrawable();
-
-        if (toRecycle != null && toRecycle.getBitmap() != null) {
-            toRecycle.getBitmap().recycle();
-        }
+        recycleBitmap();
 
         slide.destroyDrawingCache();
         slide = null;
 
         bManager.unregisterReceiver(bReceiver);
-
         super.onDestroy();
+    }
+
+    private void recycleBitmap(){
+        BitmapDrawable toRecycle = (BitmapDrawable)slide.getDrawable();
+
+        if (toRecycle != null && toRecycle.getBitmap() != null) {
+            toRecycle.getBitmap().recycle();
+        }
     }
 
 

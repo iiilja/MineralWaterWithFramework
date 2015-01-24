@@ -124,7 +124,6 @@ public class MainActivity extends Activity {
             CampaignFileType fileType = null;
             ArrayList<CampaignFile> filePack = new ArrayList<CampaignFile>();
 
-            Log.d(MAIN_ACTIVITY_STRING, "POSITION ON START = " + position);
 
             for (int i = position; i < campaign.getFiles().size(); i++) {
                 CampaignFile cFile = campaign.getFiles().get(i);
@@ -158,7 +157,6 @@ public class MainActivity extends Activity {
         } else {
                 Log.i(MAIN_ACTIVITY_STRING, "CAMPAIGN = NULL");
         }
-        Log.d(MAIN_ACTIVITY_STRING, "POSITION ON END = " + position);
     }
 
     private void startPlayingActivity(CampaignFileType fileType, ArrayList<CampaignFile> filePack){
@@ -204,7 +202,7 @@ public class MainActivity extends Activity {
             try {
 
                 mainService.setUuid(data.getStringExtra("deviceUuid"));
-                mainService.checkAndDownloadCampaign();
+                mainService.checkAndDownloadCampaign(false);
 
                 startNextFile();
 
@@ -290,7 +288,7 @@ public class MainActivity extends Activity {
             campaign = mainService.getCurrentCampaign();
 
             if (mainService.getUuid() == null || mainService.getUuid().equals("fail")) {
-                startActivityForResult(new Intent(MainActivity.this, FirstActivity.class), 2);
+                startActivityForResult(new Intent(MainActivity.this, FirstActivity.class), RESULT_FINISH_FIRST_START);
             } else {
                 startNextFile();
             }

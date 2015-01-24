@@ -1,12 +1,13 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_gravity="center"
     android:id="@+id/video_view"
     android:keepScreenOn="true"
     tools:context="ee.promobox.promoboxandroid.VideoActivity">
 
-    <ee.promobox.promoboxandroid.widgets.VideoTextureView
+    <TextureView
         android:id="@+id/videoview"
         android:layout_gravity="fill"
         android:adjustViewBounds="true"
@@ -14,4 +15,4 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-</RelativeLayout>
+</FrameLayout>

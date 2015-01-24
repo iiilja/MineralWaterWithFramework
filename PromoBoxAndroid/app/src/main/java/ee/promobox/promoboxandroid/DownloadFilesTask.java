@@ -34,6 +34,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -100,7 +101,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
 
                     handleCampaigns(data.getJSONArray("campaigns"));
                 } else {
-                    service.setCampaigns(null);
+                    service.setCampaigns(new CampaignList());
                     Log.w(DOWNLOAD_FILE_TASK, "Data has no campaigns.");
                 }
                 /*
@@ -143,6 +144,10 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
                         }
                     }
                 }
+                if (data.has("openApp") && data.getBoolean("openApp")){
+                    Log.d(DOWNLOAD_FILE_TASK, " Received OPEN APP");
+                    service.startMainActivity();
+                }
                 if (data.has("nextFile")){
                     int nextFile = data.getInt("nextFile");
                     playThisFile(nextFile);
@@ -178,19 +183,33 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
 
         service.getIsDownloading().set(true);
 
+        Campaign serviceCampaign = service.getCampaigns() != null ? service.getCampaigns().getCampaignWithId(camp.getCampaignId()): null;
+
         List<CampaignFile> campaignFiles = camp.getFiles();
-        int loadStep = 100 / campaignFiles.size()!= 0 ? campaignFiles.size() : 1;
+        int loadStep = 100 / (campaignFiles.size()!= 0 ? campaignFiles.size() : 1);
 
         for (CampaignFile f : campaignFiles) {
             service.setLoadingCampaignProgress(service.getLoadingCampaignProgress() + loadStep);
 
             File dir = new File(MainService.ROOT.getAbsolutePath() + String.format("/%s/", camp.getCampaignId()));
-
+            CampaignFile serviceCampaignFile = serviceCampaign != null ? serviceCampaign.getFileById(f.getId()) : null;
+            File file = new File(dir, f.getId() + "");
             dir.mkdirs();
 
-            File file = new File(dir, f.getId() + "");
+            /*  If there is campaignFile in service then check updated date.
+                    If updated date was not sent in JSON, check file sizes.
+                If there is no campaignFile in service, only file in cache,
+                    we can only check if file sizes are equal
+            */
+            boolean filesDifferent  = serviceCampaignFile != null
+                    && (serviceCampaignFile.getUpdatedDt() < f.getUpdatedDt()
+                        || serviceCampaignFile.getUpdatedDt() == 0 && f.getUpdatedDt() == 0 &&
+                            file.length() != f.getSize())
+                    || serviceCampaignFile == null && file.length() != f.getSize();
 
-            if (!file.exists() || file.length() != f.getSize()) {
+
+
+            if (filesDifferent) {
                 Log.d(DOWNLOAD_FILE_TASK, "CampaignFIle "+f.getId()+" f.getSize() = " + f.getSize()
                         + " real FILE length = " +  file.length()+" getTotalSpace = " +  file.getTotalSpace() + " and directiry :" + file.getAbsolutePath() );
                 downloadFile(String.format(MainService.DEFAULT_SERVER + "/service/files/%s", f.getId()), f.getId() + "", camp);
@@ -280,14 +299,9 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
             listInterface.put(obj);
 
         }
-
-        ActivityManager am = (ActivityManager) service.getSystemService(Activity.ACTIVITY_SERVICE);
-        List<ActivityManager.RunningTaskInfo> taskInfo = am.getRunningTasks(1);
-        ComponentName componentInfo = taskInfo.get(0).topActivity;
-        boolean onTop = componentInfo.getPackageName().startsWith(service.getPackageName());
-
-        json.put("isOnTop", onTop);
-        json.put("onTopActivity", componentInfo.getClassName());
+        ComponentName onTop = getOnTopComponentInfo();
+        json.put("isOnTop", onTop.getPackageName().startsWith(service.getPackageName()));
+        json.put("onTopActivity", onTop.getClassName());
 
         json.put("ip", listInterface);
         json.put("freeSpace", bytesAvailable);
@@ -312,9 +326,11 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
         HttpResponse response = null;
         try{
             response = httpclient.execute(httppost);
-        }
-        catch (HttpHostConnectException ex){
+        } catch (HttpHostConnectException ex){
             bManager.sendBroadcast(new ToastIntent("loadData HttpHostConnectException"));
+            return null;
+        } catch (SocketException ex){
+            bManager.sendBroadcast(new ToastIntent("loadData SocketException"));
             return null;
         }
 
@@ -435,5 +451,11 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
 
             }
         }
+    }
+
+    private ComponentName getOnTopComponentInfo(){
+        ActivityManager am = (ActivityManager) service.getSystemService(Activity.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningTaskInfo> taskInfo = am.getRunningTasks(1);
+        return taskInfo.get(0).topActivity;
     }
 }

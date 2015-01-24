@@ -68,9 +68,10 @@ public class Campaign {
 
                 f.setId(obj.getInt("id"));
                 f.setType(CampaignFileType.valueOf(obj.getInt("type")));
-                f.setOrderId(obj.getInt("orderId"));
+                f.setOrderId(obj.has("orderId") ? obj.getInt("orderId") : i);
                 f.setPath(new File(getRoot(), f.getId() + "").getAbsolutePath());
                 f.setSize(obj.getInt("size"));
+                f.setUpdatedDt(obj.has("updatedDt")? obj.getLong("updatedDt"):0);
 
                 files.add(f);
 
@@ -225,6 +226,16 @@ public class Campaign {
             }
         }
         return false;
+    }
+
+    public CampaignFile getFileById(int fileId){
+        for (int i = 0; i < files.size(); i++) {
+            CampaignFile file = files.get(i);
+            if (file.getId() == fileId){
+                return file;
+            }
+        }
+        return null;
     }
 
     public int getCampaignFilePositionById(int fileId){

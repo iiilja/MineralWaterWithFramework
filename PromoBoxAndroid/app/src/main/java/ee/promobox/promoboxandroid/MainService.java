@@ -49,7 +49,7 @@ public class MainService extends Service {
     private int loadingCampaignProgress;
     private CampaignList campaigns;
 
-    public final static File ROOT = new File(Environment.getExternalStorageDirectory().getAbsoluteFile() + "/promobox/");
+    public static File ROOT = new File(Environment.getExternalStorageDirectory().getAbsoluteFile() + "/promobox/");
 
     private final IBinder mBinder = new MainServiceBinder();
     private LocalBroadcastManager bManager;
@@ -70,6 +70,12 @@ public class MainService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
+        File file = new File("/mnt/external_sd");
+        if ( file.exists() && file.listFiles() != null && file.listFiles().length > 1){
+            Log.d(MAIN_SERVICE_STRING, "/mnt/external_sd EXISTS");
+            ROOT = new File(file.getPath() +  "/promobox/");
+        }
+
         boolean firstTime =  intent == null || intent.getBooleanExtra("firstTime",false);
 
         Log.i(MAIN_SERVICE_STRING, "Start command");
@@ -77,26 +83,19 @@ public class MainService extends Service {
         setUuid(getSharedPref().getString("uuid", "fail"));
         setOrientation(getSharedPref().getInt("orientation", MainActivity.ORIENTATION_LANDSCAPE));
 
-        checkAndDownloadCampaign();
-
+        checkAndDownloadCampaign(firstTime);
         if ( firstTime ) {
-            Intent mainActivity = new Intent(getBaseContext(), MainActivity.class);
-
-            mainActivity.setAction(Intent.ACTION_MAIN);
-            mainActivity.addCategory(Intent.CATEGORY_LAUNCHER);
-            mainActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY);
-
-            getApplication().startActivity(mainActivity);
+            startMainActivity();
         }
         return Service.START_NOT_STICKY;
     }
 
-    public void checkAndDownloadCampaign() {
+    public void checkAndDownloadCampaign(boolean firstTime) {
         Log.d(MAIN_SERVICE_STRING, "checkAndDownloadCampaign()");
         try {
             File data = new File(ROOT, "data.json");
 
-            if (data.exists()) {
+            if (data.exists() && firstTime) {
                 String dataString = FileUtils.readFileToString(data);
                 JSONObject dataJSON =  new JSONObject(dataString);
                 JSONArray campaignsJSON = new JSONArray();
@@ -110,8 +109,8 @@ public class MainService extends Service {
                     previousCampaignsJSON = campaignsJSON.toString();
                     setCampaigns(new CampaignList(campaignsJSON));
                 }
-                selectNextCampaign();
             }
+            selectNextCampaign();
         } catch (Exception ex) {
             Log.e(MAIN_SERVICE_STRING, ex.getMessage(), ex);
             bManager.sendBroadcast(new ToastIntent(ex.getMessage()));
@@ -165,6 +164,16 @@ public class MainService extends Service {
             setCurrentCampaign(null);
         }
     }
+    
+    public void startMainActivity(){
+        Intent mainActivity = new Intent(getBaseContext(), MainActivity.class);
+
+        mainActivity.setAction(Intent.ACTION_MAIN);
+        mainActivity.addCategory(Intent.CATEGORY_LAUNCHER);
+        mainActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY);
+
+        getApplication().startActivity(mainActivity);
+    }
 
     @Override
     public IBinder onBind(Intent arg0) {
@@ -180,6 +189,9 @@ public class MainService extends Service {
     }
 
     public String getUuid() {
+        if (uuid == null){
+            return getSharedPref().getString("uuid", "fail");
+        }
         return uuid;
     }
 
@@ -218,11 +230,11 @@ public class MainService extends Service {
     }
 
     public void setCurrentCampaign(Campaign currentCampaign) {
-
         // Broadcasting only if campaign is really updated or new.
         if (this.currentCampaign == null && currentCampaign != null
                 || this.currentCampaign != null && !this.currentCampaign.equals(currentCampaign)
-                || this.currentCampaign.getUpdateDate() < currentCampaign.getUpdateDate()){
+                || this.currentCampaign != null &&
+                    (this.currentCampaign.getUpdateDate() < currentCampaign.getUpdateDate())){
             Log.d(MAIN_SERVICE_STRING, " UPDATING CURRENT CAMPAIGN FROM setCurrentCampaign");
             this.currentCampaign = currentCampaign;
             Intent update = new Intent(MainActivity.CAMPAIGN_UPDATE);

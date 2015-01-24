@@ -112,32 +112,38 @@ public class FileDtoConsumer implements Runnable {
 		if (pagesFiles.length > 1) {
 			for (int i = 0; i < pagesFiles.length; i++) {
 				try {
-					String filename = pagesFiles[i].getName();
+					File pageFile = pagesFiles[i];
+					String filename = pageFile.getName();
 					log.info("Process file: " + filename);
 					String[] part = filename.split("-");
 					int page = Integer.parseInt(part[1]);
 					
-					if (page == 0) {
-						cFile.setPage(0);
-						cFile.setFilename(cFile.getFilename() + "[0]");
-						userService.updateCampaignFile(cFile);
-					} else {
-						CampaignsFiles pageCampaignsFiles = new CampaignsFiles();
-						pageCampaignsFiles.setAdCampaignsId(cFile.getAdCampaignsId());
-						pageCampaignsFiles.setClientId(cFile.getClientId());
-						pageCampaignsFiles.setCreatedDt(cFile.getCreatedDt());
-						pageCampaignsFiles.setFileId(cFile.getFileId());
-						pageCampaignsFiles.setFilename(cFile.getFilename() + "[" + page + "]");
-						pageCampaignsFiles.setFileType(cFile.getFileType());
-						pageCampaignsFiles.setPage(page);
-						pageCampaignsFiles.setSize(0);
-						pageCampaignsFiles.setStatus(cFile.getStatus());
-						
-						userService.addCampaignFile(pageCampaignsFiles);
-						pageCampaignsFiles.setOrderId(pageCampaignsFiles.getOrderId());
-						userService.updateCampaignFile(pageCampaignsFiles);
-						
-						log.info("Created new campaign file: " + pageCampaignsFiles.getId());
+					String name = cFile.getFilename();
+					
+					if (cFile.getPage() == null || // Means that file was not before proccessed to create pages from it
+							userService.findFileByIdAndPage(cFile.getFileId(), cFile.getPage()) == null) {
+						if (page == 0) {
+							cFile.setPage(0);
+							cFile.setFilename(name + "[0]");
+							userService.updateCampaignFile(cFile);
+						} else {
+							CampaignsFiles pageCampaignsFiles = new CampaignsFiles();
+							pageCampaignsFiles.setAdCampaignsId(cFile.getAdCampaignsId());
+							pageCampaignsFiles.setClientId(cFile.getClientId());
+							pageCampaignsFiles.setCreatedDt(cFile.getCreatedDt());
+							pageCampaignsFiles.setFileId(cFile.getFileId());
+							pageCampaignsFiles.setFilename(name + "[" + page + "]");
+							pageCampaignsFiles.setFileType(cFile.getFileType());
+							pageCampaignsFiles.setPage(page);
+							pageCampaignsFiles.setSize( (int) pageFile.length());
+							pageCampaignsFiles.setStatus(cFile.getStatus());
+							
+							userService.addCampaignFile(pageCampaignsFiles);
+							pageCampaignsFiles.setOrderId(pageCampaignsFiles.getId());
+							userService.updateCampaignFile(pageCampaignsFiles);
+							
+							log.info("Created new campaign file: " + pageCampaignsFiles.getId());
+						}
 					}
 					
 				} catch (Exception e) {

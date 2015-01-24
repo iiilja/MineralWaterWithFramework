@@ -38,6 +38,7 @@
     "device_selectcompany": "Select Company",
     "device_horizontalorientation": "Horizontal orientation",
     "device_verticalorientation": "Vertical orientation",
+    "device_verticalorientation_emu": "Эмуляция портретного режима",
     "device_sound": "Sound",
     "device_space": "Space",
     "device_clearthecache": "Clear the cache",

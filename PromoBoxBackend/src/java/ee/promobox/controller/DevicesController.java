@@ -102,7 +102,7 @@ public class DevicesController {
             
             boolean onTop = objectGiven.has("isOnTop") ? objectGiven.getBoolean("isOnTop") : true;
             d.setOnTop(onTop);
-            d.setStatus(onTop ? Devices.STATUS_ONLINE : Devices.STATUS_USED);
+            
             
             if (objectGiven.has("ip")) {
                 d.setNetworkData(objectGiven.getJSONArray("ip").toString());
@@ -117,6 +117,7 @@ public class DevicesController {
             resp.put("clearCache", d.isClearCache());
             resp.put("openApp", d.isOpenApp());
 
+            d.setOpenApp(false);
             d.setClearCache(false);
             d.setNextFile(null);
 
@@ -164,6 +165,10 @@ public class DevicesController {
                                     jsonCampaignFile.put("type", file.getFileType().intValue());
                                     jsonCampaignFile.put("size", file.getSize());
                                     jsonCampaignFile.put("orderId", file.getOrderId());
+                                    
+                                    if (file.getUpdatedDt() != null) {
+                                    	jsonCampaignFile.put("updatedDt", file.getUpdatedDt().getTime());
+                                    }
 
                                     jsonCampaignFiles.put(jsonCampaignFile);
                                 }
@@ -183,7 +188,7 @@ public class DevicesController {
                 }
 
                 d.setLastDeviceRequestDt(new Date());
-                d.setStatus(Devices.STATUS_ONLINE);
+                d.setStatus(onTop ? Devices.STATUS_ONLINE : Devices.STATUS_USED);
 
                 userService.updateDevice(d);
 

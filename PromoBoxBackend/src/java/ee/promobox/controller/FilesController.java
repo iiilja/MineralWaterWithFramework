@@ -12,7 +12,6 @@ package ee.promobox.controller;
 import ee.promobox.KioskConfig;
 import ee.promobox.entity.AdCampaigns;
 import ee.promobox.entity.CampaignsFiles;
-import ee.promobox.entity.Devices;
 import ee.promobox.entity.Files;
 import ee.promobox.jms.ClientThreadPool;
 import ee.promobox.jms.FileDto;
@@ -26,17 +25,13 @@ import ee.promobox.service.UserService;
 import ee.promobox.util.FileTypeUtils;
 import ee.promobox.util.RequestUtils;
 
-import java.beans.DesignMode;
 import java.io.*;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.jms.Destination;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
@@ -44,8 +39,6 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -74,6 +67,8 @@ public class FilesController {
     @Autowired
     private ClientThreadPool clientThreadPool;
     
+    private static final String SECRET = "gZ34sGxjUwWkuTbCLP8h45Qsju82dbmzg6Zxk9Jw";
+    
     private final static int AVERAGE_AUDIO_BITRATE = 128 * 1024;
     private final static int AVERAGE_VIDEO_BITRATE = 198 * 1024;
 
@@ -83,26 +78,97 @@ public class FilesController {
     
     @Scheduled(cron = "00 00 2 * * ?")
     public void moveArchivedCampaignFiles() throws Exception {
-        for (AdCampaigns ac: userService.findCampaignsArchiveCandidates()) {
-            for (CampaignsFiles f: userService.findCampaignFiles(ac.getId())) {
-                int clientId = f.getClientId();
-                int fileId = f.getId();
-                Integer page = f.getPage();
-
-                File rawFile = fileService.getRawFile(clientId, fileId);
-                File outputFile = fileService.getOutputFile(clientId, fileId, page);
-                File mp4File = fileService.getOutputMp4File(clientId, fileId);
-                File thumbFile = fileService.getThumbFile(clientId, fileId, page);
-                
-                
-                moveFile(rawFile, clientId);
-                moveFile(outputFile, clientId);
-                moveFile(mp4File, clientId);
-                moveFile(thumbFile, clientId);
-            }
+        log.info("Archiving starting");
+        
+        for (CampaignsFiles f: userService.findFilesArchiveCandidates()) {
             
-            ac.setFilesArchived(true);
-            userService.updateCampaign(ac);
+            log.info("Archiving file: " + f.getId());
+            
+            int clientId = f.getClientId();
+            int fileId = f.getId();
+            Integer page = f.getPage();
+
+            File rawFile = fileService.getRawFile(clientId, fileId);
+            File outputFile = fileService.getOutputFile(clientId, fileId, page);
+            File mp4File = fileService.getOutputMp4File(clientId, fileId);
+            File thumbFile = fileService.getThumbFile(clientId, fileId, page);
+            
+            
+            moveFile(rawFile, clientId);
+            moveFile(outputFile, clientId);
+            moveFile(mp4File, clientId);
+            moveFile(thumbFile, clientId);
+        }
+    }
+    
+    @RequestMapping(value = "archiveFiles/{secret}", method = RequestMethod.GET)
+    public void archiveAllFiles(
+            @PathVariable("secret") String secret,
+            HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+
+        if (secret.equals(SECRET)) {
+            moveArchivedCampaignFiles();
+        }
+
+    }
+    
+    @RequestMapping(value = "convertAllFiles/{secret}", method = RequestMethod.GET)
+    public void convertAllFiles(
+            @PathVariable("secret") String secret,
+            HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+
+        log.info("secret: " + secret);
+
+        if (secret.equals(SECRET)) {
+            for (CampaignsFiles cFile : userService.findAllFiles()) {
+                try {
+                    
+                    if (cFile.getStatus() != CampaignsFiles.STATUS_ARCHIVED) {
+                        log.info("Convert: " + cFile.getId());
+                        File clientDir = fileService.getClientFolder(cFile.getClientId());
+
+                        final String outputFileName = fileService.getOutputFile(cFile.getClientId(), cFile.getFileId(), null)
+                                .getName();
+                        File[] partFiles = clientDir.listFiles(new FilenameFilter() {
+
+                            @Override
+                            public boolean accept(File dir, String name) {
+                                return name.startsWith(outputFileName + "-")
+                                        || name.contains("port");
+                            }
+                        });
+
+                        if (partFiles.length > 1) {
+                            for (int i = 0; i < partFiles.length; i++) {
+                                File file = partFiles[i];
+                                if (file.exists()) {
+                                    file.delete();
+                                }
+                            }
+                        }
+
+                        String fileName = cFile.getFilename();
+                        String fileType = FilenameUtils.getExtension(fileName);
+
+                        FileDto fileDto = new FileDto(cFile.getId(), cFile.getClientId(), cFile.getFileType(), fileType);
+
+                        cFile.setStatus(CampaignsFiles.STATUS_CONVERTING);
+                        cFile.setUpdatedDt(new Date());
+                        userService.updateCampaignFile(cFile);
+
+                        FileDtoProducer producer = new FileDtoProducer(fileDto);
+                        FileDtoConsumer consumer = new FileDtoConsumer(cFile.getClientId(), config, userService, fileService);
+
+                        ThreadPool threadPool = clientThreadPool.getClientThreadPool(Integer.MAX_VALUE);
+                        threadPool.execute(consumer);
+                        threadPool.execute(producer);
+                    }
+                } catch (Exception e) {
+                    log.error(e.getMessage(), e);
+                }
+            }
         }
     }
     
@@ -110,7 +176,13 @@ public class FilesController {
     private void moveFile(File f, int clientId) {
         if (f.exists()) {
             try {
-                f.renameTo(new File(fileService.getArchiveClientFolder(clientId), f.getName()));
+            	File archiveFolder = fileService.getArchiveClientFolder(clientId);
+            	if (!archiveFolder.exists()) {
+            		if (!archiveFolder.mkdirs()){
+                            log.error("Archive folder don't created");
+                        }
+            	}
+                f.renameTo(new File(archiveFolder, f.getName()));
             } catch(Exception ex) {
                 log.error(ex.getMessage(), ex);
             }
@@ -254,6 +326,8 @@ public class FilesController {
                         } catch (Exception ex) {
                             log.error(ex.getMessage(), ex);
                         }
+                        
+                        Date createdDt = new Date();
 
                         if (physicalFile.exists() && physicalFile.length() > 0) {
                             Files databaseFile = new Files();
@@ -261,7 +335,7 @@ public class FilesController {
                             databaseFile.setFilename(fileName);
                             databaseFile.setFileType(fileTypeNumber);
                             databaseFile.setPath(userFolder.getCanonicalPath());
-                            databaseFile.setCreatedDt(new Date(System.currentTimeMillis()));
+                            databaseFile.setCreatedDt(createdDt);
                             databaseFile.setSize(fileSize);
                             databaseFile.setClientId(session.getClientId());
                             databaseFile.setContentLength(0L);
@@ -282,7 +356,8 @@ public class FilesController {
                             campaignFile.setFileType(fileTypeNumber);
                             campaignFile.setOrderId(databaseFile.getId());
                             campaignFile.setStatus(CampaignsFiles.STATUS_UPLOADED);
-                            campaignFile.setCreatedDt(new Date());
+                            campaignFile.setCreatedDt(createdDt);
+                            campaignFile.setUpdatedDt(createdDt);
                             campaignFile.setFilename(fileName);
 
                             userService.addCampaignFile(campaignFile);
@@ -363,6 +438,7 @@ public class FilesController {
                 fileDto.setRotate(true);
                 
                 cFile.setStatus(CampaignsFiles.STATUS_CONVERTING);
+                cFile.setUpdatedDt(new Date());
                 userService.updateCampaignFile(cFile);
                 
                 FileDtoProducer producer = new FileDtoProducer(fileDto);
@@ -432,6 +508,7 @@ public class FilesController {
             if (campaignsFile != null && dbFile != null) {
                 
                 campaignsFile.setStatus(CampaignsFiles.STATUS_ARCHIVED);
+                campaignsFile.setUpdatedDt(new Date());
 
                 userService.updateCampaignFile(campaignsFile);
 
@@ -479,7 +556,7 @@ public class FilesController {
             response.setStatus(HttpServletResponse.SC_OK);
 
             if (dbFile.getFileType() == FileTypeUtils.FILE_TYPE_VIDEO) {
-            	response.setContentType("video/mp4");
+            	response.setContentType("video/webm");
             } else if (dbFile.getFileType() == FileTypeUtils.FILE_TYPE_AUDIO) {
                 response.setContentType("audio/mpeg");
             } else if (dbFile.getFileType() == FileTypeUtils.FILE_TYPE_IMAGE) {

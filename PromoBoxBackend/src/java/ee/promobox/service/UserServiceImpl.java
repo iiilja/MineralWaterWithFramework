@@ -251,12 +251,8 @@ public class UserServiceImpl implements UserService {
     public List<CampaignsFiles> findFilesArchiveCandidates() {
         Session session = sessionFactory.getCurrentSession();
         
-        Calendar cal = GregorianCalendar.getInstance();
-        cal.add(Calendar.DAY_OF_YEAR, -2);
-        
-        Query q = session.createQuery("FROM CampaignsFiles cf WHERE cf.status = :statusArchived AND cf.updateDt > :updatedDt")
-                .setInteger("statusArchived", CampaignsFiles.STATUS_ARCHIVED)
-                .setDate("updatedDt", cal.getTime());
+        Query q = session.createQuery("FROM CampaignsFiles cf WHERE cf.status = :statusArchived")
+                .setInteger("statusArchived", CampaignsFiles.STATUS_ARCHIVED);
         
         return q.list();
     }

@@ -256,6 +256,17 @@ public class CampaignsController {
             camp.setStatus(AdCampaigns.STATUS_AHRCHIVED);
 
             userService.updateCampaign(camp);
+            
+            List<CampaignsFiles> files = userService.findCampaignFiles(camp.getId());
+            
+            for (CampaignsFiles f: files) {
+                
+                f.setStatus(CampaignsFiles.STATUS_ARCHIVED);
+                f.setUpdatedDt(new Date());
+                
+                userService.updateCampaignFile(f);
+
+            }
 
             response.setStatus(HttpServletResponse.SC_OK);
             RequestUtils.printResult(resp.toString(), response);

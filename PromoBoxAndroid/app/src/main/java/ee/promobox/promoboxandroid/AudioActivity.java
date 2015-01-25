@@ -102,7 +102,11 @@ public class AudioActivity extends Activity {
         }
 
         if (files.size() > 0) {
-            playAudio();
+            try {
+                playAudio();
+            } catch (Exception e) {
+                tryNextFile();
+            }
         }
 
     }
@@ -129,9 +133,13 @@ public class AudioActivity extends Activity {
         LocalBroadcastManager.getInstance(AudioActivity.this).sendBroadcast(playFile);
     }
 
-    private void playAudio() {
+    private void playAudio() throws Exception{
         cleanUp();
         String pathToFile = files.get(position).getPath();
+        File file = new File(pathToFile);
+        if (!file.exists()){
+            tryNextFile();
+        }
         Log.d(AUDIO_ACTIVITY,"playAudio() file = " + new File(pathToFile).getName());
         Uri uri = Uri.parse(pathToFile);
         SampleSource source;
@@ -163,18 +171,14 @@ public class AudioActivity extends Activity {
             if (playbackState == ExoPlayer.STATE_ENDED) {
 
                 if (position == files.size()) {
-                    cleanUp();
-
-                    Intent returnIntent = new Intent();
-
-                    returnIntent.putExtra("result", 1);
-
-                    AudioActivity.this.setResult(RESULT_OK, returnIntent);
-
-                    AudioActivity.this.finish();
+                    finishActivity();
                 }
                 else {
-                    playAudio();
+                    try {
+                        playAudio();
+                    } catch (Exception e) {
+                        finishActivity();
+                    }
                 }
             }
         }
@@ -186,7 +190,27 @@ public class AudioActivity extends Activity {
 
         @Override
         public void onPlayerError(ExoPlaybackException e) {
+            tryNextFile();
+        }
+    }
 
+    private void finishActivity (){
+        cleanUp();
+        AudioActivity.this.setResult(RESULT_OK);
+        AudioActivity.this.finish();
+    }
+
+    private void tryNextFile(){
+        try {
+            if (position < files.size()){
+                position ++;
+                playAudio();
+            } else {
+                finishActivity();
+            }
+        }
+        catch (Exception ex){
+            tryNextFile();
         }
     }
 
@@ -197,11 +221,7 @@ public class AudioActivity extends Activity {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (action.equals(MainActivity.ACTIVITY_FINISH)) {
-                cleanUp();
-
-                AudioActivity.this.setResult(RESULT_OK);
-
-                AudioActivity.this.finish();
+                finishActivity();
             } else if (action.equals(MainActivity.NO_NETWORK)){
                 Log.d(RECEIVER_STRING, "NO NETWORK");
                 try {

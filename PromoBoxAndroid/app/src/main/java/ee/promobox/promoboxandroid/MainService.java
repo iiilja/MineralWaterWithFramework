@@ -15,6 +15,7 @@ import android.util.Log;
 
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -40,6 +41,8 @@ public class MainService extends Service {
     private int orientation;
     private int currentFileId;
 
+    private boolean firstStart = true; // To read DATA.JSON only on first start of service
+
     private String previousCampaignsJSON = new String();
 
     private final AtomicBoolean isDownloading = new AtomicBoolean(false);
@@ -61,61 +64,46 @@ public class MainService extends Service {
         setSharedPref(PreferenceManager.getDefaultSharedPreferences(this));
         bManager = LocalBroadcastManager.getInstance(this);
         dTask = new DownloadFilesTask(this);
-        if (!ROOT.exists()){
-            ROOT.mkdirs();
-        }
-    }
-
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
 
         File file = new File("/mnt/external_sd");
         if ( file.exists() && file.listFiles() != null && file.listFiles().length > 1){
             Log.d(MAIN_SERVICE_STRING, "/mnt/external_sd EXISTS");
             ROOT = new File(file.getPath() +  "/promobox/");
         }
+        if (!ROOT.exists()){
+            ROOT.mkdirs();
+        }
+        setCampaignsFromJSONFile();
+    }
 
-        boolean firstTime =  intent == null || intent.getBooleanExtra("firstTime",false);
+
+
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+
+        boolean startMainActivity =  intent == null || intent.getBooleanExtra("startMainActivity",false);
 
         Log.i(MAIN_SERVICE_STRING, "Start command");
 
         setUuid(getSharedPref().getString("uuid", "fail"));
         setOrientation(getSharedPref().getInt("orientation", MainActivity.ORIENTATION_LANDSCAPE));
 
-        checkAndDownloadCampaign(firstTime);
-        if ( firstTime ) {
+        checkAndDownloadCampaign();
+        if ( startMainActivity ) {
             startMainActivity();
         }
         return Service.START_NOT_STICKY;
     }
 
-    public void checkAndDownloadCampaign(boolean firstTime) {
+    public void checkAndDownloadCampaign() {
         Log.d(MAIN_SERVICE_STRING, "checkAndDownloadCampaign()");
         try {
-            File data = new File(ROOT, "data.json");
-
-            if (data.exists() && firstTime) {
-                String dataString = FileUtils.readFileToString(data);
-                JSONObject dataJSON =  new JSONObject(dataString);
-                JSONArray campaignsJSON = new JSONArray();
-
-                if (dataJSON.has("campaigns")){
-                    campaignsJSON = new JSONObject(dataString).getJSONArray("campaigns");
-                }
-
-                if (!previousCampaignsJSON.equals(campaignsJSON.toString())){
-                    Log.d(MAIN_SERVICE_STRING, previousCampaignsJSON + "\n" + dataString);
-                    previousCampaignsJSON = campaignsJSON.toString();
-                    setCampaigns(new CampaignList(campaignsJSON));
-                }
-            }
             selectNextCampaign();
         } catch (Exception ex) {
             Log.e(MAIN_SERVICE_STRING, ex.getMessage(), ex);
             bManager.sendBroadcast(new ToastIntent(ex.getMessage()));
         }
-
         if (getUuid() != null) {
             dTask = new DownloadFilesTask(this);
             dTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, String.format(DEFAULT_SERVER_JSON, getUuid()));
@@ -173,6 +161,33 @@ public class MainService extends Service {
         mainActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY);
 
         getApplication().startActivity(mainActivity);
+    }
+
+    private void setCampaignsFromJSONFile(){
+        try {
+            File data = new File(ROOT, "data.json");
+
+            if (data.exists() && firstStart) {
+                firstStart = false;
+                String dataString = FileUtils.readFileToString(data);
+                JSONObject dataJSON =  new JSONObject(dataString);
+                JSONArray campaignsJSON = new JSONArray();
+
+                if (dataJSON.has("campaigns")){
+                    campaignsJSON = new JSONObject(dataString).getJSONArray("campaigns");
+                }
+
+                if (!previousCampaignsJSON.equals(campaignsJSON.toString())){
+                    Log.d(MAIN_SERVICE_STRING, previousCampaignsJSON + "\n" + dataString);
+                    previousCampaignsJSON = campaignsJSON.toString();
+                    setCampaigns(new CampaignList(campaignsJSON));
+                }
+            }
+        }
+        catch (Exception ex){
+            Log.e(MAIN_SERVICE_STRING, ex.getMessage(), ex);
+            bManager.sendBroadcast(new ToastIntent(ex.getMessage()));
+        }
     }
 
     @Override

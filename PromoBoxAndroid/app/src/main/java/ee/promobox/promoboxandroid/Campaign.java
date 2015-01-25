@@ -34,6 +34,8 @@ public class Campaign {
     private int delay;
     private int sequence;
 
+    private String ROOT = "";
+
     private ArrayList<Integer> days = new ArrayList<Integer>();
     private ArrayList<Integer> hours = new ArrayList<Integer>();
 
@@ -45,8 +47,9 @@ public class Campaign {
 
     }
 
-    public Campaign(JSONObject json) {
+    public Campaign(JSONObject json, String ROOT) {
         try {
+            this.ROOT  = ROOT;
 
             setClientId(json.getInt("clientId"));
             setCampaignId(json.getInt("campaignId"));
@@ -91,7 +94,7 @@ public class Campaign {
     }
 
     public File getRoot() {
-        return new File(Environment.getExternalStorageDirectory().getAbsoluteFile() + "/promobox/" + campaignId + "/");
+        return new File(ROOT + "/" + campaignId + "/");
     }
 
     public int getClientId() {

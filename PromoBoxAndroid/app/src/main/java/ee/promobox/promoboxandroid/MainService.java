@@ -180,7 +180,7 @@ public class MainService extends Service {
                 if (!previousCampaignsJSON.equals(campaignsJSON.toString())){
                     Log.d(MAIN_SERVICE_STRING, previousCampaignsJSON + "\n" + dataString);
                     previousCampaignsJSON = campaignsJSON.toString();
-                    setCampaigns(new CampaignList(campaignsJSON));
+                    setCampaigns(new CampaignList(campaignsJSON, ROOT.getPath()));
                 }
             }
         }
@@ -293,4 +293,7 @@ public class MainService extends Service {
         }
     }
 
+    public String getROOT() {
+        return ROOT.getPath();
+    }
 }

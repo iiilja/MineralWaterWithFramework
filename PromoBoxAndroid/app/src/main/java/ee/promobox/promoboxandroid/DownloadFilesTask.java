@@ -383,7 +383,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
     private void handleCampaigns(JSONArray campaigns){
 
         CampaignList oldCampaigns = service.getCampaigns();
-        CampaignList newCampaigns = new CampaignList(campaigns);
+        CampaignList newCampaigns = new CampaignList(campaigns, service.getROOT());
         CampaignList campaignsToBeSet = new CampaignList(newCampaigns.size());
 
         boolean campaignsUpdated = false;

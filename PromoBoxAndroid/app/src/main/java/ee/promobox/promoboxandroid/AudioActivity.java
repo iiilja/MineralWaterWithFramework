@@ -174,11 +174,7 @@ public class AudioActivity extends Activity {
                     finishActivity();
                 }
                 else {
-                    try {
-                        playAudio();
-                    } catch (Exception e) {
-                        finishActivity();
-                    }
+                    tryNextFile();
                 }
             }
         }

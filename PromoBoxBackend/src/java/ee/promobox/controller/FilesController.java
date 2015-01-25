@@ -541,7 +541,6 @@ public class FilesController {
     @RequestMapping("files/{id}")
     public void getFile(
             @PathVariable("id") int id,
-            @RequestParam(required = false) Integer orient,
             @RequestParam(required = false) Boolean webm, 
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
@@ -570,7 +569,7 @@ public class FilesController {
             		
             	if (mp4File.exists()) {
             		file = mp4File;
-            		response.setContentType("video/mpeg");
+            		response.setContentType("video/mp4");
             	}
             }
             
@@ -666,7 +665,7 @@ public class FilesController {
         if (file.getFileType() == FileTypeUtils.FILE_TYPE_AUDIO) {
             ext = ".mp3";
         } else if (file.getFileType() == FileTypeUtils.FILE_TYPE_VIDEO) {
-            ext = ".mp4";
+            ext = ".webm";
         }
 
         return ext;

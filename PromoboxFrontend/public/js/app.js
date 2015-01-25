@@ -1,4 +1,4 @@
-var apiEndpoint = "http://46.182.31.101:8080/service/";
+var apiEndpoint = "http://46.182.30.93:8080/service/";
 
 var app = angular.module('promobox', ['ngRoute', 'ui.bootstrap', 'pascalprecht.translate', 'promobox.services', 'angularFileUpload', 'toaster', 'ui.router', 'ui.sortable', 'angularMoment', 'ui.bootstrap.datetimepicker', 'checklist-model']);
 
@@ -227,6 +227,24 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         $scope.isWebmVideo = function() {
             var browserName = browser.detectBrowser();
             return browserName == "chrome" || browserName == "firefox" || browserName == "opera";
+        }
+
+        $scope.getFileExt = function(file) {
+            var browserName = browser.detectBrowser();
+            var webm =  browserName == "chrome" || browserName == "firefox" || browserName == "opera";
+            var ext = ".png";
+
+            if (file.fileType == 2) {
+                ext = ".mp3";
+            } else if (file.fileType == 3) {
+                if (webm) {
+                    ext = ".webm";
+                } else {
+                    ext = ".mp4";
+                }
+            }
+
+            return ext;
         }
 
         $scope.isFileConverting = function (file) {

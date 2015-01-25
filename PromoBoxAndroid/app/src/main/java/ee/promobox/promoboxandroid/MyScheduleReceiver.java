@@ -26,7 +26,7 @@ public class MyScheduleReceiver extends BroadcastReceiver {
 
         Intent i = new Intent(context, MyStartServiceReceiver.class);
 
-        if (intent.getAction() == Intent.ACTION_BOOT_COMPLETED) {
+        if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)) {
             Intent mainService = new Intent(context, MainService.class);
             mainService.putExtra("firstTime", true);
             context.startService(mainService);

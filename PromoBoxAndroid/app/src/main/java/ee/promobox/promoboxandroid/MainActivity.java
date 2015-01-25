@@ -208,7 +208,7 @@ public class MainActivity extends Activity {
             try {
 
                 mainService.setUuid(data.getStringExtra("deviceUuid"));
-                mainService.checkAndDownloadCampaign(false);
+                mainService.checkAndDownloadCampaign();
 
 //                startNextFile();
 

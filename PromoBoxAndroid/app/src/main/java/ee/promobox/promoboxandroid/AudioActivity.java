@@ -151,7 +151,6 @@ public class AudioActivity extends Activity {
         exoPlayer.setPlayWhenReady(true);
         sendPlayCampaignFile();
         exoPlayer.addListener(new OnTrackFinished());
-        position++;
     }
 
     private void cleanUp() {
@@ -170,7 +169,7 @@ public class AudioActivity extends Activity {
 
             if (playbackState == ExoPlayer.STATE_ENDED) {
 
-                if (position == files.size()) {
+                if (position + 1 == files.size()) {
                     finishActivity();
                 }
                 else {
@@ -198,8 +197,8 @@ public class AudioActivity extends Activity {
 
     private void tryNextFile(){
         try {
+            position ++;
             if (position < files.size()){
-                position ++;
                 playAudio();
             } else {
                 finishActivity();

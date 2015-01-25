@@ -15,6 +15,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.RotateAnimation;
+import android.widget.ImageView;
 
 
 import org.apache.commons.io.IOUtils;
@@ -30,13 +31,71 @@ public class ImageActivity extends Activity {
 
     private final String IMAGE_ACTIVITY_STRING = "ImageActivity ";
 
-    private AspectRatioImageView slide;
+    private ImageView slide;
     private LocalBroadcastManager bManager;
     private ArrayList<CampaignFile> files;
     private int position = 0;
     private boolean active = true;
     private int orientation;
-    private RotateAnimation animation;
+    private long delay = 0;
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Log.d(IMAGE_ACTIVITY_STRING, "onCreate");
+
+        setContentView(R.layout.activity_image);
+
+        bManager = LocalBroadcastManager.getInstance(this);
+
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(MainActivity.ACTIVITY_FINISH);
+        intentFilter.addAction(MainActivity.NO_NETWORK);
+        bManager.registerReceiver(bReceiver, intentFilter);
+
+        slide = (ImageView) findViewById(R.id.slide_1);
+
+        Bundle extras = getIntent().getExtras();
+
+        files = extras.getParcelableArrayList("files");
+        delay = getIntent().getExtras().getInt("delay") * 1000;
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(IMAGE_ACTIVITY_STRING, "onResume");
+
+        active = true;
+
+        Log.i(IMAGE_ACTIVITY_STRING, "Orientation: " + getIntent().getExtras().getInt("orientation"));
+        orientation = getIntent().getExtras().getInt("orientation");
+
+        if (orientation == MainActivity.ORIENTATION_PORTRAIT) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        } else {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        }
+
+        hideSystemUI();
+
+        if (position > files.size() - 1) {
+            position = 0;
+        }
+
+        if (files.size() > 0) {
+            playImage(files.get(position).getPath());
+        }
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        active = false;
+    }
 
     private Bitmap decodeBitmap(File file) {
         Bitmap bm = null;
@@ -49,13 +108,8 @@ public class ImageActivity extends Activity {
             options.inDither = false;
             options.inTempStorage = new byte[32 * 1024];
 
-            FileInputStream fs = new FileInputStream(file);
+            bm = BitmapFactory.decodeFile(file.getPath(), options);
 
-            bm = BitmapFactory.decodeFileDescriptor(fs.getFD(), null, options);
-
-            fs.getFD().sync();
-
-            IOUtils.closeQuietly(fs);
 
 
         } catch (Exception ex) {
@@ -100,66 +154,10 @@ public class ImageActivity extends Activity {
         });
     }
 
-
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        active = true;
-
-        Log.i(IMAGE_ACTIVITY_STRING, "Orientation: " + getIntent().getExtras().getInt("orientation"));
-        orientation = getIntent().getExtras().getInt("orientation");
-
-        if (orientation == MainActivity.ORIENTATION_PORTRAIT) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        } else {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        }
-
-        hideSystemUI();
-
-        if (position > files.size() - 1) {
-            position = 0;
-        }
-
-        if (files.size() > 0) {
-            playImage(files.get(position).getPath());
-        }
-
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        active = false;
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        setContentView(R.layout.activity_image);
-
-        bManager = LocalBroadcastManager.getInstance(this);
-
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(MainActivity.ACTIVITY_FINISH);
-        intentFilter.addAction(MainActivity.NO_NETWORK);
-
-        bManager.registerReceiver(bReceiver, intentFilter);
-
-        slide = (AspectRatioImageView) findViewById(R.id.slide_1);
-
-        Bundle extras = getIntent().getExtras();
-
-        files = extras.getParcelableArrayList("files");
-
-    }
-
     final Runnable r = new Runnable() {
         @Override
         public void run() {
+            Log.d(IMAGE_ACTIVITY_STRING," running runnable");
             if (position == files.size() || !active) {
 
                 Intent returnIntent = new Intent();
@@ -194,8 +192,6 @@ public class ImageActivity extends Activity {
             sendPlayCampaignFile();
 
             position++;
-
-            final long delay = getIntent().getExtras().getInt("delay") * 1000;
 
             slide.postDelayed(r, delay);
 

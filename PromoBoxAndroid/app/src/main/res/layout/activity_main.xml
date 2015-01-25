@@ -5,8 +5,7 @@
     android:layout_height="match_parent"
     android:paddingTop="?android:attr/actionBarSize"
     android:keepScreenOn="true"
-    tools:context="ee.promobox.promoboxandroid.MainActivity"
-    android:background="@drawable/promobox">
+    tools:context="ee.promobox.promoboxandroid.MainActivity">
 
 
 

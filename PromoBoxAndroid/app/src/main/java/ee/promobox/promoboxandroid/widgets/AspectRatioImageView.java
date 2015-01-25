@@ -29,6 +29,7 @@ public class AspectRatioImageView extends ImageView {
         if (widthMeasureSpec == 0 || heightMeasureSpec == 0
                 || MeasureSpec.getSize(widthMeasureSpec) == 0 || MeasureSpec.getSize(heightMeasureSpec) == 0) {
             Log.w("AspectRatioImageView","(widthMeasureSpec == 0 || heightMeasureSpec == 0" );
+            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
             return;
         }
         try {

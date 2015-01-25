@@ -46,7 +46,7 @@ public class MainService extends Service {
 
     private Campaign currentCampaign;
     private Campaign loadingCampaign;
-    private int loadingCampaignProgress;
+    private double loadingCampaignProgress;
     private CampaignList campaigns;
 
     public static File ROOT = new File(Environment.getExternalStorageDirectory().getAbsoluteFile() + "/promobox/");
@@ -256,11 +256,11 @@ public class MainService extends Service {
         this.loadingCampaign = loadingCampaign;
     }
 
-    public int getLoadingCampaignProgress() {
+    public double getLoadingCampaignProgress() {
         return loadingCampaignProgress;
     }
 
-    public void setLoadingCampaignProgress(int loadingCampaignProgress) {
+    public void setLoadingCampaignProgress(double loadingCampaignProgress) {
         this.loadingCampaignProgress = loadingCampaignProgress;
     }
 

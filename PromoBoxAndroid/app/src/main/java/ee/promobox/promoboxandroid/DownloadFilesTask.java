@@ -186,7 +186,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
         Campaign serviceCampaign = service.getCampaigns() != null ? service.getCampaigns().getCampaignWithId(camp.getCampaignId()): null;
 
         List<CampaignFile> campaignFiles = camp.getFiles();
-        int loadStep = 100 / (campaignFiles.size()!= 0 ? campaignFiles.size() : 1);
+        double loadStep = 100 / (campaignFiles.size()!= 0 ? campaignFiles.size() : 1);
 
         for (CampaignFile f : campaignFiles) {
             service.setLoadingCampaignProgress(service.getLoadingCampaignProgress() + loadStep);
@@ -313,7 +313,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
 
         if (service.getLoadingCampaign() != null) {
             json.put("loadingCampaingId", service.getLoadingCampaign().getCampaignId());
-            json.put("loadingCampaingProgress", service.getLoadingCampaignProgress());
+            json.put("loadingCampaingProgress", (int) service.getLoadingCampaignProgress());
         }
 
         Log.i(DOWNLOAD_FILE_TASK, "Pull info:" + json.toString());

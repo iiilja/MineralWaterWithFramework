@@ -54,6 +54,8 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
     private MediaCodecAudioTrackRenderer audioRenderer;
     private MediaCodecVideoTrackRenderer videoRenderer;
 
+    private SampleSource source;
+
     private int viewOriginalHeight = 0;
     private int viewOriginalWidth = 0;
 
@@ -97,10 +99,11 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
                 cleanUp();
                 Surface surface = new Surface(videoView.getSurfaceTexture());
                 String pathToFile = files.get(position).getPath();
-                Log.d(VIDEO_ACTIVITY,"playVideo() file = " + new File(pathToFile).getName());
-                Log.d(VIDEO_ACTIVITY,new File(pathToFile).getPath());
+                String[] splitted = pathToFile.split("/");
+                Log.d(VIDEO_ACTIVITY,"playVideo() file = " + splitted[splitted.length-1]);
+                Log.d(VIDEO_ACTIVITY,pathToFile);
                 Uri uri = Uri.parse(pathToFile);
-                SampleSource source = new FrameworkSampleSource(this,uri,null,2);
+                source = new FrameworkSampleSource(this,uri,null,2);
                 audioRenderer = new MediaCodecAudioTrackRenderer(
                         source, null, true);
                 videoRenderer = new MediaCodecVideoTrackRenderer(source,
@@ -111,6 +114,7 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
                 exoPlayer.addListener(new OnTrackFinished());
                 exoPlayer.sendMessage(videoRenderer, MediaCodecVideoTrackRenderer.MSG_SET_SURFACE, surface);
                 exoPlayer.setPlayWhenReady(true);
+
 
                 sendPlayCampaignFile();
 
@@ -300,6 +304,7 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
 
         @Override
         public void onPlayerError(ExoPlaybackException e) {
+            Log.e(VIDEO_ACTIVITY, "onPlayerError");
         }
     }
 

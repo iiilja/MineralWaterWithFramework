@@ -18,6 +18,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -34,8 +35,11 @@ public class MainActivity extends Activity {
     public static final String CURRENT_FILE_ID  = "ee.promobox.promoboxandroid.CURRENT_FILE_ID";
     public static final String MAKE_TOAST       = "ee.promobox.promoboxandroid.MAKE_TOAST";
     public static final String NO_NETWORK       = "ee.promobox.promoboxandroid.NO_NETWORK";
-    public static final String APP_START       = "ee.promobox.promoboxandroid.START";
+    public static final String APP_START        = "ee.promobox.promoboxandroid.START";
+    public static final String SET_STATUS       = "ee.promobox.promoboxandroid.SET_STATUS";
     public static final String PLAY_SPECIFIC_FILE       = "ee.promobox.promoboxandroid.PLAY_SPECIFIC_FILE";
+
+    private static final String NO_ACTIVE_CAMPAIGN       = "no active campaign";
 
     public final static String MAIN_ACTIVITY_STRING = "MainActivity";
 
@@ -97,6 +101,7 @@ public class MainActivity extends Activity {
         intentFilter.addAction(MAKE_TOAST);
         intentFilter.addAction(NO_NETWORK);
         intentFilter.addAction(PLAY_SPECIFIC_FILE);
+        intentFilter.addAction(SET_STATUS);
 
         bManager.registerReceiver(bReceiver, intentFilter);
 
@@ -320,41 +325,55 @@ public class MainActivity extends Activity {
 
     }
 
+    private void updateStatus( String status ){
+        TextView textView = (TextView) findViewById(R.id.main_activity_status);
+        textView.setText(status);
+    }
+
     private BroadcastReceiver bReceiver = new BroadcastReceiver() {
         private final String RECEIVER_STRING = MAIN_ACTIVITY_STRING + "BroadcastReceiver";
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (action.equals(CAMPAIGN_UPDATE)) {
+
                 if (mainService == null){
                     return;
                 }
                 campaign = mainService.getCurrentCampaign();
                 Log.d(RECEIVER_STRING, "CAMPAIGN_UPDATE to " + (campaign != null ? campaign.getCampaignName() : "NONE"));
+                updateStatus( campaign != null ? campaign.getCampaignName() : NO_ACTIVE_CAMPAIGN);
                 position = 0;
-                if (activityIsActive(MainActivity.class.getName())){
+                if (active){
                     Log.d(RECEIVER_STRING, MAIN_ACTIVITY_STRING + " active, start next file from receiver");
                     startNextFile();
                 } else {
                     Log.d(RECEIVER_STRING, "Broadcasting to finish active activity");
                     bManager.sendBroadcast(new Intent(ACTIVITY_FINISH));
                 }
+
             } else if (action.equals(CURRENT_FILE_ID)) {
+
                 mainService.setCurrentFileId(intent.getExtras().getInt("fileId"));
                 Log.d(RECEIVER_STRING, "CURRENT_FILE_ID = " + mainService.getCurrentFileId());
             } else if (action.equals(MAKE_TOAST)){
+
                 Log.d(RECEIVER_STRING, "Make TOAST");
                 Toast.makeText(getApplicationContext(),intent.getStringExtra("Toast"), Toast.LENGTH_LONG).show();
+
             } else if (action.equals(NO_NETWORK)){
+
                 Log.d(RECEIVER_STRING, "NO NETWORK");
                 try {
                     new NoNetworkDialog().show(getFragmentManager(),"NO_NETWORK");
                 } catch (IllegalStateException ex){
                 }
+
             } else if (action.equals(PLAY_SPECIFIC_FILE)){
+
                 nextSpecificFile = intent.getParcelableExtra("campaignFile");
                 Log.d(RECEIVER_STRING, "PLAY_SPECIFIC_FILE with id " + nextSpecificFile.getId());
-                if (activityIsActive(MainActivity.class.toString())){
+                if (active){
                     startNextFile();
                 } else {
                     if (campaign != null){
@@ -366,6 +385,11 @@ public class MainActivity extends Activity {
                     }
                     bManager.sendBroadcast(new Intent(ACTIVITY_FINISH));
                 }
+            } else if ( action.equals(SET_STATUS)){
+
+                String status = intent.getStringExtra("status");
+                Log.d(RECEIVER_STRING, SET_STATUS +" "+ status);
+                updateStatus(intent.getStringExtra("status"));
             }
         }
     };

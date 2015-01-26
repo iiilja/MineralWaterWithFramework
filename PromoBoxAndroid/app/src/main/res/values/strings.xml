@@ -14,5 +14,8 @@
     <string name="title_activity_first">FirstActivity</string>
     <string name="quit"></string>
     <string name="title_activity_fullscreen">FullscreenActivity</string>
+    <string name="main_activity_title_promo">Promo</string>
+    <string name="main_activity_title_box">Box</string>
+    <string name="main_activity_status_loading">loading...</string>
 
 </resources>

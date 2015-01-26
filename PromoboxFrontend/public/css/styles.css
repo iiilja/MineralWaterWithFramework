@@ -575,7 +575,7 @@ input[readonly] {
 }
 .label-row .datepicker-wrap {
     float: left;
-    width: 145px;
+    width: 155px;
 }
 
 .label-row .datepicker-wrap .input-group-addon {

@@ -168,9 +168,14 @@ public class FileDtoConsumer implements Runnable {
 			
 			createMultipageCampaingsFiles(cFile);
 
-			File file = fileService.getRawFile(fileDto.getClientId(),
-					cFile.getFileId());
-			cFile.setSize((int) file.length());
+			File mp4File = fileService.getOutputMp4File(fileDto.getClientId(), cFile.getFileId());
+			if (mp4File.exists()) {
+				cFile.setSize((int) mp4File.length());
+			} else {
+				File file = fileService.getRawFile(fileDto.getClientId(),
+						cFile.getFileId());
+				cFile.setSize((int) file.length());
+			}
 
 			Files dbFile = userService.findFileById(cFile.getFileId());
 

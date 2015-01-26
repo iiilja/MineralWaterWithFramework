@@ -77,27 +77,32 @@ public class FilesController {
     
     
     @Scheduled(cron = "00 00 2 * * ?")
+    @RequestMapping("archive")
     public void moveArchivedCampaignFiles() throws Exception {
         log.info("Archiving starting");
         
         for (CampaignsFiles f: userService.findFilesArchiveCandidates()) {
-            
-            log.info("Archiving file: " + f.getId());
-            
-            int clientId = f.getClientId();
-            int fileId = f.getId();
-            Integer page = f.getPage();
+        	try {
+        		log.info("archive: " + f.getFileId());
+        		
+	            int clientId = f.getClientId();
+	            int fileId = f.getId();
+	            Integer page = f.getPage();
+	
+	            File rawFile = fileService.getRawFile(clientId, fileId);
+	            File outputFile = fileService.getOutputFile(clientId, fileId, page);
+	            File mp4File = fileService.getOutputMp4File(clientId, fileId);
+	            File thumbFile = fileService.getThumbFile(clientId, fileId, page);
+	            
+	            
+	            moveFile(rawFile, clientId);
+	            moveFile(outputFile, clientId);
+	            moveFile(mp4File, clientId);
+	            moveFile(thumbFile, clientId);
+        	} catch (Exception e) {
+        		log.error(e.getMessage(), e);
+        	}
 
-            File rawFile = fileService.getRawFile(clientId, fileId);
-            File outputFile = fileService.getOutputFile(clientId, fileId, page);
-            File mp4File = fileService.getOutputMp4File(clientId, fileId);
-            File thumbFile = fileService.getThumbFile(clientId, fileId, page);
-            
-            
-            moveFile(rawFile, clientId);
-            moveFile(outputFile, clientId);
-            moveFile(mp4File, clientId);
-            moveFile(thumbFile, clientId);
         }
     }
     

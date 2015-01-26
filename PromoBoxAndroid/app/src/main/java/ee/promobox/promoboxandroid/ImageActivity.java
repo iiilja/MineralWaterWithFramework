@@ -15,6 +15,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.RotateAnimation;
+import android.widget.ImageView;
 
 
 import org.apache.commons.io.IOUtils;
@@ -30,79 +31,42 @@ public class ImageActivity extends Activity {
 
     private final String IMAGE_ACTIVITY_STRING = "ImageActivity ";
 
-    private AspectRatioImageView slide;
+    private ImageView slide;
     private LocalBroadcastManager bManager;
     private ArrayList<CampaignFile> files;
     private int position = 0;
     private boolean active = true;
     private int orientation;
-    private RotateAnimation animation;
-
-    private Bitmap decodeBitmap(File file) {
-        Bitmap bm = null;
-
-        try {
-            BitmapFactory.Options options = new BitmapFactory.Options();
-
-            options.inPurgeable = true;
-            options.inInputShareable = true;
-            options.inDither = false;
-            options.inTempStorage = new byte[32 * 1024];
-
-            FileInputStream fs = new FileInputStream(file);
-
-            bm = BitmapFactory.decodeFileDescriptor(fs.getFD(), null, options);
-
-            fs.getFD().sync();
-
-            IOUtils.closeQuietly(fs);
+    private long delay = 0;
 
 
-        } catch (Exception ex) {
-            Log.e(IMAGE_ACTIVITY_STRING, ex.getMessage(), ex);
-            bManager.sendBroadcast(new ToastIntent(ex.toString()));
-        }
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Log.d(IMAGE_ACTIVITY_STRING, "onCreate");
 
-        return bm;
+        setContentView(R.layout.activity_image);
+
+        bManager = LocalBroadcastManager.getInstance(this);
+
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(MainActivity.ACTIVITY_FINISH);
+        intentFilter.addAction(MainActivity.NO_NETWORK);
+        bManager.registerReceiver(bReceiver, intentFilter);
+
+        slide = (ImageView) findViewById(R.id.slide_1);
+
+        Bundle extras = getIntent().getExtras();
+
+        files = extras.getParcelableArrayList("files");
+        delay = getIntent().getExtras().getInt("delay") * 1000;
+
     }
-
-    public static Bitmap rotateBitmap(Bitmap source, float angle)
-    {
-        Matrix matrix = new Matrix();
-        matrix.postRotate(angle);
-        return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
-    }
-
-    private void hideSystemUI() {
-
-        this.getWindow().getDecorView().setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
-                        | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
-        );
-
-
-
-        View view = findViewById(R.id.image_view);
-
-        view.setOnLongClickListener(new View.OnLongClickListener() {
-
-            public boolean onLongClick(View view) {
-                Intent i = new Intent(ImageActivity.this, SettingsActivity.class);
-                startActivity(i);
-
-                return true;
-            }
-        });
-    }
-
-
 
     @Override
     protected void onResume() {
         super.onResume();
+        Log.d(IMAGE_ACTIVITY_STRING, "onResume");
 
         active = true;
 
@@ -133,31 +97,67 @@ public class ImageActivity extends Activity {
         active = false;
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    private Bitmap decodeBitmap(File file) {
+        Bitmap bm = null;
 
-        setContentView(R.layout.activity_image);
+        try {
+            BitmapFactory.Options options = new BitmapFactory.Options();
 
-        bManager = LocalBroadcastManager.getInstance(this);
+            options.inPurgeable = true;
+            options.inInputShareable = true;
+            options.inDither = false;
+            options.inTempStorage = new byte[32 * 1024];
 
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(MainActivity.ACTIVITY_FINISH);
-        intentFilter.addAction(MainActivity.NO_NETWORK);
+            bm = BitmapFactory.decodeFile(file.getPath(), options);
 
-        bManager.registerReceiver(bReceiver, intentFilter);
 
-        slide = (AspectRatioImageView) findViewById(R.id.slide_1);
 
-        Bundle extras = getIntent().getExtras();
+        } catch (Exception ex) {
+            Log.e(IMAGE_ACTIVITY_STRING, ex.getMessage(), ex);
+            bManager.sendBroadcast(new ToastIntent(ex.toString()));
+        }
 
-        files = extras.getParcelableArrayList("files");
+        return bm;
+    }
 
+    public static Bitmap rotateBitmap(Bitmap source, float angle)
+    {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(angle);
+        Bitmap newBitmap = Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
+        source.recycle();
+        return newBitmap;
+    }
+
+    private void hideSystemUI() {
+
+        this.getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
+        );
+
+
+
+        View view = findViewById(R.id.image_view);
+
+        view.setOnLongClickListener(new View.OnLongClickListener() {
+
+            public boolean onLongClick(View view) {
+                Intent i = new Intent(ImageActivity.this, SettingsActivity.class);
+                startActivity(i);
+
+                return true;
+            }
+        });
     }
 
     final Runnable r = new Runnable() {
         @Override
         public void run() {
+            Log.d(IMAGE_ACTIVITY_STRING," running runnable");
             if (position == files.size() || !active) {
 
                 Intent returnIntent = new Intent();
@@ -186,21 +186,19 @@ public class ImageActivity extends Activity {
             if (orientation == MainActivity.ORIENTATION_PORTRAIT_EMULATION){
                 bitmap = rotateBitmap(bitmap, 270);
             }
+            recycleBitmap();
             slide.setImageBitmap(bitmap);
 
             sendPlayCampaignFile();
 
             position++;
 
-            final long delay = getIntent().getExtras().getInt("delay") * 1000;
-
             slide.postDelayed(r, delay);
 
 
         } catch (Exception ex) {
             Log.e(IMAGE_ACTIVITY_STRING, ex.getMessage(), ex);
-            Log.e(IMAGE_ACTIVITY_STRING, "Path = " + path +
-                    " , decodeBitmap(file) = " + (decodeBitmap(file) == null));
+            Log.e(IMAGE_ACTIVITY_STRING, "Path = " + path );
 
             bManager.sendBroadcast(new ToastIntent(ex.toString()));
 
@@ -216,18 +214,21 @@ public class ImageActivity extends Activity {
 
     @Override
     protected void onDestroy() {
-        BitmapDrawable toRecycle = (BitmapDrawable)slide.getDrawable();
-
-        if (toRecycle != null && toRecycle.getBitmap() != null) {
-            toRecycle.getBitmap().recycle();
-        }
+        recycleBitmap();
 
         slide.destroyDrawingCache();
         slide = null;
 
         bManager.unregisterReceiver(bReceiver);
-
         super.onDestroy();
+    }
+
+    private void recycleBitmap(){
+        BitmapDrawable toRecycle = (BitmapDrawable)slide.getDrawable();
+
+        if (toRecycle != null && toRecycle.getBitmap() != null) {
+            toRecycle.getBitmap().recycle();
+        }
     }
 
 

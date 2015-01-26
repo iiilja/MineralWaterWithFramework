@@ -22,12 +22,12 @@ public class CampaignList extends ArrayList<Campaign> {
         super();
     }
 
-    public CampaignList(JSONArray campaignsJSONArray) {
+    public CampaignList(JSONArray campaignsJSONArray, String ROOT) {
         this();
         try {
             int campaignsCount = campaignsJSONArray.length();
             for(int i =0; i < campaignsCount; i++) {
-                this.add(new Campaign(campaignsJSONArray.getJSONObject(i)));
+                this.add(new Campaign(campaignsJSONArray.getJSONObject(i), ROOT));
             }
         } catch (JSONException je) {
             Log.e("CampaignList", je.getMessage());

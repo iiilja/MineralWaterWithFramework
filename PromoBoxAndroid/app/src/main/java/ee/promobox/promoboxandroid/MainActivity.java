@@ -12,6 +12,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.media.AudioManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
@@ -55,6 +56,7 @@ public class MainActivity extends Activity {
     private boolean nextSpecificFilePlaying = false;
 
     private boolean mBound = false;
+    private boolean active = true;
 
     private void hideSystemUI() {
 
@@ -82,7 +84,6 @@ public class MainActivity extends Activity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
@@ -109,10 +110,15 @@ public class MainActivity extends Activity {
 
 
     private void startNextFile() {
+        if (!active){
+            Log.e(MAIN_ACTIVITY_STRING, "AM NOT ACTIVE");
+            return;
+        }
         if (campaign != null && nextSpecificFile == null &&
                 campaign.getFiles() != null && campaign.getFiles().size() > 0) {
 
             Log.d(MAIN_ACTIVITY_STRING, "startNextFile() in " + campaign.getCampaignName());
+            active = false;
             if (nextSpecificFilePlaying) nextSpecificFilePlaying = false;
 
 
@@ -124,7 +130,6 @@ public class MainActivity extends Activity {
             CampaignFileType fileType = null;
             ArrayList<CampaignFile> filePack = new ArrayList<CampaignFile>();
 
-            Log.d(MAIN_ACTIVITY_STRING, "POSITION ON START = " + position);
 
             for (int i = position; i < campaign.getFiles().size(); i++) {
                 CampaignFile cFile = campaign.getFiles().get(i);
@@ -158,7 +163,6 @@ public class MainActivity extends Activity {
         } else {
                 Log.i(MAIN_ACTIVITY_STRING, "CAMPAIGN = NULL");
         }
-        Log.d(MAIN_ACTIVITY_STRING, "POSITION ON END = " + position);
     }
 
     private void startPlayingActivity(CampaignFileType fileType, ArrayList<CampaignFile> filePack){
@@ -198,7 +202,7 @@ public class MainActivity extends Activity {
         Log.d(MAIN_ACTIVITY_STRING," onActivityResult() ,requestCode = " + requestCode);
         if (requestCode == RESULT_FINISH_PLAY) {
 
-            startNextFile();
+////            startNextFile();
 
         } else if (requestCode == RESULT_FINISH_FIRST_START) {
             try {
@@ -206,7 +210,7 @@ public class MainActivity extends Activity {
                 mainService.setUuid(data.getStringExtra("deviceUuid"));
                 mainService.checkAndDownloadCampaign();
 
-                startNextFile();
+//                startNextFile();
 
             } catch (Exception ex) {
                 Log.e(this.getClass().getName(), ex.getMessage(), ex);
@@ -216,14 +220,14 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onResume() {
-        Log.d(MAIN_ACTIVITY_STRING, "onResume");
         super.onResume();
+        Log.d(MAIN_ACTIVITY_STRING, "onResume");
 
         hideSystemUI();
 
-        Intent intent = new Intent(this, MainService.class);
 
         if (!mBound) {
+            Intent intent = new Intent(this, MainService.class);
             bindService(intent, mConnection,
                     Context.BIND_AUTO_CREATE);
 
@@ -244,11 +248,14 @@ public class MainActivity extends Activity {
         } else {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
+        active = true;
+        startNextFile();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        active = false;
         Log.d(MAIN_ACTIVITY_STRING, "onPause");
     }
 
@@ -290,9 +297,7 @@ public class MainActivity extends Activity {
             campaign = mainService.getCurrentCampaign();
 
             if (mainService.getUuid() == null || mainService.getUuid().equals("fail")) {
-                startActivityForResult(new Intent(MainActivity.this, FirstActivity.class), 2);
-            } else {
-                startNextFile();
+                startActivityForResult(new Intent(MainActivity.this, FirstActivity.class), RESULT_FINISH_FIRST_START);
             }
 
         }
@@ -328,7 +333,7 @@ public class MainActivity extends Activity {
                 Log.d(RECEIVER_STRING, "CAMPAIGN_UPDATE to " + (campaign != null ? campaign.getCampaignName() : "NONE"));
                 position = 0;
                 if (activityIsActive(MainActivity.class.getName())){
-                    Log.d(RECEIVER_STRING, MAIN_ACTIVITY_STRING +" active, start next file from receiver");
+                    Log.d(RECEIVER_STRING, MAIN_ACTIVITY_STRING + " active, start next file from receiver");
                     startNextFile();
                 } else {
                     Log.d(RECEIVER_STRING, "Broadcasting to finish active activity");

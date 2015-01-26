@@ -15,6 +15,7 @@ import android.util.Log;
 
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -40,16 +41,18 @@ public class MainService extends Service {
     private int orientation;
     private int currentFileId;
 
+    private boolean firstStart = true; // To read DATA.JSON only on first start of service
+
     private String previousCampaignsJSON = new String();
 
     private final AtomicBoolean isDownloading = new AtomicBoolean(false);
 
     private Campaign currentCampaign;
     private Campaign loadingCampaign;
-    private int loadingCampaignProgress;
+    private double loadingCampaignProgress;
     private CampaignList campaigns;
 
-    public final static File ROOT = new File(Environment.getExternalStorageDirectory().getAbsoluteFile() + "/promobox/");
+    public static File ROOT = new File(Environment.getExternalStorageDirectory().getAbsoluteFile() + "/promobox/");
 
     private final IBinder mBinder = new MainServiceBinder();
     private LocalBroadcastManager bManager;
@@ -61,16 +64,25 @@ public class MainService extends Service {
         setSharedPref(PreferenceManager.getDefaultSharedPreferences(this));
         bManager = LocalBroadcastManager.getInstance(this);
         dTask = new DownloadFilesTask(this);
+
+        File file = new File("/mnt/external_sd");
+        if ( file.exists() && file.listFiles() != null && file.listFiles().length > 1){
+            Log.d(MAIN_SERVICE_STRING, "/mnt/external_sd EXISTS");
+            ROOT = new File(file.getPath() +  "/promobox/");
+        }
         if (!ROOT.exists()){
             ROOT.mkdirs();
         }
+        setCampaignsFromJSONFile();
     }
+
+
 
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        boolean firstTime =  intent == null || intent.getBooleanExtra("firstTime",false);
+        boolean startMainActivity =  intent == null || intent.getBooleanExtra("startMainActivity",false);
 
         Log.i(MAIN_SERVICE_STRING, "Start command");
 
@@ -78,15 +90,8 @@ public class MainService extends Service {
         setOrientation(getSharedPref().getInt("orientation", MainActivity.ORIENTATION_LANDSCAPE));
 
         checkAndDownloadCampaign();
-
-        if ( firstTime ) {
-            Intent mainActivity = new Intent(getBaseContext(), MainActivity.class);
-
-            mainActivity.setAction(Intent.ACTION_MAIN);
-            mainActivity.addCategory(Intent.CATEGORY_LAUNCHER);
-            mainActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY);
-
-            getApplication().startActivity(mainActivity);
+        if ( startMainActivity ) {
+            startMainActivity();
         }
         return Service.START_NOT_STICKY;
     }
@@ -94,29 +99,11 @@ public class MainService extends Service {
     public void checkAndDownloadCampaign() {
         Log.d(MAIN_SERVICE_STRING, "checkAndDownloadCampaign()");
         try {
-            File data = new File(ROOT, "data.json");
-
-            if (data.exists()) {
-                String dataString = FileUtils.readFileToString(data);
-                JSONObject dataJSON =  new JSONObject(dataString);
-                JSONArray campaignsJSON = new JSONArray();
-
-                if (dataJSON.has("campaigns")){
-                    campaignsJSON = new JSONObject(dataString).getJSONArray("campaigns");
-                }
-
-                if (!previousCampaignsJSON.equals(campaignsJSON.toString())){
-                    Log.d(MAIN_SERVICE_STRING, previousCampaignsJSON + "\n" + dataString);
-                    previousCampaignsJSON = campaignsJSON.toString();
-                    setCampaigns(new CampaignList(campaignsJSON));
-                }
-                selectNextCampaign();
-            }
+            selectNextCampaign();
         } catch (Exception ex) {
             Log.e(MAIN_SERVICE_STRING, ex.getMessage(), ex);
             bManager.sendBroadcast(new ToastIntent(ex.getMessage()));
         }
-
         if (getUuid() != null) {
             dTask = new DownloadFilesTask(this);
             dTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, String.format(DEFAULT_SERVER_JSON, getUuid()));
@@ -165,6 +152,43 @@ public class MainService extends Service {
             setCurrentCampaign(null);
         }
     }
+    
+    public void startMainActivity(){
+        Intent mainActivity = new Intent(getBaseContext(), MainActivity.class);
+
+        mainActivity.setAction(Intent.ACTION_MAIN);
+        mainActivity.addCategory(Intent.CATEGORY_LAUNCHER);
+        mainActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY);
+
+        getApplication().startActivity(mainActivity);
+    }
+
+    private void setCampaignsFromJSONFile(){
+        try {
+            File data = new File(ROOT, "data.json");
+
+            if (data.exists() && firstStart) {
+                firstStart = false;
+                String dataString = FileUtils.readFileToString(data);
+                JSONObject dataJSON =  new JSONObject(dataString);
+                JSONArray campaignsJSON = new JSONArray();
+
+                if (dataJSON.has("campaigns")){
+                    campaignsJSON = new JSONObject(dataString).getJSONArray("campaigns");
+                }
+
+                if (!previousCampaignsJSON.equals(campaignsJSON.toString())){
+                    Log.d(MAIN_SERVICE_STRING, previousCampaignsJSON + "\n" + dataString);
+                    previousCampaignsJSON = campaignsJSON.toString();
+                    setCampaigns(new CampaignList(campaignsJSON, ROOT.getPath()));
+                }
+            }
+        }
+        catch (Exception ex){
+            Log.e(MAIN_SERVICE_STRING, ex.getMessage(), ex);
+            bManager.sendBroadcast(new ToastIntent(ex.getMessage()));
+        }
+    }
 
     @Override
     public IBinder onBind(Intent arg0) {
@@ -180,6 +204,9 @@ public class MainService extends Service {
     }
 
     public String getUuid() {
+        if (uuid == null){
+            return getSharedPref().getString("uuid", "fail");
+        }
         return uuid;
     }
 
@@ -218,11 +245,11 @@ public class MainService extends Service {
     }
 
     public void setCurrentCampaign(Campaign currentCampaign) {
-
         // Broadcasting only if campaign is really updated or new.
         if (this.currentCampaign == null && currentCampaign != null
                 || this.currentCampaign != null && !this.currentCampaign.equals(currentCampaign)
-                || this.currentCampaign.getUpdateDate() < currentCampaign.getUpdateDate()){
+                || this.currentCampaign != null &&
+                    (this.currentCampaign.getUpdateDate() < currentCampaign.getUpdateDate())){
             Log.d(MAIN_SERVICE_STRING, " UPDATING CURRENT CAMPAIGN FROM setCurrentCampaign");
             this.currentCampaign = currentCampaign;
             Intent update = new Intent(MainActivity.CAMPAIGN_UPDATE);
@@ -244,11 +271,11 @@ public class MainService extends Service {
         this.loadingCampaign = loadingCampaign;
     }
 
-    public int getLoadingCampaignProgress() {
+    public double getLoadingCampaignProgress() {
         return loadingCampaignProgress;
     }
 
-    public void setLoadingCampaignProgress(int loadingCampaignProgress) {
+    public void setLoadingCampaignProgress(double loadingCampaignProgress) {
         this.loadingCampaignProgress = loadingCampaignProgress;
     }
 
@@ -266,4 +293,7 @@ public class MainService extends Service {
         }
     }
 
+    public String getROOT() {
+        return ROOT.getPath();
+    }
 }

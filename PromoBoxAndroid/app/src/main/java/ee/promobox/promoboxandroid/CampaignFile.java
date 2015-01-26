@@ -13,6 +13,7 @@ public class CampaignFile implements Comparable<CampaignFile>, Parcelable{
     private CampaignFileType type;
     private int size;
     private String path;
+    private long updatedDt;
 
     public CampaignFile() {
 
@@ -25,6 +26,7 @@ public class CampaignFile implements Comparable<CampaignFile>, Parcelable{
         this.type = CampaignFileType.valueOf(in.readInt());
         this.size = in.readInt();
         this.setPath(in.readString());
+        this.setUpdatedDt(in.readLong());
     }
 
     public String getName() {
@@ -67,6 +69,14 @@ public class CampaignFile implements Comparable<CampaignFile>, Parcelable{
         this.orderId = orderId;
     }
 
+    public long getUpdatedDt() {
+        return updatedDt;
+    }
+
+    public void setUpdatedDt(long updatedDt) {
+        this.updatedDt = updatedDt;
+    }
+
     @Override
     public int compareTo(CampaignFile campaignFile) {
         if (this.getOrderId() > campaignFile.getOrderId()) {
@@ -91,6 +101,7 @@ public class CampaignFile implements Comparable<CampaignFile>, Parcelable{
         parcel.writeInt(this.getType().ordinal());
         parcel.writeInt(this.size);
         parcel.writeString(this.path);
+        parcel.writeLong(this.updatedDt);
     }
 
     public static final Parcelable.Creator<CampaignFile> CREATOR = new Parcelable.Creator<CampaignFile>() {

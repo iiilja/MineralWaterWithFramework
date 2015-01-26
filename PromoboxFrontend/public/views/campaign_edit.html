@@ -74,7 +74,7 @@
                 <ul id="playlist" style="list-style: none;">
                     <li ng-repeat="promofile in campaign_form.filesArray" 
                         ng-if="!isFileConverting(promofile)"
-                        data-url="{{apiEndpoint}}files/{{promofile.id}}{{promofile.ext}}?t={{promofile.t}}{{isWebmVideo() ? '&webm=true' : ''}}"
+                        data-url="{{apiEndpoint}}files/{{promofile.id}}{{getFileExt(promofile)}}{{isWebmVideo() ? '?webm=true' : ''}}"
                         data-thumbnail-path="{{apiEndpoint}}files/thumb/{{promofile.Id}}"></li>
                 </ul>
             </div>

@@ -879,10 +879,14 @@ input[readonly] {
     font-size: 10.5pt;
     display: inline-block;
     vertical-align: top;
-    width: 250px;
+    max-width: 250px;
     text-overflow:ellipsis;
     white-space: nowrap;
     overflow: hidden;
+}
+
+.mCustomScrollbar {
+    overflow-y:scroll;
 }
 
 #sorting  .controll-block {

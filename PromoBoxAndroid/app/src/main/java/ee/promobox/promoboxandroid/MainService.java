@@ -41,6 +41,11 @@ public class MainService extends Service {
     private int orientation;
     private int currentFileId;
 
+    private Date lastWifiRestartDt;
+    private int wifiRestartCounter;
+    private Campaign loadingCampaign;
+    private double loadingCampaignProgress;
+
     private boolean firstStart = true; // To read DATA.JSON only on first start of service
 
     private String previousCampaignsJSON = new String();
@@ -48,8 +53,6 @@ public class MainService extends Service {
     private final AtomicBoolean isDownloading = new AtomicBoolean(false);
 
     private Campaign currentCampaign;
-    private Campaign loadingCampaign;
-    private double loadingCampaignProgress;
     private CampaignList campaigns;
 
     public static File ROOT = new File(Environment.getExternalStorageDirectory().getAbsoluteFile() + "/promobox/");
@@ -287,6 +290,14 @@ public class MainService extends Service {
         this.campaigns = campaigns;
     }
 
+    public void setWifiRestartCounter(int attemptsNumber) {
+        this.wifiRestartCounter = attemptsNumber;
+    }
+
+    public int getWifiRestartCounter() {
+        return wifiRestartCounter;
+    }
+
     public class MainServiceBinder extends Binder {
         MainService getService() {
             return MainService.this;
@@ -295,5 +306,13 @@ public class MainService extends Service {
 
     public String getROOT() {
         return ROOT.getPath();
+    }
+
+    public Date getLastWifiRestartDt() {
+        return lastWifiRestartDt;
+    }
+
+    public void setLastWifiRestartDt(Date lastWifiRestartDt) {
+        this.lastWifiRestartDt = lastWifiRestartDt;
     }
 }

@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.StatFs;
@@ -36,6 +37,8 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -59,7 +62,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
 
     protected File doInBackground(String... urls) {
 
-        if (!isNetworkConnected()) {
+        if (!isNetworkConnected() && service.getWifiRestartCounter() > 5) {
             Intent intent = new Intent(MainActivity.NO_NETWORK);
             LocalBroadcastManager.getInstance(service).sendBroadcast(intent);
             return null;
@@ -201,6 +204,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
                 If there is no campaignFile in service, only file in cache,
                     we can only check if file sizes are equal
             */
+            Log.d(DOWNLOAD_FILE_TASK, "check size real file = " +  file.length() + " campaign file = " + f.getSize());
             boolean filesDifferent  = serviceCampaignFile != null
                     && (serviceCampaignFile.getUpdatedDt() < f.getUpdatedDt()
                         || serviceCampaignFile.getUpdatedDt() == 0 && f.getUpdatedDt() == 0 &&
@@ -375,7 +379,25 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
             }
 
         } catch (Exception e) {
-            return false;
+            result = false;
+        }
+        if (!result ) {
+            Log.d(DOWNLOAD_FILE_TASK, "Network not connected");
+            Calendar calendar = Calendar.getInstance();
+            calendar.add(Calendar.MINUTE ,-5);
+            Date lastWifiRestartDt = service.getLastWifiRestartDt();
+            if ( lastWifiRestartDt == null || lastWifiRestartDt.before(calendar.getTime())){
+                Log.d(DOWNLOAD_FILE_TASK, "Restarting WiFi");
+                service.setLastWifiRestartDt(new Date());
+                WifiManager wifiManager = (WifiManager) service.getSystemService(Context.WIFI_SERVICE);
+                if (wifiManager.isWifiEnabled()){
+                    wifiManager.setWifiEnabled(false);
+                }
+                wifiManager.setWifiEnabled(true);
+            }
+        }
+        else {
+            service.setWifiRestartCounter(0);
         }
         return result;
     }

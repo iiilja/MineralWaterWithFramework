@@ -141,7 +141,7 @@ public class UserServiceImpl implements UserService {
 	public CampaignsFiles findFileByIdAndPage(int fileId, int page) {
 		Session session = sessionFactory.getCurrentSession();
 
-        Query q = session.createQuery("select cf CampaignsFiles cf where cf.page = :page and cf.fileId = :fileId");
+        Query q = session.createQuery("SELECT cf FROM CampaignsFiles cf WHERE cf.page = :page AND cf.fileId = :fileId");
         q.setParameter("fileId", fileId);
         q.setParameter("page", page);
         q.setMaxResults(1);
@@ -251,12 +251,11 @@ public class UserServiceImpl implements UserService {
     public List<CampaignsFiles> findFilesArchiveCandidates() {
         Session session = sessionFactory.getCurrentSession();
         
-        Calendar cal = GregorianCalendar.getInstance();
-        cal.add(Calendar.DAY_OF_YEAR, -2);
+        //Calendar cal = GregorianCalendar.getInstance();
+        //cal.add(Calendar.DAY_OF_YEAR, -2);
         
-        Query q = session.createQuery("FROM CampaignsFiles cf WHERE cf.status = :statusArchived AND cf.updateDt > :updatedDt")
-                .setInteger("statusArchived", CampaignsFiles.STATUS_ARCHIVED)
-                .setDate("updatedDt", cal.getTime());
+        Query q = session.createQuery("FROM CampaignsFiles cf WHERE cf.status = :statusArchived")
+                .setInteger("statusArchived", CampaignsFiles.STATUS_ARCHIVED);
         
         return q.list();
     }

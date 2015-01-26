@@ -94,7 +94,9 @@ public class FileDtoConsumer implements Runnable {
 
 	}
 	
-	public void createMultipageCampaingsFiles(CampaignsFiles cFile) {
+	public boolean createMultipageCampaingsFiles(CampaignsFiles cFile) {
+		boolean hasManyFiles = false;
+		
 		File clientDir = fileService.getClientFolder(cFile.getClientId());
 		
 		final String outputFileName = fileService.getOutputFile(cFile.getClientId(), cFile.getFileId(), null)
@@ -107,9 +109,9 @@ public class FileDtoConsumer implements Runnable {
 						&& !name.contains("port");
 			}
 		});
-		
-		log.info("Files sizes: " + pagesFiles.length);
+
 		if (pagesFiles.length > 1) {
+			hasManyFiles = true;
 			for (int i = 0; i < pagesFiles.length; i++) {
 				try {
 					File pageFile = pagesFiles[i];
@@ -125,6 +127,8 @@ public class FileDtoConsumer implements Runnable {
 						if (page == 0) {
 							cFile.setPage(0);
 							cFile.setFilename(name + "[0]");
+							
+							cFile.setSize( (int) pageFile.length());
 							userService.updateCampaignFile(cFile);
 						} else {
 							CampaignsFiles pageCampaignsFiles = new CampaignsFiles();
@@ -152,6 +156,7 @@ public class FileDtoConsumer implements Runnable {
 			}
 		}
 		
+		return hasManyFiles;
 	}
 
 	public void handleMessage(FileDto fileDto) {
@@ -166,16 +171,17 @@ public class FileDtoConsumer implements Runnable {
 		if (result) {
 			cFile.setStatus(CampaignsFiles.STATUS_ACTIVE);
 			
-			createMultipageCampaingsFiles(cFile);
+			boolean manyFiles = createMultipageCampaingsFiles(cFile);
 
 			File mp4File = fileService.getOutputMp4File(fileDto.getClientId(), cFile.getFileId());
 			if (mp4File.exists()) {
 				cFile.setSize((int) mp4File.length());
-			} else {
-				File file = fileService.getRawFile(fileDto.getClientId(),
-						cFile.getFileId());
+			} else if (!manyFiles) {
+			
+				File file = fileService.getOutputFile(fileDto.getClientId(),
+						cFile.getFileId(), 0);
 				cFile.setSize((int) file.length());
-			}
+			} // otherwise all file sizes set in createMultipageCampaingsFiles procedure
 
 			Files dbFile = userService.findFileById(cFile.getFileId());
 

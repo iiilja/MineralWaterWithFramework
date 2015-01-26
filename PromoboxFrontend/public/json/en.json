@@ -48,7 +48,7 @@
     "device_used": "Stand By",
     "device_online": "Device is ON",
     "device_off": "Device is OFF",
-    "device_updatedate": "Date of refreshing",
+    "device_updatedate": "Last updating date",
     "device_currentcompany": "Company is ON",
     "device_companyloading": "Company is loading",
     "device_audioaut": "Audio out",

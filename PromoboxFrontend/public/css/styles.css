@@ -887,6 +887,7 @@ input[readonly] {
 
 .mCustomScrollbar {
     overflow-y:scroll;
+    overflow-x: hidden;
 }
 
 #sorting  .controll-block {

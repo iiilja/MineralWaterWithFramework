@@ -42,6 +42,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 
+import ee.promobox.promoboxandroid.util.SetStatusIntent;
 import ee.promobox.promoboxandroid.util.ToastIntent;
 
 /**
@@ -191,7 +192,8 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
         List<CampaignFile> campaignFiles = camp.getFiles();
         double loadStep = 100 / (campaignFiles.size()!= 0 ? campaignFiles.size() : 1);
 
-        for (CampaignFile f : campaignFiles) {
+        for (int i = 0; i < campaignFiles.size(); i++) {
+            CampaignFile f  = campaignFiles.get(i);
             service.setLoadingCampaignProgress(service.getLoadingCampaignProgress() + loadStep);
 
             File dir = new File(MainService.ROOT.getAbsolutePath() + String.format("/%s/", camp.getCampaignId()));
@@ -214,12 +216,16 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
 
 
             if (filesDifferent) {
+
+                bManager.sendBroadcast(new SetStatusIntent(
+                        "Downloading " + camp.getCampaignName() + " files "+ (i+1) + "/" + campaignFiles.size()));
+
                 Log.d(DOWNLOAD_FILE_TASK, "CampaignFIle "+f.getId()+" f.getSize() = " + f.getSize()
-                        + " real FILE length = " +  file.length()+" getTotalSpace = " +  file.getTotalSpace() + " and directiry :" + file.getAbsolutePath() );
+                        + " real FILE length = " +  file.length()+" getTotalSpace = " +  file.getTotalSpace() + " and directory :" + file.getAbsolutePath() );
                 downloadFile(String.format(MainService.DEFAULT_SERVER + "/service/files/%s", f.getId()), f.getId() + "", camp);
             }
         }
-
+        bManager.sendBroadcast(new SetStatusIntent(""));
         service.setLoadingCampaignProgress(100);
         service.setLoadingCampaign(null);
         service.getIsDownloading().set(false);
@@ -345,7 +351,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
                 String jsonString = IOUtils.toString(response.getEntity().getContent());
                 return new JSONObject(jsonString);
             }
-        } else {
+        } else if ( !service.getIsDownloading().get() ){
             String error = IOUtils.toString(response.getEntity().getContent());
             Log.e(DOWNLOAD_FILE_TASK, error);
             Log.e(DOWNLOAD_FILE_TASK, "StatusCode = " + response.getStatusLine().getStatusCode());

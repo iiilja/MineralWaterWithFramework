@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.exoplayer.ExoPlaybackException;
@@ -32,6 +33,8 @@ public class AudioActivity extends Activity {
 
     ExoPlayer exoPlayer;
     MediaCodecAudioTrackRenderer audioRenderer;
+
+    private SampleSource source;
 
     private LocalBroadcastManager bManager;
 
@@ -56,9 +59,6 @@ public class AudioActivity extends Activity {
             public boolean onLongClick(View view) {
                 Intent i = new Intent(AudioActivity.this, SettingsActivity.class);
                 startActivity(i);
-
-                Toast.makeText(view.getContext(), "Just a test", Toast.LENGTH_SHORT).show();
-
                 return true;
             }
         });
@@ -105,6 +105,8 @@ public class AudioActivity extends Activity {
             try {
                 playAudio();
             } catch (Exception e) {
+                Log.e(AUDIO_ACTIVITY, "onResume " + e.getMessage());
+                Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
                 tryNextFile();
             }
         }
@@ -138,11 +140,12 @@ public class AudioActivity extends Activity {
         String pathToFile = files.get(position).getPath();
         File file = new File(pathToFile);
         if (!file.exists()){
-            tryNextFile();
+            Log.e(AUDIO_ACTIVITY, "File not found : " + pathToFile);
+            throw new Exception("File not found : " + pathToFile);
         }
-        Log.d(AUDIO_ACTIVITY,"playAudio() file = " + new File(pathToFile).getName());
+        Log.d(AUDIO_ACTIVITY,"playAudio() file = " + file.getName());
+        setStatus(files.get(position).getId() + "");
         Uri uri = Uri.parse(pathToFile);
-        SampleSource source;
         source = new FrameworkSampleSource(this,uri,null,1);
         audioRenderer = new MediaCodecAudioTrackRenderer(
                 source, null, true);
@@ -185,6 +188,8 @@ public class AudioActivity extends Activity {
 
         @Override
         public void onPlayerError(ExoPlaybackException e) {
+            Toast.makeText(AudioActivity.this,e.getMessage(),Toast.LENGTH_SHORT).show();
+            Log.e(AUDIO_ACTIVITY, "onPlayerError " + e.getMessage());
             tryNextFile();
         }
     }
@@ -201,12 +206,21 @@ public class AudioActivity extends Activity {
             if (position < files.size()){
                 playAudio();
             } else {
+                Toast.makeText(this,"Player error",Toast.LENGTH_LONG).show();
+                Thread.sleep(3000);
                 finishActivity();
             }
         }
         catch (Exception ex){
+            Log.e(AUDIO_ACTIVITY, "onPlayerError " + ex.getMessage());
+            Toast.makeText(this,ex.getMessage(),Toast.LENGTH_SHORT).show();
             tryNextFile();
         }
+    }
+
+    private void setStatus(String status){
+        TextView textView = (TextView)findViewById(R.id.audio_activity_status);
+        textView.setText(status);
     }
 
 
@@ -221,7 +235,9 @@ public class AudioActivity extends Activity {
                 Log.d(RECEIVER_STRING, "NO NETWORK");
                 try {
                     new NoNetworkDialog().show(getFragmentManager(),"NO_NETWORK");
-                } catch (IllegalStateException ignored){
+                } catch (IllegalStateException ex){
+                    Log.e(AUDIO_ACTIVITY, "NoNetworkDialog().show " + ex.getMessage());
+                    Toast.makeText(AudioActivity.this,ex.getMessage(),Toast.LENGTH_SHORT).show();
                 }
             }
         }

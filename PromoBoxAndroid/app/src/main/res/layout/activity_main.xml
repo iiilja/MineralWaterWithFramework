@@ -8,5 +8,45 @@
     tools:context="ee.promobox.promoboxandroid.MainActivity">
 
 
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:gravity="center_horizontal">
 
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:padding="20dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/main_activity_title_promo"
+                android:textSize="50sp"
+                android:textStyle="bold"
+                android:textColor="#ffcdcdcd" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/main_activity_title_box"
+                android:textSize="50sp"
+                android:textColor="#ffcea974"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="@string/main_activity_status_loading"
+            android:id="@+id/main_activity_status"
+            android:singleLine="true" />
+
+    </LinearLayout>
 </RelativeLayout>

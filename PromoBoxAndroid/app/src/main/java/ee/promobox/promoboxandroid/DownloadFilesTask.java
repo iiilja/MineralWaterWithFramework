@@ -56,6 +56,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
 
     private MainService service;
 
+
     public DownloadFilesTask(MainService service) {
         this.service = service;
         bManager = LocalBroadcastManager.getInstance(service);
@@ -115,15 +116,13 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
                 Now, when campains are updated and new are set playing we may clear cache.
                 And then try play next file
                  */
-                MainService.ROOT.mkdirs();
-                File jsonDataFile = new File(MainService.ROOT, "data.json");
+
+                File jsonDataFile = new File(service.getROOT(), "data.json");
                 FileUtils.writeStringToFile(jsonDataFile, data.toString(), "UTF-8");
 
                 if (data.has("clearCache") && data.getBoolean("clearCache")){
-                    String directoryString = MainService.ROOT.getAbsolutePath() + "/";
-                    File directory = new File(directoryString);
                     CampaignList campaignList = service.getCampaigns();
-                    for (File folder : directory.listFiles()){
+                    for (File folder : service.getROOT().listFiles()){
                         try{
                             int id = Integer.parseInt(folder.getName());
                             Log.d(DOWNLOAD_FILE_TASK,"Am in folder " + id);
@@ -196,7 +195,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
             CampaignFile f  = campaignFiles.get(i);
             service.setLoadingCampaignProgress(service.getLoadingCampaignProgress() + loadStep);
 
-            File dir = new File(MainService.ROOT.getAbsolutePath() + String.format("/%s/", camp.getCampaignId()));
+            File dir = new File(service.getROOT().getAbsolutePath() + String.format("/%s/", camp.getCampaignId()));
             CampaignFile serviceCampaignFile = serviceCampaign != null ? serviceCampaign.getFileById(f.getId()) : null;
             File file = new File(dir, f.getId() + "");
             dir.mkdirs();
@@ -245,7 +244,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
             HttpEntity entity = response.getEntity();
 
             if (entity != null) {
-                File dir = new File(MainService.ROOT.getAbsolutePath() + String.format("/%s/", camp.getCampaignId()));
+                File dir = new File(service.getROOT().getAbsolutePath() + String.format("/%s/", camp.getCampaignId()));
 
                 File file = new File(dir, fileName);
 
@@ -281,7 +280,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
 
         JSONObject json = new JSONObject();
 
-        StatFs stat = new StatFs(Environment.getExternalStorageDirectory().getPath());
+        StatFs stat = new StatFs(service.getROOTPath());
         long bytesAvailable = (long) stat.getBlockSize() * (long) stat.getAvailableBlocks();
 
 
@@ -317,7 +316,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
         json.put("freeSpace", bytesAvailable);
         json.put("force", 1);
 
-        json.put("cache", FileUtils.sizeOfDirectory(MainService.ROOT.getAbsoluteFile()));
+        json.put("cache", FileUtils.sizeOfDirectory(service.getROOT().getAbsoluteFile()));
         json.put("currentFileId", service.getCurrentFileId());
         json.put("currentCampaignId", service.getCurrentCampaign() != null ? service.getCurrentCampaign().getCampaignId() : 0);
 
@@ -411,7 +410,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
     private void handleCampaigns(JSONArray campaigns){
 
         CampaignList oldCampaigns = service.getCampaigns();
-        CampaignList newCampaigns = new CampaignList(campaigns, service.getROOT());
+        CampaignList newCampaigns = new CampaignList(campaigns, service.getROOTPath());
         CampaignList campaignsToBeSet = new CampaignList(newCampaigns.size());
 
         boolean campaignsUpdated = false;

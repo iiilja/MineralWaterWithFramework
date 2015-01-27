@@ -15,6 +15,7 @@ import android.os.Message;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -77,7 +78,6 @@ public class AudioActivity extends Activity {
         IntentFilter intentFilter = new IntentFilter();
 
         intentFilter.addAction(MainActivity.ACTIVITY_FINISH);
-        intentFilter.addAction(MainActivity.NO_NETWORK);
 
         bManager.registerReceiver(bReceiver, intentFilter);
 
@@ -93,8 +93,11 @@ public class AudioActivity extends Activity {
 
         hideSystemUI();
 
-        if (getIntent().getExtras().getInt("orientation") == MainActivity.ORIENTATION_PORTRAIT) {
+        int orientation = getIntent().getExtras().getInt("orientation");
+        if ( orientation == MainActivity.ORIENTATION_PORTRAIT) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        } else if ( orientation == MainActivity.ORIENTATION_PORTRAIT_EMULATION){
+            findViewById(R.id.audio_view).setRotation(270);
         } else {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
@@ -237,14 +240,6 @@ public class AudioActivity extends Activity {
             String action = intent.getAction();
             if (action.equals(MainActivity.ACTIVITY_FINISH)) {
                 finishActivity();
-            } else if (action.equals(MainActivity.NO_NETWORK)){
-                Log.d(RECEIVER_STRING, "NO NETWORK");
-                try {
-                    new NoNetworkDialog().show(getFragmentManager(),"NO_NETWORK");
-                } catch (IllegalStateException ex){
-                    Log.e(AUDIO_ACTIVITY, "NoNetworkDialog().show " + ex.getMessage());
-                    Toast.makeText(AudioActivity.this,ex.getMessage(),Toast.LENGTH_SHORT).show();
-                }
             }
         }
     };

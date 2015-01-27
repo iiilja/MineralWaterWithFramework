@@ -18,6 +18,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,7 +35,6 @@ public class MainActivity extends Activity {
     public static final String ACTIVITY_FINISH  = "ee.promobox.promoboxandroid.FINISH";
     public static final String CURRENT_FILE_ID  = "ee.promobox.promoboxandroid.CURRENT_FILE_ID";
     public static final String MAKE_TOAST       = "ee.promobox.promoboxandroid.MAKE_TOAST";
-    public static final String NO_NETWORK       = "ee.promobox.promoboxandroid.NO_NETWORK";
     public static final String APP_START        = "ee.promobox.promoboxandroid.START";
     public static final String SET_STATUS       = "ee.promobox.promoboxandroid.SET_STATUS";
     public static final String PLAY_SPECIFIC_FILE       = "ee.promobox.promoboxandroid.PLAY_SPECIFIC_FILE";
@@ -99,7 +99,6 @@ public class MainActivity extends Activity {
         intentFilter.addAction(CAMPAIGN_UPDATE);
         intentFilter.addAction(CURRENT_FILE_ID);
         intentFilter.addAction(MAKE_TOAST);
-        intentFilter.addAction(NO_NETWORK);
         intentFilter.addAction(PLAY_SPECIFIC_FILE);
         intentFilter.addAction(SET_STATUS);
 
@@ -243,8 +242,10 @@ public class MainActivity extends Activity {
         }
 
         if (mainService != null) {
-            if (mainService.getOrientation() == MainActivity.ORIENTATION_PORTRAIT) {
+            if (mainService.getOrientation() == ORIENTATION_PORTRAIT) {
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            } else if ( mainService.getOrientation() == ORIENTATION_PORTRAIT_EMULATION){
+                findViewById(R.id.main_view).setRotation(270);
             } else {
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
             }
@@ -364,14 +365,6 @@ public class MainActivity extends Activity {
 
                 Log.d(RECEIVER_STRING, "Make TOAST");
                 Toast.makeText(getApplicationContext(),intent.getStringExtra("Toast"), Toast.LENGTH_LONG).show();
-
-            } else if (action.equals(NO_NETWORK)){
-
-                Log.d(RECEIVER_STRING, "NO NETWORK");
-                try {
-                    new NoNetworkDialog().show(getFragmentManager(),"NO_NETWORK");
-                } catch (IllegalStateException ex){
-                }
 
             } else if (action.equals(PLAY_SPECIFIC_FILE)){
 

@@ -29,7 +29,6 @@ public class FirstActivity extends Activity {
 
 
         LocalBroadcastManager bManager = LocalBroadcastManager.getInstance(this);
-        intentFilter.addAction(MainActivity.NO_NETWORK);
         intentFilter.addAction(MainActivity.MAKE_TOAST);
         bManager.registerReceiver(bReceiver, intentFilter);
 
@@ -58,13 +57,7 @@ public class FirstActivity extends Activity {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if (action.equals(MainActivity.NO_NETWORK)){
-                Log.d(RECEIVER_STRING, "NO NETWORK");
-                try {
-                    new NoNetworkDialog().show(getFragmentManager(),"NO_NETWORK");
-                } catch (IllegalStateException ex){
-                }
-            } else if (action.equals(MainActivity.MAKE_TOAST)){
+            if (action.equals(MainActivity.MAKE_TOAST)){
                 Log.d(RECEIVER_STRING, "Make TOAST");
                 Toast.makeText(getApplicationContext(),intent.getStringExtra("Toast"), Toast.LENGTH_LONG).show();
             }

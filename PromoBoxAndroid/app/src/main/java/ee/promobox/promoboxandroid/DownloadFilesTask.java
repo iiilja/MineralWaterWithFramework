@@ -66,9 +66,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
 
         if (!isNetworkConnected()) {
             if ( service.getWifiRestartCounter() > 5 ){
-                Intent intent = new Intent(MainActivity.NO_NETWORK);
-                bManager.sendBroadcast(intent);
-            } else {
+                service.setWifiRestartCounter(0);
                 bManager.sendBroadcast(new ToastIntent("No network"));
             }
             return null;

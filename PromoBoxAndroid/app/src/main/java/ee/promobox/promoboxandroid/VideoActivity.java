@@ -359,12 +359,6 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
                 VideoActivity.this.setResult(RESULT_OK, returnIntent);
 
                 VideoActivity.this.finish();
-            }  else if (action.equals(MainActivity.NO_NETWORK)){
-                Log.d(RECEIVER_STRING, "NO NETWORK");
-                try {
-                    new NoNetworkDialog().show(getFragmentManager(),"NO_NETWORK");
-                } catch (IllegalStateException ex){
-            }
             }
         }
     };

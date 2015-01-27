@@ -8,7 +8,7 @@
 
     <LinearLayout
         android:orientation="vertical"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
@@ -26,8 +26,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/main_activity_title_promo"
                 android:textSize="50sp"
-                android:textStyle="bold"
-                android:textColor="#ffa5a5a5" />
+                android:textStyle="bold" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -39,9 +38,10 @@
         </LinearLayout>
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/main_activity_status_loading"
+            android:gravity="center"
             android:id="@+id/audio_activity_status"
             android:textSize="20sp"/>
 

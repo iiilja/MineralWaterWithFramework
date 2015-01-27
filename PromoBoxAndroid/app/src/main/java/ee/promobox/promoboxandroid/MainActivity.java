@@ -166,7 +166,10 @@ public class MainActivity extends Activity {
             nextSpecificFile = null;
             nextSpecificFilePlaying = true;
         } else {
-                Log.i(MAIN_ACTIVITY_STRING, "CAMPAIGN = NULL");
+            if (campaign != null ){
+                updateStatus("No files to play in " + campaign.getCampaignName());
+            }
+            Log.i(MAIN_ACTIVITY_STRING, "CAMPAIGN = NULL");
         }
     }
 
@@ -341,6 +344,7 @@ public class MainActivity extends Activity {
                     return;
                 }
                 campaign = mainService.getCurrentCampaign();
+                mainService.setActivityReceivedUpdate(true);
                 Log.d(RECEIVER_STRING, "CAMPAIGN_UPDATE to " + (campaign != null ? campaign.getCampaignName() : "NONE"));
                 updateStatus( campaign != null ? campaign.getCampaignName() : NO_ACTIVE_CAMPAIGN);
                 position = 0;

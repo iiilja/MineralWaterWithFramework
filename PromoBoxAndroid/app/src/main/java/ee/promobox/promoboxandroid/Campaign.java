@@ -62,7 +62,7 @@ public class Campaign {
             setDays(json.getJSONArray("days"));
             setHours(json.getJSONArray("hours"));
 
-            JSONArray ar = json.getJSONArray("files");
+            JSONArray ar = json.has("files") ? json.getJSONArray("files"): new JSONArray();
 
             for (int i = 0; i < ar.length(); i++) {
                 JSONObject obj = ar.getJSONObject(i);

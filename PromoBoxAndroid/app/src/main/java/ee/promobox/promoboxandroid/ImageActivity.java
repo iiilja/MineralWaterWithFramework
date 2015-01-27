@@ -11,11 +11,13 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 
 import org.apache.commons.io.IOUtils;
@@ -111,22 +113,26 @@ public class ImageActivity extends Activity {
             bm = BitmapFactory.decodeFile(file.getPath(), options);
 
 
-
         } catch (Exception ex) {
             Log.e(IMAGE_ACTIVITY_STRING, ex.getMessage(), ex);
-            bManager.sendBroadcast(new ToastIntent(ex.toString()));
+            Toast.makeText(this,ex.toString(), Toast.LENGTH_SHORT).show();
         }
 
         return bm;
     }
 
-    public static Bitmap rotateBitmap(Bitmap source, float angle)
-    {
-        Matrix matrix = new Matrix();
-        matrix.postRotate(angle);
-        Bitmap newBitmap = Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
-        source.recycle();
-        return newBitmap;
+    public Bitmap rotateBitmap(Bitmap source, float angle) {
+        try {
+            Matrix matrix = new Matrix();
+            matrix.postRotate(angle);
+            Bitmap newBitmap = Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
+            source.recycle();
+            return newBitmap;
+        } catch (Exception e){
+            Log.e(IMAGE_ACTIVITY_STRING, e.getMessage(), e);
+            Toast.makeText(this, e.toString(), Toast.LENGTH_SHORT).show();
+            return source;
+        }
     }
 
     private void hideSystemUI() {
@@ -138,7 +144,6 @@ public class ImageActivity extends Activity {
                         | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
                         | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
         );
-
 
 
         View view = findViewById(R.id.image_view);
@@ -157,7 +162,6 @@ public class ImageActivity extends Activity {
     final Runnable r = new Runnable() {
         @Override
         public void run() {
-            Log.d(IMAGE_ACTIVITY_STRING," running runnable");
             if (position == files.size() || !active) {
 
                 Intent returnIntent = new Intent();
@@ -174,16 +178,22 @@ public class ImageActivity extends Activity {
     private void sendPlayCampaignFile() {
         Intent playFile = new Intent(MainActivity.CURRENT_FILE_ID);
         playFile.putExtra("fileId", files.get(position).getId());
-        Log.d(IMAGE_ACTIVITY_STRING,files.get(position).getPath());
+        Log.d(IMAGE_ACTIVITY_STRING, files.get(position).getPath());
         bManager.sendBroadcast(playFile);
     }
 
     private void playImage(String path) {
         File file = new File(path);
-
+        if (!file.exists()){
+            Log.e(IMAGE_ACTIVITY_STRING, "No file in path " + path);
+            Toast.makeText(this,"No file in path " + path, Toast.LENGTH_SHORT).show();
+            position ++ ;
+            slide.postDelayed(r, delay);
+            return;
+        }
         try {
             Bitmap bitmap = decodeBitmap(file);
-            if (orientation == MainActivity.ORIENTATION_PORTRAIT_EMULATION){
+            if (orientation == MainActivity.ORIENTATION_PORTRAIT_EMULATION) {
                 bitmap = rotateBitmap(bitmap, 270);
             }
             recycleBitmap();
@@ -223,8 +233,8 @@ public class ImageActivity extends Activity {
         super.onDestroy();
     }
 
-    private void recycleBitmap(){
-        BitmapDrawable toRecycle = (BitmapDrawable)slide.getDrawable();
+    private void recycleBitmap() {
+        BitmapDrawable toRecycle = (BitmapDrawable) slide.getDrawable();
 
         if (toRecycle != null && toRecycle.getBitmap() != null) {
             toRecycle.getBitmap().recycle();
@@ -232,10 +242,9 @@ public class ImageActivity extends Activity {
     }
 
 
-
-
     private BroadcastReceiver bReceiver = new BroadcastReceiver() {
         private final String RECEIVER_STRING = IMAGE_ACTIVITY_STRING + "BroadcastReceiver";
+
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
@@ -246,11 +255,11 @@ public class ImageActivity extends Activity {
                 ImageActivity.this.setResult(RESULT_OK, returnIntent);
 
                 ImageActivity.this.finish();
-            } else if (action.equals(MainActivity.NO_NETWORK)){
+            } else if (action.equals(MainActivity.NO_NETWORK)) {
                 Log.d(RECEIVER_STRING, "NO NETWORK");
                 try {
-                    new NoNetworkDialog().show(getFragmentManager(),"NO_NETWORK");
-                } catch (IllegalStateException ex){
+                    new NoNetworkDialog().show(getFragmentManager(), "NO_NETWORK");
+                } catch (IllegalStateException ex) {
                 }
             }
         }

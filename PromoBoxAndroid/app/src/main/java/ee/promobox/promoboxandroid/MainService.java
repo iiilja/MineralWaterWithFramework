@@ -19,6 +19,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -47,6 +48,7 @@ public class MainService extends Service {
     private double loadingCampaignProgress;
 
     private boolean firstStart = true; // To read DATA.JSON only on first start of service
+    private boolean activityReceivedUpdate = false; // Sometimes mainActivity receiver starts after this broadcasts
 
     private String previousCampaignsJSON = new String();
 
@@ -55,7 +57,7 @@ public class MainService extends Service {
     private Campaign currentCampaign;
     private CampaignList campaigns;
 
-    public static File ROOT = new File(Environment.getExternalStorageDirectory().getAbsoluteFile() + "/promobox/");
+    private File ROOT = new File(Environment.getExternalStorageDirectory().getAbsoluteFile() + "/promobox/");
 
     private final IBinder mBinder = new MainServiceBinder();
     private LocalBroadcastManager bManager;
@@ -74,8 +76,14 @@ public class MainService extends Service {
             ROOT = new File(file.getPath() +  "/promobox/");
         }
         if (!ROOT.exists()){
-            ROOT.mkdirs();
+            try {
+                FileUtils.forceMkdir(ROOT);
+            } catch (IOException e) {
+                Log.e(MAIN_SERVICE_STRING, e.getMessage());
+                bManager.sendBroadcast(new ToastIntent(e.getMessage()));
+            }
         }
+        Log.d(MAIN_SERVICE_STRING, " ROOT  = " + ROOT.getPath());
         setCampaignsFromJSONFile();
     }
 
@@ -247,13 +255,16 @@ public class MainService extends Service {
         return isDownloading;
     }
 
-    public void setCurrentCampaign(Campaign currentCampaign) {
+    private void setCurrentCampaign(Campaign currentCampaign) {
         // Broadcasting only if campaign is really updated or new.
-        if (this.currentCampaign == null && currentCampaign != null
+        // Or if MainActivity receiver did not start as fast as this
+        if (!activityReceivedUpdate
+                || this.currentCampaign == null && currentCampaign != null
                 || this.currentCampaign != null && !this.currentCampaign.equals(currentCampaign)
                 || this.currentCampaign != null &&
                     (this.currentCampaign.getUpdateDate() < currentCampaign.getUpdateDate())){
             Log.d(MAIN_SERVICE_STRING, " UPDATING CURRENT CAMPAIGN FROM setCurrentCampaign");
+            setActivityReceivedUpdate(false);
             this.currentCampaign = currentCampaign;
             Intent update = new Intent(MainActivity.CAMPAIGN_UPDATE);
             bManager.sendBroadcast(update);
@@ -304,8 +315,12 @@ public class MainService extends Service {
         }
     }
 
-    public String getROOT() {
+    public String getROOTPath() {
         return ROOT.getPath();
+    }
+
+    public File getROOT() {
+        return ROOT;
     }
 
     public Date getLastWifiRestartDt() {
@@ -314,5 +329,9 @@ public class MainService extends Service {
 
     public void setLastWifiRestartDt(Date lastWifiRestartDt) {
         this.lastWifiRestartDt = lastWifiRestartDt;
+    }
+
+    public void setActivityReceivedUpdate(boolean activityReceivedUpdate) {
+        this.activityReceivedUpdate = activityReceivedUpdate;
     }
 }

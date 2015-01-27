@@ -146,7 +146,7 @@ public class AudioActivity extends Activity {
             throw new Exception("File not found : " + pathToFile);
         }
         Log.d(AUDIO_ACTIVITY,"playAudio() file = " + file.getName() + " PATH = " + pathToFile);
-        setStatus(files.get(position).getId() + "");
+        setStatus(files.get(position).getName());
         Uri uri = Uri.parse(pathToFile);
         source = new FrameworkSampleSource(this,uri,null,1);
         audioRenderer = new MediaCodecAudioTrackRenderer(

@@ -75,6 +75,7 @@ public class Campaign {
                 f.setPath(new File(getRoot(), f.getId() + "").getAbsolutePath());
                 f.setSize(obj.getInt("size"));
                 f.setUpdatedDt(obj.has("updatedDt")? obj.getLong("updatedDt"):0);
+                f.setName(obj.has("name") ? obj.getString("name") : "not named file");
 
                 files.add(f);
 

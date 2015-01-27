@@ -37,14 +37,16 @@ services.factory('Campaign', ['$resource',
                         angle: '@angle'
                     }
                 },
-                delete_campaigns: {method: 'DELETE', url: apiEndpoint + 'token/:token/campaigns/:id/', params: {token: '@token', id: '@id'},
+                delete_campaigns: {method: 'DELETE', url: apiEndpoint + 'token/:token/campaigns/:id/', params: {token: '@token', id: '@id'}
+                    /*,
                     interceptor: {
                         response: function(response) {
                             console.log(response);
                             console.debug('Tags: ', response.data.tags);
                             response.data = response.data.tags;
                             return response;
-                        }}}
+                        }}*/
+                    }
                 
             });}]);
 

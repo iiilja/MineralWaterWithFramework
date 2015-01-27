@@ -87,8 +87,10 @@ public class UserServiceImpl implements UserService {
     	Session session = sessionFactory.getCurrentSession();
 
         Query q = session.createQuery("SELECT d FROM Devices d, DevicesCampaigns dc  WHERE d.id = dc.deviceId "
-        		+ " AND dc.adCampaignsId = :campaignId");
+        		+ " AND dc.adCampaignsId = :campaignId"
+        		+ " AND d.status != :statusArchived");
         q.setParameter("campaignId", campaignId);
+        q.setParameter("statusArchived", Devices.STATUS_AHRCHIVED);
 
         return q.list();
 	}
@@ -149,11 +151,11 @@ public class UserServiceImpl implements UserService {
         return (CampaignsFiles) q.uniqueResult();
 	}
 
-	public List<CampaignsFiles> findCampaignFiles(int campgaignId) {
+	public List<CampaignsFiles> findCampaignFiles(int campaignId) {
         Session session = sessionFactory.getCurrentSession();
 
-        Query q = session.createQuery("select cf from Files f, CampaignsFiles cf where cf.campgainId = :campaignId and f.id = cf.fileId");
-        q.setParameter("campaignId", campgaignId);
+        Query q = session.createQuery("select cf from Files f, CampaignsFiles cf where cf.adCampaignsId = :campaignId and f.id = cf.fileId");
+        q.setParameter("campaignId", campaignId);
 
         return q.list();
     }

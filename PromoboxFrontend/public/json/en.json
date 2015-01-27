@@ -107,6 +107,7 @@
     "campaign_edit_allaudioscount": "Audio's",
     "campaign_edit_add": "Add",
     "campaign_edit_delete": "Delete",
+    "campaign_edit_in_use": "Кампания установлена на устройстве",
     "campaign_edit_changefilesorder": "Change files order",
     "campaign_edit_hidesettings": "Hide settings",
     "campaign_edit_showsettings": "Show settings",

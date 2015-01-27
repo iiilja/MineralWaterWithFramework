@@ -107,6 +107,7 @@
     "campaign_edit_allaudioscount": "Audiot",
     "campaign_edit_add": "Lisama",
     "campaign_edit_delete": "Kustuta",
+    "campaign_edit_in_use": "Кампания установлена на устройстве",
     "campaign_edit_changefilesorder": "Failide järgi muutumine",
     "campaign_edit_hidesettings": "Peitma seaded",
     "campaign_edit_showsettings": "Näita seaded",

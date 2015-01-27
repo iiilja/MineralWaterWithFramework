@@ -251,22 +251,27 @@ public class CampaignsController {
         Session session = sessionService.findSession(token);
 
         if (session != null) {
+        	List<Devices> devices =  userService.findDevicesByCampaing(id);
+        	if (devices.isEmpty()) {
 
-            AdCampaigns camp = userService.findCampaignByIdAndClientId(id, session.getClientId());
-            camp.setStatus(AdCampaigns.STATUS_AHRCHIVED);
-
-            userService.updateCampaign(camp);
-            
-            List<CampaignsFiles> files = userService.findCampaignFiles(camp.getId());
-            
-            for (CampaignsFiles f: files) {
-                
-                f.setStatus(CampaignsFiles.STATUS_ARCHIVED);
-                f.setUpdatedDt(new Date());
-                
-                userService.updateCampaignFile(f);
-
-            }
+	            AdCampaigns camp = userService.findCampaignByIdAndClientId(id, session.getClientId());
+	            camp.setStatus(AdCampaigns.STATUS_AHRCHIVED);
+	
+	            userService.updateCampaign(camp);
+	            
+	            List<CampaignsFiles> files = userService.findCampaignFiles(camp.getId());
+	            
+	            for (CampaignsFiles f: files) {
+	                
+	                f.setStatus(CampaignsFiles.STATUS_ARCHIVED);
+	                f.setUpdatedDt(new Date());
+	                
+	                userService.updateCampaignFile(f);
+	
+	            }
+        	} else {
+        		resp.put("error", "campaign_in_use");
+        	}
 
             response.setStatus(HttpServletResponse.SC_OK);
             RequestUtils.printResult(resp.toString(), response);

@@ -748,7 +748,7 @@ app.controller('DevicesController', ['$scope', 'token', 'Device', 'sysMessage', 
 
             $scope.openApp =  function(deviceId) {
                 Device.openApp({token: token.get() , id: deviceId}, function (response) {
-                    //sysMessage.update_s($filter('translate')('system_device_cachecleared'));
+                    sysMessage.update_s($filter('translate')('system_device_ontop'));
                 });
             }
             

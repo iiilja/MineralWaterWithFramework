@@ -125,6 +125,7 @@
     "system_removed": "Удалено",
     "system_deviceadded": "Устройство добавлено",
     "system_device_cachecleared": "Кэш будет очищен",
+    "system_device_ontop": "Приложение запустится на устройстве",
     "system_error": "Ошибка",
     "system_thenameorpassworddonotmatch": "Имя или пароль не совпадают",
     "system_playnextfile": "Файл будет воспроизведен следующим",

@@ -1,4 +1,4 @@
-var apiEndpoint = "http://46.182.30.93:8080/service/";
+var apiEndpoint = "http://46.182.31.101:8080/service/";
 
 var app = angular.module('promobox', ['ngRoute', 'ui.bootstrap', 'pascalprecht.translate', 'promobox.services', 'angularFileUpload', 'toaster', 'ui.router', 'ui.sortable', 'angularMoment', 'ui.bootstrap.datetimepicker', 'checklist-model']);
 
@@ -748,7 +748,7 @@ app.controller('DevicesController', ['$scope', 'token', 'Device', 'sysMessage', 
 
             $scope.openApp =  function(deviceId) {
                 Device.openApp({token: token.get() , id: deviceId}, function (response) {
-                    //sysMessage.update_s($filter('translate')('system_device_cachecleared'));
+                    sysMessage.update_s($filter('translate')('system_device_ontop'));
                 });
             }
             

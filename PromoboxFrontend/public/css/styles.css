@@ -575,7 +575,7 @@ input[readonly] {
 }
 .label-row .datepicker-wrap {
     float: left;
-    width: 145px;
+    width: 155px;
 }
 
 .label-row .datepicker-wrap .input-group-addon {
@@ -879,10 +879,15 @@ input[readonly] {
     font-size: 10.5pt;
     display: inline-block;
     vertical-align: top;
-    width: 250px;
+    max-width: 250px;
     text-overflow:ellipsis;
     white-space: nowrap;
     overflow: hidden;
+}
+
+.mCustomScrollbar {
+    -ms-overflow-y:scroll;
+    -ms-overflow-x: hidden;
 }
 
 #sorting  .controll-block {

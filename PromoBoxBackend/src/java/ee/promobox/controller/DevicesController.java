@@ -91,6 +91,8 @@ public class DevicesController {
         Devices d = userService.findDeviceByUuid(uuid);
 
         if (d != null) {
+        	resp.put("currentDt", new Date().getTime());
+        	
             JSONObject objectGiven = new JSONObject(json);
 
             d.setFreeSpace(objectGiven.has("freeSpace") ? objectGiven.getLong("freeSpace") : 0);
@@ -165,6 +167,7 @@ public class DevicesController {
                                     jsonCampaignFile.put("type", file.getFileType().intValue());
                                     jsonCampaignFile.put("size", file.getSize());
                                     jsonCampaignFile.put("orderId", file.getOrderId());
+                                    jsonCampaignFile.put("name", file.getFilename());
                                     
                                     if (file.getUpdatedDt() != null) {
                                     	jsonCampaignFile.put("updatedDt", file.getUpdatedDt().getTime());

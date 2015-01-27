@@ -104,6 +104,7 @@
     "campaign_edit_changefilesorder": "Изменить порядок файлов",
     "campaign_edit_hidesettings": "Скрыть настройки",
     "campaign_edit_showsettings": "Показать настройки",
+    "campaign_edit_setup": "Настроить",
     "campaign_no_active_device": "Не найдены устройства online",
     "campaign_updated": "Кампания сохранена",
     "system_adding": "Tiek pievienots",
@@ -117,6 +118,7 @@
     "system_removed": "Noņemts",
     "system_deviceadded": "Ierīce pievienota",
     "system_device_cachecleared": "Cache will be cleared",
+    "system_device_ontop": "Приложение запустится на устройстве",
     "system_playnextfile": "Файл будет воспроизведен следующим",
     "system_rotatefile": "Файл будет повернут"
 }

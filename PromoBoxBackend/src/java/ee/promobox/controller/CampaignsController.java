@@ -323,7 +323,7 @@ public class CampaignsController {
                 boolean timeIntersection = false;
                 for (Devices d: userService.findDevicesByCampaing(id)) {
                 	for (AdCampaigns c: userService.findCampaignByDeviceId(d.getId())) {
-                		if (c.getId() == (int) campaign.getId()) {
+                		if (c.getId() == (int) campaign.getId() || c.getStatus() != AdCampaigns.STATUS_PUBLISHED) {
                 			continue;
                 		}
                 		

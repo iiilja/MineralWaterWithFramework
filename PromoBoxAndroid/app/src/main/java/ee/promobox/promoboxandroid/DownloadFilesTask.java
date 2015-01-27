@@ -64,9 +64,13 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
 
     protected File doInBackground(String... urls) {
 
-        if (!isNetworkConnected() && service.getWifiRestartCounter() > 5) {
-            Intent intent = new Intent(MainActivity.NO_NETWORK);
-            LocalBroadcastManager.getInstance(service).sendBroadcast(intent);
+        if (!isNetworkConnected()) {
+            if ( service.getWifiRestartCounter() > 5 ){
+                Intent intent = new Intent(MainActivity.NO_NETWORK);
+                bManager.sendBroadcast(intent);
+            } else {
+                bManager.sendBroadcast(new ToastIntent("No network"));
+            }
             return null;
         }
         try {
@@ -394,6 +398,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
             if ( lastWifiRestartDt == null || lastWifiRestartDt.before(calendar.getTime())){
                 Log.d(DOWNLOAD_FILE_TASK, "Restarting WiFi");
                 service.setLastWifiRestartDt(new Date());
+                service.setWifiRestartCounter(service.getWifiRestartCounter() + 1 );
                 WifiManager wifiManager = (WifiManager) service.getSystemService(Context.WIFI_SERVICE);
                 if (wifiManager.isWifiEnabled()){
                     wifiManager.setWifiEnabled(false);

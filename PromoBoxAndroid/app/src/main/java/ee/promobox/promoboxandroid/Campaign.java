@@ -62,7 +62,7 @@ public class Campaign {
             setDays(json.getJSONArray("days"));
             setHours(json.getJSONArray("hours"));
 
-            JSONArray ar = json.getJSONArray("files");
+            JSONArray ar = json.has("files") ? json.getJSONArray("files"): new JSONArray();
 
             for (int i = 0; i < ar.length(); i++) {
                 JSONObject obj = ar.getJSONObject(i);
@@ -75,6 +75,7 @@ public class Campaign {
                 f.setPath(new File(getRoot(), f.getId() + "").getAbsolutePath());
                 f.setSize(obj.getInt("size"));
                 f.setUpdatedDt(obj.has("updatedDt")? obj.getLong("updatedDt"):0);
+                f.setName(obj.has("name") ? obj.getString("name") : "not named file");
 
                 files.add(f);
 

@@ -10,6 +10,8 @@ import android.media.MediaExtractor;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
@@ -143,8 +145,8 @@ public class AudioActivity extends Activity {
             Log.e(AUDIO_ACTIVITY, "File not found : " + pathToFile);
             throw new Exception("File not found : " + pathToFile);
         }
-        Log.d(AUDIO_ACTIVITY,"playAudio() file = " + file.getName());
-        setStatus(files.get(position).getId() + "");
+        Log.d(AUDIO_ACTIVITY,"playAudio() file = " + file.getName() + " PATH = " + pathToFile);
+        setStatus(files.get(position).getName());
         Uri uri = Uri.parse(pathToFile);
         source = new FrameworkSampleSource(this,uri,null,1);
         audioRenderer = new MediaCodecAudioTrackRenderer(
@@ -207,8 +209,12 @@ public class AudioActivity extends Activity {
                 playAudio();
             } else {
                 Toast.makeText(this,"Player error",Toast.LENGTH_LONG).show();
-                Thread.sleep(3000);
-                finishActivity();
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        finishActivity();
+                    }
+                }, 1000);
             }
         }
         catch (Exception ex){

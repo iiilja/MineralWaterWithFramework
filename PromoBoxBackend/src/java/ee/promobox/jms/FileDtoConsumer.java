@@ -294,7 +294,7 @@ public class FileDtoConsumer implements Runnable {
 		imageConvert.input(outputFile);
 		//imageConvert.page(0);
 		imageConvert.background("white");
-		imageConvert.resize(1920, 1920);
+		imageConvert.resize(1920, 1920, false, true, false);
 		imageConvert.rotate(f.getAngle());
 
 		imageConvert.outputFormat("png");
@@ -336,7 +336,7 @@ public class FileDtoConsumer implements Runnable {
 			imageConvert.input(rawFile);
 			//imageConvert.page(0);
 			imageConvert.background("white");
-			imageConvert.resize(1920, 1920);
+			imageConvert.resize(1920, 1920, false, true, false);
 			imageConvert.rotate(f.getAngle());
 	
 			imageConvert.outputFormat("png");
@@ -395,7 +395,7 @@ public class FileDtoConsumer implements Runnable {
 
 		imageConvert.input(rawFile);
 		imageConvert.outputFormat("png");
-		imageConvert.resize(1920, 1920);
+		imageConvert.resize(1920, 1920, false, true, false);
 		imageConvert.rotate(f.getAngle());
 
 		imageConvert.processToFile(outputFile);

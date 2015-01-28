@@ -31,11 +31,14 @@ import com.google.android.exoplayer.MediaCodecVideoTrackRenderer;
 import com.google.android.exoplayer.SampleSource;
 
 
+import org.apache.commons.io.FilenameUtils;
+
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 
-import ee.promobox.promoboxandroid.util.ToastIntent;
+import ee.promobox.promoboxandroid.data.CampaignFile;
+import ee.promobox.promoboxandroid.intents.ErrorMessageIntent;
+import ee.promobox.promoboxandroid.intents.ToastIntent;
 
 
 public class VideoActivity extends Activity implements TextureView.SurfaceTextureListener {
@@ -67,15 +70,11 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
         setContentView(R.layout.activity_video);
 
         bManager = LocalBroadcastManager.getInstance(this);
-
         IntentFilter intentFilter = new IntentFilter();
-
         intentFilter.addAction(MainActivity.ACTIVITY_FINISH);
-
         bManager.registerReceiver(bReceiver, intentFilter);
 
         Bundle extras = getIntent().getExtras();
-
         files = extras.getParcelableArrayList("files");
 
     }
@@ -99,8 +98,7 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
                 cleanUp();
                 Surface surface = new Surface(videoView.getSurfaceTexture());
                 String pathToFile = files.get(position).getPath();
-                String[] splitted = pathToFile.split("/");
-                Log.d(VIDEO_ACTIVITY,"playVideo() file = " + splitted[splitted.length-1]);
+                Log.d(VIDEO_ACTIVITY,"playVideo() file = " + FilenameUtils.getBaseName(pathToFile));
                 Log.d(VIDEO_ACTIVITY,pathToFile);
                 Uri uri = Uri.parse(pathToFile);
                 source = new FrameworkSampleSource(this,uri,null,2);
@@ -124,13 +122,11 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
             } catch (Exception ex) {
                 Log.e("VideoActivity", ex.getMessage(), ex);
                 bManager.sendBroadcast(new ToastIntent(ex.getMessage()));
+                bManager.sendBroadcast(new ErrorMessageIntent(ex));
 
                 Intent returnIntent = new Intent();
-
                 returnIntent.putExtra("result", MainActivity.RESULT_FINISH_PLAY);
-
                 VideoActivity.this.setResult(RESULT_OK, returnIntent);
-
                 VideoActivity.this.finish();
             }
         }
@@ -262,14 +258,17 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
         }
 
         @Override
-        public void onDecoderInitializationError(MediaCodecTrackRenderer.DecoderInitializationException e) {
-            bManager.sendBroadcast(new ToastIntent("DecoderInitializationError"));
-            cleanUp();
+        public void onDecoderInitializationError(MediaCodecTrackRenderer.DecoderInitializationException ex) {
+            bManager.sendBroadcast(new ToastIntent(ex.getMessage()));
+            bManager.sendBroadcast(new ErrorMessageIntent(ex));
             Log.e(TAG, "onDecoderInitializationError");
+            cleanUp();
         }
 
         @Override
-        public void onCryptoError(MediaCodec.CryptoException e) {
+        public void onCryptoError(MediaCodec.CryptoException ex) {
+            bManager.sendBroadcast(new ToastIntent(ex.getMessage()));
+            bManager.sendBroadcast(new ErrorMessageIntent(ex));
             Log.e(TAG,"onCryptoError");
         }
     };
@@ -303,7 +302,9 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
         }
 
         @Override
-        public void onPlayerError(ExoPlaybackException e) {
+        public void onPlayerError(ExoPlaybackException ex) {
+            bManager.sendBroadcast(new ToastIntent(ex.getMessage()));
+            bManager.sendBroadcast(new ErrorMessageIntent(ex));
             Log.e(VIDEO_ACTIVITY, "onPlayerError");
         }
     }
@@ -323,10 +324,12 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
             size.set(Integer.parseInt(width), Integer.parseInt(height));
             return size;
 
-        } catch (NumberFormatException e) {
-            Log.e(VIDEO_ACTIVITY, e.getMessage());
+        } catch (NumberFormatException ex) {
+            bManager.sendBroadcast(new ToastIntent(ex.getMessage()));
+            bManager.sendBroadcast(new ErrorMessageIntent(ex));
+            Log.e(VIDEO_ACTIVITY, ex.getMessage());
         }
-        return null;
+        return new Point(0,0);
     }
 
     private Point calculateNeededVideoSize(Point videoSize, int viewHeight, int viewWidth) {

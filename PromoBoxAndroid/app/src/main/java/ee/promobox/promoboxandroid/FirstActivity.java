@@ -39,14 +39,9 @@ public class FirstActivity extends Activity {
                 Log.i("FirstActivity", et.getText().toString());
 
                 Intent returnIntent = new Intent();
-
                 returnIntent.putExtra("result", MainActivity.RESULT_FINISH_FIRST_START);
-
-                //Nado proverjat
                 returnIntent.putExtra("deviceUuid", et.getText().toString());
-
                 setResult(RESULT_OK, returnIntent);
-
                 FirstActivity.this.finish();
             }
         });

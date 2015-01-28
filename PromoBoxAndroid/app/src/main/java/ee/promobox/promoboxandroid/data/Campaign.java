@@ -1,6 +1,5 @@
-package ee.promobox.promoboxandroid;
+package ee.promobox.promoboxandroid.data;
 
-import android.os.Environment;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -12,7 +11,6 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.ArrayList;
-import java.util.IllegalFormatException;
 import java.util.List;
 
 /**

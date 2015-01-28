@@ -1,13 +1,15 @@
-package ee.promobox.promoboxandroid;
+package ee.promobox.promoboxandroid.data;
 
 import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import ee.promobox.promoboxandroid.data.Campaign;
+import ee.promobox.promoboxandroid.data.CampaignFile;
 
 /**
  * Created by Viktor on 11/16/2014.

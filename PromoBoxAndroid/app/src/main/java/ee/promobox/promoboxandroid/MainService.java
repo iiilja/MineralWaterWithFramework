@@ -1,8 +1,6 @@
 package ee.promobox.promoboxandroid;
 
-import android.app.ActivityManager;
 import android.app.Service;
-import android.content.ComponentName;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -15,17 +13,20 @@ import android.util.Log;
 
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import ee.promobox.promoboxandroid.util.ToastIntent;
+import ee.promobox.promoboxandroid.data.Campaign;
+import ee.promobox.promoboxandroid.data.CampaignList;
+import ee.promobox.promoboxandroid.data.ErrorMessage;
+import ee.promobox.promoboxandroid.data.ErrorMessageArray;
+import ee.promobox.promoboxandroid.intents.ToastIntent;
 
 
 public class MainService extends Service {
@@ -56,6 +57,7 @@ public class MainService extends Service {
 
     private Campaign currentCampaign;
     private CampaignList campaigns;
+    private ErrorMessageArray errors = new ErrorMessageArray();
 
     private File ROOT = new File(Environment.getExternalStorageDirectory().getAbsoluteFile() + "/promobox/");
 
@@ -78,9 +80,10 @@ public class MainService extends Service {
         if (!ROOT.exists()){
             try {
                 FileUtils.forceMkdir(ROOT);
-            } catch (IOException e) {
-                Log.e(MAIN_SERVICE_STRING, e.getMessage());
-                bManager.sendBroadcast(new ToastIntent(e.getMessage()));
+            } catch (IOException ex) {
+                Log.e(MAIN_SERVICE_STRING, ex.getMessage());
+                bManager.sendBroadcast(new ToastIntent(ex.getMessage()));
+                errors.addError(new ErrorMessage(ex.toString(),ex.getMessage(),ex.getStackTrace()));
             }
         }
         Log.d(MAIN_SERVICE_STRING, " ROOT  = " + ROOT.getPath());
@@ -114,6 +117,8 @@ public class MainService extends Service {
         } catch (Exception ex) {
             Log.e(MAIN_SERVICE_STRING, ex.getMessage(), ex);
             bManager.sendBroadcast(new ToastIntent(ex.getMessage()));
+            errors.addError(new ErrorMessage(ex.toString(),ex.getMessage(),ex.getStackTrace()));
+
         }
         if (getUuid() != null) {
             dTask = new DownloadFilesTask(this);
@@ -198,6 +203,7 @@ public class MainService extends Service {
         catch (Exception ex){
             Log.e(MAIN_SERVICE_STRING, ex.getMessage(), ex);
             bManager.sendBroadcast(new ToastIntent(ex.getMessage()));
+            errors.addError(new ErrorMessage(ex.toString(),ex.getMessage(),ex.getStackTrace()));
         }
     }
 
@@ -333,5 +339,17 @@ public class MainService extends Service {
 
     public void setActivityReceivedUpdate(boolean activityReceivedUpdate) {
         this.activityReceivedUpdate = activityReceivedUpdate;
+    }
+
+    public ErrorMessageArray getErrors() {
+        return errors;
+    }
+
+    public void setErrors(ErrorMessageArray errors) {
+        this.errors = errors;
+    }
+
+    public void addError(ErrorMessage msg){
+        errors.addError(msg);
     }
 }

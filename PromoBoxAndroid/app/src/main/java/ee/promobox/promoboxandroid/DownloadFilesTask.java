@@ -9,7 +9,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
-import android.os.Environment;
 import android.os.StatFs;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -42,8 +41,14 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 
-import ee.promobox.promoboxandroid.util.SetStatusIntent;
-import ee.promobox.promoboxandroid.util.ToastIntent;
+import ee.promobox.promoboxandroid.data.Campaign;
+import ee.promobox.promoboxandroid.data.CampaignFile;
+import ee.promobox.promoboxandroid.data.CampaignList;
+import ee.promobox.promoboxandroid.data.ErrorMessage;
+import ee.promobox.promoboxandroid.data.ErrorMessageArray;
+import ee.promobox.promoboxandroid.intents.ErrorMessageIntent;
+import ee.promobox.promoboxandroid.intents.SetStatusIntent;
+import ee.promobox.promoboxandroid.intents.ToastIntent;
 
 /**
  * Created by Maxim on 15.12.2014.
@@ -145,7 +150,9 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
                                     }
                                 }
                             }
-                        } catch (NumberFormatException ignored){
+                        } catch (NumberFormatException ex){
+                            bManager.sendBroadcast(new ToastIntent(ex.getMessage()));
+                            service.addError(new ErrorMessage(ex.toString(), ex.getMessage(), ex.getStackTrace()));
                         }
                     }
                 }
@@ -163,6 +170,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
         } catch (Exception ex) {
             Log.e(DOWNLOAD_FILE_TASK, ex.getMessage(), ex);
             bManager.sendBroadcast(new ToastIntent(DOWNLOAD_FILE_TASK + ex.toString()));
+            service.addError(new ErrorMessage(ex.toString(), ex.getMessage(), ex.getStackTrace()));
         }
 
         return null;
@@ -265,9 +273,10 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
             }
 
 
-        } catch (Exception e) {
-            Log.d(DOWNLOAD_FILE_TASK, e.getMessage(), e);
-            bManager.sendBroadcast(new ToastIntent(DOWNLOAD_FILE_TASK + e.toString()));
+        } catch (Exception ex) {
+            Log.d(DOWNLOAD_FILE_TASK, ex.getMessage(), ex);
+            bManager.sendBroadcast(new ToastIntent(DOWNLOAD_FILE_TASK + ex.toString()));
+            service.addError(new ErrorMessage(ex.toString(), ex.getMessage(), ex.getStackTrace()));
         }
 
         return null;
@@ -321,11 +330,15 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
         json.put("cache", FileUtils.sizeOfDirectory(service.getROOT().getAbsoluteFile()));
         json.put("currentFileId", service.getCurrentFileId());
         json.put("currentCampaignId", service.getCurrentCampaign() != null ? service.getCurrentCampaign().getCampaignId() : 0);
+        json.put("errors", service.getErrors());
+
+        service.setErrors(new ErrorMessageArray());
 
         if (service.getLoadingCampaign() != null) {
             json.put("loadingCampaingId", service.getLoadingCampaign().getCampaignId());
             json.put("loadingCampaingProgress", (int) service.getLoadingCampaignProgress());
         }
+
 
         Log.i(DOWNLOAD_FILE_TASK, "Pull info:" + json.toString());
 
@@ -339,9 +352,11 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
             response = httpclient.execute(httppost);
         } catch (HttpHostConnectException ex){
             bManager.sendBroadcast(new ToastIntent("loadData HttpHostConnectException"));
+            service.addError(new ErrorMessage(ex.toString(), ex.getMessage(), ex.getStackTrace()));
             return null;
         } catch (SocketException ex){
             bManager.sendBroadcast(new ToastIntent("loadData SocketException"));
+            service.addError(new ErrorMessage(ex.toString(), ex.getMessage(), ex.getStackTrace()));
             return null;
         }
 
@@ -353,9 +368,10 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
                 return new JSONObject(jsonString);
             }
         } else if ( !service.getIsDownloading().get() ){
-            String error = IOUtils.toString(response.getEntity().getContent());
+            String error = " Status code:" + response.getStatusLine().getStatusCode();
+            error += ". Content:" +  IOUtils.toString(response.getEntity().getContent());
             Log.e(DOWNLOAD_FILE_TASK, error);
-            Log.e(DOWNLOAD_FILE_TASK, "StatusCode = " + response.getStatusLine().getStatusCode());
+            service.addError(new ErrorMessage("ServerError", error, null));
             bManager.sendBroadcast(new ToastIntent(DOWNLOAD_FILE_TASK + error));
         }
 

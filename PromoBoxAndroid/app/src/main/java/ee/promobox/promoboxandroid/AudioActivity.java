@@ -6,16 +6,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
-import android.media.MediaExtractor;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,7 +22,11 @@ import com.google.android.exoplayer.MediaCodecAudioTrackRenderer;
 import com.google.android.exoplayer.SampleSource;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
+
+import ee.promobox.promoboxandroid.data.CampaignFile;
+import ee.promobox.promoboxandroid.intents.ErrorMessageIntent;
 
 
 //https://github.com/felixpalmer/android-visualizer
@@ -109,10 +109,16 @@ public class AudioActivity extends Activity {
         if (files.size() > 0) {
             try {
                 playAudio();
-            } catch (Exception e) {
-                Log.e(AUDIO_ACTIVITY, "onResume " + e.getMessage());
-                Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
-                tryNextFile();
+            } catch (Exception ex) {
+                Log.e(AUDIO_ACTIVITY, "onResume " + ex.getMessage());
+                Toast.makeText(this,ex.getMessage(),Toast.LENGTH_SHORT).show();
+                bManager.sendBroadcast(new ErrorMessageIntent(ex));
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        tryNextFile();
+                    }
+                },1000);
             }
         }
 
@@ -146,7 +152,7 @@ public class AudioActivity extends Activity {
         File file = new File(pathToFile);
         if (!file.exists()){
             Log.e(AUDIO_ACTIVITY, "File not found : " + pathToFile);
-            throw new Exception("File not found : " + pathToFile);
+            throw new FileNotFoundException("File not found : " + pathToFile);
         }
         Log.d(AUDIO_ACTIVITY,"playAudio() file = " + file.getName() + " PATH = " + pathToFile);
         setStatus(files.get(position).getName());
@@ -192,10 +198,16 @@ public class AudioActivity extends Activity {
         }
 
         @Override
-        public void onPlayerError(ExoPlaybackException e) {
-            Toast.makeText(AudioActivity.this,e.getMessage(),Toast.LENGTH_SHORT).show();
-            Log.e(AUDIO_ACTIVITY, "onPlayerError " + e.getMessage());
-            tryNextFile();
+        public void onPlayerError(ExoPlaybackException ex) {
+            Toast.makeText(AudioActivity.this,ex.getMessage(),Toast.LENGTH_SHORT).show();
+            bManager.sendBroadcast(new ErrorMessageIntent(ex));
+            Log.e(AUDIO_ACTIVITY, "onPlayerError " + ex.getMessage());
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    tryNextFile();
+                }
+            }, 1000);
         }
     }
 
@@ -223,7 +235,13 @@ public class AudioActivity extends Activity {
         catch (Exception ex){
             Log.e(AUDIO_ACTIVITY, "onPlayerError " + ex.getMessage());
             Toast.makeText(this,ex.getMessage(),Toast.LENGTH_SHORT).show();
-            tryNextFile();
+            bManager.sendBroadcast(new ErrorMessageIntent(ex));
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    tryNextFile();
+                }
+            }, 1000);
         }
     }
 

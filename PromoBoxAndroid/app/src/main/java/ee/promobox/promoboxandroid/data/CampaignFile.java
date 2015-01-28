@@ -1,4 +1,4 @@
-package ee.promobox.promoboxandroid;
+package ee.promobox.promoboxandroid.data;
 
 import android.os.Parcel;
 import android.os.Parcelable;

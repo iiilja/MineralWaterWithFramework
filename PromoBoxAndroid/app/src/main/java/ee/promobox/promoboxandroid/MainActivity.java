@@ -12,18 +12,21 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.media.AudioManager;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import ee.promobox.promoboxandroid.data.Campaign;
+import ee.promobox.promoboxandroid.data.CampaignFile;
+import ee.promobox.promoboxandroid.data.CampaignFileType;
+import ee.promobox.promoboxandroid.data.ErrorMessage;
 
 
 public class MainActivity extends Activity {
@@ -37,6 +40,7 @@ public class MainActivity extends Activity {
     public static final String MAKE_TOAST       = "ee.promobox.promoboxandroid.MAKE_TOAST";
     public static final String APP_START        = "ee.promobox.promoboxandroid.START";
     public static final String SET_STATUS       = "ee.promobox.promoboxandroid.SET_STATUS";
+    public static final String ADD_ERROR_MSG       = "ee.promobox.promoboxandroid.ADD_ERROR_MSG";
     public static final String PLAY_SPECIFIC_FILE       = "ee.promobox.promoboxandroid.PLAY_SPECIFIC_FILE";
 
     private static final String NO_ACTIVE_CAMPAIGN       = "no active campaign";
@@ -101,6 +105,7 @@ public class MainActivity extends Activity {
         intentFilter.addAction(MAKE_TOAST);
         intentFilter.addAction(PLAY_SPECIFIC_FILE);
         intentFilter.addAction(SET_STATUS);
+        intentFilter.addAction(ADD_ERROR_MSG);
 
         bManager.registerReceiver(bReceiver, intentFilter);
 
@@ -221,6 +226,7 @@ public class MainActivity extends Activity {
 
             } catch (Exception ex) {
                 Log.e(this.getClass().getName(), ex.getMessage(), ex);
+                mainService.addError(new ErrorMessage(ex.toString(),ex.getMessage(),ex.getStackTrace()));
             }
         }
     }
@@ -341,9 +347,8 @@ public class MainActivity extends Activity {
             String action = intent.getAction();
             if (action.equals(CAMPAIGN_UPDATE)) {
 
-                if (mainService == null){
-                    return;
-                }
+                if (mainService == null) return;
+
                 campaign = mainService.getCurrentCampaign();
                 mainService.setActivityReceivedUpdate(true);
                 Log.d(RECEIVER_STRING, "CAMPAIGN_UPDATE to " + (campaign != null ? campaign.getCampaignName() : "NONE"));
@@ -387,6 +392,11 @@ public class MainActivity extends Activity {
                 String status = intent.getStringExtra("status");
                 Log.d(RECEIVER_STRING, SET_STATUS +" "+ status);
                 updateStatus(intent.getStringExtra("status"));
+            } else if ( action.equals(ADD_ERROR_MSG)){
+
+                ErrorMessage message = intent.getParcelableExtra("message");
+                Log.d(RECEIVER_STRING, "Got error MSG " + message.getMessage());
+                mainService.addError(message);
             }
         }
     };

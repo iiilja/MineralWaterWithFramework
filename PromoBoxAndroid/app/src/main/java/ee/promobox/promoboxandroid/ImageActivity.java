@@ -11,23 +11,19 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
-import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 
-import org.apache.commons.io.IOUtils;
-
 import java.io.File;
-import java.io.FileInputStream;
 import java.util.ArrayList;
 
-import ee.promobox.promoboxandroid.util.ToastIntent;
-import ee.promobox.promoboxandroid.widgets.AspectRatioImageView;
+import ee.promobox.promoboxandroid.data.CampaignFile;
+import ee.promobox.promoboxandroid.intents.ErrorMessageIntent;
+import ee.promobox.promoboxandroid.intents.ToastIntent;
 
 public class ImageActivity extends Activity {
 
@@ -115,6 +111,7 @@ public class ImageActivity extends Activity {
         } catch (Exception ex) {
             Log.e(IMAGE_ACTIVITY_STRING, ex.getMessage(), ex);
             Toast.makeText(this,ex.toString(), Toast.LENGTH_SHORT).show();
+            bManager.sendBroadcast(new ErrorMessageIntent(ex));
         }
 
         return bm;
@@ -127,9 +124,10 @@ public class ImageActivity extends Activity {
             Bitmap newBitmap = Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
             source.recycle();
             return newBitmap;
-        } catch (Exception e){
-            Log.e(IMAGE_ACTIVITY_STRING, e.getMessage(), e);
-            Toast.makeText(this, e.toString(), Toast.LENGTH_SHORT).show();
+        } catch (Exception ex){
+            Log.e(IMAGE_ACTIVITY_STRING, ex.getMessage(), ex);
+            Toast.makeText(this, ex.toString(), Toast.LENGTH_SHORT).show();
+            bManager.sendBroadcast(new ErrorMessageIntent(ex));
             return source;
         }
     }
@@ -184,8 +182,11 @@ public class ImageActivity extends Activity {
     private void playImage(String path) {
         File file = new File(path);
         if (!file.exists()){
-            Log.e(IMAGE_ACTIVITY_STRING, "No file in path " + path);
-            Toast.makeText(this,"No file in path " + path, Toast.LENGTH_SHORT).show();
+            String message = " No file in path " + path;
+            Log.e(IMAGE_ACTIVITY_STRING, message);
+            Toast.makeText(this,message, Toast.LENGTH_SHORT).show();
+            bManager.sendBroadcast(new ErrorMessageIntent(
+                    "FileNotFoundException",IMAGE_ACTIVITY_STRING + message,null));
             position ++ ;
             slide.postDelayed(r, delay);
             return;
@@ -210,6 +211,7 @@ public class ImageActivity extends Activity {
             Log.e(IMAGE_ACTIVITY_STRING, "Path = " + path );
 
             bManager.sendBroadcast(new ToastIntent(ex.toString()));
+            bManager.sendBroadcast(new ErrorMessageIntent(ex));
 
             Intent returnIntent = new Intent();
             returnIntent.putExtra("result", MainActivity.RESULT_FINISH_PLAY);

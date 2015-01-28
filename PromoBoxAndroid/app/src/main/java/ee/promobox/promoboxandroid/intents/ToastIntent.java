@@ -1,4 +1,4 @@
-package ee.promobox.promoboxandroid.util;
+package ee.promobox.promoboxandroid.intents;
 
 import android.content.Intent;
 

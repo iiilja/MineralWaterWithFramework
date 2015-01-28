@@ -12,12 +12,16 @@ import ee.promobox.service.Session;
 import ee.promobox.service.SessionService;
 import ee.promobox.service.UserService;
 import ee.promobox.util.RequestUtils;
+
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -125,12 +129,25 @@ public class CampaignsController {
                 // array for holding campaigns
                 JSONArray campaignsArray = new JSONArray();
                 // iterate trough the list of campaigns that belong to the client
+                SimpleDateFormat hourFowmat = new SimpleDateFormat("H");
+                SimpleDateFormat dayOfWeekFormat = new SimpleDateFormat("EE");
+            	Date now = new Date();
+                
                 for (AdCampaigns campaign : campaigns) {
-                	
-                	Date now = new Date();
                 	if (campaign.getStart().before(now) && 
                 			campaign.getFinish().after(now)) {
-                		campaign.setStatus(AdCampaigns.STATUS_PUBLISHED);
+                		
+                		String dayOfWeek = dayOfWeekFormat.format(now).substring(0, 2).toLowerCase();
+                		if (campaign.getWorkTimeData().contains(dayOfWeek)) {
+                			String hour = "\"" + hourFowmat.format(now) + "\"";
+                			if (campaign.getWorkTimeData().contains(hour)) {
+                				campaign.setStatus(AdCampaigns.STATUS_PUBLISHED);
+                			} else {
+                				campaign.setStatus(AdCampaigns.STATUS_UNPUBLISHED);
+                			}
+                		} else {
+                			campaign.setStatus(AdCampaigns.STATUS_UNPUBLISHED);
+                		}
                 	} else {
                 		campaign.setStatus(AdCampaigns.STATUS_UNPUBLISHED);
                 	}

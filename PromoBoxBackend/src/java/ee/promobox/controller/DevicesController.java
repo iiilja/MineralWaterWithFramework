@@ -15,6 +15,7 @@ import ee.promobox.service.Session;
 import ee.promobox.service.SessionService;
 import ee.promobox.service.UserService;
 import ee.promobox.util.RequestUtils;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -22,9 +23,11 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.UUID;
+
 import javax.jms.Destination;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -477,9 +480,11 @@ public class DevicesController {
                         AdCampaigns newAd = userService.findCampaignByCampaignId(campaignId);
 
                         boolean timeIntersection = false;
+                        String intersectionName = "";
                         for (AdCampaigns ad : userService.findCampaignByDeviceId(device.getId())) {
                             if (checkTimeIntersection(newAd, ad)) {
                                 timeIntersection = true;
+                                intersectionName = ad.getName();
 
                                 break;
                             }
@@ -497,6 +502,7 @@ public class DevicesController {
                             userService.updateDevice(device);
                         } else {
                             resp.put("ERROR", "time_intersection");
+                            resp.put("name", intersectionName);
                         }
                     } else {
                         devicesCampaigns.setAdCampaignsId(campaignId);

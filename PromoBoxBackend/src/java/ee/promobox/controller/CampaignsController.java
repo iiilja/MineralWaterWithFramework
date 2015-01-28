@@ -343,6 +343,7 @@ public class CampaignsController {
                 
                 // Check time intersection
                 boolean timeIntersection = false;
+                String intersectionName = "";
                 for (Devices d: userService.findDevicesByCampaing(id)) {
                 	for (AdCampaigns c: userService.findCampaignByDeviceId(d.getId())) {
                 		if (c.getId() == (int) campaign.getId() || c.getStatus() != AdCampaigns.STATUS_PUBLISHED) {
@@ -351,7 +352,10 @@ public class CampaignsController {
                 		
                 		timeIntersection = DevicesController.checkTimeIntersection(campaign, c);
                 		
-                		if (timeIntersection) break;
+                		if (timeIntersection) {
+                			intersectionName = c.getName();
+                			break;
+                		}
                 	}
                 }
 
@@ -361,6 +365,7 @@ public class CampaignsController {
 	                userService.updateCampaign(campaign);
                 } else {
                 	resp.put("ERROR", "time_intersection");
+                	resp.put("name", intersectionName);
                 }
 
                 response.setStatus(HttpServletResponse.SC_OK);

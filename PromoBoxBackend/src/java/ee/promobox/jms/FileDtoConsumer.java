@@ -179,7 +179,7 @@ public class FileDtoConsumer implements Runnable {
 			} else if (!manyFiles) {
 			
 				File file = fileService.getOutputFile(fileDto.getClientId(),
-						cFile.getFileId(), 0);
+						cFile.getFileId(), null);
 				cFile.setSize((int) file.length());
 			} // otherwise all file sizes set in createMultipageCampaingsFiles procedure
 

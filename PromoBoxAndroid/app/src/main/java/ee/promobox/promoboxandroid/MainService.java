@@ -72,25 +72,9 @@ public class MainService extends Service {
         bManager = LocalBroadcastManager.getInstance(this);
         dTask = new DownloadFilesTask(this);
 
-        File file = new File("/mnt/external_sd");
-        if ( file.exists() && file.listFiles() != null && file.listFiles().length > 1){
-            Log.d(MAIN_SERVICE_STRING, "/mnt/external_sd EXISTS");
-            ROOT = new File(file.getPath() +  "/promobox/");
-        }
-        if (!ROOT.exists()){
-            try {
-                FileUtils.forceMkdir(ROOT);
-            } catch (IOException ex) {
-                Log.e(MAIN_SERVICE_STRING, ex.getMessage());
-                bManager.sendBroadcast(new ToastIntent(ex.getMessage()));
-                errors.addError(new ErrorMessage(ex.toString(),ex.getMessage(),ex.getStackTrace()));
-            }
-        }
-        Log.d(MAIN_SERVICE_STRING, " ROOT  = " + ROOT.getPath());
+        checkExternalSD();
         setCampaignsFromJSONFile();
     }
-
-
 
 
     @Override
@@ -205,6 +189,24 @@ public class MainService extends Service {
             bManager.sendBroadcast(new ToastIntent(ex.getMessage()));
             errors.addError(new ErrorMessage(ex.toString(),ex.getMessage(),ex.getStackTrace()));
         }
+    }
+
+    private void checkExternalSD(){
+        File file = new File("/mnt/external_sd");
+        if ( file.exists() && file.listFiles() != null && file.listFiles().length > 1){
+            Log.d(MAIN_SERVICE_STRING, "/mnt/external_sd EXISTS");
+            ROOT = new File(file.getPath() +  "/promobox/");
+        }
+        if (!ROOT.exists()){
+            try {
+                FileUtils.forceMkdir(ROOT);
+            } catch (IOException ex) {
+                Log.e(MAIN_SERVICE_STRING, ex.getMessage());
+                bManager.sendBroadcast(new ToastIntent(ex.getMessage()));
+                errors.addError(new ErrorMessage(ex.toString(),ex.getMessage(),ex.getStackTrace()));
+            }
+        }
+        Log.d(MAIN_SERVICE_STRING, " ROOT  = " + ROOT.getPath());
     }
 
     @Override

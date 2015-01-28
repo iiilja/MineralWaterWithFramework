@@ -12,12 +12,16 @@ import ee.promobox.service.Session;
 import ee.promobox.service.SessionService;
 import ee.promobox.service.UserService;
 import ee.promobox.util.RequestUtils;
+
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -125,12 +129,25 @@ public class CampaignsController {
                 // array for holding campaigns
                 JSONArray campaignsArray = new JSONArray();
                 // iterate trough the list of campaigns that belong to the client
+                SimpleDateFormat hourFowmat = new SimpleDateFormat("H");
+                SimpleDateFormat dayOfWeekFormat = new SimpleDateFormat("EE");
+            	Date now = new Date();
+                
                 for (AdCampaigns campaign : campaigns) {
-                	
-                	Date now = new Date();
                 	if (campaign.getStart().before(now) && 
                 			campaign.getFinish().after(now)) {
-                		campaign.setStatus(AdCampaigns.STATUS_PUBLISHED);
+                		
+                		String dayOfWeek = dayOfWeekFormat.format(now).substring(0, 2).toLowerCase();
+                		if (campaign.getWorkTimeData().contains(dayOfWeek)) {
+                			String hour = "\"" + hourFowmat.format(now) + "\"";
+                			if (campaign.getWorkTimeData().contains(hour)) {
+                				campaign.setStatus(AdCampaigns.STATUS_PUBLISHED);
+                			} else {
+                				campaign.setStatus(AdCampaigns.STATUS_UNPUBLISHED);
+                			}
+                		} else {
+                			campaign.setStatus(AdCampaigns.STATUS_UNPUBLISHED);
+                		}
                 	} else {
                 		campaign.setStatus(AdCampaigns.STATUS_UNPUBLISHED);
                 	}
@@ -251,22 +268,27 @@ public class CampaignsController {
         Session session = sessionService.findSession(token);
 
         if (session != null) {
+        	List<Devices> devices =  userService.findDevicesByCampaing(id);
+        	if (devices.isEmpty()) {
 
-            AdCampaigns camp = userService.findCampaignByIdAndClientId(id, session.getClientId());
-            camp.setStatus(AdCampaigns.STATUS_AHRCHIVED);
-
-            userService.updateCampaign(camp);
-            
-            List<CampaignsFiles> files = userService.findCampaignFiles(camp.getId());
-            
-            for (CampaignsFiles f: files) {
-                
-                f.setStatus(CampaignsFiles.STATUS_ARCHIVED);
-                f.setUpdatedDt(new Date());
-                
-                userService.updateCampaignFile(f);
-
-            }
+	            AdCampaigns camp = userService.findCampaignByIdAndClientId(id, session.getClientId());
+	            camp.setStatus(AdCampaigns.STATUS_AHRCHIVED);
+	
+	            userService.updateCampaign(camp);
+	            
+	            List<CampaignsFiles> files = userService.findCampaignFiles(camp.getId());
+	            
+	            for (CampaignsFiles f: files) {
+	                
+	                f.setStatus(CampaignsFiles.STATUS_ARCHIVED);
+	                f.setUpdatedDt(new Date());
+	                
+	                userService.updateCampaignFile(f);
+	
+	            }
+        	} else {
+        		resp.put("error", "campaign_in_use");
+        	}
 
             response.setStatus(HttpServletResponse.SC_OK);
             RequestUtils.printResult(resp.toString(), response);
@@ -321,6 +343,7 @@ public class CampaignsController {
                 
                 // Check time intersection
                 boolean timeIntersection = false;
+                String intersectionName = "";
                 for (Devices d: userService.findDevicesByCampaing(id)) {
                 	for (AdCampaigns c: userService.findCampaignByDeviceId(d.getId())) {
                 		if (c.getId() == (int) campaign.getId() || c.getStatus() != AdCampaigns.STATUS_PUBLISHED) {
@@ -329,7 +352,10 @@ public class CampaignsController {
                 		
                 		timeIntersection = DevicesController.checkTimeIntersection(campaign, c);
                 		
-                		if (timeIntersection) break;
+                		if (timeIntersection) {
+                			intersectionName = c.getName();
+                			break;
+                		}
                 	}
                 }
 
@@ -339,6 +365,7 @@ public class CampaignsController {
 	                userService.updateCampaign(campaign);
                 } else {
                 	resp.put("ERROR", "time_intersection");
+                	resp.put("name", intersectionName);
                 }
 
                 response.setStatus(HttpServletResponse.SC_OK);

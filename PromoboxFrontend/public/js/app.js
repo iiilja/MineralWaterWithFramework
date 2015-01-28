@@ -381,9 +381,10 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
                 finish: dataToTime($scope.campaign_form.campaign_finish, $scope.campaign_form.campaign_finish_time), 
                 duration: $scope.campaign_form.campaign_time, 
                 days: $scope.checkedDays, 
-                hours: $scope.checkedHours}, function(response){
+                hours: $scope.checkedHours}, function(response) {
+                    console.log(response)
                     if (response.ERROR) {
-                        sysMessage.error($filter('translate')('system_device') + ' ' + $filter('translate')('time_intersection'));
+                        sysMessage.error($filter('translate')('system_device') + ' ' + $filter('translate')('device_time_intersection'));
                     } else {
                         sysMessage.update_s($filter('translate')('campaign_updated'));
                     }
@@ -396,7 +397,11 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         
         $scope.remove_company = function () {
             Campaign.delete_campaigns({token: token.get(), id: $scope.campaign.id}, function (response) {
-                sysLocation.goList();
+                if (response.error) {
+                    sysMessage.error($filter('translate')('system_device') + ' ' + $filter('translate')('campaign_edit_in_use'));
+                } else {
+                    sysLocation.goList();
+                }
             });
         };
        
@@ -707,7 +712,8 @@ app.controller('DevicesController', ['$scope', 'token', 'Device', 'sysMessage', 
                 
                 Device.update(deviceUpdate, function (response) {
                     if (response.ERROR) {
-                        sysMessage.error($filter('translate')('system_device') + ' ' + $filter('translate')('time_intersection'));
+                        sysMessage.error($filter('translate')('system_device') + ' ' + $filter('translate')('device_time_intersection') + ' ' +
+                            response.name);
                     } else {
                         sysMessage.update_s($filter('translate')('system_device') + ' ' + $filter('translate')('system_updated'));
                     }

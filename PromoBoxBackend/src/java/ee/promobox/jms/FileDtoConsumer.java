@@ -297,7 +297,7 @@ public class FileDtoConsumer implements Runnable {
 		imageConvert.resize(1920, 1920, false, true, false);
 		imageConvert.rotate(f.getAngle());
 
-		imageConvert.outputFormat("png");
+		imageConvert.outputFormat("jpg");
 
 		if (imageConvert.processToFile(outputFile)) {
 
@@ -339,7 +339,7 @@ public class FileDtoConsumer implements Runnable {
 			imageConvert.resize(1920, 1920, false, true, false);
 			imageConvert.rotate(f.getAngle());
 	
-			imageConvert.outputFormat("png");
+			imageConvert.outputFormat("jpg");
 	
 			if (imageConvert.processToFile(outputFile)) {
 	
@@ -394,7 +394,7 @@ public class FileDtoConsumer implements Runnable {
 		ImageOP imageConvert = new ImageOP(config.getImageMagick());
 
 		imageConvert.input(rawFile);
-		imageConvert.outputFormat("png");
+		imageConvert.outputFormat("jpg");
 		imageConvert.resize(1920, 1920, false, true, false);
 		imageConvert.rotate(f.getAngle());
 

@@ -57,8 +57,6 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
     private MediaCodecAudioTrackRenderer audioRenderer;
     private MediaCodecVideoTrackRenderer videoRenderer;
 
-    private SampleSource source;
-
     private int viewOriginalHeight = 0;
     private int viewOriginalWidth = 0;
 
@@ -101,7 +99,7 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
                 Log.d(VIDEO_ACTIVITY,"playVideo() file = " + FilenameUtils.getBaseName(pathToFile));
                 Log.d(VIDEO_ACTIVITY,pathToFile);
                 Uri uri = Uri.parse(pathToFile);
-                source = new FrameworkSampleSource(this,uri,null,2);
+                SampleSource source = new FrameworkSampleSource(this, uri, null, 2);
                 audioRenderer = new MediaCodecAudioTrackRenderer(
                         source, null, true);
                 videoRenderer = new MediaCodecVideoTrackRenderer(source,

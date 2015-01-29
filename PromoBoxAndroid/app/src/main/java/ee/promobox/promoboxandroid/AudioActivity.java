@@ -27,6 +27,7 @@ import java.util.ArrayList;
 
 import ee.promobox.promoboxandroid.data.CampaignFile;
 import ee.promobox.promoboxandroid.intents.ErrorMessageIntent;
+import ee.promobox.promoboxandroid.util.ExceptionHandler;
 
 
 //https://github.com/felixpalmer/android-visualizer
@@ -36,8 +37,6 @@ public class AudioActivity extends Activity {
 
     ExoPlayer exoPlayer;
     MediaCodecAudioTrackRenderer audioRenderer;
-
-    private SampleSource source;
 
     private LocalBroadcastManager bManager;
 
@@ -74,15 +73,11 @@ public class AudioActivity extends Activity {
         setContentView(R.layout.activity_audio);
 
         bManager = LocalBroadcastManager.getInstance(this);
-
         IntentFilter intentFilter = new IntentFilter();
-
         intentFilter.addAction(MainActivity.ACTIVITY_FINISH);
-
         bManager.registerReceiver(bReceiver, intentFilter);
 
         Bundle extras = getIntent().getExtras();
-
         files = extras.getParcelableArrayList("files");
 
     }
@@ -118,7 +113,7 @@ public class AudioActivity extends Activity {
                     public void run() {
                         tryNextFile();
                     }
-                },1000);
+                }, 1000);
             }
         }
 
@@ -157,9 +152,8 @@ public class AudioActivity extends Activity {
         Log.d(AUDIO_ACTIVITY,"playAudio() file = " + file.getName() + " PATH = " + pathToFile);
         setStatus(files.get(position).getName());
         Uri uri = Uri.parse(pathToFile);
-        source = new FrameworkSampleSource(this,uri,null,1);
-        audioRenderer = new MediaCodecAudioTrackRenderer(
-                source, null, true);
+        SampleSource source = new FrameworkSampleSource(this, uri, null, 1);
+        audioRenderer = new MediaCodecAudioTrackRenderer(source);
         exoPlayer = ExoPlayer.Factory.newInstance(1);
         exoPlayer.prepare(audioRenderer);
         exoPlayer.setPlayWhenReady(true);

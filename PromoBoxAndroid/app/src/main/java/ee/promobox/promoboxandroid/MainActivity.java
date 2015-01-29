@@ -27,6 +27,7 @@ import ee.promobox.promoboxandroid.data.Campaign;
 import ee.promobox.promoboxandroid.data.CampaignFile;
 import ee.promobox.promoboxandroid.data.CampaignFileType;
 import ee.promobox.promoboxandroid.data.ErrorMessage;
+import ee.promobox.promoboxandroid.util.ExceptionHandler;
 
 
 public class MainActivity extends Activity {
@@ -63,6 +64,8 @@ public class MainActivity extends Activity {
     private CampaignFile nextSpecificFile = null;
     private boolean nextSpecificFilePlaying = false;
 
+    private String exceptionHandlerError;
+
     private boolean mBound = false;
     private boolean active = true;
 
@@ -93,6 +96,9 @@ public class MainActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
+        exceptionHandlerError =  getIntent().getStringExtra("error");
 
         setContentView(R.layout.activity_main);
 
@@ -226,7 +232,7 @@ public class MainActivity extends Activity {
 
             } catch (Exception ex) {
                 Log.e(this.getClass().getName(), ex.getMessage(), ex);
-                mainService.addError(new ErrorMessage(ex.toString(),ex.getMessage(),ex.getStackTrace()));
+                mainService.addError(new ErrorMessage(ex.toString(),ex.getMessage(),ex.getStackTrace()), false);
             }
         }
     }
@@ -308,6 +314,10 @@ public class MainActivity extends Activity {
             MainService.MainServiceBinder b = (MainService.MainServiceBinder) binder;
 
             mainService = b.getService();
+
+            if (exceptionHandlerError != null){
+                mainService.addError(new ErrorMessage("UncaughtException", exceptionHandlerError, null), true);
+            }
 
             campaign = mainService.getCurrentCampaign();
 
@@ -396,7 +406,7 @@ public class MainActivity extends Activity {
 
                 ErrorMessage message = intent.getParcelableExtra("message");
                 Log.d(RECEIVER_STRING, "Got error MSG " + message.getMessage());
-                mainService.addError(message);
+                mainService.addError(message, false);
             }
         }
     };

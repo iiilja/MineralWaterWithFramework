@@ -28,6 +28,10 @@ public class ErrorMessage implements Parcelable{
         this.stackTrace = stackTraceToString(stackTrace);
     }
 
+    public ErrorMessage(Exception ex){
+        this(ex.getClass().getSimpleName(),ex.getLocalizedMessage(),ex.getStackTrace());
+    }
+
     public long getDate() {
         return date;
     }

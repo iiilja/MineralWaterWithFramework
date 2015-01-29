@@ -351,7 +351,13 @@ public class MainService extends Service {
         this.errors = errors;
     }
 
-    public void addError(ErrorMessage msg){
+    public void addError(ErrorMessage msg, boolean broadcastNow){
+        Log.d(MAIN_SERVICE_STRING,"error added");
         errors.addError(msg);
+        if (broadcastNow) {
+            dTask = new DownloadFilesTask(this);
+            dTask.setOnlySendData(true);
+            dTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, String.format(DEFAULT_SERVER_JSON, getUuid()));
+        }
     }
 }

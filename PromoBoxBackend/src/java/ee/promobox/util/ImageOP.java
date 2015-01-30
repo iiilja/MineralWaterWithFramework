@@ -280,6 +280,13 @@ public class ImageOP {
         return this;
     }
 
+    public ImageOP alpha(String alpha) {
+        args.add("-alpha");
+        args.add(alpha);
+
+        return this;
+    }
+    
     public ImageOP background(String background) {
         args.add("-background");
         args.add(background);
@@ -287,6 +294,7 @@ public class ImageOP {
         return this;
     }
     
+
      public ImageOP flatten() {
         args.add("-flatten");
 

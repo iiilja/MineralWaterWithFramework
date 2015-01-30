@@ -1,6 +1,9 @@
 package ee.promobox.promoboxandroid;
 
+import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.Service;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -20,6 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import ee.promobox.promoboxandroid.data.Campaign;
@@ -33,7 +37,8 @@ public class MainService extends Service {
 
     public final static String MAIN_SERVICE_STRING = "MainService ";
 
-    public final static String DEFAULT_SERVER = "http://46.182.31.101:8080"; //"http://api.promobox.ee/";
+//    public final static String DEFAULT_SERVER = "http://46.182.31.101:8080"; //"http://api.promobox.ee/";
+    public final static String DEFAULT_SERVER = "http://46.182.30.93:8080"; // production
     public final static String DEFAULT_SERVER_JSON = DEFAULT_SERVER + "/service/device/%s/pull";
 
     private SharedPreferences sharedPref;
@@ -283,6 +288,12 @@ public class MainService extends Service {
         if (currentCampaign == null){
             setCurrentFileId(0);
         }
+    }
+
+    public ComponentName getOnTopComponentInfo(){
+        ActivityManager am = (ActivityManager) getSystemService(Activity.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningTaskInfo> taskInfo = am.getRunningTasks(1);
+        return taskInfo.get(0).topActivity;
     }
 
     public Campaign getLoadingCampaign() {

@@ -1,7 +1,8 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
 
-    <EditTextPreference android:key="uuid"
+    <EditTextPreference
+        android:key="uuid"
         android:title="@string/device_uuid"
         android:summary="@string/device_uuid" />
 

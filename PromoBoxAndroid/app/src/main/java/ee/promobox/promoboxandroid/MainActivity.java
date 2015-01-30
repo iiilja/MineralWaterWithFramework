@@ -41,7 +41,8 @@ public class MainActivity extends Activity {
     public static final String MAKE_TOAST       = "ee.promobox.promoboxandroid.MAKE_TOAST";
     public static final String APP_START        = "ee.promobox.promoboxandroid.START";
     public static final String SET_STATUS       = "ee.promobox.promoboxandroid.SET_STATUS";
-    public static final String ADD_ERROR_MSG       = "ee.promobox.promoboxandroid.ADD_ERROR_MSG";
+    public static final String ADD_ERROR_MSG    = "ee.promobox.promoboxandroid.ADD_ERROR_MSG";
+    public static final String WRONG_UUID    = "ee.promobox.promoboxandroid.WRONG_UUID";
     public static final String PLAY_SPECIFIC_FILE       = "ee.promobox.promoboxandroid.PLAY_SPECIFIC_FILE";
 
     private static final String NO_ACTIVE_CAMPAIGN       = "no active campaign";
@@ -63,6 +64,7 @@ public class MainActivity extends Activity {
 
     private CampaignFile nextSpecificFile = null;
     private boolean nextSpecificFilePlaying = false;
+    private boolean wrongUuid = false;
 
     private String exceptionHandlerError;
 
@@ -112,6 +114,7 @@ public class MainActivity extends Activity {
         intentFilter.addAction(PLAY_SPECIFIC_FILE);
         intentFilter.addAction(SET_STATUS);
         intentFilter.addAction(ADD_ERROR_MSG);
+        intentFilter.addAction(WRONG_UUID);
 
         bManager.registerReceiver(bReceiver, intentFilter);
 
@@ -178,6 +181,8 @@ public class MainActivity extends Activity {
         } else {
             if (campaign != null ){
                 updateStatus("No files to play in " + campaign.getCampaignName());
+            } else {
+                updateStatus(NO_ACTIVE_CAMPAIGN);
             }
             Log.i(MAIN_ACTIVITY_STRING, "CAMPAIGN = NULL");
         }
@@ -270,7 +275,12 @@ public class MainActivity extends Activity {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
         active = true;
-        startNextFile();
+        if ( !wrongUuid ) {
+            startNextFile();
+        } else {
+            wrongUuid = false;
+            startActivityForResult(new Intent(MainActivity.this, FirstActivity.class), RESULT_FINISH_FIRST_START);
+        }
     }
 
     @Override
@@ -332,19 +342,6 @@ public class MainActivity extends Activity {
         }
     };
 
-    public boolean activityIsActive(String className) {
-        ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
-
-        List<ActivityManager.RunningTaskInfo> runningTaskInfo = manager.getRunningTasks(1);
-
-        ComponentName componentInfo = runningTaskInfo.get(0).topActivity;
-
-        String openClassName = componentInfo.getClassName();
-        Log.d(MAIN_ACTIVITY_STRING, "openClassName = " + openClassName + " className  =" +className);
-        return openClassName.equals(className) ;
-
-    }
-
     private void updateStatus( String status ){
         TextView textView = (TextView) findViewById(R.id.main_activity_status);
         textView.setText(status);
@@ -378,8 +375,9 @@ public class MainActivity extends Activity {
                 Log.d(RECEIVER_STRING, "CURRENT_FILE_ID = " + mainService.getCurrentFileId());
             } else if (action.equals(MAKE_TOAST)){
 
-                Log.d(RECEIVER_STRING, "Make TOAST");
-                Toast.makeText(getApplicationContext(),intent.getStringExtra("Toast"), Toast.LENGTH_LONG).show();
+                String toastString = intent.getStringExtra("Toast");
+                Log.d(RECEIVER_STRING, "Make TOAST :" + toastString);
+                Toast.makeText(MainActivity.this,toastString, Toast.LENGTH_LONG).show();
 
             } else if (action.equals(PLAY_SPECIFIC_FILE)){
 
@@ -407,6 +405,16 @@ public class MainActivity extends Activity {
                 ErrorMessage message = intent.getParcelableExtra("message");
                 Log.d(RECEIVER_STRING, "Got error MSG " + message.getMessage());
                 mainService.addError(message, false);
+            } else if ( action.equals(WRONG_UUID)){
+
+                Log.d(RECEIVER_STRING, WRONG_UUID );
+                if (wrongUuid) return;
+                if (active){
+                    startActivityForResult(new Intent(MainActivity.this, FirstActivity.class), RESULT_FINISH_FIRST_START);
+                } else {
+                    wrongUuid = true;
+                    bManager.sendBroadcast(new Intent(ACTIVITY_FINISH));
+                }
             }
         }
     };

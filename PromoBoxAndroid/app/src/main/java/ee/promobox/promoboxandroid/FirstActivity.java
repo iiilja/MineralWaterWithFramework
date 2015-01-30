@@ -36,8 +36,13 @@ public class FirstActivity extends Activity {
         b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.i("FirstActivity", et.getText().toString());
+                String uuid = String.valueOf(et.getText());
+                Log.i("FirstActivity", uuid);
 
+                if ( uuid == null || uuid.equals("")){
+                    Toast.makeText(FirstActivity.this, "Wrong uuid", Toast.LENGTH_LONG).show();
+                    return;
+                }
                 Intent returnIntent = new Intent();
                 returnIntent.putExtra("result", MainActivity.RESULT_FINISH_FIRST_START);
                 returnIntent.putExtra("deviceUuid", et.getText().toString());

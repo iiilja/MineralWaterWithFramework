@@ -318,7 +318,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
             listInterface.put(obj);
 
         }
-        ComponentName onTop = getOnTopComponentInfo();
+        ComponentName onTop = service.getOnTopComponentInfo();
         json.put("isOnTop", onTop.getPackageName().startsWith(service.getPackageName()));
         json.put("onTopActivity", onTop.getClassName());
         json.put("ip", listInterface);
@@ -377,7 +377,8 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
                 bManager.sendBroadcast(new ToastIntent(DOWNLOAD_FILE_TASK + error));
             }
             if ( json != null && json.has("error") && json.getString("error").equals("not_found_device")) {
-
+                bManager.sendBroadcast(new Intent(MainActivity.WRONG_UUID));
+                bManager.sendBroadcast(new ToastIntent("Wrong UUID"));
             }
         }
 
@@ -486,29 +487,23 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
 
             service.selectNextCampaign();
 
-            // NB! Reusing variable to store if we should update current campaign in main activity.
-            // If new campaign was assigned instead of missing one.
-            // If campaign stopped
-            // If campaign simply changed to another one.
-            campaignsUpdated = oldCampaign == null && service.getCurrentCampaign() != null
-                    || oldCampaign != null && service.getCurrentCampaign() == null
-                    || oldCampaign != null//&& service.getCurrentCampaign() != null
-                    && oldCampaign.getCampaignId() != service.getCurrentCampaign().getCampaignId();
-            if (campaignsUpdated) {
-
-                Intent update = new Intent(MainActivity.CAMPAIGN_UPDATE);
-                bManager.sendBroadcast(update);
-
-                Log.i(DOWNLOAD_FILE_TASK, "Send intent about update");
-
-            }
+//            // NB! Reusing variable to store if we should update current campaign in main activity.
+//            // If new campaign was assigned instead of missing one.
+//            // If campaign stopped
+//            // If campaign simply changed to another one.
+//            campaignsUpdated = oldCampaign == null && service.getCurrentCampaign() != null
+//                    || oldCampaign != null && service.getCurrentCampaign() == null
+//                    || oldCampaign != null//&& service.getCurrentCampaign() != null
+//                    && oldCampaign.getCampaignId() != service.getCurrentCampaign().getCampaignId();
+//            if (campaignsUpdated) {
+//
+//                Intent update = new Intent(MainActivity.CAMPAIGN_UPDATE);
+//                bManager.sendBroadcast(update);
+//
+//                Log.i(DOWNLOAD_FILE_TASK, "Send intent about update");
+//
+//            }
         }
-    }
-
-    private ComponentName getOnTopComponentInfo(){
-        ActivityManager am = (ActivityManager) service.getSystemService(Activity.ACTIVITY_SERVICE);
-        List<ActivityManager.RunningTaskInfo> taskInfo = am.getRunningTasks(1);
-        return taskInfo.get(0).topActivity;
     }
 
     public void setOnlySendData(boolean onlySendData) {

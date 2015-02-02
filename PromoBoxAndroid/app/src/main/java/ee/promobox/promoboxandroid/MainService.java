@@ -37,8 +37,8 @@ public class MainService extends Service {
 
     public final static String MAIN_SERVICE_STRING = "MainService ";
 
-//    public final static String DEFAULT_SERVER = "http://46.182.31.101:8080"; //"http://api.promobox.ee/";
-    public final static String DEFAULT_SERVER = "http://46.182.30.93:8080"; // production
+    public final static String DEFAULT_SERVER = "http://46.182.31.101:8080"; //"http://api.promobox.ee/";
+//    public final static String DEFAULT_SERVER = "http://46.182.30.93:8080"; // production
     public final static String DEFAULT_SERVER_JSON = DEFAULT_SERVER + "/service/device/%s/pull";
 
     private SharedPreferences sharedPref;
@@ -105,7 +105,7 @@ public class MainService extends Service {
             selectNextCampaign();
         } catch (Exception ex) {
             Log.e(MAIN_SERVICE_STRING, ex.getMessage(), ex);
-            bManager.sendBroadcast(new ToastIntent(ex.getMessage()));
+            bManager.sendBroadcast(new ToastIntent(String.format(MainActivity.ERROR_MESSAGE, 61 , ex.getClass().getSimpleName())));
             errors.addError(new ErrorMessage(ex.toString(),ex.getMessage(),ex.getStackTrace()));
 
         }
@@ -152,7 +152,7 @@ public class MainService extends Service {
                 return;
             } else if (counter > 1){
                 Log.e(MAIN_SERVICE_STRING, " More than one current campaign");
-                bManager.sendBroadcast(new ToastIntent(" Two campaigns int time"));
+                bManager.sendBroadcast(new ToastIntent(" Two campaigns in time"));
             }
             setCurrentCampaign(null);
         }
@@ -191,7 +191,7 @@ public class MainService extends Service {
         }
         catch (Exception ex){
             Log.e(MAIN_SERVICE_STRING, ex.getMessage(), ex);
-            bManager.sendBroadcast(new ToastIntent(ex.getMessage()));
+            bManager.sendBroadcast(new ToastIntent(String.format(MainActivity.ERROR_MESSAGE, 62 , ex.getClass().getSimpleName())));
             errors.addError(new ErrorMessage(ex.toString(),ex.getMessage(),ex.getStackTrace()));
         }
     }
@@ -207,7 +207,7 @@ public class MainService extends Service {
                 FileUtils.forceMkdir(ROOT);
             } catch (IOException ex) {
                 Log.e(MAIN_SERVICE_STRING, ex.getMessage());
-                bManager.sendBroadcast(new ToastIntent(ex.getMessage()));
+                bManager.sendBroadcast(new ToastIntent(String.format(MainActivity.ERROR_MESSAGE, 63 , ex.getClass().getSimpleName())));
                 errors.addError(new ErrorMessage(ex.toString(),ex.getMessage(),ex.getStackTrace()));
             }
         }

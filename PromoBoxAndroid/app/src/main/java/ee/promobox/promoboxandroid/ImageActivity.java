@@ -110,7 +110,9 @@ public class ImageActivity extends Activity {
 
         } catch (Exception ex) {
             Log.e(IMAGE_ACTIVITY_STRING, ex.getMessage(), ex);
-            Toast.makeText(this,ex.toString(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,String.format(
+                    MainActivity.ERROR_MESSAGE,21, ex.getClass().getSimpleName()),
+                    Toast.LENGTH_LONG).show();
             bManager.sendBroadcast(new ErrorMessageIntent(ex));
         }
 
@@ -126,7 +128,7 @@ public class ImageActivity extends Activity {
             return newBitmap;
         } catch (Exception ex){
             Log.e(IMAGE_ACTIVITY_STRING, ex.getMessage(), ex);
-            Toast.makeText(this, ex.toString(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Error rotating image", Toast.LENGTH_LONG).show();
             bManager.sendBroadcast(new ErrorMessageIntent(ex));
             return source;
         }
@@ -184,7 +186,7 @@ public class ImageActivity extends Activity {
         if (!file.exists()){
             String message = " No file in path " + path;
             Log.e(IMAGE_ACTIVITY_STRING, message);
-            Toast.makeText(this,message, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,message, Toast.LENGTH_LONG).show();
             bManager.sendBroadcast(new ErrorMessageIntent(
                     "FileNotFoundException",IMAGE_ACTIVITY_STRING + message,null));
             position ++ ;
@@ -210,7 +212,9 @@ public class ImageActivity extends Activity {
             Log.e(IMAGE_ACTIVITY_STRING, ex.getMessage(), ex);
             Log.e(IMAGE_ACTIVITY_STRING, "Path = " + path );
 
-            bManager.sendBroadcast(new ToastIntent(ex.toString()));
+            Toast.makeText(this,String.format(
+                    MainActivity.ERROR_MESSAGE, 22 , ex.getClass().getSimpleName()),
+                    Toast.LENGTH_LONG).show();
             bManager.sendBroadcast(new ErrorMessageIntent(ex));
 
             Intent returnIntent = new Intent();

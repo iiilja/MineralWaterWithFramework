@@ -31,7 +31,7 @@ import ee.promobox.promoboxandroid.util.ExceptionHandler;
 
 
 //https://github.com/felixpalmer/android-visualizer
-public class AudioActivity extends Activity {
+public class AudioActivity extends Activity implements ExoPlayer.Listener {
 
     private final String AUDIO_ACTIVITY = "AudioActivity ";
 
@@ -106,7 +106,9 @@ public class AudioActivity extends Activity {
                 playAudio();
             } catch (Exception ex) {
                 Log.e(AUDIO_ACTIVITY, "onResume " + ex.getMessage());
-                Toast.makeText(this,ex.getMessage(),Toast.LENGTH_SHORT).show();
+                Toast.makeText(this,String.format(
+                        MainActivity.ERROR_MESSAGE, 11, ex.getClass().getSimpleName()),
+                        Toast.LENGTH_LONG).show();
                 bManager.sendBroadcast(new ErrorMessageIntent(ex));
                 new Handler().postDelayed(new Runnable() {
                     @Override
@@ -158,7 +160,7 @@ public class AudioActivity extends Activity {
         exoPlayer.prepare(audioRenderer);
         exoPlayer.setPlayWhenReady(true);
         sendPlayCampaignFile();
-        exoPlayer.addListener(new OnTrackFinished());
+        exoPlayer.addListener(this);
     }
 
     private void cleanUp() {
@@ -170,39 +172,37 @@ public class AudioActivity extends Activity {
 
     }
 
-    private class OnTrackFinished implements ExoPlayer.Listener {
 
-        @Override
-        public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+    @Override
+    public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
 
-            if (playbackState == ExoPlayer.STATE_ENDED) {
+        if (playbackState == ExoPlayer.STATE_ENDED) {
 
-                if (position + 1 == files.size()) {
-                    finishActivity();
-                }
-                else {
-                    tryNextFile();
-                }
+            if (position + 1 == files.size()) {
+                finishActivity();
+            }
+            else {
+                tryNextFile();
             }
         }
+    }
 
-        @Override
-        public void onPlayWhenReadyCommitted() {
+    @Override
+    public void onPlayWhenReadyCommitted() {
 
-        }
+    }
 
-        @Override
-        public void onPlayerError(ExoPlaybackException ex) {
-            Toast.makeText(AudioActivity.this,ex.getMessage(),Toast.LENGTH_SHORT).show();
-            bManager.sendBroadcast(new ErrorMessageIntent(ex));
-            Log.e(AUDIO_ACTIVITY, "onPlayerError " + ex.getMessage());
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    tryNextFile();
-                }
-            }, 1000);
-        }
+    @Override
+    public void onPlayerError(ExoPlaybackException ex) {
+        Toast.makeText(this,"Audio player error",Toast.LENGTH_LONG).show();
+        bManager.sendBroadcast(new ErrorMessageIntent(ex));
+        Log.e(AUDIO_ACTIVITY, "onPlayerError " + ex.getMessage());
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                tryNextFile();
+            }
+        }, 1000);
     }
 
     private void finishActivity (){
@@ -217,7 +217,7 @@ public class AudioActivity extends Activity {
             if (position < files.size()){
                 playAudio();
             } else {
-                Toast.makeText(this,"Player error",Toast.LENGTH_LONG).show();
+                Toast.makeText(this,"Audio player error",Toast.LENGTH_LONG).show();
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -228,7 +228,9 @@ public class AudioActivity extends Activity {
         }
         catch (Exception ex){
             Log.e(AUDIO_ACTIVITY, "onPlayerError " + ex.getMessage());
-            Toast.makeText(this,ex.getMessage(),Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,String.format(
+                    MainActivity.ERROR_MESSAGE, 12, ex.getClass().getSimpleName()),
+                    Toast.LENGTH_LONG).show();
             bManager.sendBroadcast(new ErrorMessageIntent(ex));
             new Handler().postDelayed(new Runnable() {
                 @Override

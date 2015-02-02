@@ -20,6 +20,7 @@ import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 
 import com.google.android.exoplayer.ExoPlaybackException;
@@ -41,7 +42,8 @@ import ee.promobox.promoboxandroid.intents.ErrorMessageIntent;
 import ee.promobox.promoboxandroid.intents.ToastIntent;
 
 
-public class VideoActivity extends Activity implements TextureView.SurfaceTextureListener {
+public class VideoActivity extends Activity implements TextureView.SurfaceTextureListener,
+        MediaCodecVideoTrackRenderer.EventListener , ExoPlayer.Listener{
     private final String VIDEO_ACTIVITY = "VideoActivity ";
 
     private TextureView videoView;
@@ -104,10 +106,10 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
                         source, null, true);
                 videoRenderer = new MediaCodecVideoTrackRenderer(source,
                         MediaCodec.VIDEO_SCALING_MODE_SCALE_TO_FIT, 0, new Handler(getMainLooper()),
-                        new MediaCodecVideoTrackRendererEventListener(), 50);
+                        this, 50);
                 exoPlayer = ExoPlayer.Factory.newInstance(2);
                 exoPlayer.prepare(audioRenderer,videoRenderer);
-                exoPlayer.addListener(new OnTrackFinished());
+                exoPlayer.addListener(this);
                 exoPlayer.sendMessage(videoRenderer, MediaCodecVideoTrackRenderer.MSG_SET_SURFACE, surface);
                 exoPlayer.setPlayWhenReady(true);
 
@@ -119,7 +121,9 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
 
             } catch (Exception ex) {
                 Log.e("VideoActivity", ex.getMessage(), ex);
-                bManager.sendBroadcast(new ToastIntent(ex.getMessage()));
+                Toast.makeText(this, String.format(
+                        MainActivity.ERROR_MESSAGE, 41, ex.getClass().getSimpleName()),
+                        Toast.LENGTH_LONG).show();
                 bManager.sendBroadcast(new ErrorMessageIntent(ex));
 
                 Intent returnIntent = new Intent();
@@ -238,74 +242,71 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
 
     }
 
-    private class MediaCodecVideoTrackRendererEventListener implements MediaCodecVideoTrackRenderer.EventListener {
-        private final String TAG = "MediaCodecVideoTrackRendererEventListener" ;
-        @Override
-        public void onDroppedFrames(int i, long l) {
-            Log.d(TAG,"onDroppedFrames");
-        }
+    @Override
+    public void onDecoderInitializationError(MediaCodecTrackRenderer.DecoderInitializationException e) {
+        Toast.makeText(this, "Video player decoder initialization error", Toast.LENGTH_LONG).show();
+        bManager.sendBroadcast(new ErrorMessageIntent(e));
+        Log.e(VIDEO_ACTIVITY, "onDecoderInitializationError");
+        cleanUp();
 
-        @Override
-        public void onVideoSizeChanged(int i, int i2, float v) {
-            Log.d(TAG,"onVideoSizeChanged");
-        }
+    }
 
-        @Override
-        public void onDrawnToSurface(Surface surface) {
-            Log.d(TAG,"onDrawnToSurface");
-        }
+    @Override
+    public void onCryptoError(MediaCodec.CryptoException e) {
+        Toast.makeText(this,"Video player crypto error", Toast.LENGTH_LONG).show();
+        bManager.sendBroadcast(new ErrorMessageIntent(e));
+        Log.e(VIDEO_ACTIVITY,"onCryptoError");
+    }
 
-        @Override
-        public void onDecoderInitializationError(MediaCodecTrackRenderer.DecoderInitializationException ex) {
-            bManager.sendBroadcast(new ToastIntent(ex.getMessage()));
-            bManager.sendBroadcast(new ErrorMessageIntent(ex));
-            Log.e(TAG, "onDecoderInitializationError");
-            cleanUp();
-        }
+    @Override
+    public void onDroppedFrames(int i, long l) {
 
-        @Override
-        public void onCryptoError(MediaCodec.CryptoException ex) {
-            bManager.sendBroadcast(new ToastIntent(ex.getMessage()));
-            bManager.sendBroadcast(new ErrorMessageIntent(ex));
-            Log.e(TAG,"onCryptoError");
-        }
-    };
+    }
 
-    private class OnTrackFinished implements ExoPlayer.Listener {
+    @Override
+    public void onVideoSizeChanged(int i, int i2, float v) {
 
-        @Override
-        public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-            Log.d(VIDEO_ACTIVITY,"STATE CHANGED , state = " + playbackState);
+    }
 
-            if (playbackState == ExoPlayer.STATE_ENDED) {
+    @Override
+    public void onDrawnToSurface(Surface surface) {
 
-                if (position == files.size()) {
-                    cleanUp();
-                    Log.d(VIDEO_ACTIVITY, "POSITION == files.size");
+    }
 
-                    Intent returnIntent = new Intent();
-                    returnIntent.putExtra("result", 1);
-                    VideoActivity.this.setResult(RESULT_OK, returnIntent);
+    @Override
+    public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+        Log.d(VIDEO_ACTIVITY,"STATE CHANGED , state = " + playbackState);
 
-                    VideoActivity.this.finish();
-                } else {
-                    playVideo();
-                }
+        if (playbackState == ExoPlayer.STATE_ENDED) {
+
+            if (position == files.size()) {
+                cleanUp();
+                Log.d(VIDEO_ACTIVITY, "POSITION == files.size");
+
+                Intent returnIntent = new Intent();
+                returnIntent.putExtra("result", 1);
+                VideoActivity.this.setResult(RESULT_OK, returnIntent);
+
+                VideoActivity.this.finish();
+            } else {
+                playVideo();
             }
         }
-
-        @Override
-        public void onPlayWhenReadyCommitted() {
-
-        }
-
-        @Override
-        public void onPlayerError(ExoPlaybackException ex) {
-            bManager.sendBroadcast(new ToastIntent(ex.getMessage()));
-            bManager.sendBroadcast(new ErrorMessageIntent(ex));
-            Log.e(VIDEO_ACTIVITY, "onPlayerError");
-        }
     }
+
+    @Override
+    public void onPlayWhenReadyCommitted() {
+
+    }
+
+    @Override
+    public void onPlayerError(ExoPlaybackException ex) {
+        Toast.makeText(this, "Player ERROR ",Toast.LENGTH_LONG).show();
+        bManager.sendBroadcast(new ErrorMessageIntent(ex));
+        Log.e(VIDEO_ACTIVITY, "onPlayerError");
+    }
+
+
 
 
     private Point calculateVideoSize() {
@@ -323,7 +324,9 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
             return size;
 
         } catch (NumberFormatException ex) {
-            bManager.sendBroadcast(new ToastIntent(ex.getMessage()));
+            Toast.makeText(this, String.format(
+                    MainActivity.ERROR_MESSAGE, 42, ex.getClass().getSimpleName()),
+                    Toast.LENGTH_LONG).show();
             bManager.sendBroadcast(new ErrorMessageIntent(ex));
             Log.e(VIDEO_ACTIVITY, ex.getMessage());
         }

@@ -45,6 +45,8 @@ public class MainActivity extends Activity {
     public static final String WRONG_UUID    = "ee.promobox.promoboxandroid.WRONG_UUID";
     public static final String PLAY_SPECIFIC_FILE       = "ee.promobox.promoboxandroid.PLAY_SPECIFIC_FILE";
 
+    public static final String ERROR_MESSAGE       = "Error %d , ( %s )";
+
     private static final String NO_ACTIVE_CAMPAIGN       = "no active campaign";
 
     public final static String MAIN_ACTIVITY_STRING = "MainActivity";
@@ -230,12 +232,16 @@ public class MainActivity extends Activity {
         } else if (requestCode == RESULT_FINISH_FIRST_START) {
             try {
 
+                wrongUuid = false;
                 mainService.setUuid(data.getStringExtra("deviceUuid"));
                 mainService.checkAndDownloadCampaign();
 
 //                startNextFile();
 
             } catch (Exception ex) {
+                Toast.makeText(this, String.format(
+                        ERROR_MESSAGE, 31, ex.getClass().getSimpleName()),
+                        Toast.LENGTH_LONG).show();
                 Log.e(this.getClass().getName(), ex.getMessage(), ex);
                 mainService.addError(new ErrorMessage(ex.toString(),ex.getMessage(),ex.getStackTrace()), false);
             }

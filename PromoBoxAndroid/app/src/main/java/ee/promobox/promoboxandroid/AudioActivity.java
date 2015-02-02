@@ -5,10 +5,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.Preference;
+import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
@@ -39,6 +42,8 @@ public class AudioActivity extends Activity implements ExoPlayer.Listener {
     MediaCodecAudioTrackRenderer audioRenderer;
 
     private LocalBroadcastManager bManager;
+
+    private boolean silentMode = false;
 
     private ArrayList<CampaignFile> files;
     private int position = 0;
@@ -88,6 +93,8 @@ public class AudioActivity extends Activity implements ExoPlayer.Listener {
 
         hideSystemUI();
 
+        silentMode = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("silent_mode", false);
+
         int orientation = getIntent().getExtras().getInt("orientation");
         if ( orientation == MainActivity.ORIENTATION_PORTRAIT) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -106,9 +113,8 @@ public class AudioActivity extends Activity implements ExoPlayer.Listener {
                 playAudio();
             } catch (Exception ex) {
                 Log.e(AUDIO_ACTIVITY, "onResume " + ex.getMessage());
-                Toast.makeText(this,String.format(
-                        MainActivity.ERROR_MESSAGE, 11, ex.getClass().getSimpleName()),
-                        Toast.LENGTH_LONG).show();
+                makeToast(String.format(
+                        MainActivity.ERROR_MESSAGE, 11, ex.getClass().getSimpleName()));
                 bManager.sendBroadcast(new ErrorMessageIntent(ex));
                 new Handler().postDelayed(new Runnable() {
                     @Override
@@ -194,7 +200,7 @@ public class AudioActivity extends Activity implements ExoPlayer.Listener {
 
     @Override
     public void onPlayerError(ExoPlaybackException ex) {
-        Toast.makeText(this,"Audio player error",Toast.LENGTH_LONG).show();
+        makeToast("Audio player error");
         bManager.sendBroadcast(new ErrorMessageIntent(ex));
         Log.e(AUDIO_ACTIVITY, "onPlayerError " + ex.getMessage());
         new Handler().postDelayed(new Runnable() {
@@ -217,7 +223,8 @@ public class AudioActivity extends Activity implements ExoPlayer.Listener {
             if (position < files.size()){
                 playAudio();
             } else {
-                Toast.makeText(this,"Audio player error",Toast.LENGTH_LONG).show();
+                getSharedPreferences("silent_mode", MODE_PRIVATE);
+                makeToast("Audio player error");
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -228,9 +235,8 @@ public class AudioActivity extends Activity implements ExoPlayer.Listener {
         }
         catch (Exception ex){
             Log.e(AUDIO_ACTIVITY, "onPlayerError " + ex.getMessage());
-            Toast.makeText(this,String.format(
-                    MainActivity.ERROR_MESSAGE, 12, ex.getClass().getSimpleName()),
-                    Toast.LENGTH_LONG).show();
+            makeToast(String.format(
+                    MainActivity.ERROR_MESSAGE, 12, ex.getClass().getSimpleName()));
             bManager.sendBroadcast(new ErrorMessageIntent(ex));
             new Handler().postDelayed(new Runnable() {
                 @Override
@@ -244,6 +250,12 @@ public class AudioActivity extends Activity implements ExoPlayer.Listener {
     private void setStatus(String status){
         TextView textView = (TextView)findViewById(R.id.audio_activity_status);
         textView.setText(status);
+    }
+
+    private void makeToast(String toast){
+        if (!silentMode){
+            Toast.makeText(this,toast ,Toast.LENGTH_LONG).show();
+        }
     }
 
 

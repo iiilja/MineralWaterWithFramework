@@ -11,6 +11,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
@@ -36,6 +37,8 @@ public class ImageActivity extends Activity {
     private boolean active = true;
     private int orientation;
     private long delay = 0;
+
+    private boolean silentMode = false;
 
 
     @Override
@@ -65,6 +68,7 @@ public class ImageActivity extends Activity {
         super.onResume();
         Log.d(IMAGE_ACTIVITY_STRING, "onResume");
 
+        silentMode = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("silent_mode", false);
         active = true;
 
         Log.i(IMAGE_ACTIVITY_STRING, "Orientation: " + getIntent().getExtras().getInt("orientation"));
@@ -110,9 +114,8 @@ public class ImageActivity extends Activity {
 
         } catch (Exception ex) {
             Log.e(IMAGE_ACTIVITY_STRING, ex.getMessage(), ex);
-            Toast.makeText(this,String.format(
-                    MainActivity.ERROR_MESSAGE,21, ex.getClass().getSimpleName()),
-                    Toast.LENGTH_LONG).show();
+            makeToast(String.format(
+                    MainActivity.ERROR_MESSAGE, 21, ex.getClass().getSimpleName()));
             bManager.sendBroadcast(new ErrorMessageIntent(ex));
         }
 
@@ -128,7 +131,7 @@ public class ImageActivity extends Activity {
             return newBitmap;
         } catch (Exception ex){
             Log.e(IMAGE_ACTIVITY_STRING, ex.getMessage(), ex);
-            Toast.makeText(this, "Error rotating image", Toast.LENGTH_LONG).show();
+            makeToast("Error rotating image");
             bManager.sendBroadcast(new ErrorMessageIntent(ex));
             return source;
         }
@@ -186,7 +189,7 @@ public class ImageActivity extends Activity {
         if (!file.exists()){
             String message = " No file in path " + path;
             Log.e(IMAGE_ACTIVITY_STRING, message);
-            Toast.makeText(this,message, Toast.LENGTH_LONG).show();
+            makeToast(message);
             bManager.sendBroadcast(new ErrorMessageIntent(
                     "FileNotFoundException",IMAGE_ACTIVITY_STRING + message,null));
             position ++ ;
@@ -212,9 +215,8 @@ public class ImageActivity extends Activity {
             Log.e(IMAGE_ACTIVITY_STRING, ex.getMessage(), ex);
             Log.e(IMAGE_ACTIVITY_STRING, "Path = " + path );
 
-            Toast.makeText(this,String.format(
-                    MainActivity.ERROR_MESSAGE, 22 , ex.getClass().getSimpleName()),
-                    Toast.LENGTH_LONG).show();
+            makeToast(String.format(
+                    MainActivity.ERROR_MESSAGE, 22, ex.getClass().getSimpleName()));
             bManager.sendBroadcast(new ErrorMessageIntent(ex));
 
             Intent returnIntent = new Intent();
@@ -243,6 +245,12 @@ public class ImageActivity extends Activity {
 
         if (toRecycle != null && toRecycle.getBitmap() != null) {
             toRecycle.getBitmap().recycle();
+        }
+    }
+
+    private void makeToast(String toast){
+        if (!silentMode){
+            Toast.makeText(this,toast ,Toast.LENGTH_LONG).show();
         }
     }
 

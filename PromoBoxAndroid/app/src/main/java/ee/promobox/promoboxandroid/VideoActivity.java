@@ -13,6 +13,7 @@ import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.Gravity;
@@ -39,7 +40,6 @@ import java.util.ArrayList;
 
 import ee.promobox.promoboxandroid.data.CampaignFile;
 import ee.promobox.promoboxandroid.intents.ErrorMessageIntent;
-import ee.promobox.promoboxandroid.intents.ToastIntent;
 
 
 public class VideoActivity extends Activity implements TextureView.SurfaceTextureListener,
@@ -54,6 +54,7 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
     private int position = 0;
     private int orientation;
     private boolean active = true;
+    private boolean silentMode = false;
 
     private ExoPlayer exoPlayer;
     private MediaCodecAudioTrackRenderer audioRenderer;
@@ -121,9 +122,8 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
 
             } catch (Exception ex) {
                 Log.e("VideoActivity", ex.getMessage(), ex);
-                Toast.makeText(this, String.format(
-                        MainActivity.ERROR_MESSAGE, 41, ex.getClass().getSimpleName()),
-                        Toast.LENGTH_LONG).show();
+                makeToast(String.format(
+                        MainActivity.ERROR_MESSAGE, 41, ex.getClass().getSimpleName()));
                 bManager.sendBroadcast(new ErrorMessageIntent(ex));
 
                 Intent returnIntent = new Intent();
@@ -164,6 +164,7 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
         super.onResume();
 
         active = true;
+        silentMode = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("silent_mode", false);
 
         hideSystemUI();
 
@@ -244,7 +245,7 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
 
     @Override
     public void onDecoderInitializationError(MediaCodecTrackRenderer.DecoderInitializationException e) {
-        Toast.makeText(this, "Video player decoder initialization error", Toast.LENGTH_LONG).show();
+        makeToast("Video player decoder initialization error");
         bManager.sendBroadcast(new ErrorMessageIntent(e));
         Log.e(VIDEO_ACTIVITY, "onDecoderInitializationError");
         cleanUp();
@@ -253,7 +254,7 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
 
     @Override
     public void onCryptoError(MediaCodec.CryptoException e) {
-        Toast.makeText(this,"Video player crypto error", Toast.LENGTH_LONG).show();
+        makeToast("Video player crypto error");
         bManager.sendBroadcast(new ErrorMessageIntent(e));
         Log.e(VIDEO_ACTIVITY,"onCryptoError");
     }
@@ -301,7 +302,7 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
 
     @Override
     public void onPlayerError(ExoPlaybackException ex) {
-        Toast.makeText(this, "Player ERROR ",Toast.LENGTH_LONG).show();
+        makeToast("Player ERROR ");
         bManager.sendBroadcast(new ErrorMessageIntent(ex));
         Log.e(VIDEO_ACTIVITY, "onPlayerError");
     }
@@ -324,9 +325,8 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
             return size;
 
         } catch (NumberFormatException ex) {
-            Toast.makeText(this, String.format(
-                    MainActivity.ERROR_MESSAGE, 42, ex.getClass().getSimpleName()),
-                    Toast.LENGTH_LONG).show();
+            makeToast(String.format(
+                    MainActivity.ERROR_MESSAGE, 42, ex.getClass().getSimpleName()));
             bManager.sendBroadcast(new ErrorMessageIntent(ex));
             Log.e(VIDEO_ACTIVITY, ex.getMessage());
         }
@@ -348,6 +348,12 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
             videoSize.set(width, viewHeight);
         }
         return videoSize;
+    }
+
+    private void makeToast(String toast){
+        if (!silentMode){
+            Toast.makeText(this,toast ,Toast.LENGTH_LONG).show();
+        }
     }
 
     private BroadcastReceiver bReceiver = new BroadcastReceiver() {

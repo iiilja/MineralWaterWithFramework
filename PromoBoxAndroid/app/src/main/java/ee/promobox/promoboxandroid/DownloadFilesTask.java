@@ -32,6 +32,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -87,6 +88,22 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
 
             Log.d(DOWNLOAD_FILE_TASK, "Data: " + data.toString());
 
+            if (data.has("currentDt")){
+                Date serverDate = new Date(data.getLong("currentDt"));
+                Date serviceDate = service.getCurrentDate();
+                Date before;
+                Date after;
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(serverDate);
+                cal.add(Calendar.HOUR_OF_DAY, -8);
+                before = cal.getTime();
+                cal.setTime(serverDate);
+                cal.add(Calendar.HOUR_OF_DAY, 8);
+                after = cal.getTime();
+                if (serviceDate.before(before) || serviceDate.after(after)) {
+                    service.setCurrentDate(serverDate);
+                }
+            }
             if (data.has("audioOut")) {
                 int deviceId = data.getInt("audioOut");
 
@@ -129,33 +146,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
             FileUtils.writeStringToFile(jsonDataFile, data.toString(), "UTF-8");
 
             if (data.has("clearCache") && data.getBoolean("clearCache")){
-                CampaignList campaignList = service.getCampaigns();
-                for (File folder : service.getROOT().listFiles()){
-                    try{
-                        int id = Integer.parseInt(folder.getName());
-                        Log.d(DOWNLOAD_FILE_TASK,"Am in folder " + id);
-                        Campaign campaign = campaignList != null ? campaignList.getCampaignWithId(id) : null;
-                        if (campaign == null){
-                            FileUtils.deleteDirectory(folder);
-                            Log.d(DOWNLOAD_FILE_TASK,"Removing folder " + id);
-                        }
-                        else {
-                            for (File file: folder.listFiles()){
-                                String fileName = file.getName();
-                                if (!campaign.containsFile(fileName)){
-                                    FileUtils.deleteQuietly(file);
-                                    Log.d(DOWNLOAD_FILE_TASK,"Removing file \t" + fileName);
-                                }
-                                else {
-                                    Log.d(DOWNLOAD_FILE_TASK,"File is needed \t" + fileName);
-                                }
-                            }
-                        }
-                    } catch (NumberFormatException ex){
-                        bManager.sendBroadcast(new ToastIntent("Wrong folder name on cleaning cache"));
-                        service.addError(new ErrorMessage(ex.toString(), ex.getMessage(), ex.getStackTrace()), false);
-                    }
-                }
+                clearCache();
             }
             if (data.has("openApp") && data.getBoolean("openApp")){
                 Log.d(DOWNLOAD_FILE_TASK, " Received OPEN APP");
@@ -416,7 +407,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
             Date lastWifiRestartDt = service.getLastWifiRestartDt();
             if ( lastWifiRestartDt == null || lastWifiRestartDt.before(calendar.getTime())){
                 Log.d(DOWNLOAD_FILE_TASK, "Restarting WiFi");
-                service.setLastWifiRestartDt(new Date());
+                service.setLastWifiRestartDt(service.getCurrentDate());
                 service.setWifiRestartCounter(service.getWifiRestartCounter() + 1 );
                 WifiManager wifiManager = (WifiManager) service.getSystemService(Context.WIFI_SERVICE);
                 if (wifiManager.isWifiEnabled()){
@@ -429,6 +420,36 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
             service.setWifiRestartCounter(0);
         }
         return result;
+    }
+
+    private void clearCache() throws IOException {
+        CampaignList campaignList = service.getCampaigns();
+        for (File folder : service.getROOT().listFiles()){
+            try{
+                int id = Integer.parseInt(folder.getName());
+                Log.d(DOWNLOAD_FILE_TASK,"Am in folder " + id);
+                Campaign campaign = campaignList != null ? campaignList.getCampaignWithId(id) : null;
+                if (campaign == null){
+                    FileUtils.deleteDirectory(folder);
+                    Log.d(DOWNLOAD_FILE_TASK,"Removing folder " + id);
+                }
+                else {
+                    for (File file: folder.listFiles()){
+                        String fileName = file.getName();
+                        if (!campaign.containsFile(fileName)){
+                            FileUtils.deleteQuietly(file);
+                            Log.d(DOWNLOAD_FILE_TASK,"Removing file \t" + fileName);
+                        }
+                        else {
+                            Log.d(DOWNLOAD_FILE_TASK,"File is needed \t" + fileName);
+                        }
+                    }
+                }
+            } catch (NumberFormatException ex){
+                bManager.sendBroadcast(new ToastIntent("Wrong folder name on cleaning cache"));
+                service.addError(new ErrorMessage(ex.toString(), ex.getMessage(), ex.getStackTrace()), false);
+            }
+        }
     }
 
     private void handleCampaigns(JSONArray campaigns){

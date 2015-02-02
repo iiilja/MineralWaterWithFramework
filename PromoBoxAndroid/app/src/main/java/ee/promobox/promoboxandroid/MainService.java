@@ -60,6 +60,8 @@ public class MainService extends Service {
 
     private final AtomicBoolean isDownloading = new AtomicBoolean(false);
 
+    private Long timeDifference;
+
     private Campaign currentCampaign;
     private CampaignList campaigns;
     private ErrorMessageArray errors = new ErrorMessageArray();
@@ -105,7 +107,7 @@ public class MainService extends Service {
             selectNextCampaign();
         } catch (Exception ex) {
             Log.e(MAIN_SERVICE_STRING, ex.getMessage(), ex);
-            bManager.sendBroadcast(new ToastIntent(String.format(MainActivity.ERROR_MESSAGE, 61 , ex.getClass().getSimpleName())));
+            bManager.sendBroadcast(new ToastIntent(String.format(MainActivity.ERROR_MESSAGE, 61, ex.getClass().getSimpleName())));
             errors.addError(new ErrorMessage(ex.toString(),ex.getMessage(),ex.getStackTrace()));
 
         }
@@ -124,7 +126,7 @@ public class MainService extends Service {
     public void selectNextCampaign() {
         Log.d(MAIN_SERVICE_STRING, "selectNextCampaign()");
         if(getCampaigns() != null) {
-            Date currentDate = new Date();
+            Date currentDate = getCurrentDate();
 
             // Check for invalid device date.
             Calendar calendar = Calendar.getInstance();
@@ -141,7 +143,7 @@ public class MainService extends Service {
             int counter = 0;
             for(Campaign camp: getCampaigns()) {
                 // Current date between start and end dates of currentCampaign.
-                if(camp.hasToBePlayed()) {
+                if(camp.hasToBePlayed(getCurrentDate())) {
                     Log.d(MAIN_SERVICE_STRING, "Date bounds for currentCampaign: " + camp.getCampaignName());
                     campaignToSetCurrent  = camp;
                     counter ++;
@@ -191,7 +193,7 @@ public class MainService extends Service {
         }
         catch (Exception ex){
             Log.e(MAIN_SERVICE_STRING, ex.getMessage(), ex);
-            bManager.sendBroadcast(new ToastIntent(String.format(MainActivity.ERROR_MESSAGE, 62 , ex.getClass().getSimpleName())));
+            bManager.sendBroadcast(new ToastIntent(String.format(MainActivity.ERROR_MESSAGE, 62, ex.getClass().getSimpleName())));
             errors.addError(new ErrorMessage(ex.toString(),ex.getMessage(),ex.getStackTrace()));
         }
     }
@@ -207,7 +209,7 @@ public class MainService extends Service {
                 FileUtils.forceMkdir(ROOT);
             } catch (IOException ex) {
                 Log.e(MAIN_SERVICE_STRING, ex.getMessage());
-                bManager.sendBroadcast(new ToastIntent(String.format(MainActivity.ERROR_MESSAGE, 63 , ex.getClass().getSimpleName())));
+                bManager.sendBroadcast(new ToastIntent(String.format(MainActivity.ERROR_MESSAGE, 63, ex.getClass().getSimpleName())));
                 errors.addError(new ErrorMessage(ex.toString(),ex.getMessage(),ex.getStackTrace()));
             }
         }
@@ -326,6 +328,19 @@ public class MainService extends Service {
 
     public int getWifiRestartCounter() {
         return wifiRestartCounter;
+    }
+
+    public void setCurrentDate( Date currentDate){
+        timeDifference = System.currentTimeMillis() - currentDate.getTime();
+        Log.w(MAIN_SERVICE_STRING, "TIME HAS BEEN SET , difference with server is " + timeDifference);
+    }
+
+    public Date getCurrentDate(){
+        if (timeDifference != null){
+            return new Date(System.currentTimeMillis() - timeDifference);
+        } else {
+            return new Date();
+        }
     }
 
     public class MainServiceBinder extends Binder {

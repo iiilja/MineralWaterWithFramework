@@ -188,9 +188,9 @@ public class Campaign {
         }
     }
 
-    public boolean hasToBePlayed(){
+    public boolean hasToBePlayed(Date currentDate){
         Calendar cal = Calendar.getInstance();
-        Date currentDate = cal.getTime();
+        cal.setTime(currentDate);
         if(currentDate.after(getStartDate()) && currentDate.before(getEndDate())) {
             Integer dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
             Integer hourOfDay = cal.get(Calendar.HOUR_OF_DAY);

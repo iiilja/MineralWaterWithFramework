@@ -1,0 +1,99 @@
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 1 (0x1)
+    Signature Algorithm: sha256WithRSAEncryption
+        Issuer: C=EE, ST=HA, L=Tallinn, O=Promobox, OU=Promobox, CN=Promobox CA/name=EasyRSA/emailAddress=info@promobox.ee
+        Validity
+            Not Before: Aug 11 09:45:09 2014 GMT
+            Not After : Aug  8 09:45:09 2024 GMT
+        Subject: C=EE, ST=HA, L=Tallinn, O=Promobox, OU=Promobox, CN=server/name=EasyRSA/emailAddress=info@promobox.ee
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+                Public-Key: (2048 bit)
+                Modulus:
+                    00:9f:c3:1a:20:c5:48:7a:29:25:1d:9c:13:af:ab:
+                    b7:da:18:ff:95:b9:67:ab:0e:1f:7e:02:53:d2:d1:
+                    07:f3:1e:8e:1a:ad:19:39:08:9b:e0:fc:bf:5e:51:
+                    e7:c5:31:00:7e:0e:1a:61:a0:3a:da:ac:ee:e8:d2:
+                    9c:44:b3:b8:9c:02:1c:27:1a:09:14:5e:d2:cb:80:
+                    fd:9d:7c:e9:0a:1d:bd:52:5a:1d:de:25:1f:ae:d9:
+                    31:99:ef:1b:e0:01:c4:30:71:9f:84:13:92:fb:67:
+                    89:f0:01:0b:ce:71:ae:68:d6:82:59:d3:a9:70:7d:
+                    ad:7e:74:80:e7:90:4a:11:15:85:1e:f4:2f:3c:a3:
+                    93:8c:e7:12:8f:85:50:c1:28:a1:85:7c:47:44:ad:
+                    ae:5c:45:64:73:9b:46:93:39:1a:1f:de:17:fb:df:
+                    ad:84:1f:a6:ec:55:af:5a:0e:5a:7e:e5:95:d0:e1:
+                    c3:ba:28:53:05:91:c5:16:e0:1c:d0:24:2c:99:2c:
+                    37:fb:42:25:7e:78:42:34:be:21:e0:a0:66:c7:3c:
+                    77:b8:ed:3d:f7:f0:5f:05:8f:27:ca:e5:18:15:f4:
+                    eb:84:00:0a:c6:1f:1d:e9:de:6d:da:92:69:9d:42:
+                    dc:b5:3c:3e:7f:fd:e9:d0:b1:06:ea:1d:aa:fe:e4:
+                    de:a1
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            X509v3 Basic Constraints: 
+                CA:FALSE
+            Netscape Cert Type: 
+                SSL Server
+            Netscape Comment: 
+                Easy-RSA Generated Server Certificate
+            X509v3 Subject Key Identifier: 
+                A0:DC:A8:EA:4F:D5:41:4A:E7:79:CE:A9:E4:A3:69:4B:2C:E1:D8:23
+            X509v3 Authority Key Identifier: 
+                keyid:CD:35:5B:97:75:A3:83:5B:82:AE:AC:24:C6:0A:27:4F:3D:B0:F6:CA
+                DirName:/C=EE/ST=HA/L=Tallinn/O=Promobox/OU=Promobox/CN=Promobox CA/name=EasyRSA/emailAddress=info@promobox.ee
+                serial:9A:83:94:9B:74:64:26:7F
+
+            X509v3 Extended Key Usage: 
+                TLS Web Server Authentication
+            X509v3 Key Usage: 
+                Digital Signature, Key Encipherment
+            X509v3 Subject Alternative Name: 
+                DNS:server
+    Signature Algorithm: sha256WithRSAEncryption
+         87:c5:13:a2:c8:b9:9b:5e:6c:d4:a0:7f:71:e0:ca:48:c8:29:
+         a3:08:f1:22:e6:8a:4a:61:78:b9:19:84:e3:87:1a:32:24:82:
+         64:0a:94:3e:41:48:69:1f:ba:bf:5c:40:dc:28:7a:2d:65:33:
+         b2:52:8a:6c:7b:00:36:6b:8d:0c:9f:93:aa:15:ee:3c:26:ec:
+         f6:a1:40:3b:f0:c5:4c:67:8c:d2:dd:b1:3b:f8:53:16:19:47:
+         a5:20:64:01:7c:72:b5:50:23:7c:fd:f6:95:41:b9:55:83:8f:
+         26:ee:62:58:3b:a8:91:92:90:62:b3:5d:2c:81:32:9a:4d:d9:
+         2f:d1:de:ec:0a:8c:ba:7e:2c:35:92:83:7d:00:1e:7d:01:1d:
+         7b:d2:37:ed:bd:c8:f0:b0:80:a0:28:7e:46:2a:8f:92:b5:14:
+         ae:b9:c1:ae:0a:03:6a:8c:f9:c4:74:e3:e7:87:33:94:24:9e:
+         33:b8:e3:73:05:15:00:ae:75:df:46:cb:24:9c:1d:c3:b1:03:
+         31:a5:ec:5c:86:a6:86:8f:28:cf:29:8b:a6:e1:c0:25:0b:75:
+         38:03:3a:7d:aa:dd:96:06:fd:4d:5b:7c:88:70:74:e5:09:8c:
+         eb:83:51:a3:e7:3f:b6:63:05:f1:fd:8d:6a:bd:4c:29:06:81:
+         50:99:b2:91
+-----BEGIN CERTIFICATE-----
+MIIFLzCCBBegAwIBAgIBATANBgkqhkiG9w0BAQsFADCBmzELMAkGA1UEBhMCRUUx
+CzAJBgNVBAgTAkhBMRAwDgYDVQQHEwdUYWxsaW5uMREwDwYDVQQKEwhQcm9tb2Jv
+eDERMA8GA1UECxMIUHJvbW9ib3gxFDASBgNVBAMTC1Byb21vYm94IENBMRAwDgYD
+VQQpEwdFYXN5UlNBMR8wHQYJKoZIhvcNAQkBFhBpbmZvQHByb21vYm94LmVlMB4X
+DTE0MDgxMTA5NDUwOVoXDTI0MDgwODA5NDUwOVowgZYxCzAJBgNVBAYTAkVFMQsw
+CQYDVQQIEwJIQTEQMA4GA1UEBxMHVGFsbGlubjERMA8GA1UEChMIUHJvbW9ib3gx
+ETAPBgNVBAsTCFByb21vYm94MQ8wDQYDVQQDEwZzZXJ2ZXIxEDAOBgNVBCkTB0Vh
+c3lSU0ExHzAdBgkqhkiG9w0BCQEWEGluZm9AcHJvbW9ib3guZWUwggEiMA0GCSqG
+SIb3DQEBAQUAA4IBDwAwggEKAoIBAQCfwxogxUh6KSUdnBOvq7faGP+VuWerDh9+
+AlPS0QfzHo4arRk5CJvg/L9eUefFMQB+DhphoDrarO7o0pxEs7icAhwnGgkUXtLL
+gP2dfOkKHb1SWh3eJR+u2TGZ7xvgAcQwcZ+EE5L7Z4nwAQvOca5o1oJZ06lwfa1+
+dIDnkEoRFYUe9C88o5OM5xKPhVDBKKGFfEdEra5cRWRzm0aTORof3hf7362EH6bs
+Va9aDlp+5ZXQ4cO6KFMFkcUW4BzQJCyZLDf7QiV+eEI0viHgoGbHPHe47T338F8F
+jyfK5RgV9OuEAArGHx3p3m3akmmdQty1PD5//enQsQbqHar+5N6hAgMBAAGjggF/
+MIIBezAJBgNVHRMEAjAAMBEGCWCGSAGG+EIBAQQEAwIGQDA0BglghkgBhvhCAQ0E
+JxYlRWFzeS1SU0EgR2VuZXJhdGVkIFNlcnZlciBDZXJ0aWZpY2F0ZTAdBgNVHQ4E
+FgQUoNyo6k/VQUrnec6p5KNpSyzh2CMwgdAGA1UdIwSByDCBxYAUzTVbl3Wjg1uC
+rqwkxgonTz2w9sqhgaGkgZ4wgZsxCzAJBgNVBAYTAkVFMQswCQYDVQQIEwJIQTEQ
+MA4GA1UEBxMHVGFsbGlubjERMA8GA1UEChMIUHJvbW9ib3gxETAPBgNVBAsTCFBy
+b21vYm94MRQwEgYDVQQDEwtQcm9tb2JveCBDQTEQMA4GA1UEKRMHRWFzeVJTQTEf
+MB0GCSqGSIb3DQEJARYQaW5mb0Bwcm9tb2JveC5lZYIJAJqDlJt0ZCZ/MBMGA1Ud
+JQQMMAoGCCsGAQUFBwMBMAsGA1UdDwQEAwIFoDARBgNVHREECjAIggZzZXJ2ZXIw
+DQYJKoZIhvcNAQELBQADggEBAIfFE6LIuZtebNSgf3HgykjIKaMI8SLmikpheLkZ
+hOOHGjIkgmQKlD5BSGkfur9cQNwoei1lM7JSimx7ADZrjQyfk6oV7jwm7PahQDvw
+xUxnjNLdsTv4UxYZR6UgZAF8crVQI3z99pVBuVWDjybuYlg7qJGSkGKzXSyBMppN
+2S/R3uwKjLp+LDWSg30AHn0BHXvSN+29yPCwgKAofkYqj5K1FK65wa4KA2qM+cR0
+4+eHM5QknjO443MFFQCudd9GyyScHcOxAzGl7FyGpoaPKM8pi6bhwCULdTgDOn2q
+3ZYG/U1bfIhwdOUJjOuDUaPnP7ZjBfH9jWq9TCkGgVCZspE=
+-----END CERTIFICATE-----

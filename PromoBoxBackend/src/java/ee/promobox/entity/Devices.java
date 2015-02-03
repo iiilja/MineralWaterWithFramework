@@ -53,6 +53,7 @@ public class Devices implements Serializable {
     public static final int STATUS_AHRCHIVED = 4;
     
     public static final int AUDIO_OUT_HDMI = 1;
+    public static final int AUDIO_OUT_MINI_JACK = 2;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -117,17 +118,36 @@ public class Devices implements Serializable {
     @Column(name = "free_space")
     private long freeSpace;
     
+    @Column(name = "cache")
+    private long cache;
+    
     @Column(name = "clear_cache")
     private boolean clearCache;
     
     @Column(name = "current_file_id")
     private Integer currentFileId;
     
-    @Column(name = "loading_campaing_id")
-    private Integer loadingCampaingId;
+    @Column(name = "current_campaign_id")
+    private Integer currentCampaignId;
     
-    @Column(name = "loading_compaing_progress")
-    private Integer loadingCampaingProgress; 
+    @Column(name = "loading_campaign_id")
+    private Integer loadingCampaignId;
+    
+    @Column(name = "loading_compaign_progress")
+    private Integer loadingCampaignProgress;
+    
+    @Column(name = "next_file")
+    private Integer nextFile; 
+    
+    @Column(name = "is_on_top")
+    private boolean onTop;
+    
+    @Column(name = "open_app")
+    private boolean openApp;
+    
+    @Column(name = "created_dt")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdDt;
 
     public Devices() {
     }
@@ -280,21 +300,30 @@ public class Devices implements Serializable {
         this.currentFileId = currentFileId;
     }
 
-    public Integer getLoadingCampaingId() {
-        return loadingCampaingId;
+    public Integer getCurrentCampaignId() {
+        return currentCampaignId;
     }
 
-    public void setLoadingCampaingId(Integer loadingCampaingId) {
-        this.loadingCampaingId = loadingCampaingId;
+    public void setCurrentCampaignId(Integer currentCampaignId) {
+        this.currentCampaignId = currentCampaignId;
     }
 
-    public Integer getLoadingCampaingProgress() {
-        return loadingCampaingProgress;
+    public Integer getLoadingCampaignId() {
+        return loadingCampaignId;
     }
 
-    public void setLoadingCampaingProgress(Integer loadingCampaingProgress) {
-        this.loadingCampaingProgress = loadingCampaingProgress;
+    public void setLoadingCampaignId(Integer loadingCampaignId) {
+        this.loadingCampaignId = loadingCampaignId;
     }
+
+    public Integer getLoadingCampaignProgress() {
+        return loadingCampaignProgress;
+    }
+
+    public void setLoadingCampaignProgress(Integer loadingCampaignProgress) {
+        this.loadingCampaignProgress = loadingCampaignProgress;
+    }
+    
 
     public boolean isClearCache() {
         return clearCache;
@@ -304,7 +333,15 @@ public class Devices implements Serializable {
         this.clearCache = clearCache;
     }
     
-    @Override
+    public Date getCreatedDt() {
+		return createdDt;
+	}
+
+	public void setCreatedDt(Date createdDt) {
+		this.createdDt = createdDt;
+	}
+
+	@Override
     public int hashCode() {
         int hash = 0;
         hash += (id != null ? id.hashCode() : 0);
@@ -358,4 +395,38 @@ public class Devices implements Serializable {
     public void setNetworkData(String networkData) {
         this.networkData = networkData;
     }
+
+    public long getCache() {
+        return cache;
+    }
+
+    public void setCache(long cache) {
+        this.cache = cache;
+    }
+
+    public Integer getNextFile() {
+        return nextFile;
+    }
+
+    public void setNextFile(Integer nextFile) {
+        this.nextFile = nextFile;
+    }
+
+	public boolean isOnTop() {
+		return onTop;
+	}
+
+	public void setOnTop(boolean onTop) {
+		this.onTop = onTop;
+	}
+
+	public boolean isOpenApp() {
+		return openApp;
+	}
+
+	public void setOpenApp(boolean openApp) {
+		this.openApp = openApp;
+	}
+	
+    
 }

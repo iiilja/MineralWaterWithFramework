@@ -42,6 +42,7 @@ public class CampaignsFiles implements Serializable {
     public static final int STATUS_CONVERTED = 1;
     public static final int STATUS_ACTIVE = 2;
     public static final int STATUS_ARCHIVED = 3;
+    public static final int STATUS_CONVERTING = 4;
     
     private static final long serialVersionUID = 1L;
     @Id
@@ -55,6 +56,8 @@ public class CampaignsFiles implements Serializable {
     private Integer clientId;
     @Column(name = "file_id")
     private Integer fileId;
+    @Column(name = "page")
+    private Integer page;
     @Column(name = "file_type")
     private Integer fileType;
     @Column(name = "order_id")
@@ -68,9 +71,15 @@ public class CampaignsFiles implements Serializable {
     @Column(name = "filename")
     private String filename;
     
+    @Column(name = "updated_dt")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date updatedDt;
+    
     @Column(name = "created_dt")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDt;
+    
+    
 
     public CampaignsFiles() {
     }
@@ -201,5 +210,21 @@ public class CampaignsFiles implements Serializable {
     public void setFilename(String filename) {
         this.filename = filename;
     }
-    
+
+	public Integer getPage() {
+		return page;
+	}
+
+	public void setPage(Integer page) {
+		this.page = page;
+	}
+
+	public Date getUpdatedDt() {
+		return updatedDt;
+	}
+
+	public void setUpdatedDt(Date updatedDt) {
+		this.updatedDt = updatedDt;
+	}
+
 }

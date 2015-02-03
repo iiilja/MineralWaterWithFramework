@@ -71,6 +71,9 @@ public class AdCampaigns implements Serializable {
     @Column(name = "update_dt")
     @Temporal(TemporalType.TIMESTAMP)
     private Date updateDate;
+    @Column(name = "created_dt", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdDate;
     @Column(name = "work_time_data")
     private String workTimeData;
     
@@ -85,6 +88,15 @@ public class AdCampaigns implements Serializable {
     
     @Column(name = "count_videos", nullable = false)
     private int countVideos;
+    
+    @Column(name = "audio_length", nullable = false)
+    private long audioLength;
+    
+    @Column(name = "video_length", nullable = false)
+    private long videoLength;
+    
+    @Column(name = "files_archived", nullable = false)
+    private boolean filesArchived;
 
     public AdCampaigns() {
     }
@@ -188,6 +200,22 @@ public class AdCampaigns implements Serializable {
     public void setCountVideos(int countVideos) {
         this.countVideos = countVideos;
     }
+
+    public long getAudioLength() {
+        return audioLength;
+    }
+
+    public void setAudioLength(long audioLength) {
+        this.audioLength = audioLength;
+    }
+
+    public long getVideoLength() {
+        return videoLength;
+    }
+
+    public void setVideoLength(long videoLength) {
+        this.videoLength = videoLength;
+    }
     
     @Override
     public int hashCode() {
@@ -235,4 +263,20 @@ public class AdCampaigns implements Serializable {
     public void setWorkTimeData(String workTimeData) {
         this.workTimeData = workTimeData;
     }
-}
+
+    public boolean isFilesArchived() {
+        return filesArchived;
+    }
+
+    public void setFilesArchived(boolean filesArchived) {
+        this.filesArchived = filesArchived;
+    }
+
+    public Date getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(Date createdDate) {
+        this.createdDate = createdDate;
+    }
+}   

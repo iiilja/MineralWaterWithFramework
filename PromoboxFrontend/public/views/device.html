@@ -1,5 +1,5 @@
 <div class="row">
-    <div class="col-md-10 center-block">
+    <div class="col-md-9 center-block">
         <button ng-click="add_device()" type="button" class="btn btn-primary" style="margin-left: -15px;">{{ 'device_newdevice' | translate }}</button>
     </div>
 </div>
@@ -7,75 +7,188 @@
 <div class="row" ng-repeat="device in devices">
     <div class="col-md-9 center-block campaigns_block">
         <div class="row">
-            <div class="col-md-4">
-                <div class="form-group">
-                    <label class="control-label">{{ 'device_devicenumber' | translate }}: {{device.uuid}}</label>
-                    <span ng-if="device.status == 2" class="label label-success pull-right">{{ 'device_status' | translate }}</span>
-                    <span ng-if="device.status == 3" class="label label-danger pull-right">{{ 'device_status' | translate }}</span>
+            <div class="device clearfix">
+                <div class="device-info">
+                    <div class="top-block">
+                        <h3 class="pull-left">{{ 'device_devicenumber' | translate }}: {{device.uuid}}</h3>
+                        <span ng-if="device.status == 1" class="label label-warning pull-right">{{ 'device_used' | translate }}</span>
+                        <span ng-if="device.status == 2" class="label label-success pull-right">{{ 'device_online' | translate }}</span>
+                        <span ng-if="device.status == 3" class="label label-danger pull-right">{{ 'device_off' | translate }}</span>
+                    </div>
+                    <textarea ng-model="device.description" placeholder="{{ 'device_description' | translate }}"></textarea>
+                    <p class="free-space">{{ 'device_space' | translate }}: {{ device.space |  bytes }}</p>
+                    <div class="bottom-block">
+                        <a class="pull-left btn btn-default" 
+                           ng-click="showDeviceSettings(device.id)"
+                           ng-hide="visibleDeviceSettings == device.id"><span class="glyphicon glyphicon-cog"></span>{{'campaign_edit_showsettings' | translate}}</a>
+                        
+                        <a class="pull-left btn btn-default" 
+                           ng-click="showDeviceSettings(0)"
+                           ng-show="visibleDeviceSettings == device.id"><span class="glyphicon glyphicon-cog"></span>{{'campaign_edit_hidesettings' | translate}}</a>
+                        <p class="pull-right">
+                            {{ 'device_updatedate' | translate }}:<br/> {{timeconvert(device.lastRequestDate)}}
+                        </p>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <select class="form-control" ng-model="device.campaignId" data-ng-options="campaign.id as campaign.name for campaign in device.campaigns">
-                        <option value="">{{ 'device_selectcompany' | translate }}</option>
-                    </select>
+                <div class="company-info success" ng-class="device.status == 2 ? 'success' : (device.status == 1 ? 'warning' : 'danger')">
+                    <div ng-if="device.status == 3">
+                        <h4>{{ 'device_offtime' | translate }}</h4>
+                        <p>{{device.lastRequestDt | deviceTime}}</p>
+                    </div>
+                    <div ng-if="device.currentCamp && device.status != 3">
+                        <h4>{{ 'device_currentcompany' | translate }}</h4>
+                        <p>{{device.currentCamp.name}}</p>
+                        <ul>
+                            <li><span class="glyphicon glyphicon-play"></span>{{device.currentCamp.file}}</li>
+                        </ul>
+                    </div>
+                    <div ng-if="device.loadingCamp && device.status != 3">
+                        <h4>{{ 'device_companyloading' | translate }}</h4>
+
+                        <p class="progress-name">{{device.loadingCamp.name}}</p>
+
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: {{device.loadingCampaingProgress}}%;">
+                                {{device.loadingCampaingProgress}}%
+                            </div>
+                        </div>
+                    </div>
+                    <div ng-if="device.onTop == false && device.status == 1">
+                        <a class="btn btn-default" ng-click="openApp(device.id)">
+                            {{ 'device_launch_promobox' | translate }}
+                        </a>
+                    </div>  
                 </div>
-                <div class="form-group">
-                    <select class="form-control" ng-model="device.orientation">
-                        <option value="1">{{ 'device_horizontalorientation' | translate }}</option>
-                        <option value="2">{{ 'device_verticalorientation' | translate }}</option>
-                        <option value="3">{{ 'device_verticalorientation_emu' | translate }}</option>
-                    </select>
-                </div>
-                <!--<div class="form-group" style="margin-bottom: 0px;">-->
-                    <!--<form class="form-inline" role="form">-->
-                        <!--<div class="form-group">-->
-                            <!--<select class="form-control" ng-model="device.resolution">-->
-                                <!--<option value="1">1920x1080</option>-->
-                                <!--<option value="2">1366x768</option>-->
-                                <!--<option value="3">1280x1024</option>-->
-                                <!--<option value="4">1280x800</option>-->
-                                <!--<option value="5">1024x768</option>-->
-                            <!--</select>-->
-                        <!--</div>-->
-                        <!--&lt;!&ndash;<div class="form-group" style="margin-left: 15px;">&ndash;&gt;-->
-                            <!--&lt;!&ndash;<div class="checkbox">&ndash;&gt;-->
-                                <!--&lt;!&ndash;<label>&ndash;&gt;-->
-                                    <!--&lt;!&ndash;<input type="checkbox"> {{ 'device_sound' | translate }}&ndash;&gt;-->
-                                <!--&lt;!&ndash;</label>&ndash;&gt;-->
-                            <!--&lt;!&ndash;</div>&ndash;&gt;-->
-                        <!--&lt;!&ndash;</div>&ndash;&gt;-->
-                    <!--</form>-->
-                <!--</div>-->
             </div>
 
-            <div class="col-md-5">
-                <div class="form-group ">
-                    <textarea ng-model="device.description" rows="4" cols="45" placeholder="{{ 'device_description' | translate }}"></textarea>
-                </div>
-            </div>
+            <div class="preferences-wrap" ng-show="visibleDeviceSettings == device.id">
+                <div class="preferences">
+                    <div class="row">
+                        <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'device_cache' | translate }}</label></div>
+                        <div class="col-md-7 col-xs-9 col-sm-8">
+                            <p class="pull-left">{{ device.cache |  bytes }}</p>
+                            <button type="button" class="btn btn-warning pull-right"
+                                    ng-click="clearCache(device.id)">{{ 'device_clearcache' | translate }}</button>
+                        </div>
+                    </div>
 
-            <div class="col-md-3">
-                <div class="clearfix">
-                    <div class="form-group pull-right">
-                        <span style="font-weight: bolder;">{{ 'device_space' | translate }}: {{ device.space |  bytes }}</span>
+                    <div class="row">
+                        <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'device_orientation' | translate }}</label></div>
+                        <div class="col-md-7 col-xs-9 col-sm-8">
+                            <select class="styler" ng-model="device.orientation">
+                                <option value="1">{{ 'device_horizontalorientation' | translate }}</option>
+                                <option value="2">{{ 'device_verticalorientation' | translate }}</option>
+                                <option value="3">{{ 'device_verticalorientation_emu' | translate }}</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'device_audioaut' | translate }}</label></div>
+                        <div class="col-md-7 col-xs-9 col-sm-8">
+                            <select class="styler" ng-model="device.audioOut">
+                                <option value="1">HDMI</option>
+                                <option value="2">Mini jack</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row" style="padding-top:20px;">
+                        <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'device_choosecampaign' | translate }}</label></div>
+                        <div class="col-md-7 col-xs-9 col-sm-8">
+                            <ul class="opting-list btn-group" data-toggle="buttons">
+                                <li ng-repeat="campaign in campaigns"
+                                    ng-show="device.campaignIds.indexOf(campaign.id) != -1">
+                                    <label class="btn btn-primary active">
+                                        <input type="checkbox" autocomplete="off" checked><span class="glyphicon glyphicon-play"></span> {{campaign.name}}
+                                    </label>
+                                    <a class="close" ng-click="delete_device_campaign(device, campaign.id)"><span class="glyphicon glyphicon-remove"></span></a>
+                                </li>     
+                            </ul>
+                            <button type="button" class="btn btn-info pull-right"
+                                    data-toggle="modal" data-target="#add-company"
+                                    ng-click="open_add_campaign(device)">{{ 'device_addcampaign' | translate }}</button>
+                        </div>
+                    </div>
+
+                    <div class="row" style="padding-top:20px;">
+                        <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'campaign_edit_workdays' | translate }}</label></div>
+                        <div class="col-md-7 col-xs-9 col-sm-8">
+                            <div class="btn-group days">
+                               <label  class="btn btn-primary " 
+                                       ng-class="device[day] ? 'active' : ''"
+                                       ng-repeat="day in workdays"
+                                       ng-click="toggleWorkDay(device, day)">
+                                     {{ day | translate }}
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div  class="row operation-time">
+                        <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'device_worktime' | translate }}</label></div>
+                        <div class="col-md-7 col-xs-9 col-sm-8">
+                            <ul>
+                                <li><span></span></li>
+                                <li>
+                                    <select class="styler" ng-model="device.workStartAt">
+                                        <option ng-repeat="hour in workhours">{{hour}}</option>
+                                    </select>
+                                </li>
+                                <li><span> - </span></li>
+                                <li>
+                                    <select class="styler" ng-model="device.workEndAt">
+                                        <option ng-repeat="hour in workhours">{{hour}}</option>
+                                    </select>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
-                <!--<div class="form-group pull-right">-->
-                    <!--<button type="button" class="btn btn-warning">{{ 'device_clearthecache' | translate }}</button>-->
-                <!--</div>-->
-                <div class="clearfix">
-                    <div class="form-group pull-right">
-                        <button ng-click="change_device(device)" type="button" class="btn btn-success" style="margin-right: 5px;">{{ 'device_save' | translate }}</button>
-                    </div>
-                    <div class="form-group pull-right">
-                        <button ng-click="delete_device(device)" type="button" class="btn btn-success" style="margin-right: 5px;">{{ 'device_remove' | translate }}</button>
-                    </div>
-                </div>
-                <div class="clearfix">
-                    <div class="form-group pull-right">
-                        Дата обнавления: {{timeconvert(device.lastRequestDate)}}
+                <div class="button-wrap">
+                    <div class="form-group">
+                        <button type="submit" ng-click="change_device(device)" class="btn btn-primary ng-binding">{{ 'device_save' | translate }}</button>
+                        <button type="button" ng-click="showDeviceSettings(0)" class="btn btn-default ng-binding" style="margin-left: 15px;">Отмена</button>
+                        <!--
+                        <button type="button" ng-click="delete_device(device)" class="btn btn-default pull-right" >{{ 'device_remove' | translate }}</button>
+                        -->
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+
+<!-- Modal sorting-->
+<div class="modal fade" id="add-company" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only"></span></button>
+                <h4 class="modal-title" id="myModalLabel">{{ 'device_addcampaign' | translate }}</h4>
+            </div>
+            <div class="modal-body">
+                <div class="add-company-list mCustomScrollbar">
+                    <ul class="btn-group">
+                        <li ng-repeat="campaign in campaigns | filter:filter_device_campigns" 
+                            ng-click="toggle_campaign(campaign.id)">
+                            <label  class="btn btn-primary" 
+                                    ng-class="tmpCampaignIds.indexOf(campaign.id) != -1 ? 'active' : ''">
+                                {{campaign.name}}
+                                <span class="glyphicon glyphicon-ok"></span>
+                            </label>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="bottom-buttons">
+                    <button type="button" class="btn btn-success" 
+                            data-dismiss="modal"
+                            ng-click="add_campaigns()">{{ 'device_add' | translate }} </button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{{ 'campaign_edit_cancel' | translate }}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

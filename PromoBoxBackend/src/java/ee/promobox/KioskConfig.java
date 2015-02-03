@@ -22,12 +22,29 @@ public class KioskConfig {
     @Value("${dataDir}")
     private String dataDir;
     
+    @Value("${archiveDir}")
+    private String archiveDir;
+    
     @Value("${imageMagick}")
     private String imageMagick;
     
     @Value("${avconv}")
     private String avconv;
+    
+    @Value("${unoconv}")
+    private String unoconv;
+    
+    @Value("${deviceAdmin}")
+    private String deviceAdmin;
 
+    public String getArchiveDir() {
+        return archiveDir;
+    }
+
+    public void setArchiveDir(String archiveDir) {
+        this.archiveDir = archiveDir;
+    }
+    
     public String getDataDir() {
         return dataDir;
     }
@@ -50,6 +67,22 @@ public class KioskConfig {
 
     public void setAvconv(String avconv) {
         this.avconv = avconv;
+    }
+
+    public String getDeviceAdmin() {
+        return deviceAdmin;
+    }
+
+    public void setDeviceAdmin(String deviceAdmin) {
+        this.deviceAdmin = deviceAdmin;
+    }
+
+    public String getUnoconv() {
+        return unoconv;
+    }
+
+    public void setUnoconv(String unoconv) {
+        this.unoconv = unoconv;
     }
     
     @Bean

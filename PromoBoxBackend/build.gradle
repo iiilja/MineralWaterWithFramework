@@ -1,16 +1,16 @@
-buildscript {
+	buildscript {
     repositories {
         mavenCentral()
         jcenter()
     }
     dependencies {
-        classpath 'org.hidetake:gradle-ssh-plugin:0.3.10'
+        classpath 'org.hidetake:gradle-ssh-plugin:1.0.1'
         classpath 'org.gradle.api.plugins:gradle-tomcat-plugin:1.2.4'
     }
 }
 
 apply plugin: 'war'
-apply plugin: 'ssh'
+apply plugin: 'org.hidetake.ssh'
 apply plugin: 'groovy'
 apply plugin: 'tomcat'
 apply plugin: 'tomcat-base'
@@ -105,54 +105,55 @@ war {
 
 remotes {
     webServer {
-        host = '46.182.31.94'
+        host = '46.182.31.101'
         user = 'root'
     }
 }
 
-ssh {
-    identity = file("${System.properties['user.home']}/.ssh/github.pem")
+ssh.settings {
+    identity = file("${System.properties['user.home']}/.ssh/gradle/id_rsa")
     knownHosts = allowAnyHosts    // Disable host key verification
 }
 
 
-task deploy(type: SshTask, dependsOn: war) {
+task deploy() << {
     description = 'Deploys an application to the server.'
-  
-    ssh {
-        // Enable PTY allocation for sudo
-        pty = true
-    }
-  
-    session(remotes.webServer) {
+    
+    ssh.run {
+	    settings {
+            pty = true
+        }
+        session(remotes.webServer) {
 
-        put war.archivePath, '/root/'
-        
-        execute 'cp /opt/api.promobox.ee/WEB-INF/cfg/production.properties .'
-        
-        execute 'cp /opt/api.promobox.ee/WEB-INF/classes/log4j.xml .'
-        
-        execute 'rm -rf /opt/api.promobox.ee/'
-        
-        execute 'unzip ' + war.archiveName + ' -d /opt/api.promobox.ee/'
-        
-        execute 'mv production.properties /opt/api.promobox.ee/WEB-INF/cfg/production.properties'
-        
-        execute 'mv log4j.xml /opt/api.promobox.ee/WEB-INF/classes/log4j.xml'
-
-        execute 'sudo service tomcat7 restart'
+	        put war.archivePath, '/root/'
+	        
+	        execute 'cp /opt/api.promobox.ee/WEB-INF/cfg/production.properties .'
+	        
+	        execute 'cp /opt/api.promobox.ee/WEB-INF/classes/log4j.xml .'
+	        
+	        execute 'rm -rf /opt/api.promobox.ee/'
+	        
+	        execute 'unzip ' + war.archiveName + ' -d /opt/api.promobox.ee/'
+	        
+	        execute 'mv production.properties /opt/api.promobox.ee/WEB-INF/cfg/production.properties'
+	        
+	        execute 'mv log4j.xml /opt/api.promobox.ee/WEB-INF/classes/log4j.xml'
+	
+	        execute 'sudo service tomcat7 restart'
+        }
     }
 }
 
 
-task deploy_static(type: SshTask) {
+task deploy_static() << {
     description = 'Deploys an static to the server.'
   
-    session(remotes.webServer) {
+    ssh.run {
+        session(remotes.webServer) {
 
-        put "../PromoboxFrontend/public/" , '.'
-        execute 'cp -r public/* /opt/promobox.ee/'
-        execute 'rm -rf public/'
-
+	        put "../PromoboxFrontend/public/" , '.'
+	        execute 'cp -r public/* /opt/promobox.ee/'
+	        execute 'rm -rf public/'
+	   	}
     }
 }

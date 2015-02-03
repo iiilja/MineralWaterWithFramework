@@ -26,6 +26,16 @@ public class MyScheduleReceiver extends BroadcastReceiver {
 
         Intent i = new Intent(context, MyStartServiceReceiver.class);
 
+        if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED) ) {
+            Intent mainService = new Intent(context, MainService.class);
+            mainService.putExtra("startMainActivity", true);
+            context.startService(mainService);
+        } else if (intent.getAction().equals(MainActivity.APP_START) ) {
+            Intent mainService = new Intent(context, MainService.class);
+            mainService.putExtra("startedFromMainActivity", true);
+            context.startService(mainService);
+        }
+
         PendingIntent pending = PendingIntent.getBroadcast(context, 0, i,
                 PendingIntent.FLAG_CANCEL_CURRENT);
 

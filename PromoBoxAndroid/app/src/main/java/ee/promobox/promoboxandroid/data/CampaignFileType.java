@@ -1,4 +1,4 @@
-package ee.promobox.promoboxandroid;
+package ee.promobox.promoboxandroid.data;
 
 /**
  * Created by MaximDorofeev on 12.07.2014.

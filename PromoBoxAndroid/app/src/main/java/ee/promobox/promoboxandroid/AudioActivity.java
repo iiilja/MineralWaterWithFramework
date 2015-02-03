@@ -5,26 +5,48 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
-import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.preference.Preference;
+import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import org.apache.commons.io.IOUtils;
+import com.google.android.exoplayer.ExoPlaybackException;
+import com.google.android.exoplayer.ExoPlayer;
+import com.google.android.exoplayer.FrameworkSampleSource;
+import com.google.android.exoplayer.MediaCodecAudioTrackRenderer;
+import com.google.android.exoplayer.SampleSource;
 
-import java.io.FileInputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+
+import ee.promobox.promoboxandroid.data.CampaignFile;
+import ee.promobox.promoboxandroid.intents.ErrorMessageIntent;
+import ee.promobox.promoboxandroid.util.ExceptionHandler;
+
 
 //https://github.com/felixpalmer/android-visualizer
-public class AudioActivity extends Activity {
+public class AudioActivity extends Activity implements ExoPlayer.Listener {
 
-    private MediaPlayer mPlayer;
+    private final String AUDIO_ACTIVITY = "AudioActivity ";
+
+    ExoPlayer exoPlayer;
+    MediaCodecAudioTrackRenderer audioRenderer;
+
     private LocalBroadcastManager bManager;
-    private String[] paths;
+
+    private boolean silentMode = false;
+
+    private ArrayList<CampaignFile> files;
     private int position = 0;
-    private FileInputStream inputStream;
 
     private void hideSystemUI() {
 
@@ -37,7 +59,6 @@ public class AudioActivity extends Activity {
         );
 
 
-
         View view = findViewById(R.id.audio_view);
 
         view.setOnLongClickListener(new View.OnLongClickListener() {
@@ -45,9 +66,6 @@ public class AudioActivity extends Activity {
             public boolean onLongClick(View view) {
                 Intent i = new Intent(AudioActivity.this, SettingsActivity.class);
                 startActivity(i);
-
-                Toast.makeText(view.getContext(), "Just a test", Toast.LENGTH_SHORT).show();
-
                 return true;
             }
         });
@@ -60,16 +78,13 @@ public class AudioActivity extends Activity {
         setContentView(R.layout.activity_audio);
 
         bManager = LocalBroadcastManager.getInstance(this);
-
         IntentFilter intentFilter = new IntentFilter();
-
         intentFilter.addAction(MainActivity.ACTIVITY_FINISH);
-
         bManager.registerReceiver(bReceiver, intentFilter);
 
         Bundle extras = getIntent().getExtras();
+        files = extras.getParcelableArrayList("files");
 
-        paths = extras.getStringArray("paths");
     }
 
     @Override
@@ -78,18 +93,36 @@ public class AudioActivity extends Activity {
 
         hideSystemUI();
 
-        if (getIntent().getExtras().getInt("orientation") == MainActivity.ORIENTATION_PORTRAIT) {
+        silentMode = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("silent_mode", false);
+
+        int orientation = getIntent().getExtras().getInt("orientation");
+        if ( orientation == MainActivity.ORIENTATION_PORTRAIT) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        } else if ( orientation == MainActivity.ORIENTATION_PORTRAIT_EMULATION){
+            findViewById(R.id.audio_view).setRotation(270);
         } else {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
 
-        if (position > paths.length - 1) {
+        if (position > files.size() - 1) {
             position = 0;
         }
 
-        if (paths.length > 0) {
-            playAudio();
+        if (files.size() > 0) {
+            try {
+                playAudio();
+            } catch (Exception ex) {
+                Log.e(AUDIO_ACTIVITY, "onResume " + ex.getMessage());
+                makeToast(String.format(
+                        MainActivity.ERROR_MESSAGE, 11, ex.getClass().getSimpleName()));
+                bManager.sendBroadcast(new ErrorMessageIntent(ex));
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        tryNextFile();
+                    }
+                }, 1000);
+            }
         }
 
     }
@@ -110,84 +143,131 @@ public class AudioActivity extends Activity {
         cleanUp();
     }
 
-    private void playAudio() {
-        mPlayer = new MediaPlayer();
+    private void sendPlayCampaignFile() {
+        Intent playFile = new Intent(MainActivity.CURRENT_FILE_ID);
+        playFile.putExtra("fileId", files.get(position).getId());
+        LocalBroadcastManager.getInstance(AudioActivity.this).sendBroadcast(playFile);
+    }
 
-        try {
-            inputStream = new FileInputStream(paths[position]);
-
-            mPlayer.setDataSource(inputStream.getFD());
-            mPlayer.prepare();
-            mPlayer.start();
-
-            mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mediaPlayer) {
-                    cleanUp();
-
-                    if (position == paths.length) {
-
-                        Intent returnIntent = new Intent();
-
-                        returnIntent.putExtra("result", 1);
-
-                        AudioActivity.this.setResult(RESULT_OK, returnIntent);
-
-                        AudioActivity.this.finish();
-                    } else {
-                        playAudio();
-                    }
-                }
-            });
-
-            position++;
-
-        } catch (Exception ex) {
-            Log.e("AudioActivity", ex.getMessage(), ex);
-            IOUtils.closeQuietly(inputStream);
-
-            Intent returnIntent = new Intent();
-
-            returnIntent.putExtra("result", MainActivity.RESULT_FINISH_PLAY);
-
-            AudioActivity.this.setResult(RESULT_OK, returnIntent);
-
-            AudioActivity.this.finish();
+    private void playAudio() throws Exception{
+        cleanUp();
+        String pathToFile = files.get(position).getPath();
+        File file = new File(pathToFile);
+        if (!file.exists()){
+            Log.e(AUDIO_ACTIVITY, "File not found : " + pathToFile);
+            throw new FileNotFoundException("File not found : " + pathToFile);
         }
+        Log.d(AUDIO_ACTIVITY,"playAudio() file = " + file.getName() + " PATH = " + pathToFile);
+        setStatus(files.get(position).getName());
+        Uri uri = Uri.parse(pathToFile);
+        SampleSource source = new FrameworkSampleSource(this, uri, null, 1);
+        audioRenderer = new MediaCodecAudioTrackRenderer(source);
+        exoPlayer = ExoPlayer.Factory.newInstance(1);
+        exoPlayer.prepare(audioRenderer);
+        exoPlayer.setPlayWhenReady(true);
+        sendPlayCampaignFile();
+        exoPlayer.addListener(this);
+    }
+
+    private void cleanUp() {
+        if (exoPlayer != null) {
+            exoPlayer.release();
+            exoPlayer = null;
+        }
+        audioRenderer = null;
 
     }
 
 
+    @Override
+    public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
 
+        if (playbackState == ExoPlayer.STATE_ENDED) {
 
-    private void cleanUp() {
-        if (mPlayer != null) {
-            mPlayer.setOnCompletionListener(null);
-            mPlayer.stop();
-            mPlayer.release();
-            mPlayer = null;
+            if (position + 1 == files.size()) {
+                finishActivity();
+            }
+            else {
+                tryNextFile();
+            }
         }
+    }
 
-        IOUtils.closeQuietly(inputStream);
+    @Override
+    public void onPlayWhenReadyCommitted() {
 
+    }
+
+    @Override
+    public void onPlayerError(ExoPlaybackException ex) {
+        makeToast("Audio player error");
+        bManager.sendBroadcast(new ErrorMessageIntent(ex));
+        Log.e(AUDIO_ACTIVITY, "onPlayerError " + ex.getMessage());
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                tryNextFile();
+            }
+        }, 1000);
+    }
+
+    private void finishActivity (){
+        cleanUp();
+        AudioActivity.this.setResult(RESULT_OK);
+        AudioActivity.this.finish();
+    }
+
+    private void tryNextFile(){
+        try {
+            position ++;
+            if (position < files.size()){
+                playAudio();
+            } else {
+                getSharedPreferences("silent_mode", MODE_PRIVATE);
+                makeToast("Audio player error");
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        finishActivity();
+                    }
+                }, 1000);
+            }
+        }
+        catch (Exception ex){
+            Log.e(AUDIO_ACTIVITY, "onPlayerError " + ex.getMessage());
+            makeToast(String.format(
+                    MainActivity.ERROR_MESSAGE, 12, ex.getClass().getSimpleName()));
+            bManager.sendBroadcast(new ErrorMessageIntent(ex));
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    tryNextFile();
+                }
+            }, 1000);
+        }
+    }
+
+    private void setStatus(String status){
+        TextView textView = (TextView)findViewById(R.id.audio_activity_status);
+        textView.setText(status);
+    }
+
+    private void makeToast(String toast){
+        if (!silentMode){
+            Toast.makeText(this,toast ,Toast.LENGTH_LONG).show();
+        }
     }
 
 
     private BroadcastReceiver bReceiver = new BroadcastReceiver() {
+        private final String RECEIVER_STRING = AUDIO_ACTIVITY + "BroadcastReceiver";
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(MainActivity.ACTIVITY_FINISH)) {
-                cleanUp();
-                Intent returnIntent = new Intent();
-
-                returnIntent.putExtra("result", MainActivity.RESULT_FINISH_PLAY);
-
-                AudioActivity.this.setResult(RESULT_OK, returnIntent);
-
-                AudioActivity.this.finish();
+            String action = intent.getAction();
+            if (action.equals(MainActivity.ACTIVITY_FINISH)) {
+                finishActivity();
             }
         }
     };
-
 
 }

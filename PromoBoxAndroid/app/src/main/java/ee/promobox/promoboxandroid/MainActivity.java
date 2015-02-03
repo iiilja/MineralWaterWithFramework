@@ -1,31 +1,55 @@
 package ee.promobox.promoboxandroid;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import ee.promobox.promoboxandroid.data.Campaign;
+import ee.promobox.promoboxandroid.data.CampaignFile;
+import ee.promobox.promoboxandroid.data.CampaignFileType;
+import ee.promobox.promoboxandroid.data.ErrorMessage;
+import ee.promobox.promoboxandroid.util.ExceptionHandler;
 
 
 public class MainActivity extends Activity {
 
-    public final static String CAMPAIGN_UPDATE = "ee.promobox.promoboxandroid.UPDATE";
-    public final static String ACTIVITY_FINISH = "ee.promobox.promoboxandroid.FINISH";
+    private final static String AUDIO_DEVICE_PARAM = "audio_devices_out_active";
+    public final static  String AUDIO_DEVICE_PREF = "audio_device";
 
-    public final static String APP_START = "ee.promobox.promoboxandroid.START";
+    public static final String CAMPAIGN_UPDATE  = "ee.promobox.promoboxandroid.UPDATE";
+    public static final String ACTIVITY_FINISH  = "ee.promobox.promoboxandroid.FINISH";
+    public static final String CURRENT_FILE_ID  = "ee.promobox.promoboxandroid.CURRENT_FILE_ID";
+    public static final String MAKE_TOAST       = "ee.promobox.promoboxandroid.MAKE_TOAST";
+    public static final String APP_START        = "ee.promobox.promoboxandroid.START";
+    public static final String SET_STATUS       = "ee.promobox.promoboxandroid.SET_STATUS";
+    public static final String ADD_ERROR_MSG    = "ee.promobox.promoboxandroid.ADD_ERROR_MSG";
+    public static final String WRONG_UUID    = "ee.promobox.promoboxandroid.WRONG_UUID";
+    public static final String PLAY_SPECIFIC_FILE       = "ee.promobox.promoboxandroid.PLAY_SPECIFIC_FILE";
+
+    public static final String ERROR_MESSAGE       = "Error %d , ( %s )";
+
+    private static final String NO_ACTIVE_CAMPAIGN       = "no active campaign";
+
+    public final static String MAIN_ACTIVITY_STRING = "MainActivity";
 
     public final static int RESULT_FINISH_PLAY = 1;
     public final static int RESULT_FINISH_FIRST_START = 2;
@@ -34,10 +58,20 @@ public class MainActivity extends Activity {
     public static final int ORIENTATION_PORTRAIT = 2;
     public static final int ORIENTATION_PORTRAIT_EMULATION = 3;
 
+    LocalBroadcastManager bManager;
+
     private MainService mainService;
     private int position;
     private Campaign campaign;
+
+    private CampaignFile nextSpecificFile = null;
+    private boolean nextSpecificFilePlaying = false;
+    private boolean wrongUuid = false;
+
+    private String exceptionHandlerError;
+
     private boolean mBound = false;
+    private boolean active = true;
 
     private void hideSystemUI() {
 
@@ -65,43 +99,57 @@ public class MainActivity extends Activity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
+
+        Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
+        exceptionHandlerError =  getIntent().getStringExtra("error");
 
         setContentView(R.layout.activity_main);
 
-        LocalBroadcastManager bManager = LocalBroadcastManager.getInstance(this);
+        bManager = LocalBroadcastManager.getInstance(this);
 
         IntentFilter intentFilter = new IntentFilter();
 
         intentFilter.addAction(CAMPAIGN_UPDATE);
+        intentFilter.addAction(CURRENT_FILE_ID);
+        intentFilter.addAction(MAKE_TOAST);
+        intentFilter.addAction(PLAY_SPECIFIC_FILE);
+        intentFilter.addAction(SET_STATUS);
+        intentFilter.addAction(ADD_ERROR_MSG);
+        intentFilter.addAction(WRONG_UUID);
+
+        bManager.registerReceiver(bReceiver, intentFilter);
 
         Intent start = new Intent();
         start.setAction(MainActivity.APP_START);
         sendBroadcast(start);
 
-        bManager.registerReceiver(bReceiver, intentFilter);
-
-        AudioManager am = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
-
-        //am.setParameters("audio_devices_out=AUDIO_CODEC,AUDIO_HDMI,AUDIO_SPDIF");
-        am.setParameters("audio_devices_out_active=AUDIO_CODEC");
-
-
+        setAudioDeviceFromPrefs();
     }
 
 
 
     private void startNextFile() {
-        if (campaign != null && campaign.getFiles() != null && campaign.getFiles().size() > 0) {
+        if (!active){
+            Log.e(MAIN_ACTIVITY_STRING, "AM NOT ACTIVE");
+            return;
+        }
+        if (campaign != null && nextSpecificFile == null &&
+                campaign.getFiles() != null && campaign.getFiles().size() > 0) {
+
+            Log.d(MAIN_ACTIVITY_STRING, "startNextFile() in " + campaign.getCampaignName());
+            active = false;
+            if (nextSpecificFilePlaying) nextSpecificFilePlaying = false;
+
 
             if (position == campaign.getFiles().size()) {
                 position = 0;
-                mainService.checkAndDownloadCampaign();
+                Log.i(MAIN_ACTIVITY_STRING, "Starting from position 0");
             }
 
             CampaignFileType fileType = null;
-            List<String> filePack = new ArrayList<String>();
+            ArrayList<CampaignFile> filePack = new ArrayList<CampaignFile>();
+
 
             for (int i = position; i < campaign.getFiles().size(); i++) {
                 CampaignFile cFile = campaign.getFiles().get(i);
@@ -109,89 +157,93 @@ public class MainActivity extends Activity {
                 if (fileType == null) {
                     fileType = cFile.getType();
                 }
-
                 if (cFile.getType() == fileType) {
-                    String portSufix = "";
 
-                    if (mainService.getOrientation() == MainActivity.ORIENTATION_PORTRAIT_EMULATION) {
-                        portSufix = "_port";
-                    }
-                    File f = new File(campaign.getRoot(), cFile.getId() + portSufix);
+                    filePack.add(cFile);
+                    fileType = cFile.getType();
+                    position++;
 
-                    if (f.exists()) {
-                        filePack.add(f.getAbsolutePath());
-                        fileType = cFile.getType();
-                        position++;
-                    }
                 } else {
                     break;
                 }
             }
-
             if (campaign.getFiles().size() == 1) {
                 campaign.setDelay(60 * 60 * 12);
             }
 
-
-            if (fileType == CampaignFileType.IMAGE) {
-
-                Intent i = new Intent(this, ImageActivity.class);
-
-                i.putExtra("paths", filePack.toArray(new String[filePack.size()]));
-                i.putExtra("delay", campaign.getDelay());
-                i.putExtra("orientation", mainService.getOrientation());
-
-                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-                startActivityForResult(i, RESULT_FINISH_PLAY);
-
-                this.overridePendingTransition(0, 0);
+            startPlayingActivity(fileType,filePack);
 
 
-            } else if (fileType == CampaignFileType.AUDIO) {
-
-                Intent i = new Intent(this, AudioActivity.class);
-
-                i.putExtra("paths", filePack.toArray(new String[filePack.size()]));
-                i.putExtra("orientation", mainService.getOrientation());
-
-                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-                startActivityForResult(i, RESULT_FINISH_PLAY);
-
-            } else if (fileType == CampaignFileType.VIDEO) {
-
-                Intent i = new Intent(this, VideoActivity.class);
-
-                i.putExtra("paths", filePack.toArray(new String[filePack.size()]));
-                i.putExtra("orientation", mainService.getOrientation());
-
-                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-                startActivityForResult(i, RESULT_FINISH_PLAY);
-
-                this.overridePendingTransition(0, 0);
-
+        } else if (nextSpecificFile != null) {
+            ArrayList<CampaignFile> filePack = new ArrayList<CampaignFile>();
+            filePack.add(nextSpecificFile);
+            startPlayingActivity(nextSpecificFile.getType(), filePack);
+            nextSpecificFile = null;
+            nextSpecificFilePlaying = true;
+        } else {
+            if (campaign != null ){
+                updateStatus("No files to play in " + campaign.getCampaignName());
+            } else {
+                updateStatus(NO_ACTIVE_CAMPAIGN);
             }
+            Log.i(MAIN_ACTIVITY_STRING, "CAMPAIGN = NULL");
+        }
+    }
 
+    private void startPlayingActivity(CampaignFileType fileType, ArrayList<CampaignFile> filePack){
+        if (fileType == CampaignFileType.IMAGE) {
+            Intent i = new Intent(this, ImageActivity.class);
+            i.putParcelableArrayListExtra("files", filePack);
+            i.putExtra("delay", campaign.getDelay());
+            i.putExtra("orientation", mainService.getOrientation());
+            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
+            startActivityForResult(i, RESULT_FINISH_PLAY);
+
+            this.overridePendingTransition(0, 0);
+
+        } else if (fileType == CampaignFileType.AUDIO) {
+            Intent i = new Intent(this, AudioActivity.class);
+            i.putParcelableArrayListExtra("files", filePack);
+            i.putExtra("orientation", mainService.getOrientation());
+            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+            startActivityForResult(i, RESULT_FINISH_PLAY);
+
+        } else if (fileType == CampaignFileType.VIDEO) {
+
+            Intent i = new Intent(this, VideoActivity.class);
+            i.putParcelableArrayListExtra("files", filePack);
+            i.putExtra("orientation", mainService.getOrientation());
+            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+            startActivityForResult(i, RESULT_FINISH_PLAY);
+
+            this.overridePendingTransition(0, 0);
         }
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
+        Log.d(MAIN_ACTIVITY_STRING," onActivityResult() ,requestCode = " + requestCode);
         if (requestCode == RESULT_FINISH_PLAY) {
-            startNextFile();
+
+////            startNextFile();
+
         } else if (requestCode == RESULT_FINISH_FIRST_START) {
             try {
 
+                wrongUuid = false;
                 mainService.setUuid(data.getStringExtra("deviceUuid"));
                 mainService.checkAndDownloadCampaign();
 
-                startNextFile();
+//                startNextFile();
 
             } catch (Exception ex) {
+                Toast.makeText(this, String.format(
+                        ERROR_MESSAGE, 31, ex.getClass().getSimpleName()),
+                        Toast.LENGTH_LONG).show();
                 Log.e(this.getClass().getName(), ex.getMessage(), ex);
+                mainService.addError(new ErrorMessage(ex.toString(),ex.getMessage(),ex.getStackTrace()), false);
             }
         }
     }
@@ -199,14 +251,13 @@ public class MainActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+        Log.d(MAIN_ACTIVITY_STRING, "onResume");
 
         hideSystemUI();
 
-        Intent intent = new Intent(this, MainService.class);
-
-        startService(intent);
 
         if (!mBound) {
+            Intent intent = new Intent(this, MainService.class);
             bindService(intent, mConnection,
                     Context.BIND_AUTO_CREATE);
 
@@ -214,17 +265,50 @@ public class MainActivity extends Activity {
         }
 
         if (mainService != null) {
-            if (mainService.getOrientation() == MainActivity.ORIENTATION_PORTRAIT) {
+            if (mainService.getOrientation() == ORIENTATION_PORTRAIT) {
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            } else if ( mainService.getOrientation() == ORIENTATION_PORTRAIT_EMULATION){
+                findViewById(R.id.main_view).setRotation(270);
             } else {
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            }
+
+            String audioDevice = mainService.getAudioDevice();
+            if(audioDevice != null) {
+                setAudioDevice(audioDevice);
             }
         } else {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
-
+        active = true;
+        if ( !wrongUuid ) {
+            startNextFile();
+        } else {
+            wrongUuid = false;
+            startActivityForResult(new Intent(MainActivity.this, FirstActivity.class), RESULT_FINISH_FIRST_START);
+        }
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        active = false;
+        Log.d(MAIN_ACTIVITY_STRING, "onPause");
+    }
+
+    private void setAudioDeviceFromPrefs() {
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        String audioDevice = sharedPref.getString(AUDIO_DEVICE_PREF,"AUDIO_CODEC");
+        setAudioDevice(audioDevice);
+    }
+
+    private void setAudioDevice(String audioDevice) {
+        AudioManager am = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
+        //am.setParameters("audio_devices_out=AUDIO_CODEC,AUDIO_HDMI,AUDIO_SPDIF"); // for reference.
+        if(!audioDevice.equals(am.getParameters(AUDIO_DEVICE_PARAM))) {
+            am.setParameters(AUDIO_DEVICE_PARAM + "=" + audioDevice);
+        }
+    }
 
     @Override
     protected void onDestroy() {
@@ -242,16 +326,19 @@ public class MainActivity extends Activity {
         public void onServiceConnected(ComponentName className,
                                        IBinder binder) {
 
+            Log.d(MAIN_ACTIVITY_STRING, "onServiceConnected");
             MainService.MainServiceBinder b = (MainService.MainServiceBinder) binder;
 
             mainService = b.getService();
 
-            campaign = mainService.getCampaign();
+            if (exceptionHandlerError != null){
+                mainService.addError(new ErrorMessage("UncaughtException", exceptionHandlerError, null), true);
+            }
+
+            campaign = mainService.getCurrentCampaign();
 
             if (mainService.getUuid() == null || mainService.getUuid().equals("fail")) {
-                startActivityForResult(new Intent(MainActivity.this, FirstActivity.class), 2);
-            } else {
-                startNextFile();
+                startActivityForResult(new Intent(MainActivity.this, FirstActivity.class), RESULT_FINISH_FIRST_START);
             }
 
         }
@@ -261,13 +348,79 @@ public class MainActivity extends Activity {
         }
     };
 
+    private void updateStatus( String status ){
+        TextView textView = (TextView) findViewById(R.id.main_activity_status);
+        textView.setText(status);
+    }
+
     private BroadcastReceiver bReceiver = new BroadcastReceiver() {
+        private final String RECEIVER_STRING = MAIN_ACTIVITY_STRING + "BroadcastReceiver";
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(CAMPAIGN_UPDATE)) {
-                campaign = mainService.getCampaign();
+            String action = intent.getAction();
+            if (action.equals(CAMPAIGN_UPDATE)) {
+
+                if (mainService == null) return;
+
+                campaign = mainService.getCurrentCampaign();
+                mainService.setActivityReceivedUpdate(true);
+                Log.d(RECEIVER_STRING, "CAMPAIGN_UPDATE to " + (campaign != null ? campaign.getCampaignName() : "NONE"));
+                updateStatus( campaign != null ? campaign.getCampaignName() : NO_ACTIVE_CAMPAIGN);
                 position = 0;
-                startNextFile();
+                if (active){
+                    Log.d(RECEIVER_STRING, MAIN_ACTIVITY_STRING + " active, start next file from receiver");
+                    startNextFile();
+                } else {
+                    Log.d(RECEIVER_STRING, "Broadcasting to finish active activity");
+                    bManager.sendBroadcast(new Intent(ACTIVITY_FINISH));
+                }
+
+            } else if (action.equals(CURRENT_FILE_ID)) {
+
+                mainService.setCurrentFileId(intent.getExtras().getInt("fileId"));
+                Log.d(RECEIVER_STRING, "CURRENT_FILE_ID = " + mainService.getCurrentFileId());
+            } else if (action.equals(MAKE_TOAST)){
+
+                String toastString = intent.getStringExtra("Toast");
+                Log.d(RECEIVER_STRING, "Make TOAST :" + toastString);
+                Toast.makeText(MainActivity.this,toastString, Toast.LENGTH_LONG).show();
+
+            } else if (action.equals(PLAY_SPECIFIC_FILE)){
+
+                nextSpecificFile = intent.getParcelableExtra("campaignFile");
+                Log.d(RECEIVER_STRING, "PLAY_SPECIFIC_FILE with id " + nextSpecificFile.getId());
+                if (active){
+                    startNextFile();
+                } else {
+                    if (campaign != null){
+                        if ( !nextSpecificFilePlaying ) {
+                            int fileId = mainService.getCurrentFileId();
+                            position = campaign.getCampaignFilePositionById(fileId);
+                            position ++;
+                        }
+                    }
+                    bManager.sendBroadcast(new Intent(ACTIVITY_FINISH));
+                }
+            } else if ( action.equals(SET_STATUS)){
+
+                String status = intent.getStringExtra("status");
+                Log.d(RECEIVER_STRING, SET_STATUS +" "+ status);
+                updateStatus(intent.getStringExtra("status"));
+            } else if ( action.equals(ADD_ERROR_MSG)){
+
+                ErrorMessage message = intent.getParcelableExtra("message");
+                Log.d(RECEIVER_STRING, "Got error MSG " + message.getMessage());
+                mainService.addError(message, false);
+            } else if ( action.equals(WRONG_UUID)){
+
+                Log.d(RECEIVER_STRING, WRONG_UUID );
+                if (wrongUuid) return;
+                if (active){
+                    startActivityForResult(new Intent(MainActivity.this, FirstActivity.class), RESULT_FINISH_FIRST_START);
+                } else {
+                    wrongUuid = true;
+                    bManager.sendBroadcast(new Intent(ACTIVITY_FINISH));
+                }
             }
         }
     };

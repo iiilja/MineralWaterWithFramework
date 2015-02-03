@@ -1,6 +1,6 @@
-var apiEndpoint = "http://api.dev.promobox.ee/service/";
+var apiEndpoint = "http://46.182.31.101:8080/service/";
 
-var app = angular.module('promobox', ['ngRoute', 'ui.bootstrap', 'pascalprecht.translate', 'promobox.services', 'angularFileUpload', 'toaster', 'ui.router', 'angularMoment', 'ui.bootstrap.datetimepicker', 'checklist-model']);
+var app = angular.module('promobox', ['ngRoute', 'ui.bootstrap', 'pascalprecht.translate', 'promobox.services', 'angularFileUpload', 'toaster', 'ui.router', 'ui.sortable', 'angularMoment', 'ui.bootstrap.datetimepicker', 'checklist-model']);
 
 
 app.config(['$routeProvider','$stateProvider','$urlRouterProvider', function ($routeProvider, $stateProvider, $urlRouterProvider) {
@@ -103,17 +103,40 @@ app.filter('bytes', function() {
     }
 });
 
+app.filter('humanLength', function() {
+    return function(sec) {
+        var hours = Math.floor(sec / 3600);
+        sec -= hours * 3600;
+        var min = Math.floor(sec / 60);
+
+        return hours + " : " + min;
+    }
+ });
+
+app.filter('deviceTime', function() {
+    return function(val) {
+        var date = new Date(val);
+        return date.getDay() + "." + (1 + date.getMonth()) + "." + date.getFullYear() + " " + 
+                date.getHours() + ":" + date.getMinutes();
+    }
+
+});
 
 app.controller('Exit', ['token',
     function (token) {
         token.remove();
     }]);
 
-app.controller('TopMenuController', ['$scope', '$location', '$http', 'token', '$rootScope', '$translate',
-    function ($scope, $location, $http, token, $rootScope, $translate) {
+app.controller('TopMenuController', ['$scope', '$location', '$http', 'token', 'Clients', '$rootScope', '$translate',
+    function ($scope, $location, $http, token, Clients, $rootScope, $translate) {
         $rootScope.bodyClass = 'content_bg';
         $rootScope.top_link_active_list = '';
         $rootScope.top_link_active_device = '';
+        
+        Clients.getClient({token: token.get()}, function(response) {
+            console.log(response);
+            $scope.compName = response.compName;
+        });
 
         $scope.change_language = function(lang) {
             $translate.use(lang);
@@ -161,20 +184,115 @@ app.controller('CampaignNewController', ['token', 'Campaign', 'sysLocation',
         });
     }]);
 
-app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Campaign', '$location', '$http', 'toaster', 'Files','sysMessage', 'sysLocation', 'FileUploader', '$rootScope', '$filter',
-    function ($scope, $stateParams, token, Campaign, $location, $http, toaster, Files, sysMessage, sysLocation, FileUploader, $rootScope, $filter) {
+app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Campaign', '$location', '$http', 'toaster', 'Files','sysMessage', 'sysLocation', 'FileUploader', '$rootScope', '$filter', 'orderByFilter', '$timeout', 'browser',
+    function ($scope, $stateParams, token, Campaign, $location, $http, toaster, Files, sysMessage, sysLocation, FileUploader, $rootScope, $filter, orderByFilter, $timeout, browser) {
         $rootScope.top_link_active_list = 'top_link_active';
         $scope.filesArray = [];
         $scope.checkedDays = [];
         $scope.checkedHours = [];
-
+        $scope.apiEndpoint = apiEndpoint;
+        
         Campaign.get_campaigns({token: token.get(), id: $stateParams.cId}, function (response) {
             console.log(response);
             $scope.campaign = response;
             $scope.checkedDays = $scope.campaign.days;
             $scope.checkedHours = $scope.campaign.hours;
-            $scope.campaign_form = {campaign_status: $scope.campaign.status, filesArray: $scope.campaign.files, campaign_name: $scope.campaign.name, campaign_time: $scope.campaign.duration, campaign_order: $scope.campaign.sequence, campaign_start: timeToData($scope.campaign.start), campaign_finish: timeToData($scope.campaign.finish)};
+            $scope.campaign_form = {campaign_status: $scope.campaign.status, 
+                                    filesArray: $scope.campaign.files, 
+                                    campaign_name: $scope.campaign.name, 
+                                    campaign_time: $scope.campaign.duration, 
+                                    campaign_order: $scope.campaign.sequence, 
+                                    campaign_start: timeToData($scope.campaign.start), 
+                                    campaign_finish: timeToData($scope.campaign.finish),
+                                    campaign_start_time: timeToDataTime($scope.campaign.start),
+                                    campaign_finish_time: timeToDataTime($scope.campaign.finish),
+                                    };
+            $scope.campaign_stat = {campaign_count_files: $scope.campaign.countFiles,
+                                    campaign_count_images: $scope.campaign.countImages,
+                                    campaign_count_audios: $scope.campaign.countAudios,
+                                    campaign_count_videos: $scope.campaign.countVideos,
+                                    campaign_audio_length: $scope.campaign.audioLength,
+                                    campaign_video_length: $scope.campaign.videoLength
+                                    };
+            
+            if (!$scope.campaign.files) {
+                $scope.campaign.files = [];
+            }
+            
+            //$scope.$watchCollection('campaign.files', function () {
+            //    $scope.campaign.files = orderByFilter($scope.campaign.files, ['orderId','name']);
+            //});
         });
+
+        $scope.isWebmVideo = function() {
+            var browserName = browser.detectBrowser();
+            return browserName == "chrome" || browserName == "firefox" || browserName == "opera";
+        }
+
+        $scope.getFileExt = function(file) {
+            var browserName = browser.detectBrowser();
+            var webm =  browserName == "chrome" || browserName == "firefox" || browserName == "opera";
+            var ext = ".png";
+
+            if (file.fileType == 2) {
+                ext = ".mp3";
+            } else if (file.fileType == 3) {
+                if (webm) {
+                    ext = ".webm";
+                } else {
+                    ext = ".mp4";
+                }
+            }
+
+            return ext;
+        }
+
+        $scope.isFileConverting = function (file) {
+            return file.status == 0 || file.status == 4;
+        }
+        
+        var extstsConvertingFiles = function(id) {
+            for (var i = 0; file = $scope.campaign.files[i]; i++) {
+                return $scope.isFileConverting(file);
+            }
+            
+            return false;
+        }
+        
+        var findFileById = function(id) {
+            for (var i = 0; file = $scope.campaign.files[i]; i++) {
+                if (id == file.id) {
+                    return file;
+                }
+            }
+            
+            return null;
+        } 
+        
+        var refreshFileStatuses = function() {
+            var files = [];
+            for (var i = 0; i < $scope.campaign.files.length; i++) {
+                if ($scope.campaign.files[i].status == 0 || 
+                        $scope.campaign.files[i].status == 4) {
+                    files.push($scope.campaign.files[i].id);
+                }
+            }
+            if (files.length > 0) {
+                Campaign.refrehs_files_stautes({token: token.get(), files: files}, function(responce) {
+                    for (var i = 0; i < responce.files.length; i++) {
+                        var f = responce.files[i];
+
+                        var file = findFileById(f.id);
+                        file.t= new Date().getTime();
+                        file.status = f.status;
+                     }
+                });
+            }
+            
+            if (extstsConvertingFiles()) {
+                $timeout(refreshFileStatuses, 15000);
+            }
+        };
 
         $scope.workdays = ['mo', 'tu', 'we', 'th', 'fr', 'sa', 'su'];
         $scope.toggleCheckDays = function (day) {
@@ -184,49 +302,231 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
                 $scope.checkedDays.splice($scope.checkedDays.indexOf(day), 1);
             }
         };
+        
 
-        $scope.workhours = ['7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '0'];
-        $scope.toggleCheckHours = function (hour) {
-            if ($scope.checkedHours.indexOf(hour) === -1) {
-                $scope.checkedHours.push(hour);
+        $scope.workhours = [];
+        for (var i = 0; i < 24; i++) {
+              $scope.workhours.push(i + "");
+        }
+        
+        $scope.addWorkhours = [];
+        $scope.removeWorkhours = [];
+        
+        
+        
+        $scope.toggleWorkHours = function (ar, hour) {
+            if (ar.indexOf(hour) === -1) {
+                ar.push(hour);
             } else {
-                $scope.checkedHours.splice($scope.checkedHours.indexOf(hour), 1);
+                ar.splice(ar.indexOf(hour), 1);
             }
         };
+        
+        $scope.addWorkingHours = function () {
+            for (i = 0; i < $scope.addWorkhours.length; i++) {
+                $scope.checkedHours.push($scope.addWorkhours[i]);
+            }
+            $scope.addWorkhours = [];
+        }
+        
+        $scope.removeWorkingHours = function () {
+            for (i = 0; i < $scope.removeWorkhours.length; i++) {
+                $scope.checkedHours.splice($scope.checkedHours.indexOf($scope.removeWorkhours[i]), 1);
+            }
+            $scope.removeWorkhours = [];
+        }
+        
+        $scope.formatWorkingHours = function (hour) {
+            if (hour.indexOf(":") == -1) {
+                return hour + ":00";
+            }
+            
+            return hour;
+        }
+        
 
         var timeToData = function(time) {
-            return new Date(time);
+            var dateTime = new Date(time);
+            return new Date(dateTime.getFullYear(), dateTime.getMonth(), dateTime.getDate(), 0, 0, 0, 0);
         };
-
-        var dataToTime = function(data) {
-            return data.getTime();
+        
+        var timeToDataTime = function(time) {
+            var date = new Date(time);
+            
+            var h = date.getHours();
+            var m = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
+            var result =  h + ":" + m;
+            
+            console.log(result);
+            
+            return result;
+        };
+ 
+        var dataToTime = function(data, time) {
+            var timePart = time.split(":");
+            return data.getTime() + (timePart[0] * 60 * 60 + timePart[1] * 60) * 1000;
         };
         $scope.edit_company = function () {
             console.log($scope.checkedHours);
             console.log($scope.checkedDays);
             console.log($scope.campaign_form);
 
-            Campaign.edit_campaigns({token: token.get(), id: $scope.campaign.id, status: $scope.campaign_form.campaign_status, name: $scope.campaign_form.campaign_name, sequence: $scope.campaign_form.campaign_order, start: dataToTime($scope.campaign_form.campaign_start), finish: dataToTime($scope.campaign_form.campaign_finish), duration: $scope.campaign_form.campaign_time, days: $scope.checkedDays, hours: $scope.checkedHours}, function(response){
-                sysLocation.goList();
+            Campaign.edit_campaigns({
+                token: token.get(), 
+                id: $scope.campaign.id, 
+                status: $scope.campaign_form.campaign_status, 
+                name: $scope.campaign_form.campaign_name, 
+                sequence: $scope.campaign_form.campaign_order, 
+                start: dataToTime($scope.campaign_form.campaign_start, $scope.campaign_form.campaign_start_time), 
+                finish: dataToTime($scope.campaign_form.campaign_finish, $scope.campaign_form.campaign_finish_time), 
+                duration: $scope.campaign_form.campaign_time, 
+                days: $scope.checkedDays, 
+                hours: $scope.checkedHours}, function(response) {
+                    console.log(response)
+                    if (response.ERROR) {
+                        sysMessage.error($filter('translate')('system_device') + ' ' + $filter('translate')('device_time_intersection'));
+                    } else {
+                        sysMessage.update_s($filter('translate')('campaign_updated'));
+                    }
             });
+        };
+        
+        $scope.close_settings = function () {
+            sysLocation.goList();
+        }
+        
+        $scope.remove_company = function () {
+            Campaign.delete_campaigns({token: token.get(), id: $scope.campaign.id}, function (response) {
+                if (response.error) {
+                    sysMessage.error($filter('translate')('system_device') + ' ' + $filter('translate')('campaign_edit_in_use'));
+                } else {
+                    sysLocation.goList();
+                }
+            });
+        };
+       
+        $scope.fileSort = {
+            stop: function(e, ui) {
+                update_files_order_id();
+            }
+        }
+        
+        $scope.selectedFile = null;
+        $scope.file_sort_select_file = function(file) { 
+            $scope.selectedFile = file;
+        };
+        
+        $scope.file_sort_up = function () {
+            var index = $scope.campaign_form.filesArray.indexOf($scope.selectedFile);
+
+            if (index != -1 && index != 0 ) {
+                change_files_order(index, index - 1);
+            }
+        };
+        
+        $scope.file_sort_down = function () {
+            var index = $scope.campaign_form.filesArray.indexOf($scope.selectedFile);
+
+            if (index != -1 && index != $scope.campaign_form.filesArray.length - 1) {
+                change_files_order(index, index + 1);
+            }
+        };
+        
+        $scope.file_sort_top = function () {
+            var index = $scope.campaign_form.filesArray.indexOf($scope.selectedFile);
+
+            if (index != -1 && index != 0 ) {
+                change_files_order(index, 0);
+            }
+        };
+        
+        $scope.file_sort_bottom = function () {
+            var index = $scope.campaign_form.filesArray.indexOf($scope.selectedFile);
+
+            if (index != -1 && index != $scope.campaign_form.filesArray.length - 1) {
+                change_files_order(index, $scope.campaign_form.filesArray.length - 1);
+            }
+        };
+        
+        
+        var change_files_order = function(i1, i2) {
+            var f1 = $scope.campaign_form.filesArray[i1];
+            $scope.campaign_form.filesArray.splice(i1, 1);
+            $scope.campaign_form.filesArray.splice(i2, 0, f1);
+            
+            update_files_order_id();
+        };
+        
+        var update_files_order_id = function() {
+            for (var index in $scope.campaign.files) {
+                $scope.campaign.files[index].orderId = index;
+            }
+        }
+        
+        $scope.reorder_files = function() {
+            Files.reorderFiles({
+                token: token.get(),
+                id: $scope.campaign.id,
+                filesOrder: $scope.campaign.files});
         };
 
         $scope.openPlayer = function(key) {
-            FWDRL.show('playlist', key);
-        }
+            var index = key;
+            for (var i = 0; file = $scope.campaign.files[i]; i++) {
+                if (i >= key) {
+                    break;
+                }
+
+                if ($scope.isFileConverting(file)) {
+                    index = index - 1;
+                }
+            }
+            FWDRL.show('playlist', index);
+        };
 
         $scope.inArchive = function (id) {
             Files.arhiveFiles({token: token.get(), id: id}, function(response){
-                sysMessage.delete_s($filter('translate')('system_filewasdeleted'))
+                sysMessage.delete_s($filter('translate')('system_filewasdeleted'));
                 refreshFilesModel();
             });
         };
-
+        
+        $scope.playNextFile = function (id) {
+            Campaign.play_next_file({token: token.get(), id: $stateParams.cId, file: id}, function(responce) {
+                if (responce.error == "no_device") {
+                    sysMessage.error($filter('translate')('system_device') + ' ' + $filter('translate')('campaign_no_active_device'));
+                } else {
+                    sysMessage.update_s($filter('translate')('system_playnextfile'));
+                }
+            });
+        };
+        
+        $scope.rotateFile = function (id, angle) {
+            Campaign.rotate_file({token: token.get(), id: $stateParams.cId, file: id, angle: angle}, function(responce) {
+                sysMessage.update_s($filter('translate')('system_rotatefile'));
+                refreshFilesModel();
+            });
+        };
+        
+        $scope.settingsVisible = false;
+        $scope.showSettings = function(show) {
+            $scope.settingsVisible = show;
+        }
+        
         var refreshFilesModel = function () {
             Campaign.get_campaigns({token: token.get(), id: $stateParams.cId}, function (response) {
                 console.log(response);
-                $scope.files = response;
-                $scope.campaign_form.filesArray = $scope.files.files;
+                $scope.campaign.files = response.files;
+                $scope.campaign_form.filesArray = $scope.campaign.files;
+                
+                for (var i = 0; i < $scope.campaign.files.length; i++) {
+                    if ($scope.campaign.files[i].status == 0 || 
+                            $scope.campaign.files[i].status == 4) {
+                        $scope.campaign.files[i].t =  new Date().getTime();
+                    }
+                }
+                
+                $timeout(refreshFileStatuses, 15000);
             });
         };
 
@@ -286,6 +586,10 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         };
 
         console.info('uploader', uploader);
+        
+        setTimeout(function(){jQuery('.styler').styler();}, 800);
+        //jQuery(function(){jQuery('.styler').styler()});
+        console.log("styler")
     }]);
 
 app.controller('CampaignsController', ['$scope', 'token', 'Campaign', 'sysMessage', '$rootScope', '$filter',
@@ -298,9 +602,19 @@ app.controller('CampaignsController', ['$scope', 'token', 'Campaign', 'sysMessag
             };
 
             $rootScope.top_link_active_list = 'top_link_active';
+            $scope.currentCampaign = {};
             Campaign.get_all_campaigns({token: token.get()}, function (response) {
+                console.log(response);
+                
                 $scope.campaigns = response.campaigns;
+                
+                if ($scope.campaigns.length > 0) {
+                    $scope.currentCampaign = $scope.campaigns[0];
+                }
             });
+            $scope.show_statistics = function(campaign) {
+                $scope.currentCampaign = campaign;
+            }
             $scope.remove = function (campaign) {
                 $scope.campaigns.splice($scope.campaigns.indexOf(campaign), 1);
                 Campaign.delete_campaigns({token: token.get(), id: campaign.id}, function (response) {
@@ -325,13 +639,95 @@ app.controller('DevicesController', ['$scope', 'token', 'Device', 'sysMessage', 
             $rootScope.top_link_active_device = 'top_link_active';
             Device.get_data({token: token.get()}, function (response) {
                 console.log(response);
+                
                 $scope.devices = response.devices;
+                $scope.campaigns = response.campaigns;
+                
+                $scope.currentDevice = null;
+                $scope.tmpCampaignIds = [];
+                if ($scope.devices.length > 0) {
+                    $scope.currentDevice = $scope.devices[0];
+                }
+                setTimeout(function(){jQuery('.styler').styler();}, 800); 
+                console.log("styler")
             });
+            
+            $scope.open_add_campaign = function(device) {
+                $scope.currentDevice = device;
+                
+                if (!$scope.currentDevice.campaignIds) {
+                    $scope.currentDevice.campaignIds = [];
+                }
+                              
+                $scope.tmpCampaignIds = [];
+                for (var index in device.campaignIds) {
+                    $scope.tmpCampaignIds.push(device.campaignIds[index]);
+                }
+            };
+            $scope.filter_device_campigns = function(value, index) {
+                if (!$scope.currentDevice) {
+                    $scope.currentDevice = {campaignIds: []};
+                }
+                
+                if (!$scope.currentDevice.campaignIds) {
+                    $scope.currentDevice.campaignIds = [];
+                }
+                
+                return $scope.currentDevice.campaignIds.indexOf(value.id) == -1;
+            }
+            $scope.toggle_campaign = function(campaignId) {
+                var index = $scope.tmpCampaignIds.indexOf(campaignId);
+                if (index == -1) {
+                    $scope.tmpCampaignIds.push(campaignId);
+                } else {
+                    $scope.tmpCampaignIds.splice(index, 1);
+                }
+            }
+            $scope.add_campaigns = function() {
+                for (var index in $scope.tmpCampaignIds) {
+                    var campId = $scope.tmpCampaignIds[index];
+                    
+                    if ($scope.currentDevice.campaignIds.indexOf(campId) == -1) {
+                        $scope.currentDevice.campaignIds.push(campId);
+                    }
+                }
+            }
+            
             $scope.change_device = function(device) {
-                Device.update({token: token.get(), id: device.id, orientation: parseInt(device.orientation), resolution: parseInt(device.resolution), campaignId: parseInt(device.campaignId), description: device.description }, function (response) {
-                    sysMessage.update_s($filter('translate')('system_device') + ' ' + $filter('translate')('system_updated'));
+                var deviceUpdate = {token: token.get(), 
+                    id: device.id, 
+                    orientation: parseInt(device.orientation), 
+                    resolution: parseInt(device.resolution), 
+                    campaignIds: device.campaignIds, 
+                    description: device.description,
+                    audioOut: device.audioOut,
+                    workStartAt: device.workStartAt,
+                    workEndAt: device.workEndAt
+                }
+                
+                for (index in $scope.workdays) {
+                    var day = $scope.workdays[index];
+                    deviceUpdate[day] = device[day];
+                }
+                
+                Device.update(deviceUpdate, function (response) {
+                    if (response.ERROR) {
+                        sysMessage.error($filter('translate')('system_device') + ' ' + $filter('translate')('device_time_intersection') + ' ' +
+                            response.name);
+                    } else {
+                        sysMessage.update_s($filter('translate')('system_device') + ' ' + $filter('translate')('system_updated'));
+                    }
                 });
             };
+            
+            $scope.delete_device_campaign = function (device, campaignId) {
+                Device.delete_device_campaign(
+                        {token: token.get(), id: device.id, campaignId: campaignId}, function(response) {
+                        var index = device.campaignIds.indexOf(campaignId);
+                        device.campaignIds.splice(index, 1);
+                    });
+            };
+            
             $scope.delete_device = function(device) {
                 Device.delete({token: token.get(), id: device.id}, function (response){
                     Device.get_data({token: token.get()}, function (response) {
@@ -349,5 +745,33 @@ app.controller('DevicesController', ['$scope', 'token', 'Device', 'sysMessage', 
                     });
                 });
             };
+            
+            $scope.clearCache =  function(deviceId) {
+                Device.clearCache({token: token.get() , id: deviceId}, function (response) {
+                    sysMessage.update_s($filter('translate')('system_device_cachecleared'));
+                });
+            }
+
+            $scope.openApp =  function(deviceId) {
+                Device.openApp({token: token.get() , id: deviceId}, function (response) {
+                    sysMessage.update_s($filter('translate')('system_device_ontop'));
+                });
+            }
+            
+            $scope.workdays = ['mo', 'tu', 'we', 'th', 'fr', 'sa', 'su'];
+            $scope.toggleWorkDay = function(device, day) {
+                device[day] = !device[day];
+            }
+            $scope.workhours = [];
+            for (var i = 0; i < 24; i++) {
+                 $scope.workhours.push(i + ":00");
+                 $scope.workhours.push(i + ":30");
+            }
+            
+            $scope.visibleDeviceSettings = 0;
+            $scope.showDeviceSettings = function(id) {
+                $scope.visibleDeviceSettings = id;
+            };
+            
         };
     }]);

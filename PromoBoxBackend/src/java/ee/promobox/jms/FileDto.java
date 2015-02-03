@@ -15,33 +15,37 @@ import java.io.Serializable;
  */
 public class FileDto implements Serializable {
     
-    private int id;
+    private int fileId;
+    private int campaignFileId;
+    private int clientId;
     private int fileType;
-    private File file;
     private String extention;
+    private int angle;
+    private boolean rotate;
 
-    public FileDto(int id, int fileType, File file, String extention) {
-        this.id = id;
-        this.file = file;
+    public FileDto(int campaignFileId, int clientId, int fileType, String extention) {
+        this.campaignFileId = campaignFileId;
+        this.clientId = clientId;
         this.fileType = fileType;
         this.extention = extention;
     }
     
-    public int getId() {
-        return id;
+    public int getCampaignFileId() {
+        return campaignFileId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setCampaignFileId(int campaignFileId) {
+        this.campaignFileId = campaignFileId;
     }
 
-    public File getFile() {
-        return file;
+    public int getClientId() {
+        return clientId;
     }
 
-    public void setFile(File file) {
-        this.file = file;
+    public void setClientId(int clientId) {
+        this.clientId = clientId;
     }
+    
 
     public int getFileType() {
         return fileType;
@@ -65,4 +69,27 @@ public class FileDto implements Serializable {
         this.extention = extention;
     }
 
+    public int getAngle() {
+        return angle;
+    }
+
+    public void setAngle(int angle) {
+        this.angle = angle;
+    }
+
+    public int getFileId() {
+        return fileId;
+    }
+
+    public void setFileId(int fileId) {
+        this.fileId = fileId;
+    }
+
+	public boolean isRotate() {
+		return rotate;
+	}
+
+	public void setRotate(boolean rotate) {
+		this.rotate = rotate;
+	} 
 }

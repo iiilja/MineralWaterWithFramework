@@ -11,14 +11,43 @@ services.factory('Campaign', ['$resource',
                 edit_campaigns: {method: 'PUT', url: apiEndpoint + 'token/:token/campaigns/:id', params: {token: '@token', id: '@id'}},
                 get_campaigns: {method: 'GET', url: apiEndpoint + 'token/:token/campaigns/:id/', params: {token: '@token', id: '@id'}},
                 get_all_campaigns: {method: 'GET', url: apiEndpoint + 'token/:token/campaigns/', params: {token: '@token'}},
-                delete_campaigns: {method: 'DELETE', url: apiEndpoint + 'token/:token/campaigns/:id/', params: {token: '@token', id: '@id'},
+                refrehs_files_stautes: {
+                    method: 'GET',
+                    url: apiEndpoint + 'token/:token/files/status',
+                    params: {
+                        token: '@token'
+                    }
+                },
+                play_next_file: {
+                    method: 'PUT',
+                    url: apiEndpoint + 'token/:token/campaigns/:id/nextFile/:file',
+                    params: {
+                        token: '@token',
+                        id: '@id',
+                        file: '@file'
+                    }
+                },
+                rotate_file: {
+                    method: 'PUT',
+                    url: apiEndpoint + "token/:token/campaigns/:id/files/:file/rotate/:angle",
+                    params: {
+                        token: '@token',
+                        id: '@id',
+                        file: '@file',
+                        angle: '@angle'
+                    }
+                },
+                delete_campaigns: {method: 'DELETE', url: apiEndpoint + 'token/:token/campaigns/:id/', params: {token: '@token', id: '@id'}
+                    /*,
                     interceptor: {
                         response: function(response) {
                             console.log(response);
                             console.debug('Tags: ', response.data.tags);
                             response.data = response.data.tags;
                             return response;
-                        }}}
+                        }}*/
+                    }
+                
             });}]);
 
 services.factory('Device', ['$resource',
@@ -27,14 +56,31 @@ services.factory('Device', ['$resource',
                 get_data: {method: 'GET', url: apiEndpoint + 'token/:token/devices/', params: {token: '@token'}},
                 update: {method: 'PUT', url:apiEndpoint + 'token/:token/devices/:id', params: {token: '@token', id: '@id'}},
                 delete: {method: 'DELETE', url:apiEndpoint + 'token/:token/devices/:id', params: {token: '@token', id: '@id'}},
-                add: {method: 'POST', url:apiEndpoint + 'token/:token/devices/', params: {token: '@token'}}
+                add: {method: 'POST', url:apiEndpoint + 'token/:token/devices/', params: {token: '@token'}},
+                clearCache: {method: 'PUT', url:apiEndpoint + 'token/:token/devices/:id/clearcache', params: {token: '@token', id: '@id'}},
+                openApp: {method: 'PUT', url:apiEndpoint + 'token/:token/devices/:id/openapp', params: {token: '@token', id: '@id'}},
+                delete_device_campaign: {method: 'DELETE', url:apiEndpoint + 'token/:token/devices/:id/campaign/:campaignId', params: {token: '@token', id: '@id', campaignId: '@campaignId'}}
             });}]);
 
 services.factory('Files', ['$resource',
     function ($resource) {
         return $resource('',{},{
             getFiles: {method: 'GET', url: apiEndpoint + 'token/:token/campaigns/:id/files/', params: {token: '@token', id: '@id'}},
-            arhiveFiles: {method: 'PUT', url: apiEndpoint + 'token/:token/files/archive/:id/', params: {token: '@token', id: '@id'}}
+            arhiveFiles: {method: 'PUT', url: apiEndpoint + 'token/:token/files/archive/:id/', params: {token: '@token', id: '@id'}},
+            reorderFiles: {method: 'PUT', url: apiEndpoint + 'token/:token/campaigns/:id/files/order', params: {token: '@token', id: '@id'}}
+        });
+    }]);
+
+services.factory("Clients", ['$resource',
+    function($resource) {
+        return $resource('',{},{
+            getClient: {
+                method: 'GET',
+                url: apiEndpoint + "/user/data/:token",
+                params: {
+                    token: '@token'
+                }
+            }
         });
     }]);
 
@@ -83,7 +129,10 @@ services.factory("sysMessage", ['toaster','$filter', function (toaster, $filter)
         },
         login_failed: function (message) {
             toaster.pop('error', $filter('translate')('system_error'), message);
-        }
+        },
+        error: function (message) {
+            toaster.pop('error', $filter('translate')('system_error'), message);
+        },
     }
 }]);
 
@@ -99,4 +148,32 @@ services.factory("sysLocation", ['$location', function ($location) {
             $location.path(link);
         }
     }
+}]);
+
+services.factory('browser', ['$window', function($window) {
+
+     return {
+
+        detectBrowser: function() {
+
+            var userAgent = $window.navigator.userAgent;
+
+            var browsers = {
+                chrome: /chrome/i, 
+                safari: /safari/i, 
+                firefox: /firefox/i, 
+                ie: /internet explorer/i, 
+                opera: /opera/i
+            };
+
+            for(var key in browsers) {
+                if (browsers[key].test(userAgent)) {
+                    return key;
+                }
+           };
+
+           return 'unknown';
+       }
+    }
+
 }]);

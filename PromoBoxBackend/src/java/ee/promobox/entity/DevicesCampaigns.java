@@ -32,6 +32,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "DevicesCampaigns.findAll", query = "SELECT d FROM DevicesCampaigns d"),
     @NamedQuery(name = "DevicesCampaigns.findById", query = "SELECT d FROM DevicesCampaigns d WHERE d.id = :id"),
     @NamedQuery(name = "DevicesCampaigns.findByAdCampaignsId", query = "SELECT d FROM DevicesCampaigns d WHERE d.adCampaignsId = :adCampaignsId"),
+    @NamedQuery(name = "DevicesCampaigns.findByAdCampaignsIdAndDeviceId", query = "SELECT d FROM DevicesCampaigns d WHERE d.deviceId = :deviceId AND d.adCampaignsId = :adCampaignsId"),
     @NamedQuery(name = "DevicesCampaigns.findByDeviceId", query = "SELECT d FROM DevicesCampaigns d WHERE d.deviceId = :deviceId")})
 public class DevicesCampaigns implements Serializable {
     private static final long serialVersionUID = 1L;

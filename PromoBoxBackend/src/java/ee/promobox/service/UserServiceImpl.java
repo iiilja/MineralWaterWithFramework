@@ -7,11 +7,16 @@ package ee.promobox.service;
 
 import ee.promobox.entity.AdCampaigns;
 import ee.promobox.entity.CampaignsFiles;
+import ee.promobox.entity.Clients;
 import ee.promobox.entity.Devices;
 import ee.promobox.entity.DevicesCampaigns;
 import ee.promobox.entity.Files;
 import ee.promobox.entity.Users;
+
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
+
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -47,10 +52,22 @@ public class UserServiceImpl implements UserService {
         return (Users) q.uniqueResult();
     }
 
+    @Override
+    public Clients findClientById(int clientId) {
+        Session session = sessionFactory.getCurrentSession();
+
+        Query q = session.getNamedQuery("Clients.findById");
+        q.setParameter("id", clientId);
+
+        return (Clients) q.uniqueResult();
+    }
+    
+    
+
     public List<AdCampaigns> findUserAdCompaigns(int clientId) {
         Session session = sessionFactory.getCurrentSession();
 
-        Query q = session.createQuery("from AdCampaigns where clientId = :clientId AND status > 0 AND status < 4");
+        Query q = session.createQuery("from AdCampaigns where clientId = :clientId AND status > 0 AND status < 4 Order by createdDate DESC, id DESC");
         q.setParameter("clientId", clientId);
 
         return q.list();
@@ -59,13 +76,26 @@ public class UserServiceImpl implements UserService {
     public List<Devices> findUserDevieces(int clientId) {
         Session session = sessionFactory.getCurrentSession();
 
-        Query q = session.createQuery("from Devices where clientId = :clientId AND status < 4");
+        Query q = session.createQuery("from Devices where clientId = :clientId AND status < 4 ORDER BY createdDt DESC, id DESC");
         q.setParameter("clientId", clientId);
 
         return q.list();
     }
 
-    public CampaignsFiles findCampaignFile(int id, int clientId) {
+    @Override
+	public List<Devices> findDevicesByCampaing(int campaignId) {
+    	Session session = sessionFactory.getCurrentSession();
+
+        Query q = session.createQuery("SELECT d FROM Devices d, DevicesCampaigns dc  WHERE d.id = dc.deviceId "
+        		+ " AND dc.adCampaignsId = :campaignId"
+        		+ " AND d.status != :statusArchived");
+        q.setParameter("campaignId", campaignId);
+        q.setParameter("statusArchived", Devices.STATUS_AHRCHIVED);
+
+        return q.list();
+	}
+
+	public CampaignsFiles findCampaignFile(int id, int clientId) {
         Session session = sessionFactory.getCurrentSession();
 
         Query q = session.createQuery("from CampaignsFiles where id  = :id and clientId = :clientId");
@@ -85,12 +115,47 @@ public class UserServiceImpl implements UserService {
         return (CampaignsFiles) q.uniqueResult();
 
     }
-
-    public List<Files> findCampaignFiles(int campgaignId) {
+    
+    public List<CampaignsFiles> findCampaignFileByIds(List<Integer> ids) {
         Session session = sessionFactory.getCurrentSession();
 
-        Query q = session.createQuery("select f from Files f, CampaignsFiles cf where cf.campgainId = :campaignId and f.id = cf.fileId");
-        q.setParameter("campaignId", campgaignId);
+        Query q = session.createQuery("from CampaignsFiles where id  IN (:ids)");
+        q.setParameterList("ids", ids);
+
+        return q.list();
+
+    }
+    
+    
+
+    @Override
+	public List<CampaignsFiles> findAllFiles() {
+        Session session = sessionFactory.getCurrentSession();
+
+        Query q = session.createQuery("FROM CampaignsFiles");
+
+        return q.list();
+	}
+    
+    
+
+	@Override
+	public CampaignsFiles findFileByIdAndPage(int fileId, int page) {
+		Session session = sessionFactory.getCurrentSession();
+
+        Query q = session.createQuery("SELECT cf FROM CampaignsFiles cf WHERE cf.page = :page AND cf.fileId = :fileId");
+        q.setParameter("fileId", fileId);
+        q.setParameter("page", page);
+        q.setMaxResults(1);
+
+        return (CampaignsFiles) q.uniqueResult();
+	}
+
+	public List<CampaignsFiles> findCampaignFiles(int campaignId) {
+        Session session = sessionFactory.getCurrentSession();
+
+        Query q = session.createQuery("select cf from Files f, CampaignsFiles cf where cf.adCampaignsId = :campaignId and f.id = cf.fileId");
+        q.setParameter("campaignId", campaignId);
 
         return q.list();
     }
@@ -99,7 +164,8 @@ public class UserServiceImpl implements UserService {
         Session session = sessionFactory.getCurrentSession();
 
         Query q = session.createQuery("SELECT cf FROM CampaignsFiles cf "
-                + "WHERE cf.clientId = :clientId AND cf.adCampaignsId = :campaignId AND cf.status != :status");
+                + "WHERE cf.clientId = :clientId AND cf.adCampaignsId = :campaignId AND cf.status != :status "
+                + "ORDER BY orderId DESC");
         
         q.setParameter("clientId", clientId);
         q.setParameter("status", CampaignsFiles.STATUS_ARCHIVED);
@@ -135,25 +201,74 @@ public class UserServiceImpl implements UserService {
         return (Devices) q.uniqueResult();
     }
 
-    public DevicesCampaigns findDeviceCampaignByDeviceId(int deviceId) {
+    @Override
+    public List<Devices> findAllDevices() {
+        Session session = sessionFactory.getCurrentSession();
+    
+        Query q = session.getNamedQuery("Devices.findAll");
+        
+        return q.list();
+    }
+    
+    
+
+    public DevicesCampaigns findDeviceCampaignByCampaignId(int deviceId, int campaignId) {
         Session session = sessionFactory.getCurrentSession();
 
-        Query q = session.getNamedQuery("DevicesCampaigns.findByDeviceId").setInteger("deviceId", deviceId);
+        Query q = session.getNamedQuery("DevicesCampaigns.findByAdCampaignsIdAndDeviceId")
+                .setInteger("deviceId", deviceId)
+                .setInteger("adCampaignsId", campaignId);
         return (DevicesCampaigns) q.uniqueResult();
     }
-
-    public AdCampaigns findCampaignByDeviceId(int deviceId) {
+    
+    public DevicesCampaigns findLastUpdatedDeviceCampaign(int deviceId) {
         Session session = sessionFactory.getCurrentSession();
 
-        Query q = session.createQuery("select ad from AdCampaigns ad, DevicesCampaigns d where d.deviceId = :deviceId and ad.id = d.adCampaignsId").setInteger("deviceId", deviceId);
-
-        return (AdCampaigns) q.uniqueResult();
+        Query q = session.createQuery("FROM DevicesCampaigns WHERE deviceId = :deviceId ORDER BY updatedDt DESC")
+                .setInteger("deviceId", deviceId)
+                .setMaxResults(1);
+        
+        return (DevicesCampaigns) q.uniqueResult();
     }
+    
+    
+    public List<DevicesCampaigns> findDeviceCampaignsByDeviceId(int deviceId) {
+        Session session = sessionFactory.getCurrentSession();
+
+        Query q = session.getNamedQuery("DevicesCampaigns.findByDeviceId")
+                .setInteger("deviceId", deviceId);
+        return  q.list();
+    }
+
+    public List<AdCampaigns> findCampaignByDeviceId(int deviceId) {
+        Session session = sessionFactory.getCurrentSession();
+
+        Query q = session.createQuery("select ad from AdCampaigns ad, DevicesCampaigns d where d.deviceId = :deviceId and ad.id = d.adCampaignsId")
+                .setInteger("deviceId", deviceId);
+
+        return q.list();
+    }
+
+    @Override
+    public List<CampaignsFiles> findFilesArchiveCandidates() {
+        Session session = sessionFactory.getCurrentSession();
+        
+        //Calendar cal = GregorianCalendar.getInstance();
+        //cal.add(Calendar.DAY_OF_YEAR, -2);
+        
+        Query q = session.createQuery("FROM CampaignsFiles cf WHERE cf.status = :statusArchived")
+                .setInteger("statusArchived", CampaignsFiles.STATUS_ARCHIVED);
+        
+        return q.list();
+    }
+    
+    
 
     public AdCampaigns findCampaignByCampaignId(int campaignId) {
         Session session = sessionFactory.getCurrentSession();
         
-        Query q = session.getNamedQuery("AdCampaigns.findById").setInteger("id", campaignId);
+        Query q = session.getNamedQuery("AdCampaigns.findById")
+                .setInteger("id", campaignId);
         
         return (AdCampaigns) q.uniqueResult();
     }
@@ -161,7 +276,8 @@ public class UserServiceImpl implements UserService {
     public Files findFileById(int id) {
         Session session = sessionFactory.getCurrentSession();
         
-        Query q = session.getNamedQuery("Files.findById").setInteger("id", id);
+        Query q = session.getNamedQuery("Files.findById")
+                .setInteger("id", id);
         
         return (Files) q.uniqueResult();
     }
@@ -250,6 +366,32 @@ public class UserServiceImpl implements UserService {
         q.setParameter("clientId", clientId);
 
         return (Devices) q.uniqueResult();
+    }
+
+    @Override
+    public List<Devices> findDevicesByCampaignId(int campignId, int clientId) {
+        Session session = sessionFactory.getCurrentSession();
+
+        Query q = session.createQuery("FROM Devices WHERE currentCampaignId = :campignId AND clientId = :clientId");
+
+        q.setParameter("campignId", campignId);
+        q.setParameter("clientId", clientId);
+
+        return q.list();
+    }
+    
+    
+    
+    @Override
+    public void deleteDeviceCampaign(int deviceId, int campaignId) {
+        Session session = sessionFactory.getCurrentSession();
+
+        Query q = session.createQuery("DELETE FROM DevicesCampaigns WHERE adCampaignsId = :campaignId AND deviceId = :deviceId");
+
+        q.setParameter("deviceId", deviceId);
+        q.setParameter("campaignId", campaignId);
+
+        q.executeUpdate();
     }
 
 }

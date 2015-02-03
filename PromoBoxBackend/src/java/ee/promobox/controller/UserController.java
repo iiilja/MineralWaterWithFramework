@@ -5,6 +5,7 @@
 package ee.promobox.controller;
 
 import ee.promobox.entity.AdCampaigns;
+import ee.promobox.entity.Clients;
 import ee.promobox.entity.Devices;
 import ee.promobox.entity.Users;
 import ee.promobox.service.Session;
@@ -43,35 +44,7 @@ public class UserController {
     @Autowired
     private SessionService sessionService;
     
-    @RequestMapping("/index")
-    public ModelAndView indexHandler(
-            HttpServletRequest request,
-            HttpServletResponse response) throws Exception {
 
-        JSONObject json = new JSONObject();
-        json.put("response", "OK");
-        JSONArray userAr = new JSONArray();
-
-        List<Users> list = userService.findAllUsers();
-        
-        for (Users u : list) {
-
-            JSONObject jsonUser = new JSONObject();
-            jsonUser.put("firstname", u.getFirstname());
-            jsonUser.put("surname", u.getSurname());
-            jsonUser.put("emai", u.getEmail());
-
-            userAr.put(jsonUser);
-
-        }
-
-        json.put("users", userAr);
-
-        return RequestUtils.printResult(json.toString(), response);
-
-    }
-    
-    
     @RequestMapping("/user/login")
     public ModelAndView userLoginHandler(
             @RequestParam String email,
@@ -82,6 +55,7 @@ public class UserController {
         JSONObject resp = RequestUtils.getErrorResponse();
         
         Users user = userService.findUserByEmailAndPassword(email, password);
+        
         
         if (user!=null) {
             resp.put("response", RequestUtils.OK);
@@ -117,6 +91,11 @@ public class UserController {
         
         if (session!=null) {
             resp.put("response", RequestUtils.OK);
+            
+            Clients client = userService.findClientById(session.getClientId());
+            if (client != null) {
+                resp.put("compName", client.getCompanyName());
+            }
             
             List<AdCampaigns> campaigns = userService.findUserAdCompaigns(session.getClientId());
             List<Devices> devices = userService.findUserDevieces(session.getClientId());

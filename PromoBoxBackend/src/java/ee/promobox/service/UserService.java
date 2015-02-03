@@ -7,6 +7,7 @@ package ee.promobox.service;
 
 import ee.promobox.entity.AdCampaigns;
 import ee.promobox.entity.CampaignsFiles;
+import ee.promobox.entity.Clients;
 import ee.promobox.entity.Devices;
 import ee.promobox.entity.DevicesCampaigns;
 import ee.promobox.entity.Files;
@@ -22,16 +23,24 @@ public interface UserService {
     public List<Users> findAllUsers();
 
     public Users findUserByEmailAndPassword(String email, String password);
+    
+    public Clients findClientById(int clientId);
 
     public List<AdCampaigns> findUserAdCompaigns(int clientId);
 
     public List<Devices> findUserDevieces(int clientId);
+    
+    public List<Devices> findDevicesByCampaing(int campaignId);
 
-    public List<Files> findCampaignFiles(int campgaignId);
+    public List<CampaignsFiles> findAllFiles();
+    
+    public List<CampaignsFiles> findCampaignFiles(int campgaignId);
     
     public CampaignsFiles findCampaignFile(int fileId, int clientId);
     
     public List<CampaignsFiles> findUsersCampaignFiles(int campaignId, int clientId);
+    
+    public CampaignsFiles findFileByIdAndPage(int fileId, int page);
     
     public AdCampaigns findCampaignByIdAndClientId(int id, int clientId);
     
@@ -41,9 +50,17 @@ public interface UserService {
     
     public Devices findDeviceByUuid(String uuid);
     
-    public DevicesCampaigns findDeviceCampaignByDeviceId(int deviceId);
+    public List<Devices> findAllDevices();
+    
+    public List<DevicesCampaigns> findDeviceCampaignsByDeviceId(int deviceId);
+    
+    public DevicesCampaigns findLastUpdatedDeviceCampaign(int deviceId);
+    
+    public DevicesCampaigns findDeviceCampaignByCampaignId(int deviceId, int campaignId);
 
-    public AdCampaigns findCampaignByDeviceId(int deviceId);
+    public List<AdCampaigns> findCampaignByDeviceId(int deviceId);
+    
+    public List<CampaignsFiles> findFilesArchiveCandidates();
     
     public AdCampaigns findCampaignByCampaignId(int campaignId);
     
@@ -68,7 +85,13 @@ public interface UserService {
 
     public Devices findDeviceByIdAndClientId(int id, int clientId);
     
+    public List<Devices> findDevicesByCampaignId(int id, int clientId);
+    
     public void addDeviceAdCampaign(DevicesCampaigns dc);
     
     public CampaignsFiles findCampaignFileById(int fileId);
+    
+    public List<CampaignsFiles> findCampaignFileByIds(List<Integer> fileIds);
+    
+    public void deleteDeviceCampaign(int deviceId, int campaignId);
 }

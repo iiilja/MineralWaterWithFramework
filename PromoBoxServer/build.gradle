@@ -1,0 +1,131 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+    dependencies {
+        classpath 'org.hidetake:gradle-ssh-plugin:1.0.1'
+    }
+}
+
+apply plugin: 'org.hidetake.ssh'
+apply plugin: 'groovy'
+
+
+remotes {
+    webServer {
+        host = '46.182.30.93'
+        user = 'root'
+    }
+}
+
+ssh.settings {
+    identity = file("${System.properties['user.home']}/.ssh/gradle/promobox.pem")
+    knownHosts = allowAnyHosts    // Disable host key verification
+}
+
+task install_server() << {
+    description = 'Install server.'
+  
+    ssh.run {
+        session(remotes.webServer) {
+            execute 'apt-get update'
+            execute 'apt-get -y install vim'
+            execute 'apt-get -y install nginx'
+            execute 'apt-get -y install postgresql-9.3'
+            execute 'apt-get -y install openjdk-7-jdk'
+            execute 'apt-get -y install tomcat7'
+            execute 'apt-get -y install imagemagick'
+            execute 'apt-get -y install libav-tools'
+            execute 'apt-get -y install openvpn'
+            execute 'apt-get -y install unoconv'
+            execute 'ufw allow "Nginx Full"'
+            execute 'ufw allow "OpenSSH"'
+            execute 'ufw logging off'
+            execute 'ufw enable'
+            execute 'echo "*       soft    nofile  65000" >> /etc/security/limits.conf'
+            execute 'echo "*       hard    nofile  65000" >> /etc/security/limits.conf'
+            execute 'echo "root    soft    nofile  65000" >> /etc/security/limits.conf'
+            execute 'echo "root    hard    nofile  65000" >> /etc/security/limits.conf'
+            execute 'mkdir -p /opt/amq'
+            execute 'mkdir -p /opt/api.promobox.ee'
+            execute 'mkdir -p /opt/data'
+            execute 'mkdir -p /opt/promobox.ee'
+            execute 'chown -R tomcat7.tomcat7 /opt/amq'
+            execute 'chmod 777 /usr/share/tomcat7/'
+            execute 'chown -R tomcat7.tomcat7 /opt/*'
+            execute 'chown -R tomcat7.tomcat7 /opt/data/'
+            execute 'apt-get -y install ntp'
+        }
+    }
+}
+
+
+task update_postgre() << {
+    ssh.run {
+        session(remotes.webServer) {
+            put "postgresql/postgresql.conf" , '/etc/postgresql/9.3/main/postgresql.conf'
+            put "postgresql/pg_hba.conf" , '/etc/postgresql/9.3/main/pg_hba.conf'
+            
+            execute 'service postgresql restart'
+        }
+    }
+}
+
+
+task update_nginx() << {
+    ssh.run {
+        session(remotes.webServer) {
+            put "nginx/admin.promobox.ee" , '/etc/nginx/sites-available/admin.promobox.ee'
+            put "nginx/api.promobox.ee" , '/etc/nginx/sites-available/api.promobox.ee'
+            put "nginx/default" , '/etc/nginx/sites-available/default'
+            put "nginx/nginx.conf" , '/etc/nginx/nginx.conf'
+            
+            execute 'ln -sf /etc/nginx/sites-available/admin.promobox.ee /etc/nginx/sites-enabled/admin.promobox.ee'
+            execute 'ln -sf /etc/nginx/sites-available/api.promobox.ee /etc/nginx/sites-enabled/api.promobox.ee'
+            
+            execute 'service nginx restart'
+        }
+    }
+}
+
+task update_openvpn() << {
+    
+    ssh.run {
+        session(remotes.webServer) {
+            put "openvpn/server.conf" , '/etc/openvpn/server.conf'
+            put "openvpn/server.crt" , '/etc/openvpn/server.crt'
+            put "openvpn/server.key" , '/etc/openvpn/server.key'
+            put "openvpn/ca.crt" , '/etc/openvpn/ca.crt'
+            put "openvpn/dh2048.pem" , '/etc/openvpn/dh2048.pem'
+            
+            execute 'service openvpn restart'
+        }
+    }
+}
+
+task update_tomcat() << {
+    
+    ssh.run {
+        session(remotes.webServer) {
+            put "tomcat/server.xml" , '/etc/tomcat7/server.xml'
+            put "tomcat/logging.properties" , '/etc/tomcat7/logging.properties'
+            put "tomcat/tomcat7" , '/etc/default/tomcat7'
+            put "tomcat/ROOT.xml" , '/etc/tomcat7/Catalina/localhost/ROOT.xml'
+            
+            execute 'mkdir -p /opt/api.promobox.ee/WEB-INF/cfg/'
+            execute 'mkdir -p /opt/api.promobox.ee/WEB-INF/classes/'
+            
+            put "tomcat/log4j.xml" , '/opt/api.promobox.ee/WEB-INF/classes/log4j.xml'
+            put "tomcat/production.properties" , '/opt/api.promobox.ee/WEB-INF/cfg/production.properties'
+            
+            execute 'service tomcat7 restart'
+        }
+    }
+}
+
+task update_configs(){
+    dependsOn update_postgre, update_nginx, update_openvpn, update_tomcat
+    description = 'Update configs'
+    
+}

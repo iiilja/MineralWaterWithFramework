@@ -54,6 +54,7 @@ public class MainService extends Service {
     private double loadingCampaignProgress;
 
     private boolean firstStart = true; // To read DATA.JSON only on first start of service
+    private boolean firstStartWatchDog = true; // To read DATA.JSON only on first start of service
     private boolean activityReceivedUpdate = false; // Sometimes mainActivity receiver starts after this broadcasts
 
     private String previousCampaignsJSON = new String();
@@ -87,7 +88,8 @@ public class MainService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        boolean startMainActivity =  intent == null || intent.getBooleanExtra("startMainActivity",false);
+        boolean startMainActivity       =  intent == null || intent.getBooleanExtra("startMainActivity",false);
+        boolean startedFromMainActivity =  intent == null || intent.getBooleanExtra("startedFromMainActivity",false);
 
         Log.i(MAIN_SERVICE_STRING, "Start command");
 
@@ -95,9 +97,13 @@ public class MainService extends Service {
         setOrientation(getSharedPref().getInt("orientation", MainActivity.ORIENTATION_LANDSCAPE));
 
         checkAndDownloadCampaign();
-        if ( startMainActivity ) {
+        if ( startMainActivity || !startedFromMainActivity && firstStartWatchDog ) {
+            if (!startedFromMainActivity && firstStartWatchDog){
+                Log.d("WatchDog", "Activity started from watchdog");
+            }
             startMainActivity();
         }
+        firstStartWatchDog = false;
         return Service.START_NOT_STICKY;
     }
 

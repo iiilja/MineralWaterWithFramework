@@ -52,6 +52,7 @@ task install_server() << {
             execute 'mkdir -p /opt/data'
             execute 'mkdir -p /opt/promobox.ee'
             execute 'chown -R tomcat7.tomcat7 /opt/amq'
+            execute 'chmod 777 /usr/share/tomcat7/'
             execute 'chown -R tomcat7.tomcat7 /opt/*'
             execute 'chown -R tomcat7.tomcat7 /opt/data/'
             execute 'apt-get -y install ntp'

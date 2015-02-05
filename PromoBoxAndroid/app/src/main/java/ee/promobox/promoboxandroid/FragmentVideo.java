@@ -1,11 +1,8 @@
 package ee.promobox.promoboxandroid;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
+import android.app.Fragment;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.pm.ActivityInfo;
 import android.graphics.Point;
 import android.graphics.SurfaceTexture;
 import android.media.MediaCodec;
@@ -16,11 +13,12 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
-import android.widget.FrameLayout;
+import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 
@@ -40,11 +38,12 @@ import java.util.ArrayList;
 
 import ee.promobox.promoboxandroid.data.CampaignFile;
 import ee.promobox.promoboxandroid.intents.ErrorMessageIntent;
+import ee.promobox.promoboxandroid.util.FragmentPlaybackListener;
 
 
-public class VideoActivity extends Activity implements TextureView.SurfaceTextureListener,
+public class FragmentVideo extends Fragment implements TextureView.SurfaceTextureListener,
         MediaCodecVideoTrackRenderer.EventListener , ExoPlayer.Listener{
-    private final String VIDEO_ACTIVITY = "VideoActivity ";
+    private final String TAG = "VideoActivity ";
 
     private TextureView videoView;
 
@@ -52,7 +51,6 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
     private LocalBroadcastManager bManager;
     private ArrayList<CampaignFile> files;
     private int position = 0;
-    private int orientation;
     private boolean active = true;
     private boolean silentMode = false;
 
@@ -62,51 +60,55 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
 
     private int viewOriginalHeight = 0;
     private int viewOriginalWidth = 0;
+    private FragmentPlaybackListener playbackListener;
+    private MainActivity mainActivity;
 
 
     @Override
-    public void onCreate(Bundle b) {
-        super.onCreate(b);
-
-        setContentView(R.layout.activity_video);
-
-        bManager = LocalBroadcastManager.getInstance(this);
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(MainActivity.ACTIVITY_FINISH);
-        bManager.registerReceiver(bReceiver, intentFilter);
-
-        Bundle extras = getIntent().getExtras();
-        files = extras.getParcelableArrayList("files");
-
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.d(TAG, "onCreateView");
+        View view = inflater.inflate(R.layout.fragment_video,container,false);
+        videoView = (TextureView) view.findViewById(R.id.video_texture_view);
+        return view;
     }
 
+
+    @Override
+    public void onAttach(Activity activity) {
+        Log.d(TAG, "onAttach");
+        super.onAttach(activity);
+        playbackListener = (FragmentPlaybackListener) activity;
+        mainActivity = (MainActivity) activity;
+
+    }
 
     public void playVideo() {
         if (files.size() > 0) {
             try {
-                if (orientation == MainActivity.ORIENTATION_PORTRAIT_EMULATION){
+                if (mainActivity.getOrientation() == MainActivity.ORIENTATION_PORTRAIT_EMULATION){
                     Point videoSize = calculateVideoSize();
                     if (position == 0){
                         viewOriginalHeight =  videoView.getMeasuredHeight();
                         viewOriginalWidth =  videoView.getMeasuredWidth();
                     }
                     videoSize = calculateNeededVideoSize(videoSize,viewOriginalWidth,viewOriginalHeight);
-                    FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(videoSize.x, videoSize.y);
-                    params.gravity = Gravity.CENTER;
-                    videoView.setLayoutParams(params);
+                    RelativeLayout.LayoutParams relPar = (RelativeLayout.LayoutParams) videoView.getLayoutParams();
+                    relPar.width = videoSize.x;
+                    relPar.height = videoSize.y;
+                    videoView.setLayoutParams(relPar);
                 }
 
                 cleanUp();
                 Surface surface = new Surface(videoView.getSurfaceTexture());
                 String pathToFile = files.get(position).getPath();
-                Log.d(VIDEO_ACTIVITY,"playVideo() file = " + FilenameUtils.getBaseName(pathToFile));
-                Log.d(VIDEO_ACTIVITY,pathToFile);
+                Log.d(TAG,"playVideo() file = " + FilenameUtils.getBaseName(pathToFile));
+                Log.d(TAG,pathToFile);
                 Uri uri = Uri.parse(pathToFile);
-                SampleSource source = new FrameworkSampleSource(this, uri, null, 2);
+                SampleSource source = new FrameworkSampleSource(getActivity(), uri, null, 2);
                 audioRenderer = new MediaCodecAudioTrackRenderer(
                         source, null, true);
                 videoRenderer = new MediaCodecVideoTrackRenderer(source,
-                        MediaCodec.VIDEO_SCALING_MODE_SCALE_TO_FIT, 0, new Handler(getMainLooper()),
+                        MediaCodec.VIDEO_SCALING_MODE_SCALE_TO_FIT, 0, new Handler(getActivity().getMainLooper()),
                         this, 50);
                 exoPlayer = ExoPlayer.Factory.newInstance(2);
                 exoPlayer.prepare(audioRenderer,videoRenderer);
@@ -128,61 +130,26 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
 
                 Intent returnIntent = new Intent();
                 returnIntent.putExtra("result", MainActivity.RESULT_FINISH_PLAY);
-                VideoActivity.this.setResult(RESULT_OK, returnIntent);
-                VideoActivity.this.finish();
+                playbackListener.onPlaybackStop();
             }
         }
-    }
-
-    private void hideSystemUI() {
-
-        this.getWindow().getDecorView().setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
-                        | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
-        );
-
-        View view = findViewById(R.id.video_view);
-
-        view.setOnLongClickListener(new View.OnLongClickListener() {
-
-            public boolean onLongClick(View view) {
-
-                Intent i = new Intent(VideoActivity.this, SettingsActivity.class);
-                startActivity(i);
-
-                return true;
-            }
-        });
     }
 
 
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
 
         active = true;
-        silentMode = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("silent_mode", false);
+        silentMode = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("silent_mode", false);
 
-        hideSystemUI();
-
-        orientation = getIntent().getExtras().getInt("orientation");
-
-        if (orientation == MainActivity.ORIENTATION_PORTRAIT) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        } else {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        }
+        files = mainActivity.getFilePack() != null ? mainActivity.getFilePack() : new ArrayList<CampaignFile>();
 
         if (position > files.size() - 1) {
             position = 0;
         }
 
-        videoView = (TextureView) findViewById(R.id.videoview);
-
-        if (orientation == MainActivity.ORIENTATION_PORTRAIT_EMULATION){
+        if (mainActivity.getOrientation() == MainActivity.ORIENTATION_PORTRAIT_EMULATION){
             videoView.setRotation(270.0f);
         }
 
@@ -191,7 +158,7 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
     }
 
     @Override
-    protected void onPause() {
+    public void onPause() {
         super.onPause();
         cleanUp();
         active = false;
@@ -199,9 +166,8 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
     }
 
     private void sendPlayCampaignFile() {
-        Intent playFile = new Intent(MainActivity.CURRENT_FILE_ID);
-        playFile.putExtra("fileId", files.get(position).getId());
-        LocalBroadcastManager.getInstance(VideoActivity.this).sendBroadcast(playFile);
+        mainActivity.setCurrentFileId(files.get(position).getId());
+        Log.d(TAG, files.get(position).getPath());
     }
 
     private void cleanUp() {
@@ -215,10 +181,8 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
     }
 
     @Override
-    protected void onDestroy() {
+    public void onDestroy() {
         cleanUp();
-
-        bManager.unregisterReceiver(bReceiver);
 
         super.onDestroy();
     }
@@ -247,7 +211,7 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
     public void onDecoderInitializationError(MediaCodecTrackRenderer.DecoderInitializationException e) {
         makeToast("Video player decoder initialization error");
         bManager.sendBroadcast(new ErrorMessageIntent(e));
-        Log.e(VIDEO_ACTIVITY, "onDecoderInitializationError");
+        Log.e(TAG, "onDecoderInitializationError");
         cleanUp();
 
     }
@@ -256,7 +220,7 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
     public void onCryptoError(MediaCodec.CryptoException e) {
         makeToast("Video player crypto error");
         bManager.sendBroadcast(new ErrorMessageIntent(e));
-        Log.e(VIDEO_ACTIVITY,"onCryptoError");
+        Log.e(TAG,"onCryptoError");
     }
 
     @Override
@@ -276,19 +240,17 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
 
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-        Log.d(VIDEO_ACTIVITY,"STATE CHANGED , state = " + playbackState);
+        Log.d(TAG,"STATE CHANGED , state = " + playbackState);
 
         if (playbackState == ExoPlayer.STATE_ENDED) {
 
             if (position == files.size()) {
                 cleanUp();
-                Log.d(VIDEO_ACTIVITY, "POSITION == files.size");
+                Log.d(TAG, "POSITION == files.size");
 
                 Intent returnIntent = new Intent();
                 returnIntent.putExtra("result", 1);
-                VideoActivity.this.setResult(RESULT_OK, returnIntent);
-
-                VideoActivity.this.finish();
+                playbackListener.onPlaybackStop();
             } else {
                 playVideo();
             }
@@ -304,7 +266,7 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
     public void onPlayerError(ExoPlaybackException ex) {
         makeToast("Player ERROR ");
         bManager.sendBroadcast(new ErrorMessageIntent(ex));
-        Log.e(VIDEO_ACTIVITY, "onPlayerError");
+        Log.e(TAG, "onPlayerError");
     }
 
 
@@ -319,7 +281,7 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
                     .extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT);
             String width = metaRetriever
                     .extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH);
-            Log.d(VIDEO_ACTIVITY, height + "h , w = " + width);
+            Log.d(TAG, height + "h , w = " + width);
             Point size = new Point();
             size.set(Integer.parseInt(width), Integer.parseInt(height));
             return size;
@@ -328,7 +290,7 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
             makeToast(String.format(
                     MainActivity.ERROR_MESSAGE, 42, ex.getClass().getSimpleName()));
             bManager.sendBroadcast(new ErrorMessageIntent(ex));
-            Log.e(VIDEO_ACTIVITY, ex.getMessage());
+            Log.e(TAG, ex.getMessage());
         }
         return new Point(0,0);
     }
@@ -352,24 +314,7 @@ public class VideoActivity extends Activity implements TextureView.SurfaceTextur
 
     private void makeToast(String toast){
         if (!silentMode){
-            Toast.makeText(this,toast ,Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(),toast ,Toast.LENGTH_LONG).show();
         }
     }
-
-    private BroadcastReceiver bReceiver = new BroadcastReceiver() {
-        private final String RECEIVER_STRING = VIDEO_ACTIVITY + "BroadcastReceiver";
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (action.equals(MainActivity.ACTIVITY_FINISH)) {
-                Intent returnIntent = new Intent();
-
-                returnIntent.putExtra("result", MainActivity.RESULT_FINISH_PLAY);
-
-                VideoActivity.this.setResult(RESULT_OK, returnIntent);
-
-                VideoActivity.this.finish();
-            }
-        }
-    };
 }

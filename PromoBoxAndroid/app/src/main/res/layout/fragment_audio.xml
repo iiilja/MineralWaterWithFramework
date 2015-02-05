@@ -1,0 +1,46 @@
+
+
+    <LinearLayout
+        android:id="@+id/audio_view"
+        android:orientation="vertical"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:keepScreenOn="true"
+        tools:context="ee.promobox.promoboxandroid.AudioActivity"
+        android:gravity="center">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:padding="20dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/main_activity_title_promo"
+                android:textSize="50sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/main_activity_title_box"
+                android:textSize="50sp"
+                android:textColor="#ffceab73"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/main_activity_status_loading"
+            android:gravity="center"
+            android:id="@+id/audio_activity_status"
+            android:textSize="20sp"/>
+
+    </LinearLayout>
+

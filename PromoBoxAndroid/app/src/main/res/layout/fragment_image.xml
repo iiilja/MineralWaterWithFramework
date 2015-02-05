@@ -4,7 +4,9 @@
     android:layout_height="match_parent"
     android:id="@+id/image_view"
     android:keepScreenOn="true"
-    tools:context="ee.promobox.promoboxandroid.ImageActivity">
+    android:layout_gravity="center"
+    android:gravity="center"
+    tools:context="ee.promobox.promoboxandroid.FragmentImage">
 
         <ee.promobox.promoboxandroid.widgets.AspectRatioImageView
             android:id="@+id/slide_1"

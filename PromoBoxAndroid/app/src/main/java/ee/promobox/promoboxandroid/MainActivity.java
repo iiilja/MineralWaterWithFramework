@@ -1,7 +1,8 @@
 package ee.promobox.promoboxandroid;
 
 import android.app.Activity;
-import android.app.ActivityManager;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -21,23 +22,21 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import ee.promobox.promoboxandroid.data.Campaign;
 import ee.promobox.promoboxandroid.data.CampaignFile;
 import ee.promobox.promoboxandroid.data.CampaignFileType;
 import ee.promobox.promoboxandroid.data.ErrorMessage;
-import ee.promobox.promoboxandroid.util.ExceptionHandler;
+import ee.promobox.promoboxandroid.util.FragmentPlaybackListener;
 
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements FragmentPlaybackListener , View.OnLongClickListener{
 
     private final static String AUDIO_DEVICE_PARAM = "audio_devices_out_active";
     public final static  String AUDIO_DEVICE_PREF = "audio_device";
 
     public static final String CAMPAIGN_UPDATE  = "ee.promobox.promoboxandroid.UPDATE";
     public static final String ACTIVITY_FINISH  = "ee.promobox.promoboxandroid.FINISH";
-    public static final String CURRENT_FILE_ID  = "ee.promobox.promoboxandroid.CURRENT_FILE_ID";
     public static final String MAKE_TOAST       = "ee.promobox.promoboxandroid.MAKE_TOAST";
     public static final String APP_START        = "ee.promobox.promoboxandroid.START";
     public static final String SET_STATUS       = "ee.promobox.promoboxandroid.SET_STATUS";
@@ -73,6 +72,14 @@ public class MainActivity extends Activity {
     private boolean mBound = false;
     private boolean active = true;
 
+    Fragment mainFragment = new FragmentMain();
+    Fragment audioFragment = new FragmentAudio();
+    Fragment videoFragment = new FragmentVideo();
+    Fragment imageFragment = new FragmentImage();
+
+    private ArrayList<CampaignFile> filePack;
+
+
     private void hideSystemUI() {
 
         this.getWindow().getDecorView().setSystemUiVisibility(
@@ -86,14 +93,7 @@ public class MainActivity extends Activity {
 
         View view = findViewById(R.id.main_view);
 
-        view.setOnLongClickListener(new View.OnLongClickListener() {
-
-            public boolean onLongClick(View view) {
-                Intent i = new Intent(MainActivity.this, SettingsActivity.class);
-                startActivity(i);
-                return true;
-            }
-        });
+        view.setOnLongClickListener(this);
     }
 
 
@@ -101,7 +101,8 @@ public class MainActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
+
+        //Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
         exceptionHandlerError =  getIntent().getStringExtra("error");
 
         setContentView(R.layout.activity_main);
@@ -111,7 +112,6 @@ public class MainActivity extends Activity {
         IntentFilter intentFilter = new IntentFilter();
 
         intentFilter.addAction(CAMPAIGN_UPDATE);
-        intentFilter.addAction(CURRENT_FILE_ID);
         intentFilter.addAction(MAKE_TOAST);
         intentFilter.addAction(PLAY_SPECIFIC_FILE);
         intentFilter.addAction(SET_STATUS);
@@ -119,6 +119,8 @@ public class MainActivity extends Activity {
         intentFilter.addAction(WRONG_UUID);
 
         bManager.registerReceiver(bReceiver, intentFilter);
+
+        getFragmentManager().beginTransaction().add(R.id.main_view, mainFragment).addToBackStack(null).commit();
 
         Intent start = new Intent();
         start.setAction(MainActivity.APP_START);
@@ -149,7 +151,6 @@ public class MainActivity extends Activity {
 
             CampaignFileType fileType = null;
             ArrayList<CampaignFile> filePack = new ArrayList<CampaignFile>();
-
 
             for (int i = position; i < campaign.getFiles().size(); i++) {
                 CampaignFile cFile = campaign.getFiles().get(i);
@@ -190,46 +191,33 @@ public class MainActivity extends Activity {
         }
     }
 
-    private void startPlayingActivity(CampaignFileType fileType, ArrayList<CampaignFile> filePack){
+    private void startPlayingActivity(CampaignFileType fileType, ArrayList<CampaignFile> filePack) {
+        Fragment fragment = null;
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        setFilePack(filePack);
         if (fileType == CampaignFileType.IMAGE) {
-            Intent i = new Intent(this, ImageActivity.class);
-            i.putParcelableArrayListExtra("files", filePack);
-            i.putExtra("delay", campaign.getDelay());
-            i.putExtra("orientation", mainService.getOrientation());
-            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//            Bundle extra = new Bundle();
+//            extra.putParcelableArrayList("files", filePack);
+//            extra.putInt("delay", campaign.getDelay());
+//            extra.putInt("orientation", mainService.getOrientation());
 
-            startActivityForResult(i, RESULT_FINISH_PLAY);
-
-            this.overridePendingTransition(0, 0);
+            fragment = new FragmentImage();
 
         } else if (fileType == CampaignFileType.AUDIO) {
-            Intent i = new Intent(this, AudioActivity.class);
-            i.putParcelableArrayListExtra("files", filePack);
-            i.putExtra("orientation", mainService.getOrientation());
-            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-            startActivityForResult(i, RESULT_FINISH_PLAY);
+            fragment = new FragmentAudio();
 
         } else if (fileType == CampaignFileType.VIDEO) {
+            fragment = new FragmentVideo();
 
-            Intent i = new Intent(this, VideoActivity.class);
-            i.putParcelableArrayListExtra("files", filePack);
-            i.putExtra("orientation", mainService.getOrientation());
-            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-            startActivityForResult(i, RESULT_FINISH_PLAY);
-
-            this.overridePendingTransition(0, 0);
         }
+        transaction.replace(R.id.main_view, fragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d(MAIN_ACTIVITY_STRING," onActivityResult() ,requestCode = " + requestCode);
-        if (requestCode == RESULT_FINISH_PLAY) {
-
-////            startNextFile();
-
-        } else if (requestCode == RESULT_FINISH_FIRST_START) {
+        if (requestCode == RESULT_FINISH_FIRST_START) {
             try {
 
                 wrongUuid = false;
@@ -267,8 +255,6 @@ public class MainActivity extends Activity {
         if (mainService != null) {
             if (mainService.getOrientation() == ORIENTATION_PORTRAIT) {
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-            } else if ( mainService.getOrientation() == ORIENTATION_PORTRAIT_EMULATION){
-                findViewById(R.id.main_view).setRotation(270);
             } else {
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
             }
@@ -282,7 +268,7 @@ public class MainActivity extends Activity {
         }
         active = true;
         if ( !wrongUuid ) {
-            startNextFile();
+//            startNextFile();
         } else {
             wrongUuid = false;
             startActivityForResult(new Intent(MainActivity.this, FirstActivity.class), RESULT_FINISH_FIRST_START);
@@ -310,6 +296,7 @@ public class MainActivity extends Activity {
         }
     }
 
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -336,6 +323,7 @@ public class MainActivity extends Activity {
             }
 
             campaign = mainService.getCurrentCampaign();
+            campaignWasUpdated(MAIN_ACTIVITY_STRING + " mConnection");
 
             if (mainService.getUuid() == null || mainService.getUuid().equals("fail")) {
                 startActivityForResult(new Intent(MainActivity.this, FirstActivity.class), RESULT_FINISH_FIRST_START);
@@ -353,6 +341,24 @@ public class MainActivity extends Activity {
         textView.setText(status);
     }
 
+    public void addError(ErrorMessage message, boolean broadcastNow){
+        mainService.addError(message, broadcastNow);
+    }
+
+    public void makeToast(String toast){
+        boolean silentMode = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("silent_mode", false);
+        if (!silentMode){
+            Toast.makeText(this,toast ,Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public int getOrientation(){
+        if (mainService == null) {
+            return ORIENTATION_LANDSCAPE;
+        }
+        return mainService.getOrientation();
+    }
+
     private BroadcastReceiver bReceiver = new BroadcastReceiver() {
         private final String RECEIVER_STRING = MAIN_ACTIVITY_STRING + "BroadcastReceiver";
         @Override
@@ -364,21 +370,12 @@ public class MainActivity extends Activity {
 
                 campaign = mainService.getCurrentCampaign();
                 mainService.setActivityReceivedUpdate(true);
-                Log.d(RECEIVER_STRING, "CAMPAIGN_UPDATE to " + (campaign != null ? campaign.getCampaignName() : "NONE"));
-                updateStatus( campaign != null ? campaign.getCampaignName() : NO_ACTIVE_CAMPAIGN);
+
+                // new
                 position = 0;
-                if (active){
-                    Log.d(RECEIVER_STRING, MAIN_ACTIVITY_STRING + " active, start next file from receiver");
-                    startNextFile();
-                } else {
-                    Log.d(RECEIVER_STRING, "Broadcasting to finish active activity");
-                    bManager.sendBroadcast(new Intent(ACTIVITY_FINISH));
-                }
+                startNextFile();
+//                campaignWasUpdated(RECEIVER_STRING);
 
-            } else if (action.equals(CURRENT_FILE_ID)) {
-
-                mainService.setCurrentFileId(intent.getExtras().getInt("fileId"));
-                Log.d(RECEIVER_STRING, "CURRENT_FILE_ID = " + mainService.getCurrentFileId());
             } else if (action.equals(MAKE_TOAST)){
 
                 String toastString = intent.getStringExtra("Toast");
@@ -410,7 +407,7 @@ public class MainActivity extends Activity {
 
                 ErrorMessage message = intent.getParcelableExtra("message");
                 Log.d(RECEIVER_STRING, "Got error MSG " + message.getMessage());
-                mainService.addError(message, false);
+                addError(message, false);
             } else if ( action.equals(WRONG_UUID)){
 
                 Log.d(RECEIVER_STRING, WRONG_UUID );
@@ -425,5 +422,43 @@ public class MainActivity extends Activity {
         }
     };
 
+    private void campaignWasUpdated(String tag) {
+        Log.d(tag, "CAMPAIGN_UPDATE to " + (campaign != null ? campaign.getCampaignName() : "NONE"));
+        updateStatus( campaign != null ? campaign.getCampaignName() : NO_ACTIVE_CAMPAIGN);
+        position = 0;
+        if (active){
+            Log.d(tag, MAIN_ACTIVITY_STRING + " active, start next file from receiver");
+            startNextFile();
+        } else {
+            Log.d(tag, "Broadcasting to finish active activity");
+            bManager.sendBroadcast(new Intent(ACTIVITY_FINISH));
+        }
+    }
 
+
+    @Override
+    public void onPlaybackStop() {
+        Log.w(MAIN_ACTIVITY_STRING, "onPlaybackStop");
+        active = true;
+        startNextFile();
+    }
+
+    @Override
+    public boolean onLongClick(View view) {
+        Intent i = new Intent(MainActivity.this, SettingsActivity.class);
+        startActivity(i);
+        return true;
+    }
+
+    public ArrayList<CampaignFile> getFilePack() {
+        return filePack;
+    }
+
+    public void setFilePack(ArrayList<CampaignFile> filePack) {
+        this.filePack = filePack;
+    }
+
+    public void setCurrentFileId(int currentFileId) {
+        mainService.setCurrentFileId(currentFileId);
+    }
 }

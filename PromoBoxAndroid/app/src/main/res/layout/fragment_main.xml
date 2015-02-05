@@ -1,18 +1,16 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragment_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/audio_view"
-    android:keepScreenOn="true"
-    tools:context="ee.promobox.promoboxandroid.AudioActivity">
+    tools:context="ee.promobox.promoboxandroid.FragmentMain">
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
-        android:gravity="center_horizontal">
+        android:gravity="center_horizontal"
+        android:layout_gravity="center_vertical">
 
         <LinearLayout
             android:orientation="horizontal"
@@ -26,6 +24,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/main_activity_title_promo"
                 android:textSize="50sp"
+                android:textColor="#ffcdcdcd"
                 android:textStyle="bold" />
 
             <TextView
@@ -38,13 +37,13 @@
         </LinearLayout>
 
         <TextView
+            android:id="@+id/main_activity_status"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:text="@string/main_activity_status_loading"
-            android:gravity="center"
-            android:id="@+id/audio_activity_status"
-            android:textSize="20sp"/>
+            android:textSize="20sp"
+            android:gravity="center" />
 
     </LinearLayout>
 
-</RelativeLayout>
+</FrameLayout>

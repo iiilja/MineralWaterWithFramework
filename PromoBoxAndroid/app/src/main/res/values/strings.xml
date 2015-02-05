@@ -19,5 +19,6 @@
     <string name="main_activity_status_loading">loading...</string>
     <string name="silent_mode">Silent mode</string>
     <string name="silent_mode_summary">No Toasts will be shown</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

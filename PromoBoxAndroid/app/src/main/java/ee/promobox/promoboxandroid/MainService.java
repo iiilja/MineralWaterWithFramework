@@ -96,7 +96,7 @@ public class MainService extends Service {
         setUuid(getSharedPref().getString("uuid", "fail"));
         setOrientation(getSharedPref().getInt("orientation", MainActivity.ORIENTATION_LANDSCAPE));
 
-        checkAndDownloadCampaign();
+
         if ( startMainActivity || !startedFromMainActivity && firstStartWatchDog ) {
             if (!startedFromMainActivity && firstStartWatchDog){
                 Log.d("WatchDog", "Activity started from watchdog");
@@ -104,6 +104,8 @@ public class MainService extends Service {
             startMainActivity();
         }
         firstStartWatchDog = false;
+
+        checkAndDownloadCampaign();
         return Service.START_NOT_STICKY;
     }
 

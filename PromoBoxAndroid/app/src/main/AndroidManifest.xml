@@ -50,17 +50,17 @@
         </service>
 
         <activity
-            android:name=".ImageActivity"
+            android:name=".FragmentImage"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_image" >
         </activity>
         <activity
-            android:name=".AudioActivity"
+            android:name=".FragmentAudio"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_audio" >
         </activity>
         <activity
-            android:name=".VideoActivity"
+            android:name=".FragmentVideo"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_video" >
         </activity>

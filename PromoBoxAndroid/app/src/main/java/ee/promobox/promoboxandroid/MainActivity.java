@@ -27,6 +27,7 @@ import ee.promobox.promoboxandroid.data.Campaign;
 import ee.promobox.promoboxandroid.data.CampaignFile;
 import ee.promobox.promoboxandroid.data.CampaignFileType;
 import ee.promobox.promoboxandroid.data.ErrorMessage;
+import ee.promobox.promoboxandroid.util.ExceptionHandler;
 import ee.promobox.promoboxandroid.util.FragmentPlaybackListener;
 
 
@@ -97,7 +98,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
         super.onCreate(savedInstanceState);
 
 
-        //Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
+        Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
         exceptionHandlerError =  getIntent().getStringExtra("error");
 
         setContentView(R.layout.activity_main);
@@ -171,10 +172,11 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
             try {
 
                 wrongUuid = false;
-                mainService.setUuid(data.getStringExtra("deviceUuid"));
-                mainService.checkAndDownloadCampaign();
+                if (mainService != null){
+                    mainService.setUuid(data.getStringExtra("deviceUuid"));
+                    mainService.checkAndDownloadCampaign();
+                }
 
-//                startNextFile();
 
             } catch (Exception ex) {
                 Toast.makeText(this, String.format(
@@ -217,7 +219,6 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
         if ( wrongUuid ) {
-            wrongUuid = false;
             startActivityForResult(new Intent(MainActivity.this, FirstActivity.class), RESULT_FINISH_FIRST_START);
         }
     }
@@ -268,11 +269,16 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
                 mainService.addError(new ErrorMessage("UncaughtException", exceptionHandlerError, null), true);
             }
 
-            campaign = mainService.getCurrentCampaign();
-            campaignWasUpdated(MAIN_ACTIVITY_STRING + " mConnection");
+            if (campaign == null || !campaign.equals(mainService.getCurrentCampaign())){
+                campaign = mainService.getCurrentCampaign();
+                campaignWasUpdated(MAIN_ACTIVITY_STRING + " mConnection");
+            }
 
             if (mainService.getUuid() == null || mainService.getUuid().equals("fail")) {
-                startActivityForResult(new Intent(MainActivity.this, FirstActivity.class), RESULT_FINISH_FIRST_START);
+                if (! wrongUuid ){
+                    wrongUuid = true;
+                    startActivityForResult(new Intent(MainActivity.this, FirstActivity.class), RESULT_FINISH_FIRST_START);
+                }
             }
 
         }
@@ -314,7 +320,8 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
             String action = intent.getAction();
             if (action.equals(CAMPAIGN_UPDATE)) {
 
-                if (mainService == null) return;
+                if (mainService == null ||
+                        (campaign != null && campaign.equals(mainService.getCurrentCampaign()))) return;
 
                 campaign = mainService.getCurrentCampaign();
                 mainService.setActivityReceivedUpdate(true);
@@ -345,8 +352,10 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
             } else if ( action.equals(WRONG_UUID)){
 
                 Log.d(RECEIVER_STRING, WRONG_UUID );
-                if (wrongUuid) return;
-                startActivityForResult(new Intent(MainActivity.this, FirstActivity.class), RESULT_FINISH_FIRST_START);
+                if ( !wrongUuid ) {
+                    wrongUuid = true;
+                    startActivityForResult(new Intent(MainActivity.this, FirstActivity.class), RESULT_FINISH_FIRST_START);
+                }
             }
         }
     };

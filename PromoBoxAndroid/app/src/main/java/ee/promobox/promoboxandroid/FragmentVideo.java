@@ -47,7 +47,7 @@ import ee.promobox.promoboxandroid.util.FragmentPlaybackListener;
 
 public class FragmentVideo extends Fragment implements TextureView.SurfaceTextureListener,
         MediaCodecVideoTrackRenderer.EventListener , ExoPlayer.Listener{
-    private final String TAG = "VideoActivity ";
+    private static final String TAG = "VideoActivity ";
 
     private TextureView videoView;
 
@@ -226,7 +226,14 @@ public class FragmentVideo extends Fragment implements TextureView.SurfaceTextur
 
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-        Log.d(TAG,"STATE CHANGED , state = " + playbackState);
+
+        if (playbackState == ExoPlayer.STATE_READY){
+            long duration = exoPlayer.getDuration();
+            Log.d(TAG, "onPlayerStateChanged , exoPlayer.getDuration()" + duration);
+            if (duration != ExoPlayer.UNKNOWN_TIME){
+                videoLengthHandler.postDelayed(r, duration + 10 * 1000);
+            }
+        }
 
         if (playbackState == ExoPlayer.STATE_ENDED) {
             CampaignFile campaignFile = mainActivity.getNextFile(CampaignFileType.VIDEO);
@@ -242,8 +249,6 @@ public class FragmentVideo extends Fragment implements TextureView.SurfaceTextur
 
     @Override
     public void onPlayWhenReadyCommitted() {
-        Log.d(TAG, "onPlayWhenReadyCommitted , exoPlayer.getDuration()" + exoPlayer.getDuration());
-        videoLengthHandler.postDelayed(r, exoPlayer.getDuration() + 10 * 1000);
     }
 
     @Override
@@ -312,6 +317,7 @@ public class FragmentVideo extends Fragment implements TextureView.SurfaceTextur
 
         @Override
         public void run() {
+            Log.e(FragmentVideo.TAG,"Executing runnable, smth wrong with player");
             FragmentVideo fragment = fragmentReference.get();
             FragmentPlaybackListener playbackListener = playbackListenerReference.get();
             if (fragment != null && playbackListener != null){

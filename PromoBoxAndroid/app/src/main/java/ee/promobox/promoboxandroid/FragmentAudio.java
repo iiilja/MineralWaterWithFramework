@@ -30,7 +30,7 @@ import ee.promobox.promoboxandroid.util.FragmentPlaybackListener;
 //https://github.com/felixpalmer/android-visualizer
 public class FragmentAudio extends Fragment implements ExoPlayer.Listener {
 
-    private final String TAG = "AudioActivity ";
+    private static final String TAG = "AudioActivity ";
 
     private ExoPlayer exoPlayer;
     private MediaCodecAudioTrackRenderer audioRenderer;
@@ -124,16 +124,20 @@ public class FragmentAudio extends Fragment implements ExoPlayer.Listener {
 
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-
         if (playbackState == ExoPlayer.STATE_ENDED) {
             tryNextFile();
+        }
+        if (playbackState == ExoPlayer.STATE_READY){
+            long duration = exoPlayer.getDuration();
+            Log.d(TAG, "onPlayerStateChanged , exoPlayer.getDuration()" + duration);
+            if (duration != ExoPlayer.UNKNOWN_TIME){
+                audioLengthHandler.postDelayed(r, duration + 10 * 1000);
+            }
         }
     }
 
     @Override
     public void onPlayWhenReadyCommitted() {
-        Log.d(TAG, "onPlayWhenReadyCommitted , exoPlayer.getDuration()" + exoPlayer.getDuration());
-        audioLengthHandler.postDelayed(r, exoPlayer.getDuration() + 10 * 1000);
     }
 
     @Override
@@ -198,6 +202,7 @@ public class FragmentAudio extends Fragment implements ExoPlayer.Listener {
 
         @Override
         public void run() {
+            Log.e(FragmentAudio.TAG,"Executing runnable, smth wrong with player");
             FragmentAudio fragment = fragmentReference.get();
             FragmentPlaybackListener playbackListener = playbackListenerReference.get();
             if (fragment != null && playbackListener != null){

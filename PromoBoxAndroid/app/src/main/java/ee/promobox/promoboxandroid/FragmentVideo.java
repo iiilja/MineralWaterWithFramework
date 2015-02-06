@@ -154,6 +154,7 @@ public class FragmentVideo extends Fragment implements TextureView.SurfaceTextur
             audioRenderer = null;
             videoRenderer = null;
         }
+        videoLengthHandler.removeCallbacks(r);
     }
 
     @Override

@@ -125,10 +125,18 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
     }
 
     private void startNextFile() {
+        Log.d(MAIN_ACTIVITY_STRING, "startNextFile()");
         CampaignFile campaignFile = getNextFile(null);
         Fragment fragment = null;
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
-        CampaignFileType fileType = campaignFile.getType();
+        CampaignFileType fileType = null;
+
+        if (campaignFile == null){
+            fragment = mainFragment;
+        } else {
+            fileType = campaignFile.getType();
+        }
+
         if (fileType == CampaignFileType.IMAGE) {
             fragment = imageFragment;
             Bundle data = fragment.getArguments();

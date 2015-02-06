@@ -19,7 +19,7 @@ import com.google.android.exoplayer.SampleSource;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
+import java.lang.ref.WeakReference;
 
 import ee.promobox.promoboxandroid.data.CampaignFile;
 import ee.promobox.promoboxandroid.data.CampaignFileType;
@@ -37,6 +37,9 @@ public class FragmentAudio extends Fragment implements ExoPlayer.Listener {
 
     private FragmentPlaybackListener playbackListener;
     private MainActivity mainActivity;
+
+    private Handler audioLengthHandler = new Handler();
+    private Runnable r;
 
     private View audioView;
 
@@ -56,6 +59,8 @@ public class FragmentAudio extends Fragment implements ExoPlayer.Listener {
         Log.d(TAG, "onAttach");
         playbackListener = (FragmentPlaybackListener) activity;
 
+        r = new AudioLengthWatcher(this,playbackListener);
+
         mainActivity = (MainActivity) activity;
         super.onAttach(activity);
     }
@@ -64,7 +69,6 @@ public class FragmentAudio extends Fragment implements ExoPlayer.Listener {
     public void onResume() {
         super.onResume();
 
-//        files = mainActivity.getFilePack() != null ? mainActivity.getFilePack() : new ArrayList<CampaignFile>();
 
         if ( mainActivity.getOrientation() == MainActivity.ORIENTATION_PORTRAIT_EMULATION){
             audioView.setRotation(270);
@@ -113,6 +117,8 @@ public class FragmentAudio extends Fragment implements ExoPlayer.Listener {
         }
         audioRenderer = null;
 
+        audioLengthHandler.removeCallbacks(r);
+
     }
 
 
@@ -126,7 +132,8 @@ public class FragmentAudio extends Fragment implements ExoPlayer.Listener {
 
     @Override
     public void onPlayWhenReadyCommitted() {
-
+        Log.d(TAG, "onPlayWhenReadyCommitted , exoPlayer.getDuration()" + exoPlayer.getDuration());
+        audioLengthHandler.postDelayed(r, exoPlayer.getDuration() + 10 * 1000);
     }
 
     @Override
@@ -178,5 +185,25 @@ public class FragmentAudio extends Fragment implements ExoPlayer.Listener {
     private void setStatus(String status){
         TextView textView = (TextView)getActivity().findViewById(R.id.main_activity_status);
         textView.setText(status);
+    }
+
+    private static final class AudioLengthWatcher implements Runnable {
+        private final WeakReference<FragmentAudio> fragmentReference;
+        private final WeakReference<FragmentPlaybackListener> playbackListenerReference;
+
+        AudioLengthWatcher( FragmentAudio fragment, FragmentPlaybackListener playbackListener){
+            fragmentReference = new WeakReference<FragmentAudio>(fragment);
+            playbackListenerReference = new WeakReference<FragmentPlaybackListener>(playbackListener);
+        }
+
+        @Override
+        public void run() {
+            FragmentAudio fragment = fragmentReference.get();
+            FragmentPlaybackListener playbackListener = playbackListenerReference.get();
+            if (fragment != null && playbackListener != null){
+                fragment.cleanUp();
+                playbackListener.onPlaybackStop();
+            }
+        }
     }
 }

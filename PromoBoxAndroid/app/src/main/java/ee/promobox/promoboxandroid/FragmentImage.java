@@ -21,6 +21,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 import ee.promobox.promoboxandroid.data.CampaignFile;
+import ee.promobox.promoboxandroid.data.CampaignFileType;
 import ee.promobox.promoboxandroid.data.ErrorMessage;
 import ee.promobox.promoboxandroid.util.FragmentPlaybackListener;
 
@@ -29,12 +30,7 @@ public class FragmentImage extends Fragment {
     private final String IMAGE_FRAGMENT_STRING = "ImageFragment ";
 
     private ImageView slide;
-    private ArrayList<CampaignFile> files;
-    private int position = 0;
-    private boolean active = true;
-    private long delay = 5000;
 
-    private boolean silentMode = false;
 
     private FragmentPlaybackListener playbackListener;
 
@@ -50,9 +46,10 @@ public class FragmentImage extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d(IMAGE_FRAGMENT_STRING, "onCreateView");
-        View view = inflater.inflate(R.layout.fragment_image,null, false);
+        View view = inflater.inflate(R.layout.fragment_image, container, false);
 
         slide = (ImageView) view.findViewById(R.id.slide_1);
+
         return view;
     }
 
@@ -75,16 +72,11 @@ public class FragmentImage extends Fragment {
         Log.d(IMAGE_FRAGMENT_STRING, "onResume");
         super.onResume();
 
-        files = mainActivity.getFilePack() != null ? mainActivity.getFilePack() : new ArrayList<CampaignFile>();
-        silentMode = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("silent_mode", false);
-        active = true;
-
-        if (position > files.size() - 1) {
-            position = 0;
-        }
-
-        if (files.size() > 0) {
-            playImage(files.get(position).getPath());
+        CampaignFile campaignFile = mainActivity.getNextFile(CampaignFileType.IMAGE);
+        if (campaignFile != null) {
+            playImage(campaignFile);
+        } else {
+            playbackListener.onPlaybackStop();
         }
 
     }
@@ -92,15 +84,15 @@ public class FragmentImage extends Fragment {
     @Override
     public void onPause() {
         Log.d(IMAGE_FRAGMENT_STRING, "onPause");
+        slide.getHandler().removeCallbacks(r);
+        recycleBitmap();
         super.onPause();
-        active = false;
     }
 
 
     @Override
     public void onDestroy() {
         Log.d(IMAGE_FRAGMENT_STRING, "onDestroy");
-        recycleBitmap();
 
         slide.destroyDrawingCache();
         slide = null;
@@ -151,22 +143,19 @@ public class FragmentImage extends Fragment {
     final Runnable r = new Runnable() {
         @Override
         public void run() {
-            if (position == files.size() || !active) {
-
-                playbackListener.onPlaybackStop();
+            CampaignFile campaignFile = mainActivity.getNextFile(CampaignFileType.IMAGE);
+            if (campaignFile != null) {
+                playImage(campaignFile);
 
             } else {
-                playImage(files.get(position).getPath());
+                playbackListener.onPlaybackStop();
             }
         }
     };
 
-    private void sendPlayCampaignFile() {
-        mainActivity.setCurrentFileId(files.get(position).getId());
-        Log.d(IMAGE_FRAGMENT_STRING, files.get(position).getPath());
-    }
 
-    private void playImage(String path) {
+    private void playImage(CampaignFile campaignFile) {
+        String path = campaignFile.getPath();
         File file = new File(path);
         if (!file.exists()){
             String message = " No file in path " + path;
@@ -174,8 +163,7 @@ public class FragmentImage extends Fragment {
             makeToast(message);
             mainActivity.addError(new ErrorMessage(
                     "FileNotFoundException",IMAGE_FRAGMENT_STRING + message,null), false);
-            position ++ ;
-            slide.postDelayed(r, delay);
+            slide.postDelayed(r, getArguments().getInt("delay"));
             return;
         }
         try {
@@ -183,14 +171,9 @@ public class FragmentImage extends Fragment {
             if (mainActivity.getOrientation() == MainActivity.ORIENTATION_PORTRAIT_EMULATION) {
                 bitmap = rotateBitmap(bitmap, 270);
             }
-            recycleBitmap();
+            //recycleBitmap();
             slide.setImageBitmap(bitmap);
-
-            sendPlayCampaignFile();
-
-            position++;
-
-            slide.postDelayed(r, delay);
+            slide.postDelayed(r, getArguments().getInt("delay"));
 
 
         } catch (Exception ex) {
@@ -216,9 +199,7 @@ public class FragmentImage extends Fragment {
     }
 
     private void makeToast(String toast){
-        if (!silentMode){
-            Toast.makeText(getActivity(),toast ,Toast.LENGTH_LONG).show();
-        }
+        mainActivity.makeToast(toast);
     }
 
 

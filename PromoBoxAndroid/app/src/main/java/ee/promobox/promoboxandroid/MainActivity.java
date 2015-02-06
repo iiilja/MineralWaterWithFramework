@@ -36,7 +36,6 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
     public final static  String AUDIO_DEVICE_PREF = "audio_device";
 
     public static final String CAMPAIGN_UPDATE  = "ee.promobox.promoboxandroid.UPDATE";
-    public static final String ACTIVITY_FINISH  = "ee.promobox.promoboxandroid.FINISH";
     public static final String MAKE_TOAST       = "ee.promobox.promoboxandroid.MAKE_TOAST";
     public static final String APP_START        = "ee.promobox.promoboxandroid.START";
     public static final String SET_STATUS       = "ee.promobox.promoboxandroid.SET_STATUS";
@@ -64,20 +63,16 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
     private Campaign campaign;
 
     private CampaignFile nextSpecificFile = null;
-    private boolean nextSpecificFilePlaying = false;
     private boolean wrongUuid = false;
 
     private String exceptionHandlerError;
 
     private boolean mBound = false;
-    private boolean active = true;
 
     Fragment mainFragment = new FragmentMain();
     Fragment audioFragment = new FragmentAudio();
     Fragment videoFragment = new FragmentVideo();
     Fragment imageFragment = new FragmentImage();
-
-    private ArrayList<CampaignFile> filePack;
 
 
     private void hideSystemUI() {
@@ -129,90 +124,37 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
         setAudioDeviceFromPrefs();
     }
 
-
-
     private void startNextFile() {
-        if (!active){
-            Log.e(MAIN_ACTIVITY_STRING, "AM NOT ACTIVE");
-            return;
-        }
-        if (campaign != null && nextSpecificFile == null &&
-                campaign.getFiles() != null && campaign.getFiles().size() > 0) {
-
-            Log.d(MAIN_ACTIVITY_STRING, "startNextFile() in " + campaign.getCampaignName());
-            active = false;
-            if (nextSpecificFilePlaying) nextSpecificFilePlaying = false;
-
-
-            if (position == campaign.getFiles().size()) {
-                position = 0;
-                Log.i(MAIN_ACTIVITY_STRING, "Starting from position 0");
-            }
-
-            CampaignFileType fileType = null;
-            ArrayList<CampaignFile> filePack = new ArrayList<CampaignFile>();
-
-            for (int i = position; i < campaign.getFiles().size(); i++) {
-                CampaignFile cFile = campaign.getFiles().get(i);
-
-                if (fileType == null) {
-                    fileType = cFile.getType();
-                }
-                if (cFile.getType() == fileType) {
-
-                    filePack.add(cFile);
-                    fileType = cFile.getType();
-                    position++;
-
-                } else {
-                    break;
-                }
-            }
-            if (campaign.getFiles().size() == 1) {
-                campaign.setDelay(60 * 60 * 12);
-            }
-
-            startPlayingActivity(fileType,filePack);
-
-
-        } else if (nextSpecificFile != null) {
-            ArrayList<CampaignFile> filePack = new ArrayList<CampaignFile>();
-            filePack.add(nextSpecificFile);
-            startPlayingActivity(nextSpecificFile.getType(), filePack);
-            nextSpecificFile = null;
-            nextSpecificFilePlaying = true;
-        } else {
-            if (campaign != null ){
-                updateStatus("No files to play in " + campaign.getCampaignName());
-            } else {
-                updateStatus(NO_ACTIVE_CAMPAIGN);
-            }
-            Log.i(MAIN_ACTIVITY_STRING, "CAMPAIGN = NULL");
-        }
-    }
-
-    private void startPlayingActivity(CampaignFileType fileType, ArrayList<CampaignFile> filePack) {
+        CampaignFile campaignFile = getNextFile(null);
         Fragment fragment = null;
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
-        setFilePack(filePack);
+        CampaignFileType fileType = campaignFile.getType();
         if (fileType == CampaignFileType.IMAGE) {
-//            Bundle extra = new Bundle();
-//            extra.putParcelableArrayList("files", filePack);
-//            extra.putInt("delay", campaign.getDelay());
-//            extra.putInt("orientation", mainService.getOrientation());
-
-            fragment = new FragmentImage();
+            fragment = imageFragment;
+            Bundle data = fragment.getArguments();
+            if (data != null){
+                data.putInt("delay",campaign.getDelay()*1000);
+            } else {
+                data = new Bundle();
+                data.putInt("delay",campaign.getDelay() * 1000);
+                fragment.setArguments(data);
+            }
 
         } else if (fileType == CampaignFileType.AUDIO) {
-            fragment = new FragmentAudio();
+            fragment = audioFragment;
 
         } else if (fileType == CampaignFileType.VIDEO) {
-            fragment = new FragmentVideo();
+            fragment = videoFragment;
 
         }
-        transaction.replace(R.id.main_view, fragment);
-        transaction.addToBackStack(null);
-        transaction.commit();
+        if (fragment != null && fragment.isVisible()){
+            //fragment.onPause();
+            fragment.onResume();
+        } else {
+            transaction.replace(R.id.main_view, fragment);
+            transaction.addToBackStack(null);
+            transaction.commit();
+        }
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -266,10 +208,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
         } else {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
-        active = true;
-        if ( !wrongUuid ) {
-//            startNextFile();
-        } else {
+        if ( wrongUuid ) {
             wrongUuid = false;
             startActivityForResult(new Intent(MainActivity.this, FirstActivity.class), RESULT_FINISH_FIRST_START);
         }
@@ -278,7 +217,6 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
     @Override
     protected void onPause() {
         super.onPause();
-        active = false;
         Log.d(MAIN_ACTIVITY_STRING, "onPause");
     }
 
@@ -338,7 +276,9 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
 
     private void updateStatus( String status ){
         TextView textView = (TextView) findViewById(R.id.main_activity_status);
-        textView.setText(status);
+        if (textView != null){
+            textView.setText(status);
+        }
     }
 
     public void addError(ErrorMessage message, boolean broadcastNow){
@@ -371,33 +311,19 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
                 campaign = mainService.getCurrentCampaign();
                 mainService.setActivityReceivedUpdate(true);
 
-                // new
-                position = 0;
-                startNextFile();
-//                campaignWasUpdated(RECEIVER_STRING);
+                campaignWasUpdated(RECEIVER_STRING);
 
             } else if (action.equals(MAKE_TOAST)){
 
                 String toastString = intent.getStringExtra("Toast");
                 Log.d(RECEIVER_STRING, "Make TOAST :" + toastString);
-                Toast.makeText(MainActivity.this,toastString, Toast.LENGTH_LONG).show();
+                makeToast(toastString);
 
             } else if (action.equals(PLAY_SPECIFIC_FILE)){
 
                 nextSpecificFile = intent.getParcelableExtra("campaignFile");
                 Log.d(RECEIVER_STRING, "PLAY_SPECIFIC_FILE with id " + nextSpecificFile.getId());
-                if (active){
-                    startNextFile();
-                } else {
-                    if (campaign != null){
-                        if ( !nextSpecificFilePlaying ) {
-                            int fileId = mainService.getCurrentFileId();
-                            position = campaign.getCampaignFilePositionById(fileId);
-                            position ++;
-                        }
-                    }
-                    bManager.sendBroadcast(new Intent(ACTIVITY_FINISH));
-                }
+                startNextFile();
             } else if ( action.equals(SET_STATUS)){
 
                 String status = intent.getStringExtra("status");
@@ -412,12 +338,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
 
                 Log.d(RECEIVER_STRING, WRONG_UUID );
                 if (wrongUuid) return;
-                if (active){
-                    startActivityForResult(new Intent(MainActivity.this, FirstActivity.class), RESULT_FINISH_FIRST_START);
-                } else {
-                    wrongUuid = true;
-                    bManager.sendBroadcast(new Intent(ACTIVITY_FINISH));
-                }
+                startActivityForResult(new Intent(MainActivity.this, FirstActivity.class), RESULT_FINISH_FIRST_START);
             }
         }
     };
@@ -426,20 +347,13 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
         Log.d(tag, "CAMPAIGN_UPDATE to " + (campaign != null ? campaign.getCampaignName() : "NONE"));
         updateStatus( campaign != null ? campaign.getCampaignName() : NO_ACTIVE_CAMPAIGN);
         position = 0;
-        if (active){
-            Log.d(tag, MAIN_ACTIVITY_STRING + " active, start next file from receiver");
-            startNextFile();
-        } else {
-            Log.d(tag, "Broadcasting to finish active activity");
-            bManager.sendBroadcast(new Intent(ACTIVITY_FINISH));
-        }
+        startNextFile();
     }
 
 
     @Override
     public void onPlaybackStop() {
         Log.w(MAIN_ACTIVITY_STRING, "onPlaybackStop");
-        active = true;
         startNextFile();
     }
 
@@ -450,15 +364,55 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
         return true;
     }
 
-    public ArrayList<CampaignFile> getFilePack() {
-        return filePack;
+    public CampaignFile getNextFile(CampaignFileType fileTypeNeeded) {
+        CampaignFile campaignFile = null;
+        boolean playingSpecificFile = false;
+
+        if (campaign != null && nextSpecificFile == null &&
+                campaign.getFiles() != null && campaign.getFiles().size() > 0) {
+
+            if (position == campaign.getFiles().size()) {
+                position = 0;
+                Log.i(MAIN_ACTIVITY_STRING, "Starting from position 0");
+            }
+
+            if (campaign.getFiles().size() == 1) {
+                campaign.setDelay(60 * 60 * 12);
+            }
+
+            campaignFile = campaign.getFiles().get(position);
+
+        } else if (nextSpecificFile != null) {
+            campaignFile = nextSpecificFile;
+            playingSpecificFile = true;
+            if (fileTypeNeeded != null){
+                nextSpecificFile = null;
+            }
+
+        } else {
+            if (campaign != null ){
+                updateStatus("No files to play in " + campaign.getCampaignName());
+            } else {
+                updateStatus(NO_ACTIVE_CAMPAIGN);
+            }
+            Log.i(MAIN_ACTIVITY_STRING, "CAMPAIGN = NULL");
+        }
+        CampaignFileType fileType = campaignFile != null ? campaignFile.getType() : null;
+        boolean fileTypeOK = fileTypeNeeded != null && fileTypeNeeded.equals(fileType);
+        if (fileTypeOK && !playingSpecificFile){
+            setCurrentFileId(campaignFile.getId());
+            position ++;
+        } else if ( fileTypeNeeded != null && !fileTypeNeeded.equals(fileType)){
+            Log.d(MAIN_ACTIVITY_STRING, " file type not as needed");
+            campaignFile = null;
+        }
+
+        return campaignFile;
     }
 
-    public void setFilePack(ArrayList<CampaignFile> filePack) {
-        this.filePack = filePack;
-    }
 
-    public void setCurrentFileId(int currentFileId) {
+    private void setCurrentFileId(int currentFileId) {
+        Log.d(MAIN_ACTIVITY_STRING, "Current file id : " +currentFileId);
         mainService.setCurrentFileId(currentFileId);
     }
 }

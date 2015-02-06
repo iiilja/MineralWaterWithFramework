@@ -22,6 +22,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 import ee.promobox.promoboxandroid.data.CampaignFile;
+import ee.promobox.promoboxandroid.data.CampaignFileType;
 import ee.promobox.promoboxandroid.data.ErrorMessage;
 import ee.promobox.promoboxandroid.util.FragmentPlaybackListener;
 
@@ -31,17 +32,14 @@ public class FragmentAudio extends Fragment implements ExoPlayer.Listener {
 
     private final String TAG = "AudioActivity ";
 
-    ExoPlayer exoPlayer;
-    MediaCodecAudioTrackRenderer audioRenderer;
+    private ExoPlayer exoPlayer;
+    private MediaCodecAudioTrackRenderer audioRenderer;
 
     private FragmentPlaybackListener playbackListener;
     private MainActivity mainActivity;
 
     private View audioView;
 
-
-    private ArrayList<CampaignFile> files;
-    private int position = 0;
 
 
     @Override
@@ -66,32 +64,12 @@ public class FragmentAudio extends Fragment implements ExoPlayer.Listener {
     public void onResume() {
         super.onResume();
 
-        files = mainActivity.getFilePack() != null ? mainActivity.getFilePack() : new ArrayList<CampaignFile>();
+//        files = mainActivity.getFilePack() != null ? mainActivity.getFilePack() : new ArrayList<CampaignFile>();
 
         if ( mainActivity.getOrientation() == MainActivity.ORIENTATION_PORTRAIT_EMULATION){
             audioView.setRotation(270);
         }
-
-        if (position > files.size() - 1) {
-            position = 0;
-        }
-
-        if (files.size() > 0) {
-            try {
-                playAudio();
-            } catch (Exception ex) {
-                Log.e(TAG, "onResume " + ex.getMessage());
-                mainActivity.makeToast(String.format(
-                        MainActivity.ERROR_MESSAGE, 11, ex.getClass().getSimpleName()));
-                mainActivity.addError(new ErrorMessage(ex), false);
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        tryNextFile();
-                    }
-                }, 1000);
-            }
-        }
+        tryNextFile();
 
     }
 
@@ -108,28 +86,23 @@ public class FragmentAudio extends Fragment implements ExoPlayer.Listener {
         cleanUp();
     }
 
-    private void sendPlayCampaignFile() {
-        mainActivity.setCurrentFileId(files.get(position).getId());
-        Log.d(TAG, files.get(position).getPath());
-    }
 
-    private void playAudio() throws Exception{
+    private void playAudio(CampaignFile campaignFile) throws Exception{
         cleanUp();
-        String pathToFile = files.get(position).getPath();
+        String pathToFile = campaignFile.getPath();
         File file = new File(pathToFile);
         if (!file.exists()){
             Log.e(TAG, "File not found : " + pathToFile);
             throw new FileNotFoundException("File not found : " + pathToFile);
         }
         Log.d(TAG,"playAudio() file = " + file.getName() + " PATH = " + pathToFile);
-        setStatus(files.get(position).getName());
+        setStatus(campaignFile.getName());
         Uri uri = Uri.parse(pathToFile);
         SampleSource source = new FrameworkSampleSource(getActivity(), uri, null, 1);
         audioRenderer = new MediaCodecAudioTrackRenderer(source);
         exoPlayer = ExoPlayer.Factory.newInstance(1);
         exoPlayer.prepare(audioRenderer);
         exoPlayer.setPlayWhenReady(true);
-        sendPlayCampaignFile();
         exoPlayer.addListener(this);
     }
 
@@ -147,13 +120,7 @@ public class FragmentAudio extends Fragment implements ExoPlayer.Listener {
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
 
         if (playbackState == ExoPlayer.STATE_ENDED) {
-
-            if (position + 1 == files.size()) {
-                finishActivity();
-            }
-            else {
-                tryNextFile();
-            }
+            tryNextFile();
         }
     }
 
@@ -182,11 +149,10 @@ public class FragmentAudio extends Fragment implements ExoPlayer.Listener {
 
     private void tryNextFile(){
         try {
-            position ++;
-            if (position < files.size()){
-                playAudio();
+            CampaignFile campaignFile = mainActivity.getNextFile(CampaignFileType.AUDIO);
+            if (campaignFile != null){
+                playAudio(campaignFile);
             } else {
-                mainActivity.makeToast("Audio player error");
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {

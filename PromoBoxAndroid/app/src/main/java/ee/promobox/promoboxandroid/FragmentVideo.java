@@ -34,6 +34,7 @@ import com.google.android.exoplayer.SampleSource;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 import ee.promobox.promoboxandroid.data.Campaign;
@@ -59,6 +60,9 @@ public class FragmentVideo extends Fragment implements TextureView.SurfaceTextur
     private FragmentPlaybackListener playbackListener;
     private MainActivity mainActivity;
 
+    private Handler videoLengthHandler = new Handler();
+    private Runnable r;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -75,6 +79,8 @@ public class FragmentVideo extends Fragment implements TextureView.SurfaceTextur
         super.onAttach(activity);
         playbackListener = (FragmentPlaybackListener) activity;
         mainActivity = (MainActivity) activity;
+
+        r = new VideoLengthWatcher(this,playbackListener);
 
     }
 
@@ -235,7 +241,8 @@ public class FragmentVideo extends Fragment implements TextureView.SurfaceTextur
 
     @Override
     public void onPlayWhenReadyCommitted() {
-
+        Log.d(TAG, "onPlayWhenReadyCommitted , exoPlayer.getDuration()" + exoPlayer.getDuration());
+        videoLengthHandler.postDelayed(r, exoPlayer.getDuration() + 10 * 1000);
     }
 
     @Override
@@ -290,5 +297,26 @@ public class FragmentVideo extends Fragment implements TextureView.SurfaceTextur
 
     private void makeToast(String toast){
         mainActivity.makeToast(toast);
+    }
+
+
+    private static final class VideoLengthWatcher implements Runnable {
+        private final WeakReference<FragmentVideo> fragmentReference;
+        private final WeakReference<FragmentPlaybackListener> playbackListenerReference;
+
+        VideoLengthWatcher( FragmentVideo fragment, FragmentPlaybackListener playbackListener){
+            fragmentReference = new WeakReference<FragmentVideo>(fragment);
+            playbackListenerReference = new WeakReference<FragmentPlaybackListener>(playbackListener);
+        }
+
+        @Override
+        public void run() {
+            FragmentVideo fragment = fragmentReference.get();
+            FragmentPlaybackListener playbackListener = playbackListenerReference.get();
+            if (fragment != null && playbackListener != null){
+                fragment.cleanUp();
+                playbackListener.onPlaybackStop();
+            }
+        }
     }
 }

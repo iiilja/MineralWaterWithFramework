@@ -1,46 +1,90 @@
 
 
-    <LinearLayout
-        android:id="@+id/audio_view"
-        android:orientation="vertical"
-        xmlns:android="http://schemas.android.com/apk/res/android"
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
+        android:id="@+id/fragment_main"
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:keepScreenOn="true"
-        tools:context="ee.promobox.promoboxandroid.AudioActivity"
-        android:gravity="center">
+        android:layout_gravity="center_vertical"
+        android:background="@drawable/player_background"
+        tools:context="ee.promobox.promoboxandroid.FragmentAudio">
 
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:padding="20dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/main_activity_title_promo"
-                android:textSize="50sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/main_activity_title_box"
-                android:textSize="50sp"
-                android:textColor="#ffceab73"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-        <TextView
+        <ee.promobox.promoboxandroid.widgets.RoboticTextView
+            android:id="@+id/main_activity_status"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/main_activity_status_loading"
-            android:gravity="center"
-            android:id="@+id/audio_activity_status"
-            android:textSize="20sp"/>
+            android:textSize="18sp"
+            android:gravity="center_horizontal|top"
+            android:padding="10dp" />
 
-    </LinearLayout>
+        <LinearLayout
+            android:id="@+id/audio_player_buttons"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:padding="20dp"
+            android:gravity="center"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true">
+
+            <Button
+                android:id="@+id/player_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/btn_previous" />
+
+            <Button
+                android:id="@+id/player_pause"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/btn_play" />
+
+            <Button
+                android:id="@+id/player_next"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/btn_next" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/seekBar_layout"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="100dp"
+            android:layout_marginRight="100dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp">
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="New Text"
+                android:layout_weight="3"/>
+
+            <SeekBar
+                android:id="@+id/audio_seekBar"
+                android:layout_weight="6"
+                android:minHeight="7dp"
+                android:maxHeight="7dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="New Text"
+                android:layout_weight="3"/>
+        </LinearLayout>
+
+    </RelativeLayout>
 

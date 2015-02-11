@@ -156,7 +156,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
             fragment = videoFragment;
 
         }
-        if (fragment != null && fragment.isVisible()){
+        if (fragment != null && fragment.isAdded() ){
             //fragment.onPause();
             fragment.onResume();
         } else {
@@ -313,53 +313,6 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
         return mainService.getOrientation();
     }
 
-    private BroadcastReceiver bReceiver = new BroadcastReceiver() {
-        private final String RECEIVER_STRING = MAIN_ACTIVITY_STRING + "BroadcastReceiver";
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (action.equals(CAMPAIGN_UPDATE)) {
-
-                if (mainService == null ||
-                        (campaign != null && campaign.equals(mainService.getCurrentCampaign()))) return;
-
-                campaign = mainService.getCurrentCampaign();
-                mainService.setActivityReceivedUpdate(true);
-
-                campaignWasUpdated(RECEIVER_STRING);
-
-            } else if (action.equals(MAKE_TOAST)){
-
-                String toastString = intent.getStringExtra("Toast");
-                Log.d(RECEIVER_STRING, "Make TOAST :" + toastString);
-                makeToast(toastString);
-
-            } else if (action.equals(PLAY_SPECIFIC_FILE)){
-
-                nextSpecificFile = intent.getParcelableExtra("campaignFile");
-                Log.d(RECEIVER_STRING, "PLAY_SPECIFIC_FILE with id " + nextSpecificFile.getId());
-                startNextFile();
-            } else if ( action.equals(SET_STATUS)){
-
-                String status = intent.getStringExtra("status");
-                Log.d(RECEIVER_STRING, SET_STATUS +" "+ status);
-                updateStatus(intent.getStringExtra("status"));
-            } else if ( action.equals(ADD_ERROR_MSG)){
-
-                ErrorMessage message = intent.getParcelableExtra("message");
-                Log.d(RECEIVER_STRING, "Got error MSG " + message.getMessage());
-                addError(message, false);
-            } else if ( action.equals(WRONG_UUID)){
-
-                Log.d(RECEIVER_STRING, WRONG_UUID );
-                if ( !wrongUuid ) {
-                    wrongUuid = true;
-                    startActivityForResult(new Intent(MainActivity.this, FirstActivity.class), RESULT_FINISH_FIRST_START);
-                }
-            }
-        }
-    };
-
     private void campaignWasUpdated(String tag) {
         Log.d(tag, "CAMPAIGN_UPDATE to " + (campaign != null ? campaign.getCampaignName() : "NONE"));
         updateStatus( campaign != null ? campaign.getCampaignName() : NO_ACTIVE_CAMPAIGN);
@@ -367,12 +320,12 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
         startNextFile();
     }
 
-
     @Override
     public void onPlaybackStop() {
         Log.w(MAIN_ACTIVITY_STRING, "onPlaybackStop");
         startNextFile();
     }
+
 
     @Override
     public boolean onLongClick(View view) {
@@ -427,9 +380,56 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
         return campaignFile;
     }
 
-
     private void setCurrentFileId(int currentFileId) {
         Log.d(MAIN_ACTIVITY_STRING, "Current file id : " +currentFileId);
         mainService.setCurrentFileId(currentFileId);
     }
+
+
+    private BroadcastReceiver bReceiver = new BroadcastReceiver() {
+        private final String RECEIVER_STRING = MAIN_ACTIVITY_STRING + "BroadcastReceiver";
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (action.equals(CAMPAIGN_UPDATE)) {
+
+                if (mainService == null ||
+                        (campaign != null && campaign.equals(mainService.getCurrentCampaign()))) return;
+
+                campaign = mainService.getCurrentCampaign();
+                mainService.setActivityReceivedUpdate(true);
+
+                campaignWasUpdated(RECEIVER_STRING);
+
+            } else if (action.equals(MAKE_TOAST)){
+
+                String toastString = intent.getStringExtra("Toast");
+                Log.d(RECEIVER_STRING, "Make TOAST :" + toastString);
+                makeToast(toastString);
+
+            } else if (action.equals(PLAY_SPECIFIC_FILE)){
+
+                nextSpecificFile = intent.getParcelableExtra("campaignFile");
+                Log.d(RECEIVER_STRING, "PLAY_SPECIFIC_FILE with id " + nextSpecificFile.getId());
+                startNextFile();
+            } else if ( action.equals(SET_STATUS)){
+
+                String status = intent.getStringExtra("status");
+                Log.d(RECEIVER_STRING, SET_STATUS +" "+ status);
+                updateStatus(intent.getStringExtra("status"));
+            } else if ( action.equals(ADD_ERROR_MSG)){
+
+                ErrorMessage message = intent.getParcelableExtra("message");
+                Log.d(RECEIVER_STRING, "Got error MSG " + message.getMessage());
+                addError(message, false);
+            } else if ( action.equals(WRONG_UUID)){
+
+                Log.d(RECEIVER_STRING, WRONG_UUID );
+                if ( !wrongUuid ) {
+                    wrongUuid = true;
+                    startActivityForResult(new Intent(MainActivity.this, FirstActivity.class), RESULT_FINISH_FIRST_START);
+                }
+            }
+        }
+    };
 }

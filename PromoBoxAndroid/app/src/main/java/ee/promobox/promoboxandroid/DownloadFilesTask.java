@@ -188,7 +188,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
         Campaign serviceCampaign = service.getCampaigns() != null ? service.getCampaigns().getCampaignWithId(camp.getCampaignId()): null;
 
         List<CampaignFile> campaignFiles = camp.getFiles();
-        double loadStep = 100 / (campaignFiles.size()!= 0 ? campaignFiles.size() : 1);
+        double loadStep = 100d / (campaignFiles.size()!= 0 ? campaignFiles.size() : 1);
 
         for (int i = 0; i < campaignFiles.size(); i++) {
             CampaignFile f  = campaignFiles.get(i);

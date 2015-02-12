@@ -29,13 +29,13 @@ import ee.promobox.promoboxandroid.data.ErrorMessage;
 import ee.promobox.promoboxandroid.util.FragmentPlaybackListener;
 import ee.promobox.promoboxandroid.util.PlayerUIVisibilityRunnable;
 import ee.promobox.promoboxandroid.util.SeekBarProgressChangerRunnable;
+import ee.promobox.promoboxandroid.widgets.FragmentWithSeekBar;
 
 
 //https://github.com/felixpalmer/android-visualizer
-public class FragmentAudio extends Fragment implements ExoPlayer.Listener, SeekBar.OnSeekBarChangeListener, View.OnClickListener {
+public class FragmentAudio extends FragmentWithSeekBar implements ExoPlayer.Listener {
 
     private static final String TAG = "AudioActivity ";
-    private static final long VISIBILITY_DELAY_MS = 10*1000;
 
     private ExoPlayer exoPlayer;
     private MediaCodecAudioTrackRenderer audioRenderer;
@@ -44,40 +44,20 @@ public class FragmentAudio extends Fragment implements ExoPlayer.Listener, SeekB
     private MainActivity mainActivity;
 
     private Handler audioLengthHandler = new Handler();
-    private Handler playerUIVisibilityHandler = new Handler();
-    private static Runnable visibilityRunnable;
-    private static Runnable seekBarProgressChanger;
     private static Runnable audioLengthStopper;
 
     private View audioView;
-    private SeekBar seekBar;
-    private View seekBarLayout;
-
-    private View playerButtonsLayout;
-
 
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_audio, container, false);
-
+        super.setView(view);
         view.setOnLongClickListener(mainActivity);
-        view.setOnClickListener(this);
         audioView = view;
-        seekBar = (SeekBar) view.findViewById(R.id.audio_seekBar);
-        seekBar.setOnSeekBarChangeListener(this);
-        seekBar.setProgressDrawable( getResources().getDrawable(R.drawable.seek_bar_progress));
-        seekBar.setThumb(getResources().getDrawable(R.drawable.seek_bar_thumb_scrubber_control_selector_holo_dark));
-        seekBarLayout = view.findViewById(R.id.seekBar_layout);
-        playerButtonsLayout = view.findViewById(R.id.audio_player_buttons);
-//        seekBar.setIndeterminate(true);
-        seekBarProgressChanger = new SeekBarProgressChangerRunnable(seekBar);
-        visibilityRunnable = new PlayerUIVisibilityRunnable(seekBarLayout, playerButtonsLayout);
-        playerUIVisibilityHandler.postDelayed(visibilityRunnable, VISIBILITY_DELAY_MS);
         return view;
     }
-
 
     @Override
     public void onAttach(Activity activity) {
@@ -94,6 +74,7 @@ public class FragmentAudio extends Fragment implements ExoPlayer.Listener, SeekB
     public void onResume() {
         Log.d(TAG, "onResume");
         super.onResume();
+
 
         if ( mainActivity.getOrientation() == MainActivity.ORIENTATION_PORTRAIT_EMULATION){
             audioView.setRotation(270);
@@ -136,11 +117,8 @@ public class FragmentAudio extends Fragment implements ExoPlayer.Listener, SeekB
         exoPlayer.addListener(this);
     }
 
-    private void cleanUp() {
-        if (seekBar != null ){
-            seekBar.setProgress(0);
-            seekBar.setMax(100);
-        }
+    protected void cleanUp() {
+        super.cleanUp();
         if (exoPlayer != null) {
             exoPlayer.release();
             exoPlayer = null;
@@ -158,9 +136,7 @@ public class FragmentAudio extends Fragment implements ExoPlayer.Listener, SeekB
             long duration = exoPlayer.getDuration();
             Log.d(TAG, "onPlayerStateChanged , exoPlayer.getDuration()" + duration);
             if (duration != ExoPlayer.UNKNOWN_TIME){
-                seekBar.setMax((int) duration);
-                TextView playerFullTime = (TextView) seekBarLayout.findViewById(R.id.player_time_full);
-                playerFullTime.setText(getTimeString(duration));
+                super.setSeekBarMax( duration );
                 audioLengthHandler.postDelayed(audioLengthStopper, duration + 10 * 1000);
             }
         }
@@ -171,7 +147,7 @@ public class FragmentAudio extends Fragment implements ExoPlayer.Listener, SeekB
 
     @Override
     public void onPlayWhenReadyCommitted() {
-        new Thread(seekBarProgressChanger).start();
+        super.startSeekBarProgressChanger();
     }
 
     @Override
@@ -185,28 +161,6 @@ public class FragmentAudio extends Fragment implements ExoPlayer.Listener, SeekB
                 tryNextFile();
             }
         }, 1000);
-    }
-
-    @Override
-    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-        TextView timeElapsed = (TextView) seekBarLayout.findViewById(R.id.player_time_elapsed);
-        timeElapsed.setText(getTimeString(progress));
-    }
-
-    @Override
-    public void onStartTrackingTouch(SeekBar seekBar) {
-
-    }
-
-    @Override
-    public void onStopTrackingTouch(SeekBar seekBar) {
-        long progress = seekBar.getProgress();
-        if (exoPlayer != null){
-            exoPlayer.seekTo(progress);
-
-            audioLengthHandler.removeCallbacks(audioLengthStopper);
-            audioLengthHandler.postDelayed(audioLengthStopper, seekBar.getMax()-progress + 10 * 1000);
-        }
     }
 
     private void finishActivity (){
@@ -247,28 +201,14 @@ public class FragmentAudio extends Fragment implements ExoPlayer.Listener, SeekB
         textView.setText(status);
     }
 
-    private String getTimeString ( long timeMillis) {
-        String hms = getResources().getString(R.string.player_unknown_time);
-        if ( TimeUnit.MILLISECONDS.toHours(timeMillis) > 1 ) {
-            hms = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(timeMillis),
-                    TimeUnit.MILLISECONDS.toMinutes(timeMillis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(timeMillis)),
-                    TimeUnit.MILLISECONDS.toSeconds(timeMillis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(timeMillis)));
-        } else {
-            hms = String.format("%02d:%02d",
-                    TimeUnit.MILLISECONDS.toMinutes(timeMillis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(timeMillis)),
-                    TimeUnit.MILLISECONDS.toSeconds(timeMillis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(timeMillis)));
-        }
-        return hms;
-    }
-
     @Override
-    public void onClick(View v) {
-        playerUIVisibilityHandler.removeCallbacks(visibilityRunnable);
-        int visibility = seekBarLayout.getVisibility() == View.VISIBLE ? View.INVISIBLE : View.VISIBLE;
-        seekBarLayout.setVisibility(visibility);
-        playerButtonsLayout.setVisibility(visibility);
-        if (visibility == View.VISIBLE) {
-            playerUIVisibilityHandler.postDelayed(visibilityRunnable, VISIBILITY_DELAY_MS);
+    public void onStopTrackingTouch(SeekBar seekBar) {
+        long progress = seekBar.getProgress();
+        if (exoPlayer != null){
+            exoPlayer.seekTo(progress);
+
+            audioLengthHandler.removeCallbacks(audioLengthStopper);
+            audioLengthHandler.postDelayed(audioLengthStopper, seekBar.getMax()-progress + 10 * 1000);
         }
     }
 
@@ -295,11 +235,9 @@ public class FragmentAudio extends Fragment implements ExoPlayer.Listener, SeekB
             FragmentAudio fragment = fragmentAudioReference.get();
             FragmentPlaybackListener playbackListener = playbackListenerReference.get();
             if (fragment != null && playbackListener != null){
-                fragment.onPause();
-                fragment.onResume();
+                fragment.cleanUp();
                 playbackListener.onPlaybackStop();
             }
         }
     }
-
 }

@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.Toast;
 
 
@@ -24,8 +25,9 @@ import ee.promobox.promoboxandroid.data.CampaignFile;
 import ee.promobox.promoboxandroid.data.CampaignFileType;
 import ee.promobox.promoboxandroid.data.ErrorMessage;
 import ee.promobox.promoboxandroid.util.FragmentPlaybackListener;
+import ee.promobox.promoboxandroid.widgets.FragmentWithSeekBar;
 
-public class FragmentImage extends Fragment {
+public class FragmentImage extends FragmentWithSeekBar {
 
     private final String IMAGE_FRAGMENT_STRING = "ImageFragment ";
 
@@ -48,6 +50,7 @@ public class FragmentImage extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d(IMAGE_FRAGMENT_STRING, "onCreateView");
         imageFragment = inflater.inflate(R.layout.fragment_image, container, false);
+        super.setView(imageFragment);
 
         slide = (ImageView) imageFragment.findViewById(R.id.slide_1);
 
@@ -149,6 +152,7 @@ public class FragmentImage extends Fragment {
         public void run() {
             CampaignFile campaignFile = mainActivity.getNextFile(CampaignFileType.IMAGE);
             if (campaignFile != null) {
+                cleanUp();
                 playImage(campaignFile);
 
             } else {
@@ -167,7 +171,7 @@ public class FragmentImage extends Fragment {
             makeToast(message);
             mainActivity.addError(new ErrorMessage(
                     "FileNotFoundException",IMAGE_FRAGMENT_STRING + message,null), false);
-            slide.postDelayed(r, getArguments().getInt("delay"));
+            slide.postDelayed(r, 1000);
             return;
         }
         try {
@@ -177,7 +181,10 @@ public class FragmentImage extends Fragment {
 //            }
             recycleBitmap();
             slide.setImageBitmap(bitmap);
-            slide.postDelayed(r, getArguments().getInt("delay"));
+            int delay = getArguments().getInt("delay");
+            super.setSeekBarMax(delay);
+            slide.postDelayed(r, delay);
+            super.startSeekBarProgressChanger();
 
 
         } catch (Exception ex) {
@@ -207,4 +214,9 @@ public class FragmentImage extends Fragment {
     }
 
 
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+        slide.removeCallbacks(r);
+        slide.postDelayed(r, seekBar.getMax() - seekBar.getProgress());
+    }
 }

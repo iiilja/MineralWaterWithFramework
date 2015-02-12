@@ -19,15 +19,11 @@ public class SeekBarProgressChangerRunnable implements Runnable {
 
     @Override
     public void run() {
-        Log.d(TAG, "SeekBarProgressChanger");
         SeekBar seekBar = seekBarWeakReference.get();
-        while (seekBar != null && seekBar.getProgress() < seekBar.getMax()) {
+        if (seekBar != null && seekBar.getProgress() < seekBar.getMax()) {
             seekBar.incrementProgressBy(250);
-            try {
-                Thread.sleep(250);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            Log.d(TAG, "progress = " + seekBar.getProgress());
+            seekBar.postDelayed(this, 250);
         }
     }
 }

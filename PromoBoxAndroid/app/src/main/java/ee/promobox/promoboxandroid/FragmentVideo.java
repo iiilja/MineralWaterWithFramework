@@ -1,7 +1,6 @@
 package ee.promobox.promoboxandroid;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.content.Intent;
 import android.graphics.Point;
 import android.graphics.SurfaceTexture;
@@ -10,8 +9,6 @@ import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.preference.PreferenceManager;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Surface;
@@ -19,7 +16,7 @@ import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
+import android.widget.SeekBar;
 
 
 import com.google.android.exoplayer.ExoPlaybackException;
@@ -35,17 +32,15 @@ import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 
-import ee.promobox.promoboxandroid.data.Campaign;
 import ee.promobox.promoboxandroid.data.CampaignFile;
 import ee.promobox.promoboxandroid.data.CampaignFileType;
 import ee.promobox.promoboxandroid.data.ErrorMessage;
-import ee.promobox.promoboxandroid.intents.ErrorMessageIntent;
 import ee.promobox.promoboxandroid.util.FragmentPlaybackListener;
+import ee.promobox.promoboxandroid.widgets.FragmentWithSeekBar;
 
 
-public class FragmentVideo extends Fragment implements TextureView.SurfaceTextureListener,
+public class FragmentVideo extends FragmentWithSeekBar implements TextureView.SurfaceTextureListener,
         MediaCodecVideoTrackRenderer.EventListener , ExoPlayer.Listener{
     private static final String TAG = "VideoActivity ";
 
@@ -61,13 +56,14 @@ public class FragmentVideo extends Fragment implements TextureView.SurfaceTextur
     private MainActivity mainActivity;
 
     private Handler videoLengthHandler = new Handler();
-    private Runnable r;
+    private Runnable videoLengthStopper;
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView");
         View view = inflater.inflate(R.layout.fragment_video,container,false);
+        super.setView(view);
         videoView = (TextureView) view.findViewById(R.id.video_texture_view);
         return view;
     }
@@ -80,7 +76,7 @@ public class FragmentVideo extends Fragment implements TextureView.SurfaceTextur
         playbackListener = (FragmentPlaybackListener) activity;
         mainActivity = (MainActivity) activity;
 
-        r = new VideoLengthWatcher(this,playbackListener);
+        videoLengthStopper = new VideoLengthWatcher(this,playbackListener);
 
     }
 
@@ -146,21 +142,20 @@ public class FragmentVideo extends Fragment implements TextureView.SurfaceTextur
 
     }
 
-    private void cleanUp() {
-
+    protected void cleanUp() {
+        super.cleanUp();
         if(exoPlayer != null){
             exoPlayer.release();
             exoPlayer = null;
             audioRenderer = null;
             videoRenderer = null;
         }
-        videoLengthHandler.removeCallbacks(r);
+        videoLengthHandler.removeCallbacks(videoLengthStopper);
     }
 
     @Override
     public void onDestroy() {
         cleanUp();
-
         super.onDestroy();
     }
 
@@ -231,7 +226,8 @@ public class FragmentVideo extends Fragment implements TextureView.SurfaceTextur
             long duration = exoPlayer.getDuration();
             Log.d(TAG, "onPlayerStateChanged , exoPlayer.getDuration()" + duration);
             if (duration != ExoPlayer.UNKNOWN_TIME){
-                videoLengthHandler.postDelayed(r, duration + 10 * 1000);
+                videoLengthHandler.postDelayed(videoLengthStopper, duration + 10 * 1000);
+                super.setSeekBarMax(duration);
             }
         }
 
@@ -249,6 +245,7 @@ public class FragmentVideo extends Fragment implements TextureView.SurfaceTextur
 
     @Override
     public void onPlayWhenReadyCommitted() {
+        super.startSeekBarProgressChanger();
     }
 
     @Override
@@ -303,6 +300,20 @@ public class FragmentVideo extends Fragment implements TextureView.SurfaceTextur
 
     private void makeToast(String toast){
         mainActivity.makeToast(toast);
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+        long progress = seekBar.getProgress();
+        if (exoPlayer != null){
+            exoPlayer.stop();
+            exoPlayer.seekTo(progress);
+            exoPlayer.setPlayWhenReady(true);
+            exoPlayer.prepare(audioRenderer,videoRenderer);
+
+            videoLengthHandler.removeCallbacks(videoLengthStopper);
+            videoLengthHandler.postDelayed(videoLengthStopper, seekBar.getMax()-progress + 10 * 1000);
+        }
     }
 
 

@@ -11,6 +11,7 @@ import android.widget.ImageView;
  * Created by ilja on 15.01.2015.
  */
 public class AspectRatioImageView extends ImageView {
+    private static String TAG = "AspectRatioImageView";
 
     public AspectRatioImageView(Context context) {
         super(context);
@@ -33,6 +34,7 @@ public class AspectRatioImageView extends ImageView {
             return;
         }
         try {
+//            Log.w(TAG, "onMeasure");
             Drawable drawable = getDrawable();
 
             if (drawable == null) {
@@ -40,16 +42,64 @@ public class AspectRatioImageView extends ImageView {
             } else {
                 float imageSideRatio = (float)drawable.getIntrinsicWidth() / (float)drawable.getIntrinsicHeight();
                 float viewSideRatio = (float)MeasureSpec.getSize(widthMeasureSpec) / (float)MeasureSpec.getSize(heightMeasureSpec);
-                if (imageSideRatio <= viewSideRatio && imageSideRatio > 1) {
+                int width;
+                int height;
+                if (imageSideRatio <= viewSideRatio) {
                     // Image is taller than the display (ratio)
-                    int width = MeasureSpec.getSize(widthMeasureSpec);
-                    int height = (int)(width / imageSideRatio);
-                    setMeasuredDimension(width, height);
+                    if ( viewSideRatio > 1 ) { // Wide monitor
+                        if (imageSideRatio > 1) { // Wide picture
+//                            Log.w(TAG, "*** 1 ***");
+                            width = MeasureSpec.getSize(widthMeasureSpec);
+                            height = (int)(width / imageSideRatio);
+                            setMeasuredDimension(width, height);
+                        } else { // Tall picture
+//                            Log.w(TAG, "*** 2 ***");
+                            height = MeasureSpec.getSize(heightMeasureSpec);
+                            width = (int)(height * imageSideRatio);
+                            setMeasuredDimension(width, height);
+                        }
+                    } else { // Tall monitor
+                        if (imageSideRatio > 1) { // Wide picture
+//                            Log.w(TAG, "*** 3 ***");
+                            Log.e(TAG, "This is not real");
+                            width = MeasureSpec.getSize(widthMeasureSpec);
+                            height = (int)(width / imageSideRatio);
+                            setMeasuredDimension(width, height);
+                        } else { // Tall picture
+//                            Log.w(TAG, "*** 4 ***");
+                            width = MeasureSpec.getSize(widthMeasureSpec);
+                            height = (int)(width / imageSideRatio);
+                            setMeasuredDimension(width, height);
+                        }
+                    }
                 } else {
                     // Image is wider than the display (ratio)
-                    int height = MeasureSpec.getSize(heightMeasureSpec);
-                    int width = (int)(height * imageSideRatio);
-                    setMeasuredDimension(width, height);
+                    if ( viewSideRatio > 1 ) { // Wide monitor
+                        if (imageSideRatio > 1) { // Wide picture
+//                            Log.w(TAG, "*** 5 ***");
+                            height = MeasureSpec.getSize(heightMeasureSpec);
+                            width = (int)(height * imageSideRatio);
+                            setMeasuredDimension(width, height);
+                        } else { // Tall picture
+//                            Log.w(TAG, "*** 6 ***");
+                            Log.e(TAG, "This is not real");
+                            height = MeasureSpec.getSize(heightMeasureSpec);
+                            width = (int)(height * imageSideRatio);
+                            setMeasuredDimension(width, height);
+                        }
+                    } else { // Tall monitor
+                        if (imageSideRatio > 1) { // Wide picture
+//                            Log.w(TAG, "*** 7 ***");
+                            width = MeasureSpec.getSize(widthMeasureSpec);
+                            height = (int)(width / imageSideRatio);
+                            setMeasuredDimension(width, height);
+                        } else { // Tall picture
+//                            Log.w(TAG, "*** 8 ***");
+                            height = MeasureSpec.getSize(heightMeasureSpec);
+                            width = (int)(height * imageSideRatio);
+                            setMeasuredDimension(width, height);
+                        }
+                    }
                 }
             }
         } catch (Exception e) {

@@ -30,6 +30,7 @@ public class FragmentImage extends Fragment {
     private final String IMAGE_FRAGMENT_STRING = "ImageFragment ";
 
     private ImageView slide;
+    private View imageFragment;
 
 
     private FragmentPlaybackListener playbackListener;
@@ -46,11 +47,11 @@ public class FragmentImage extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d(IMAGE_FRAGMENT_STRING, "onCreateView");
-        View view = inflater.inflate(R.layout.fragment_image, container, false);
+        imageFragment = inflater.inflate(R.layout.fragment_image, container, false);
 
-        slide = (ImageView) view.findViewById(R.id.slide_1);
+        slide = (ImageView) imageFragment.findViewById(R.id.slide_1);
 
-        return view;
+        return imageFragment;
     }
 
     @Override
@@ -72,6 +73,9 @@ public class FragmentImage extends Fragment {
         Log.d(IMAGE_FRAGMENT_STRING, "onResume");
         super.onResume();
 
+        if (mainActivity.getOrientation() == MainActivity.ORIENTATION_PORTRAIT_EMULATION) {
+            imageFragment.setRotation(270);
+        }
         CampaignFile campaignFile = mainActivity.getNextFile(CampaignFileType.IMAGE);
         if (campaignFile != null) {
             playImage(campaignFile);
@@ -168,10 +172,10 @@ public class FragmentImage extends Fragment {
         }
         try {
             Bitmap bitmap = decodeBitmap(file);
-            if (mainActivity.getOrientation() == MainActivity.ORIENTATION_PORTRAIT_EMULATION) {
-                bitmap = rotateBitmap(bitmap, 270);
-            }
-            //recycleBitmap();
+//            if (mainActivity.getOrientation() == MainActivity.ORIENTATION_PORTRAIT_EMULATION) {
+//                bitmap = rotateBitmap(bitmap, 270);
+//            }
+            recycleBitmap();
             slide.setImageBitmap(bitmap);
             slide.postDelayed(r, getArguments().getInt("delay"));
 

@@ -6,13 +6,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-import android.view.DragEvent;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
-import android.view.ViewPropertyAnimator;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -31,6 +27,8 @@ import ee.promobox.promoboxandroid.data.CampaignFile;
 import ee.promobox.promoboxandroid.data.CampaignFileType;
 import ee.promobox.promoboxandroid.data.ErrorMessage;
 import ee.promobox.promoboxandroid.util.FragmentPlaybackListener;
+import ee.promobox.promoboxandroid.util.PlayerUIVisibilityRunnable;
+import ee.promobox.promoboxandroid.util.SeekBarProgressChangerRunnable;
 
 
 //https://github.com/felixpalmer/android-visualizer
@@ -46,16 +44,16 @@ public class FragmentAudio extends Fragment implements ExoPlayer.Listener, SeekB
     private MainActivity mainActivity;
 
     private Handler audioLengthHandler = new Handler();
-    private Runnable audioLengthStopper;
-    private Runnable seekBarProgressChanger;
+    private Handler playerUIVisibilityHandler = new Handler();
+    private static Runnable visibilityRunnable;
+    private static Runnable seekBarProgressChanger;
+    private static Runnable audioLengthStopper;
 
     private View audioView;
     private SeekBar seekBar;
     private View seekBarLayout;
-    private View playerButtonsLayout;
 
-    private Handler playerUIVisibilityHandler = new Handler();
-    private Runnable visibilityRunnable;
+    private View playerButtonsLayout;
 
 
 
@@ -74,7 +72,7 @@ public class FragmentAudio extends Fragment implements ExoPlayer.Listener, SeekB
         seekBarLayout = view.findViewById(R.id.seekBar_layout);
         playerButtonsLayout = view.findViewById(R.id.audio_player_buttons);
 //        seekBar.setIndeterminate(true);
-        seekBarProgressChanger = new SeekBarProgressChanger(seekBar);
+        seekBarProgressChanger = new SeekBarProgressChangerRunnable(seekBar);
         visibilityRunnable = new PlayerUIVisibilityRunnable(seekBarLayout, playerButtonsLayout);
         playerUIVisibilityHandler.postDelayed(visibilityRunnable, VISIBILITY_DELAY_MS);
         return view;
@@ -94,8 +92,8 @@ public class FragmentAudio extends Fragment implements ExoPlayer.Listener, SeekB
 
     @Override
     public void onResume() {
+        Log.d(TAG, "onResume");
         super.onResume();
-
 
         if ( mainActivity.getOrientation() == MainActivity.ORIENTATION_PORTRAIT_EMULATION){
             audioView.setRotation(270);
@@ -113,6 +111,7 @@ public class FragmentAudio extends Fragment implements ExoPlayer.Listener, SeekB
 
     @Override
     public void onPause() {
+        Log.d(TAG, "onPause");
         super.onPause();
         cleanUp();
     }
@@ -190,12 +189,6 @@ public class FragmentAudio extends Fragment implements ExoPlayer.Listener, SeekB
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-//        if (fromUser && exoPlayer != null){
-//            exoPlayer.seekTo((long) progress);
-//
-//            audioLengthHandler.removeCallbacks(audioLengthStopper);
-//            audioLengthHandler.postDelayed(audioLengthStopper, seekBar.getMax()-progress + 10 * 1000);
-//        }
         TextView timeElapsed = (TextView) seekBarLayout.findViewById(R.id.player_time_elapsed);
         timeElapsed.setText(getTimeString(progress));
     }
@@ -281,66 +274,32 @@ public class FragmentAudio extends Fragment implements ExoPlayer.Listener, SeekB
 
 
     private static final class AudioLengthWatcher implements Runnable {
-        private final WeakReference<FragmentAudio> fragmentReference;
+        private final WeakReference<FragmentAudio> fragmentAudioReference;
+        private final WeakReference<FragmentVideo> fragmentVideoReference;
         private final WeakReference<FragmentPlaybackListener> playbackListenerReference;
 
         AudioLengthWatcher( FragmentAudio fragment, FragmentPlaybackListener playbackListener){
-            fragmentReference = new WeakReference<FragmentAudio>(fragment);
-            playbackListenerReference = new WeakReference<FragmentPlaybackListener>(playbackListener);
+            fragmentAudioReference = new WeakReference<>(fragment);
+            fragmentVideoReference =  null;
+            playbackListenerReference = new WeakReference<>(playbackListener);
+        }
+        AudioLengthWatcher( FragmentVideo fragment, FragmentPlaybackListener playbackListener){
+            fragmentVideoReference = new WeakReference<>(fragment);
+            fragmentAudioReference = null;
+            playbackListenerReference = new WeakReference<>(playbackListener);
         }
 
         @Override
         public void run() {
             Log.e(FragmentAudio.TAG,"Executing runnable, smth wrong with player");
-            FragmentAudio fragment = fragmentReference.get();
+            FragmentAudio fragment = fragmentAudioReference.get();
             FragmentPlaybackListener playbackListener = playbackListenerReference.get();
             if (fragment != null && playbackListener != null){
-                fragment.cleanUp();
+                fragment.onPause();
+                fragment.onResume();
                 playbackListener.onPlaybackStop();
             }
         }
     }
 
-    private static final class SeekBarProgressChanger implements Runnable {
-        private final WeakReference<SeekBar> seekBarWeakReference;
-
-        SeekBarProgressChanger( SeekBar seekBar ){
-            seekBarWeakReference = new WeakReference<>(seekBar);
-        }
-
-        @Override
-        public void run() {
-            Log.d(FragmentAudio.TAG, "SeekBarProgressChanger");
-            SeekBar seekBar = seekBarWeakReference.get();
-            while (seekBar != null && seekBar.getProgress() < seekBar.getMax()) {
-                seekBar.incrementProgressBy(250);
-                try {
-                    Thread.sleep(250);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
-    private static final class PlayerUIVisibilityRunnable implements Runnable {
-        private final WeakReference<View> seekBarLayoutReference;
-        private final WeakReference<View> playerButtonsLayoutReference;
-
-        PlayerUIVisibilityRunnable( View seekBarLayout , View playerButtonsLayout ){
-            seekBarLayoutReference = new WeakReference<>(seekBarLayout);
-            playerButtonsLayoutReference = new WeakReference<>(playerButtonsLayout);
-        }
-
-        @Override
-        public void run() {
-            Log.d(FragmentAudio.TAG, "PlayerUIVisibilityRunnable");
-            View seekBarLayout = seekBarLayoutReference.get();
-            View playerButtonsLayout = playerButtonsLayoutReference.get();
-            if (seekBarLayout != null && playerButtonsLayout != null) {
-                seekBarLayout.setVisibility(View.INVISIBLE);
-                playerButtonsLayout.setVisibility(View.INVISIBLE);
-            }
-        }
-    }
 }

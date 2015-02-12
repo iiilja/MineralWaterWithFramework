@@ -159,10 +159,10 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
         if (fragment != null && fragment.isAdded() ){
             //fragment.onPause();
             fragment.onResume();
-        } else {
+        } else if ( fragment != null ){
             transaction.replace(R.id.main_view, fragment);
             transaction.addToBackStack(null);
-            transaction.commit();
+            transaction.commitAllowingStateLoss();
         }
     }
 

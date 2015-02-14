@@ -671,7 +671,7 @@ public class DevicesController {
             device.setLastDeviceRequestDt(new Date());
             device.setStatus(Devices.STATUS_USED);
             device.setAudioOut(Devices.AUDIO_OUT_HDMI);
-            device.setUuid(UUID.randomUUID().toString().substring(0, 4));
+            device.setUuid(userService.findDeviceUuid());
             device.setDescription("");
             device.setNetworkData("");
             device.setCreatedDt(new Date());

@@ -18,5 +18,6 @@
     <string name="enter_device_id">Enter device ID. It can be found on site under Devices</string>
     <string name="enter_uuid_button_txt">Start</string>
     <string name="player_unknown_time">00:00</string>
+    <string name="no_active_campaigns">NO ACTIVE CAMPAIGN AT THE MOMENT</string>
 
 </resources>

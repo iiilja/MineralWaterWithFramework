@@ -50,6 +50,7 @@ import ee.promobox.promoboxandroid.data.ErrorMessage;
 import ee.promobox.promoboxandroid.data.ErrorMessageArray;
 import ee.promobox.promoboxandroid.intents.SetStatusIntent;
 import ee.promobox.promoboxandroid.intents.ToastIntent;
+import ee.promobox.promoboxandroid.util.StatusEnum;
 
 /**
  * Created by Maxim on 15.12.2014.
@@ -146,6 +147,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
             FileUtils.writeStringToFile(jsonDataFile, data.toString(), "UTF-8");
 
             if (data.has("clearCache") && data.getBoolean("clearCache")){
+                Log.d(DOWNLOAD_FILE_TASK, "CLEARING CACHE");
                 clearCache();
             }
             if (data.has("openApp") && data.getBoolean("openApp")){
@@ -215,7 +217,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
 
             if (filesDifferent) {
 
-                bManager.sendBroadcast(new SetStatusIntent(
+                bManager.sendBroadcast(new SetStatusIntent( StatusEnum.DOWNLOADING,
                         "Downloading " + camp.getCampaignName() + " files "+ (i+1) + "/" + campaignFiles.size()));
 
                 Log.d(DOWNLOAD_FILE_TASK, "CampaignFIle "+f.getId()+" f.getSize() = " + f.getSize()
@@ -223,7 +225,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
                 downloadFile(String.format(MainService.DEFAULT_SERVER + "/service/files/%s", f.getId()), f.getId() + "", camp);
             }
         }
-        bManager.sendBroadcast(new SetStatusIntent(""));
+        bManager.sendBroadcast(new SetStatusIntent(StatusEnum.DOWNLOADED,""));
         service.setLoadingCampaignProgress(100);
         service.setLoadingCampaign(null);
         service.getIsDownloading().set(false);
@@ -426,6 +428,9 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
         CampaignList campaignList = service.getCampaigns();
         for (File folder : service.getROOT().listFiles()){
             try{
+                if (folder.getName().equals("data.json")) {
+                    continue;
+                }
                 int id = Integer.parseInt(folder.getName());
                 Log.d(DOWNLOAD_FILE_TASK,"Am in folder " + id);
                 Campaign campaign = campaignList != null ? campaignList.getCampaignWithId(id) : null;

@@ -44,6 +44,7 @@ public class FragmentVideo extends FragmentWithSeekBar implements TextureView.Su
         MediaCodecVideoTrackRenderer.EventListener , ExoPlayer.Listener{
     private static final String TAG = "VideoActivity ";
 
+    private View fragmentVideoLayout;
     private TextureView videoView;
 
     private ExoPlayer exoPlayer;
@@ -62,10 +63,10 @@ public class FragmentVideo extends FragmentWithSeekBar implements TextureView.Su
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView");
-        View view = inflater.inflate(R.layout.fragment_video,container,false);
-        super.setView(view);
-        videoView = (TextureView) view.findViewById(R.id.video_texture_view);
-        return view;
+        fragmentVideoLayout =  inflater.inflate(R.layout.fragment_video,container,false);
+        super.setView(fragmentVideoLayout);
+        videoView = (TextureView) fragmentVideoLayout.findViewById(R.id.video_texture_view);
+        return fragmentVideoLayout;
     }
 
 
@@ -88,11 +89,12 @@ public class FragmentVideo extends FragmentWithSeekBar implements TextureView.Su
 
             if (mainActivity.getOrientation() == MainActivity.ORIENTATION_PORTRAIT_EMULATION){
                 Point videoSize = calculateVideoSize(pathToFile);
-                videoSize = calculateNeededVideoSize(videoSize,viewOriginalWidth,viewOriginalHeight);
+                videoSize = calculateNeededVideoSize(videoSize,viewOriginalHeight,viewOriginalWidth);
                 RelativeLayout.LayoutParams relPar = (RelativeLayout.LayoutParams) videoView.getLayoutParams();
                 relPar.width = videoSize.x;
                 relPar.height = videoSize.y;
                 videoView.setLayoutParams(relPar);
+//                fragmentVideoLayout.setRotation(270);
             }
 
             Log.d(TAG,"playVideo() file = " + FilenameUtils.getBaseName(pathToFile));
@@ -128,7 +130,8 @@ public class FragmentVideo extends FragmentWithSeekBar implements TextureView.Su
         super.onResume();
 
         if (mainActivity.getOrientation() == MainActivity.ORIENTATION_PORTRAIT_EMULATION){
-            videoView.setRotation(270.0f);
+//            videoView.setRotation(270.0f);
+            fragmentVideoLayout.setRotation(270);
         }
 
         videoView.setSurfaceTextureListener(this);

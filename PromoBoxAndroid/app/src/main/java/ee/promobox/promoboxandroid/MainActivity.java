@@ -29,6 +29,7 @@ import ee.promobox.promoboxandroid.data.CampaignFileType;
 import ee.promobox.promoboxandroid.data.ErrorMessage;
 import ee.promobox.promoboxandroid.util.ExceptionHandler;
 import ee.promobox.promoboxandroid.util.FragmentPlaybackListener;
+import ee.promobox.promoboxandroid.util.StatusEnum;
 
 
 public class MainActivity extends Activity implements FragmentPlaybackListener , View.OnLongClickListener{
@@ -46,7 +47,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
 
     public static final String ERROR_MESSAGE       = "Error %d , ( %s )";
 
-    private static final String NO_ACTIVE_CAMPAIGN       = "no active campaign";
+    private static final String NO_ACTIVE_CAMPAIGN = "NO ACTIVE CAMPAIGN AT THE MOMENT";
 
     public final static String MAIN_ACTIVITY_STRING = "MainActivity";
 
@@ -70,10 +71,11 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
 
     private boolean mBound = false;
 
-    Fragment mainFragment = new FragmentMain();
+    FragmentMain mainFragment = new FragmentMain();
     Fragment audioFragment = new FragmentAudio();
     Fragment videoFragment = new FragmentVideo();
     Fragment imageFragment = new FragmentImage();
+    Fragment currentFragment;
 
 
     private void hideSystemUI() {
@@ -97,7 +99,6 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
         Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
         exceptionHandlerError =  getIntent().getStringExtra("error");
 
@@ -116,8 +117,8 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
 
         bManager.registerReceiver(bReceiver, intentFilter);
 
-        getFragmentManager().beginTransaction().add(R.id.main_view, mainFragment).addToBackStack(null).commit();
-
+        getFragmentManager().beginTransaction().add(R.id.main_view, mainFragment).addToBackStack(mainFragment.toString()).commit();
+        currentFragment = mainFragment;
         Intent start = new Intent();
         start.setAction(MainActivity.APP_START);
         sendBroadcast(start);
@@ -161,7 +162,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
             fragment.onResume();
         } else if ( fragment != null ){
             transaction.replace(R.id.main_view, fragment);
-            transaction.addToBackStack(null);
+            transaction.addToBackStack(fragment.toString());
             transaction.commitAllowingStateLoss();
         }
     }
@@ -247,6 +248,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        Log.d(MAIN_ACTIVITY_STRING,"onDestroy");
 
         if (mBound) {
             unbindService(mConnection);
@@ -288,13 +290,6 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
         }
     };
 
-    private void updateStatus( String status ){
-        TextView textView = (TextView) findViewById(R.id.main_activity_status);
-        if (textView != null){
-            textView.setText(status);
-        }
-    }
-
     public void addError(ErrorMessage message, boolean broadcastNow){
         mainService.addError(message, broadcastNow);
     }
@@ -315,7 +310,8 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
 
     private void campaignWasUpdated(String tag) {
         Log.d(tag, "CAMPAIGN_UPDATE to " + (campaign != null ? campaign.getCampaignName() : "NONE"));
-        updateStatus( campaign != null ? campaign.getCampaignName() : NO_ACTIVE_CAMPAIGN);
+        StatusEnum statusEnum = campaign != null ? StatusEnum.NO_ACTIVE_CAMPAIGN : null;
+        mainFragment.updateStatus(statusEnum, campaign != null ? campaign.getCampaignName() : NO_ACTIVE_CAMPAIGN);
         position = 0;
         startNextFile();
     }
@@ -361,9 +357,9 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
 
         } else {
             if (campaign != null ){
-                updateStatus("No files to play in " + campaign.getCampaignName());
+                mainFragment.updateStatus(StatusEnum.NO_FILES,"No files to play in " + campaign.getCampaignName());
             } else {
-                updateStatus(NO_ACTIVE_CAMPAIGN);
+                mainFragment.updateStatus(StatusEnum.NO_ACTIVE_CAMPAIGN,NO_ACTIVE_CAMPAIGN);
             }
             Log.i(MAIN_ACTIVITY_STRING, "CAMPAIGN = NULL");
         }
@@ -415,8 +411,9 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
             } else if ( action.equals(SET_STATUS)){
 
                 String status = intent.getStringExtra("status");
-                Log.d(RECEIVER_STRING, SET_STATUS +" "+ status);
-                updateStatus(intent.getStringExtra("status"));
+                StatusEnum statusEnum = (StatusEnum) intent.getSerializableExtra("statusEnum");
+                Log.d(RECEIVER_STRING, SET_STATUS +" "+ status + " statusEnum = " + statusEnum.toString());
+                mainFragment.updateStatus(statusEnum,intent.getStringExtra("status"));
             } else if ( action.equals(ADD_ERROR_MSG)){
 
                 ErrorMessage message = intent.getParcelableExtra("message");

@@ -8,20 +8,4 @@
     tools:context="ee.promobox.promoboxandroid.MainActivity">
 
 
-    <!--<fragment-->
-        <!--android:id="@+id/fragment_main"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:name="ee.promobox.promoboxandroid.MainActivityFragment"-->
-        <!--android:layout_alignParentLeft="true"-->
-        <!--android:layout_alignParentBottom="true" />-->
-    <!--<LinearLayout-->
-        <!--android:id="@+id/main_view_fragment_place"-->
-        <!--android:orientation="horizontal"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_centerVertical="true"-->
-        <!--android:layout_centerHorizontal="true"-->
-        <!--android:gravity="center_horizontal"-->
-        <!--android:background="#ffe7ff7c"/>-->
 </RelativeLayout>

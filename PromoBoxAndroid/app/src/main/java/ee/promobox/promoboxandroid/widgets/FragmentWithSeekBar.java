@@ -1,6 +1,7 @@
 package ee.promobox.promoboxandroid.widgets;
 
 import android.app.Fragment;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;

@@ -1,52 +1,11 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_view"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="?android:attr/actionBarSize"
+    android:gravity="center"
     android:keepScreenOn="true"
     tools:context="ee.promobox.promoboxandroid.MainActivity">
 
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
-        android:gravity="center_horizontal">
-
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:padding="20dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/main_activity_title_promo"
-                android:textSize="50sp"
-                android:textStyle="bold"
-                android:textColor="#ffcdcdcd" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/main_activity_title_box"
-                android:textSize="50sp"
-                android:textColor="#ffcea974"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="@string/main_activity_status_loading"
-            android:id="@+id/main_activity_status"
-            android:textSize="20sp"
-            android:gravity="center" />
-
-    </LinearLayout>
 </RelativeLayout>

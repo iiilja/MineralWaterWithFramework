@@ -1,6 +1,9 @@
 package ee.promobox.promoboxandroid;
 
+import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.Service;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -13,6 +16,7 @@ import android.util.Log;
 
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -20,6 +24,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import ee.promobox.promoboxandroid.data.Campaign;
@@ -34,6 +39,7 @@ public class MainService extends Service {
     public final static String MAIN_SERVICE_STRING = "MainService ";
 
     public final static String DEFAULT_SERVER = "http://46.182.31.101:8080"; //"http://api.promobox.ee/";
+//    public final static String DEFAULT_SERVER = "http://46.182.30.93:8080"; // production
     public final static String DEFAULT_SERVER_JSON = DEFAULT_SERVER + "/service/device/%s/pull";
 
     private SharedPreferences sharedPref;
@@ -49,11 +55,14 @@ public class MainService extends Service {
     private double loadingCampaignProgress;
 
     private boolean firstStart = true; // To read DATA.JSON only on first start of service
+    private boolean firstStartWatchDog = true; // To read DATA.JSON only on first start of service
     private boolean activityReceivedUpdate = false; // Sometimes mainActivity receiver starts after this broadcasts
 
     private String previousCampaignsJSON = new String();
 
     private final AtomicBoolean isDownloading = new AtomicBoolean(false);
+
+    private Long timeDifference;
 
     private Campaign currentCampaign;
     private CampaignList campaigns;
@@ -80,17 +89,24 @@ public class MainService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        boolean startMainActivity =  intent == null || intent.getBooleanExtra("startMainActivity",false);
+        boolean startMainActivity       =  intent == null || intent.getBooleanExtra("startMainActivity",false);
+        boolean startedFromMainActivity =  intent == null || intent.getBooleanExtra("startedFromMainActivity",false);
 
         Log.i(MAIN_SERVICE_STRING, "Start command");
 
         setUuid(getSharedPref().getString("uuid", "fail"));
         setOrientation(getSharedPref().getInt("orientation", MainActivity.ORIENTATION_LANDSCAPE));
 
-        checkAndDownloadCampaign();
-        if ( startMainActivity ) {
+
+        if ( startMainActivity || !startedFromMainActivity && firstStartWatchDog ) {
+            if (!startedFromMainActivity && firstStartWatchDog){
+                Log.d("WatchDog", "Activity started from watchdog");
+            }
             startMainActivity();
         }
+        firstStartWatchDog = false;
+
+        checkAndDownloadCampaign();
         return Service.START_NOT_STICKY;
     }
 
@@ -100,7 +116,7 @@ public class MainService extends Service {
             selectNextCampaign();
         } catch (Exception ex) {
             Log.e(MAIN_SERVICE_STRING, ex.getMessage(), ex);
-            bManager.sendBroadcast(new ToastIntent(ex.getMessage()));
+            bManager.sendBroadcast(new ToastIntent(String.format(MainActivity.ERROR_MESSAGE, 61, ex.getClass().getSimpleName())));
             errors.addError(new ErrorMessage(ex.toString(),ex.getMessage(),ex.getStackTrace()));
 
         }
@@ -119,7 +135,7 @@ public class MainService extends Service {
     public void selectNextCampaign() {
         Log.d(MAIN_SERVICE_STRING, "selectNextCampaign()");
         if(getCampaigns() != null) {
-            Date currentDate = new Date();
+            Date currentDate = getCurrentDate();
 
             // Check for invalid device date.
             Calendar calendar = Calendar.getInstance();
@@ -136,7 +152,7 @@ public class MainService extends Service {
             int counter = 0;
             for(Campaign camp: getCampaigns()) {
                 // Current date between start and end dates of currentCampaign.
-                if(camp.hasToBePlayed()) {
+                if(camp.hasToBePlayed(getCurrentDate())) {
                     Log.d(MAIN_SERVICE_STRING, "Date bounds for currentCampaign: " + camp.getCampaignName());
                     campaignToSetCurrent  = camp;
                     counter ++;
@@ -147,7 +163,7 @@ public class MainService extends Service {
                 return;
             } else if (counter > 1){
                 Log.e(MAIN_SERVICE_STRING, " More than one current campaign");
-                bManager.sendBroadcast(new ToastIntent(" Two campaigns int time"));
+                bManager.sendBroadcast(new ToastIntent(" Two campaigns in time"));
             }
             setCurrentCampaign(null);
         }
@@ -170,7 +186,14 @@ public class MainService extends Service {
             if (data.exists() && firstStart) {
                 firstStart = false;
                 String dataString = FileUtils.readFileToString(data);
-                JSONObject dataJSON =  new JSONObject(dataString);
+                JSONObject dataJSON = new JSONObject();
+                try {
+                    dataJSON = new JSONObject(dataString);
+                }  catch (JSONException ex ){
+                    Log.e(MAIN_SERVICE_STRING, "Can not read JSON : " + dataString);
+                    bManager.sendBroadcast(new ToastIntent(String.format(MainActivity.ERROR_MESSAGE, 62, ex.getClass().getSimpleName())));
+                    errors.addError(new ErrorMessage(JSONException.class.getSimpleName(),dataString,ex.getStackTrace()));
+                }
                 JSONArray campaignsJSON = new JSONArray();
 
                 if (dataJSON.has("campaigns")){
@@ -186,8 +209,8 @@ public class MainService extends Service {
         }
         catch (Exception ex){
             Log.e(MAIN_SERVICE_STRING, ex.getMessage(), ex);
-            bManager.sendBroadcast(new ToastIntent(ex.getMessage()));
-            errors.addError(new ErrorMessage(ex.toString(),ex.getMessage(),ex.getStackTrace()));
+            bManager.sendBroadcast(new ToastIntent(String.format(MainActivity.ERROR_MESSAGE, 62, ex.getClass().getSimpleName())));
+            errors.addError(new ErrorMessage(ex));
         }
     }
 
@@ -202,7 +225,7 @@ public class MainService extends Service {
                 FileUtils.forceMkdir(ROOT);
             } catch (IOException ex) {
                 Log.e(MAIN_SERVICE_STRING, ex.getMessage());
-                bManager.sendBroadcast(new ToastIntent(ex.getMessage()));
+                bManager.sendBroadcast(new ToastIntent(String.format(MainActivity.ERROR_MESSAGE, 63, ex.getClass().getSimpleName())));
                 errors.addError(new ErrorMessage(ex.toString(),ex.getMessage(),ex.getStackTrace()));
             }
         }
@@ -285,6 +308,12 @@ public class MainService extends Service {
         }
     }
 
+    public ComponentName getOnTopComponentInfo(){
+        ActivityManager am = (ActivityManager) getSystemService(Activity.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningTaskInfo> taskInfo = am.getRunningTasks(1);
+        return taskInfo.get(0).topActivity;
+    }
+
     public Campaign getLoadingCampaign() {
         return loadingCampaign;
     }
@@ -315,6 +344,19 @@ public class MainService extends Service {
 
     public int getWifiRestartCounter() {
         return wifiRestartCounter;
+    }
+
+    public void setCurrentDate( Date currentDate){
+        timeDifference = System.currentTimeMillis() - currentDate.getTime();
+        Log.w(MAIN_SERVICE_STRING, "TIME HAS BEEN SET , difference with server is " + timeDifference);
+    }
+
+    public Date getCurrentDate(){
+        if (timeDifference != null){
+            return new Date(System.currentTimeMillis() - timeDifference);
+        } else {
+            return new Date();
+        }
     }
 
     public class MainServiceBinder extends Binder {

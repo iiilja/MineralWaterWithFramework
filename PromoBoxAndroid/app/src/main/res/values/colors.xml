@@ -2,4 +2,39 @@
 
     <color name="black_overlay">#66000000</color>
 
+
+
+    <color name="primaryColor">#BBFFFFFF</color>
+    <color name="primaryColorDark">#BBFFFFFF</color>
+    <color name="accentColor">#F44336</color>
+    <color name="focusedHighlight">#F42337</color>
+    <color name="abc_secondary_text_material_dark">#BBFFFFFF</color>
+
+
+
+    <color name="myYellowButtonColor">#F9CF3B</color>
+
+
+    <!--Text color-->
+    <color name="abc_primary_text_material_dark">#AA9000</color>
+
+
+    <color name="background_material_dark">#2B2E31</color>
+    <color name="bright_foreground_material_dark">#AA00BB</color>
+    <color name="bright_foreground_material_light">#AA00BB</color>
+    <color name="abc_background_cache_hint_selector_material_dark">#F42337</color>
+    <color name="abc_primary_text_material_light">#AAFFFF</color>
+    <color name="abc_primary_text_disable_only_material_dark">#AA00BB</color>
+    <color name="abc_secondary_text_material_light">#AA00BB</color>
+    <color name="hint_foreground_material_dark">#AA00BB</color>
+    <color name="hint_foreground_material_light">#AA00BB</color>
+    <color name="highlighted_text_material_dark">#AA00BB</color>
+    <color name="link_text_material_dark">#AA00BB</color>
+    <color name="background_material_light">#AA00BB</color>
+    <color name="abc_background_cache_hint_selector_material_light">#AA00BB</color>
+    <color name="ripple_material_light">#AA00BB</color>
+    <color name="button_material_light">#AA00BB</color>
+    <color name="button_material_dark">#AA00BB</color>
+
+
 </resources>

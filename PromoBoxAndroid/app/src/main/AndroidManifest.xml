@@ -22,7 +22,7 @@
         android:icon="@drawable/icon512"
         android:label="@string/app_name"
         android:largeHeap="true"
-        android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
+        android:theme="@style/AppTheme" >
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
@@ -49,21 +49,6 @@
             android:label="@string/service_name" >
         </service>
 
-        <activity
-            android:name=".ImageActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_image" >
-        </activity>
-        <activity
-            android:name=".AudioActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_audio" >
-        </activity>
-        <activity
-            android:name=".VideoActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_video" >
-        </activity>
         <activity
             android:name=".FirstActivity"
             android:label="@string/title_activity_first" >

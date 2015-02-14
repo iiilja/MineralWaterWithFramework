@@ -32,6 +32,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -49,6 +50,7 @@ import ee.promobox.promoboxandroid.data.ErrorMessage;
 import ee.promobox.promoboxandroid.data.ErrorMessageArray;
 import ee.promobox.promoboxandroid.intents.SetStatusIntent;
 import ee.promobox.promoboxandroid.intents.ToastIntent;
+import ee.promobox.promoboxandroid.util.StatusEnum;
 
 /**
  * Created by Maxim on 15.12.2014.
@@ -80,98 +82,85 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
         try {
 
             JSONObject data = loadData(urls[0]);
-            if (onlySendData) return null;
+            if (onlySendData || service.getIsDownloading().get() || data == null){
+                Log.w(DOWNLOAD_FILE_TASK, "Exiting "+ DOWNLOAD_FILE_TASK);
+                return null;
+            }
 
-            if (service.getIsDownloading().get()) return null;
+            Log.d(DOWNLOAD_FILE_TASK, "Data: " + data.toString());
 
-            if (data != null) {
+            if (data.has("currentDt")){
+                Date serverDate = new Date(data.getLong("currentDt"));
+                Date serviceDate = service.getCurrentDate();
+                Date before;
+                Date after;
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(serverDate);
+                cal.add(Calendar.HOUR_OF_DAY, -8);
+                before = cal.getTime();
+                cal.setTime(serverDate);
+                cal.add(Calendar.HOUR_OF_DAY, 8);
+                after = cal.getTime();
+                if (serviceDate.before(before) || serviceDate.after(after)) {
+                    service.setCurrentDate(serverDate);
+                }
+            }
+            if (data.has("audioOut")) {
+                int deviceId = data.getInt("audioOut");
 
-                Log.d(DOWNLOAD_FILE_TASK, "Data: " + data.toString());
+                String device;
 
-                if (data.has("audioOut")) {
-                    int deviceId = data.getInt("audioOut");
-
-                    String device;
-
-                    switch (deviceId) {
-                        case 1:
-                            device = "AUDIO_HDMI";
-                            break;
-                        case 2:
-                            device = "AUDIO_SPDIF";
-                            break;
-                        default:
-                        case 0:
-                            device = "AUDIO_CODEC";
-                            break;
-                    }
-
-                    service.setAudioDevice(device);
+                switch (deviceId) {
+                    case 1:
+                        device = "AUDIO_HDMI";
+                        break;
+                    case 2:
+                        device = "AUDIO_SPDIF";
+                        break;
+                    default:
+                    case 0:
+                        device = "AUDIO_CODEC";
+                        break;
                 }
 
-                if (data.has("campaigns")) {
-                    service.setOrientation(data.optInt("orientation", MainActivity.ORIENTATION_LANDSCAPE));
-                    service.getSharedPref().edit().putInt("orientation", service.getOrientation()).commit();
+                service.setAudioDevice(device);
+            }
 
-                    handleCampaigns(data.getJSONArray("campaigns"));
-                } else {
-                    service.setCampaigns(new CampaignList());
-                    Log.w(DOWNLOAD_FILE_TASK, "Data has no campaigns.");
-                }
-                /*
-                Campigns are loaded to device and are set to campaigns in service.
-                Device is playing new campaign if was updated.
+            if (data.has("campaigns")) {
+                service.setOrientation(data.optInt("orientation", MainActivity.ORIENTATION_LANDSCAPE));
+                service.getSharedPref().edit().putInt("orientation", service.getOrientation()).commit();
 
-                Now, when campains are updated and new are set playing we may clear cache.
-                And then try play next file
-                 */
-
-                File jsonDataFile = new File(service.getROOT(), "data.json");
-                FileUtils.writeStringToFile(jsonDataFile, data.toString(), "UTF-8");
-
-                if (data.has("clearCache") && data.getBoolean("clearCache")){
-                    CampaignList campaignList = service.getCampaigns();
-                    for (File folder : service.getROOT().listFiles()){
-                        try{
-                            int id = Integer.parseInt(folder.getName());
-                            Log.d(DOWNLOAD_FILE_TASK,"Am in folder " + id);
-                            Campaign campaign = campaignList != null ? campaignList.getCampaignWithId(id) : null;
-                            if (campaign == null){
-                                FileUtils.deleteDirectory(folder);
-                                Log.d(DOWNLOAD_FILE_TASK,"Removing folder " + id);
-                            }
-                            else {
-                                for (File file: folder.listFiles()){
-                                    String fileName = file.getName();
-                                    if (!campaign.containsFile(fileName)){
-                                        FileUtils.deleteQuietly(file);
-                                        Log.d(DOWNLOAD_FILE_TASK,"Removing file \t" + fileName);
-                                    }
-                                    else {
-                                        Log.d(DOWNLOAD_FILE_TASK,"File is needed \t" + fileName);
-                                    }
-                                }
-                            }
-                        } catch (NumberFormatException ex){
-                            bManager.sendBroadcast(new ToastIntent(ex.getMessage()));
-                            service.addError(new ErrorMessage(ex.toString(), ex.getMessage(), ex.getStackTrace()), false);
-                        }
-                    }
-                }
-                if (data.has("openApp") && data.getBoolean("openApp")){
-                    Log.d(DOWNLOAD_FILE_TASK, " Received OPEN APP");
-                    service.startMainActivity();
-                }
-                if (data.has("nextFile")){
-                    int nextFile = data.getInt("nextFile");
-                    playThisFile(nextFile);
-                }
+                handleCampaigns(data.getJSONArray("campaigns"));
             } else {
-                Log.w(DOWNLOAD_FILE_TASK, "No data.");
+                service.setCampaigns(new CampaignList());
+                Log.w(DOWNLOAD_FILE_TASK, "Data has no campaigns.");
+            }
+            /*
+            Campigns are loaded to device and are set to campaigns in service.
+            Device is playing new campaign if was updated.
+
+            Now, when campains are updated and new are set playing we may clear cache.
+            And then try play next file
+             */
+
+            File jsonDataFile = new File(service.getROOT(), "data.json");
+            FileUtils.writeStringToFile(jsonDataFile, data.toString(), "UTF-8");
+
+            if (data.has("clearCache") && data.getBoolean("clearCache")){
+                Log.d(DOWNLOAD_FILE_TASK, "CLEARING CACHE");
+                clearCache();
+            }
+            if (data.has("openApp") && data.getBoolean("openApp")){
+                Log.d(DOWNLOAD_FILE_TASK, " Received OPEN APP");
+                service.startMainActivity();
+            }
+            if (data.has("nextFile")){
+                int nextFile = data.getInt("nextFile");
+                playThisFile(nextFile);
             }
         } catch (Exception ex) {
             Log.e(DOWNLOAD_FILE_TASK, ex.getMessage(), ex);
-            bManager.sendBroadcast(new ToastIntent(DOWNLOAD_FILE_TASK + ex.toString()));
+            bManager.sendBroadcast(new ToastIntent(String.format(MainActivity.ERROR_MESSAGE, 51 , ex.getClass().getSimpleName())));
             service.addError(new ErrorMessage(ex.toString(), ex.getMessage(), ex.getStackTrace()), false);
         }
 
@@ -201,7 +190,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
         Campaign serviceCampaign = service.getCampaigns() != null ? service.getCampaigns().getCampaignWithId(camp.getCampaignId()): null;
 
         List<CampaignFile> campaignFiles = camp.getFiles();
-        double loadStep = 100 / (campaignFiles.size()!= 0 ? campaignFiles.size() : 1);
+        double loadStep = 100d / (campaignFiles.size()!= 0 ? campaignFiles.size() : 1);
 
         for (int i = 0; i < campaignFiles.size(); i++) {
             CampaignFile f  = campaignFiles.get(i);
@@ -228,7 +217,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
 
             if (filesDifferent) {
 
-                bManager.sendBroadcast(new SetStatusIntent(
+                bManager.sendBroadcast(new SetStatusIntent( StatusEnum.DOWNLOADING,
                         "Downloading " + camp.getCampaignName() + " files "+ (i+1) + "/" + campaignFiles.size()));
 
                 Log.d(DOWNLOAD_FILE_TASK, "CampaignFIle "+f.getId()+" f.getSize() = " + f.getSize()
@@ -236,7 +225,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
                 downloadFile(String.format(MainService.DEFAULT_SERVER + "/service/files/%s", f.getId()), f.getId() + "", camp);
             }
         }
-        bManager.sendBroadcast(new SetStatusIntent(""));
+        bManager.sendBroadcast(new SetStatusIntent(StatusEnum.DOWNLOADED,""));
         service.setLoadingCampaignProgress(100);
         service.setLoadingCampaign(null);
         service.getIsDownloading().set(false);
@@ -277,7 +266,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
 
         } catch (Exception ex) {
             Log.d(DOWNLOAD_FILE_TASK, ex.getMessage(), ex);
-            bManager.sendBroadcast(new ToastIntent(DOWNLOAD_FILE_TASK + ex.toString()));
+            bManager.sendBroadcast(new ToastIntent(String.format(MainActivity.ERROR_MESSAGE, 52 , ex.getClass().getSimpleName())));
             service.addError(new ErrorMessage(ex.toString(), ex.getMessage(), ex.getStackTrace()), false);
         }
 
@@ -318,7 +307,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
             listInterface.put(obj);
 
         }
-        ComponentName onTop = getOnTopComponentInfo();
+        ComponentName onTop = service.getOnTopComponentInfo();
         json.put("isOnTop", onTop.getPackageName().startsWith(service.getPackageName()));
         json.put("onTopActivity", onTop.getClassName());
         json.put("ip", listInterface);
@@ -348,11 +337,11 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
         try{
             response = httpclient.execute(httppost);
         } catch (HttpHostConnectException ex){
-            bManager.sendBroadcast(new ToastIntent("loadData HttpHostConnectException"));
+            bManager.sendBroadcast(new ToastIntent("Internet connection problem (HttpHostConnectException)"));
             service.addError(new ErrorMessage(ex.toString(), ex.getMessage(), ex.getStackTrace()), false);
             return null;
         } catch (SocketException ex){
-            bManager.sendBroadcast(new ToastIntent("loadData SocketException"));
+            bManager.sendBroadcast(new ToastIntent("Internet connection problem (SocketException)"));
             service.addError(new ErrorMessage(ex.toString(), ex.getMessage(), ex.getStackTrace()), false);
             return null;
         }
@@ -374,11 +363,14 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
                 json = new JSONObject(content);
             } catch (JSONException e){
                 service.addError(new ErrorMessage("ServerError", error, null), false);
-                bManager.sendBroadcast(new ToastIntent(DOWNLOAD_FILE_TASK + error));
+                bManager.sendBroadcast(new ToastIntent("Error reading JSON from server"));
             }
             if ( json != null && json.has("error") && json.getString("error").equals("not_found_device")) {
-
+                bManager.sendBroadcast(new Intent(MainActivity.WRONG_UUID));
+                bManager.sendBroadcast(new ToastIntent("Wrong UUID"));
             }
+        } else {
+            Log.d(DOWNLOAD_FILE_TASK, "AM BUSY, AM DOWNLOADING");
         }
 
         return null;
@@ -417,7 +409,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
             Date lastWifiRestartDt = service.getLastWifiRestartDt();
             if ( lastWifiRestartDt == null || lastWifiRestartDt.before(calendar.getTime())){
                 Log.d(DOWNLOAD_FILE_TASK, "Restarting WiFi");
-                service.setLastWifiRestartDt(new Date());
+                service.setLastWifiRestartDt(service.getCurrentDate());
                 service.setWifiRestartCounter(service.getWifiRestartCounter() + 1 );
                 WifiManager wifiManager = (WifiManager) service.getSystemService(Context.WIFI_SERVICE);
                 if (wifiManager.isWifiEnabled()){
@@ -430,6 +422,39 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
             service.setWifiRestartCounter(0);
         }
         return result;
+    }
+
+    private void clearCache() throws IOException {
+        CampaignList campaignList = service.getCampaigns();
+        for (File folder : service.getROOT().listFiles()){
+            try{
+                if (folder.getName().equals("data.json")) {
+                    continue;
+                }
+                int id = Integer.parseInt(folder.getName());
+                Log.d(DOWNLOAD_FILE_TASK,"Am in folder " + id);
+                Campaign campaign = campaignList != null ? campaignList.getCampaignWithId(id) : null;
+                if (campaign == null){
+                    FileUtils.deleteDirectory(folder);
+                    Log.d(DOWNLOAD_FILE_TASK,"Removing folder " + id);
+                }
+                else {
+                    for (File file: folder.listFiles()){
+                        String fileName = file.getName();
+                        if (!campaign.containsFile(fileName)){
+                            FileUtils.deleteQuietly(file);
+                            Log.d(DOWNLOAD_FILE_TASK,"Removing file \t" + fileName);
+                        }
+                        else {
+                            Log.d(DOWNLOAD_FILE_TASK,"File is needed \t" + fileName);
+                        }
+                    }
+                }
+            } catch (NumberFormatException ex){
+                bManager.sendBroadcast(new ToastIntent("Wrong folder name on cleaning cache"));
+                service.addError(new ErrorMessage(ex.toString(), ex.getMessage(), ex.getStackTrace()), false);
+            }
+        }
     }
 
     private void handleCampaigns(JSONArray campaigns){
@@ -486,29 +511,23 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
 
             service.selectNextCampaign();
 
-            // NB! Reusing variable to store if we should update current campaign in main activity.
-            // If new campaign was assigned instead of missing one.
-            // If campaign stopped
-            // If campaign simply changed to another one.
-            campaignsUpdated = oldCampaign == null && service.getCurrentCampaign() != null
-                    || oldCampaign != null && service.getCurrentCampaign() == null
-                    || oldCampaign != null//&& service.getCurrentCampaign() != null
-                    && oldCampaign.getCampaignId() != service.getCurrentCampaign().getCampaignId();
-            if (campaignsUpdated) {
-
-                Intent update = new Intent(MainActivity.CAMPAIGN_UPDATE);
-                bManager.sendBroadcast(update);
-
-                Log.i(DOWNLOAD_FILE_TASK, "Send intent about update");
-
-            }
+//            // NB! Reusing variable to store if we should update current campaign in main activity.
+//            // If new campaign was assigned instead of missing one.
+//            // If campaign stopped
+//            // If campaign simply changed to another one.
+//            campaignsUpdated = oldCampaign == null && service.getCurrentCampaign() != null
+//                    || oldCampaign != null && service.getCurrentCampaign() == null
+//                    || oldCampaign != null//&& service.getCurrentCampaign() != null
+//                    && oldCampaign.getCampaignId() != service.getCurrentCampaign().getCampaignId();
+//            if (campaignsUpdated) {
+//
+//                Intent update = new Intent(MainActivity.CAMPAIGN_UPDATE);
+//                bManager.sendBroadcast(update);
+//
+//                Log.i(DOWNLOAD_FILE_TASK, "Send intent about update");
+//
+//            }
         }
-    }
-
-    private ComponentName getOnTopComponentInfo(){
-        ActivityManager am = (ActivityManager) service.getSystemService(Activity.ACTIVITY_SERVICE);
-        List<ActivityManager.RunningTaskInfo> taskInfo = am.getRunningTasks(1);
-        return taskInfo.get(0).topActivity;
     }
 
     public void setOnlySendData(boolean onlySendData) {

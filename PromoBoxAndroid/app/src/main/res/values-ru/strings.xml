@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">PromoBoxAndroid</string>
+    <string name="title_activity_main">PromoBox</string>
+    <string name="action_settings">Настройки</string>
+    <string name="service_name">MainService</string>
+    <string name="title_activity_first">FirstActivity</string>
+    <string name="quit"></string>
+    <string name="title_activity_fullscreen">FullscreenActivity</string>
+    <string name="main_activity_title_promo">Promo</string>
+    <string name="main_activity_title_box">Box</string>
+    <string name="main_activity_status_loading">Загружается</string>
+    <string name="silent_mode">Тихий режим</string>
+    <string name="silent_mode_summary">No Toasts will be shown</string>
+    <string name="device_id">Номер устройства :</string>
+    <string name="enter_device_id">Введите номер устройства. Его можно получить на сайте в разделе устройств.</string>
+    <string name="enter_uuid_button_txt">Продолжить</string>
+
+</resources>

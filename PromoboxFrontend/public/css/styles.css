@@ -1108,6 +1108,10 @@ input[readonly] {
 .device .company-info ul li {
     line-height: 25px;
     list-style: none;
+    overflow: hidden;
+    display: block;
+    text-overflow:ellipsis;
+    white-space: nowrap;
 }
 .device .company-info ul li span {
     color: #fff;

@@ -25,19 +25,17 @@ public class FirstActivity extends Activity {
         Button b = (Button)findViewById(R.id.first_start_button);
         final EditText et = (EditText)findViewById(R.id.first_start_device_id);
 
-        IntentFilter intentFilter = new IntentFilter();
-
-
-        LocalBroadcastManager bManager = LocalBroadcastManager.getInstance(this);
-        intentFilter.addAction(MainActivity.MAKE_TOAST);
-        bManager.registerReceiver(bReceiver, intentFilter);
-
 
         b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.i("FirstActivity", et.getText().toString());
+                String uuid = String.valueOf(et.getText());
+                Log.i("FirstActivity", uuid);
 
+                if ( uuid == null || uuid.equals("")){
+                    Toast.makeText(FirstActivity.this, "Wrong uuid", Toast.LENGTH_LONG).show();
+                    return;
+                }
                 Intent returnIntent = new Intent();
                 returnIntent.putExtra("result", MainActivity.RESULT_FINISH_FIRST_START);
                 returnIntent.putExtra("deviceUuid", et.getText().toString());
@@ -47,17 +45,7 @@ public class FirstActivity extends Activity {
         });
     }
 
-    private BroadcastReceiver bReceiver = new BroadcastReceiver() {
-        private final String RECEIVER_STRING = "FirstActivity" + "BroadcastReceiver";
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (action.equals(MainActivity.MAKE_TOAST)){
-                Log.d(RECEIVER_STRING, "Make TOAST");
-                Toast.makeText(getApplicationContext(),intent.getStringExtra("Toast"), Toast.LENGTH_LONG).show();
-            }
-        }
-    };
+
 
 
 }

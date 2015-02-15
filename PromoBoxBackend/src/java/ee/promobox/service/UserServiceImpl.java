@@ -285,11 +285,13 @@ public class UserServiceImpl implements UserService {
     @Override
 	public String findDeviceUuid() {
     	Session session = sessionFactory.getCurrentSession();
+    	
+    	String devUuid = "substr(CAST(uuid_in(CAST(md5(CAST(now() + CAST(s || ' minute' AS interval) AS text)) AS cstring)) AS TEXT), 0, 5)";
         
     	Query q = session.createSQLQuery(""
-    			+ "SELECT substr(uuid_in(md5((now() + (s || ' minute')::interval)::text)::cstring)::text, 0, 5) AS uuid "
-    			+ "FROM generate_series(1, 10) AS s"
-    			+ "WHERE NOT EXISTS (SELECT 1 FROM devices d WHERE d.uuid = substr(uuid_in(md5((now() + (s || ' minute')::interval)::text)::cstring)::text, 0, 5))");
+    			+ "SELECT " + devUuid +  " AS uuid "
+    			+ "FROM generate_series(1, 10) AS s "
+    			+ "WHERE NOT EXISTS (SELECT 1 FROM devices d WHERE d.uuid = " + devUuid + ")");
     	
     	List<String> uuids = q.list();
     	

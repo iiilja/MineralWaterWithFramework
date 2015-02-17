@@ -43,6 +43,7 @@
     "device_space": "Vaba mälu",
     "device_clearthecache": "Puhasta mälu",
     "device_save": "Salvesta",
+    "device_cancel": "Отмена",
     "device_remove": "Kustuta seade",
     "device_description": "Kirjeldus",
     "device_used": "Ootab",

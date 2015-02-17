@@ -281,8 +281,30 @@ public class UserServiceImpl implements UserService {
         
         return (Files) q.uniqueResult();
     }
+    
+    @Override
+	public String findDeviceUuid() {
+    	Session session = sessionFactory.getCurrentSession();
+    	
+    	String devUuid = "substr(CAST(uuid_in(CAST(md5(CAST(now() + CAST(s || ' minute' AS interval) AS text)) AS cstring)) AS TEXT), 0, 5)";
+        
+    	Query q = session.createSQLQuery(""
+    			+ "SELECT " + devUuid +  " AS uuid "
+    			+ "FROM generate_series(1, 10) AS s "
+    			+ "WHERE NOT EXISTS (SELECT 1 FROM devices d WHERE d.uuid = " + devUuid + ")");
+    	
+    	List<String> uuids = q.list();
+    	
+    	if (!uuids.isEmpty()) {
+    		return uuids.get(0);
+    	}
+    	
+		return null;
+	}
 
-    public void addCampaign(AdCampaigns campaign) {
+    
+
+	public void addCampaign(AdCampaigns campaign) {
         Session session = sessionFactory.getCurrentSession();
         session.save(campaign);
         session.flush();

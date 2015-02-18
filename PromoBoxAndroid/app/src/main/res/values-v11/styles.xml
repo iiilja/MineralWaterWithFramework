@@ -7,7 +7,7 @@
         <item name="colorAccent">@color/accentColor</item>
 
         <item name="android:textColorPrimary">@color/primaryColorDark</item>
-        <item name="android:colorFocusedHighlight">@color/focusedHighlight</item>.
+        <item name="android:colorFocusedHighlight">@color/focusedHighlight</item>
 
     </style>
 

@@ -50,6 +50,7 @@ import ee.promobox.promoboxandroid.data.ErrorMessage;
 import ee.promobox.promoboxandroid.data.ErrorMessageArray;
 import ee.promobox.promoboxandroid.intents.SetStatusIntent;
 import ee.promobox.promoboxandroid.intents.ToastIntent;
+import ee.promobox.promoboxandroid.util.InternetConnectionUtil;
 import ee.promobox.promoboxandroid.util.StatusEnum;
 
 /**
@@ -349,7 +350,6 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
         if (response.getStatusLine().getStatusCode() == 200 && !service.getIsDownloading().get()) {
             HttpEntity entity = response.getEntity();
             if (entity != null) {
-
                 String jsonString = IOUtils.toString(response.getEntity().getContent());
                 return new JSONObject(jsonString);
             }
@@ -366,6 +366,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
                 bManager.sendBroadcast(new ToastIntent("Error reading JSON from server"));
             }
             if ( json != null && json.has("error") && json.getString("error").equals("not_found_device")) {
+                Log.d(DOWNLOAD_FILE_TASK, "sending WRONG_UUID" );
                 bManager.sendBroadcast(new Intent(MainActivity.WRONG_UUID));
                 bManager.sendBroadcast(new ToastIntent("Wrong UUID"));
             }
@@ -386,28 +387,15 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
 
     private boolean isNetworkConnected() {
         ConnectivityManager cm = (ConnectivityManager) service.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo ni = cm.getActiveNetworkInfo();
-        boolean result = true;
-        if (ni == null) {
-            // There are no active networks.
-            result = false;
-        }
-        try {
-            InetAddress ipAddress = InetAddress.getByName("google.com");
-
-            if (ipAddress.equals("")) {
-                result = false;
-            }
-
-        } catch (Exception e) {
-            result = false;
-        }
+        boolean result = InternetConnectionUtil.isNetworkConnected(cm);
         if (!result ) {
             Log.d(DOWNLOAD_FILE_TASK, "Network not connected");
             Calendar calendar = Calendar.getInstance();
             calendar.add(Calendar.MINUTE ,-5);
             Date lastWifiRestartDt = service.getLastWifiRestartDt();
-            if ( lastWifiRestartDt == null || lastWifiRestartDt.before(calendar.getTime())){
+            if ( lastWifiRestartDt == null) {
+                service.setLastWifiRestartDt(service.getCurrentDate());
+            } else if ( lastWifiRestartDt.before(calendar.getTime())){
                 Log.d(DOWNLOAD_FILE_TASK, "Restarting WiFi");
                 service.setLastWifiRestartDt(service.getCurrentDate());
                 service.setWifiRestartCounter(service.getWifiRestartCounter() + 1 );
@@ -507,26 +495,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
         }
 
         if (campaignsUpdated) {
-            Campaign oldCampaign = service.getCurrentCampaign();
-
             service.selectNextCampaign();
-
-//            // NB! Reusing variable to store if we should update current campaign in main activity.
-//            // If new campaign was assigned instead of missing one.
-//            // If campaign stopped
-//            // If campaign simply changed to another one.
-//            campaignsUpdated = oldCampaign == null && service.getCurrentCampaign() != null
-//                    || oldCampaign != null && service.getCurrentCampaign() == null
-//                    || oldCampaign != null//&& service.getCurrentCampaign() != null
-//                    && oldCampaign.getCampaignId() != service.getCurrentCampaign().getCampaignId();
-//            if (campaignsUpdated) {
-//
-//                Intent update = new Intent(MainActivity.CAMPAIGN_UPDATE);
-//                bManager.sendBroadcast(update);
-//
-//                Log.i(DOWNLOAD_FILE_TASK, "Send intent about update");
-//
-//            }
         }
     }
 

@@ -12,6 +12,7 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.media.AudioManager;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
@@ -29,6 +30,7 @@ import ee.promobox.promoboxandroid.data.CampaignFileType;
 import ee.promobox.promoboxandroid.data.ErrorMessage;
 import ee.promobox.promoboxandroid.util.ExceptionHandler;
 import ee.promobox.promoboxandroid.util.FragmentPlaybackListener;
+import ee.promobox.promoboxandroid.util.InternetConnectionUtil;
 import ee.promobox.promoboxandroid.util.StatusEnum;
 
 
@@ -53,18 +55,19 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
 
     public final static int RESULT_FINISH_PLAY = 1;
     public final static int RESULT_FINISH_FIRST_START = 2;
+    public static final int RESULT_FINISH_NETWORK_SETTING = 3;
 
     public static final int ORIENTATION_LANDSCAPE = 1;
     public static final int ORIENTATION_PORTRAIT = 2;
     public static final int ORIENTATION_PORTRAIT_EMULATION = 3;
-
-    LocalBroadcastManager bManager;
+    private LocalBroadcastManager bManager;
 
     private MainService mainService;
     private int position;
     private Campaign campaign;
 
     private CampaignFile nextSpecificFile = null;
+
     private boolean wrongUuid = false;
 
     private String exceptionHandlerError;
@@ -171,11 +174,13 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
         Log.d(MAIN_ACTIVITY_STRING," onActivityResult() ,requestCode = " + requestCode);
         if (requestCode == RESULT_FINISH_FIRST_START) {
             try {
-
                 wrongUuid = false;
-                if (mainService != null){
+                if (mainService != null && data != null){
                     mainService.setUuid(data.getStringExtra("deviceUuid"));
                     mainService.checkAndDownloadCampaign();
+                } else if (data == null) {
+                    wrongUuid = true;
+                    startActivityForResult(new Intent(MainActivity.this, FirstActivity.class), RESULT_FINISH_FIRST_START);
                 }
 
 
@@ -186,6 +191,9 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
                 Log.e(this.getClass().getName(), ex.getMessage(), ex);
                 mainService.addError(new ErrorMessage(ex.toString(),ex.getMessage(),ex.getStackTrace()), false);
             }
+        } else if (requestCode == RESULT_FINISH_NETWORK_SETTING) {
+            wrongUuid = false;
+            mainService.checkAndDownloadCampaign();
         }
     }
 
@@ -279,7 +287,12 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
             if (mainService.getUuid() == null || mainService.getUuid().equals("fail")) {
                 if (! wrongUuid ){
                     wrongUuid = true;
-                    startActivityForResult(new Intent(MainActivity.this, FirstActivity.class), RESULT_FINISH_FIRST_START);
+                    ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+                    if ( !InternetConnectionUtil.isNetworkConnected(cm) ) {
+                        startActivityForResult(new Intent(MainActivity.this, WifiActivity.class), RESULT_FINISH_NETWORK_SETTING);
+                    } else {
+                        startActivityForResult(new Intent(MainActivity.this, FirstActivity.class), RESULT_FINISH_FIRST_START);
+                    }
                 }
             }
 
@@ -387,45 +400,53 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if (action.equals(CAMPAIGN_UPDATE)) {
+            switch (action) {
+                case CAMPAIGN_UPDATE:
 
-                if (mainService == null ||
-                        (campaign != null && campaign.equals(mainService.getCurrentCampaign()))) return;
+                    if (mainService == null ||
+                            (campaign != null && campaign.equals(mainService.getCurrentCampaign())))
+                        return;
 
-                campaign = mainService.getCurrentCampaign();
-                mainService.setActivityReceivedUpdate(true);
+                    campaign = mainService.getCurrentCampaign();
+                    mainService.setActivityReceivedUpdate(true);
 
-                campaignWasUpdated(RECEIVER_STRING);
+                    campaignWasUpdated(RECEIVER_STRING);
 
-            } else if (action.equals(MAKE_TOAST)){
+                    break;
+                case MAKE_TOAST:
 
-                String toastString = intent.getStringExtra("Toast");
-                Log.d(RECEIVER_STRING, "Make TOAST :" + toastString);
-                makeToast(toastString);
+                    String toastString = intent.getStringExtra("Toast");
+                    Log.d(RECEIVER_STRING, "Make TOAST :" + toastString);
+                    makeToast(toastString);
 
-            } else if (action.equals(PLAY_SPECIFIC_FILE)){
+                    break;
+                case PLAY_SPECIFIC_FILE:
 
-                nextSpecificFile = intent.getParcelableExtra("campaignFile");
-                Log.d(RECEIVER_STRING, "PLAY_SPECIFIC_FILE with id " + nextSpecificFile.getId());
-                startNextFile();
-            } else if ( action.equals(SET_STATUS)){
+                    nextSpecificFile = intent.getParcelableExtra("campaignFile");
+                    Log.d(RECEIVER_STRING, "PLAY_SPECIFIC_FILE with id " + nextSpecificFile.getId());
+                    startNextFile();
+                    break;
+                case SET_STATUS:
 
-                String status = intent.getStringExtra("status");
-                StatusEnum statusEnum = (StatusEnum) intent.getSerializableExtra("statusEnum");
-                Log.d(RECEIVER_STRING, SET_STATUS +" "+ status + " statusEnum = " + statusEnum.toString());
-                mainFragment.updateStatus(statusEnum,intent.getStringExtra("status"));
-            } else if ( action.equals(ADD_ERROR_MSG)){
+                    String status = intent.getStringExtra("status");
+                    StatusEnum statusEnum = (StatusEnum) intent.getSerializableExtra("statusEnum");
+                    Log.d(RECEIVER_STRING, SET_STATUS + " " + status + " statusEnum = " + statusEnum.toString());
+                    mainFragment.updateStatus(statusEnum, intent.getStringExtra("status"));
+                    break;
+                case ADD_ERROR_MSG:
 
-                ErrorMessage message = intent.getParcelableExtra("message");
-                Log.d(RECEIVER_STRING, "Got error MSG " + message.getMessage());
-                addError(message, false);
-            } else if ( action.equals(WRONG_UUID)){
+                    ErrorMessage message = intent.getParcelableExtra("message");
+                    Log.d(RECEIVER_STRING, "Got error MSG " + message.getMessage());
+                    addError(message, false);
+                    break;
+                case WRONG_UUID:
 
-                Log.d(RECEIVER_STRING, WRONG_UUID );
-                if ( !wrongUuid ) {
-                    wrongUuid = true;
-                    startActivityForResult(new Intent(MainActivity.this, FirstActivity.class), RESULT_FINISH_FIRST_START);
-                }
+                    Log.d(RECEIVER_STRING, WRONG_UUID);
+                    if (!wrongUuid) {
+                        wrongUuid = true;
+                        startActivityForResult(new Intent(MainActivity.this, FirstActivity.class), RESULT_FINISH_FIRST_START);
+                    }
+                    break;
             }
         }
     };

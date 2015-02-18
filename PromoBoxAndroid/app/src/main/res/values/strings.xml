@@ -19,5 +19,25 @@
     <string name="enter_uuid_button_txt">Start</string>
     <string name="player_unknown_time">00:00</string>
     <string name="no_active_campaigns">NO ACTIVE CAMPAIGN AT THE MOMENT</string>
+    <string name="network_ethernet">LAN Cable</string>
+    <string name="network_wifi">WLAN</string>
+    <string name="title_activity_wifi">Select network</string>
+
+    <string name="network_disconnected">Disconnected</string>
+    <string name="network_connected">CONNECTED</string>
+    <string name="network_connecting">Connecting...</string>
+
+    <string name="cancel">Cancel</string>
+    <string name="connect">Connect</string>
+    <string name="signal_strength">Signal strength</string>
+    <string name="security">Security</string>
+    <string name="password">Password</string>
+    <string name="show_password">Show password</string>
+
+    <string name="signal_strength_low">Low</string>
+    <string name="signal_strength_weak">Weak</string>
+    <string name="signal_strength_medium">Medium</string>
+    <string name="signal_strength_normal">Normal</string>
+    <string name="signal_strength_strong">Strong</string>
 
 </resources>

@@ -16,5 +16,19 @@
     <string name="device_id">Номер устройства :</string>
     <string name="enter_device_id">Введите номер устройства. Его можно получить на сайте в разделе устройств.</string>
     <string name="enter_uuid_button_txt">Продолжить</string>
+    <string name="no_active_campaigns">В ДАННЫЙ МОМЕНТ НЕТ НИ ОДНОЙ ВКТИВНОЙ КАМПАНИИ НА УСТРОЙСТВЕ</string>
+    <string name="network_ethernet">Сетевой кабель</string>
+    <string name="network_wifi">Беспроводная сеть</string>
+    <string name="title_activity_wifi">Выберите сеть</string>
+
+    <string name="network_disconnected">ОТКЛЮЧЕНО</string>
+    <string name="network_connected">ПОДКЛЮЧЕНО</string>
+    <string name="network_connecting">CONNECTING...</string>
+
+    <string name="cancel">Cancel</string>
+    <string name="signal_strength">Signal level</string>
+    <string name="security">Security</string>
+    <string name="password">Password</string>
+    <string name="show_password">Show password</string>
 
 </resources>

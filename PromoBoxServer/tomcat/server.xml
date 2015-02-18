@@ -45,6 +45,7 @@
 
     <Connector executor="tomcatThreadPool"
                port="8080" protocol="HTTP/1.1"
+               maxPostSize="650000000"
                connectionTimeout="15000"
                redirectPort="8443" />
   

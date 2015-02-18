@@ -32,14 +32,14 @@ public class TurningRelativeLayout extends RelativeLayout {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        Log.w("TurningrelativeLayout", "onmeasure :" + widthMeasureSpec + " heightMeasureSpec= "+heightMeasureSpec);
+//        Log.d("TurningrelativeLayout", "onmeasure :" + widthMeasureSpec + " heightMeasureSpec= "+heightMeasureSpec);
         if (rotationSet){
             if (this.widthMeasureSpec == null && this.heightMeasureSpec == null) {
-                Log.w("TurningrelativeLayout", "integers are NULL");
+                Log.d("TurningrelativeLayout", "integers are NULL");
                 this.widthMeasureSpec = widthMeasureSpec;
                 this.heightMeasureSpec = heightMeasureSpec;
             }
-            Log.w("TurningrelativeLayout", "onmeasure with rotation :" + this.widthMeasureSpec + " heightMeasureSpec= "+this.heightMeasureSpec);
+//            Log.w("TurningrelativeLayout", "onmeasure with rotation :" + this.widthMeasureSpec + " heightMeasureSpec= "+this.heightMeasureSpec);
             super.onMeasure(this.heightMeasureSpec, this.widthMeasureSpec);
             return;
         }

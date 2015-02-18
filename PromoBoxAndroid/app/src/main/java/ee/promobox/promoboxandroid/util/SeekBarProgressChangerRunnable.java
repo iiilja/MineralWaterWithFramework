@@ -22,15 +22,10 @@ public class SeekBarProgressChangerRunnable implements Runnable {
     @Override
     public void run() {
         SeekBar seekBar = seekBarWeakReference.get();
-        Log.w(TAG, (isKilled ? "AM KILLED": "am alive") + " my name is " + toString());
         if (!isKilled && seekBar != null && seekBar.getProgress() < seekBar.getMax()) {
-            seekBar.incrementProgressBy(1000);
-            Log.d(TAG, "progress = " + seekBar.getProgress());
-            seekBar.postDelayed(this, 1000);
+            seekBar.incrementProgressBy(100);
+//            Log.d(TAG, "progress = " + seekBar.getProgress());
+            seekBar.postDelayed(this, 100);
         }
     }
-//
-//    public void setKilled(boolean isKilled) {
-//        this.isKilled = isKilled;
-//    }
 }

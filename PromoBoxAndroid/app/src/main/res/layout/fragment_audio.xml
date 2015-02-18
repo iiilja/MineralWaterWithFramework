@@ -1,16 +1,13 @@
+<ee.promobox.promoboxandroid.widgets.TurningRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragment_main"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center_vertical"
+    tools:context="ee.promobox.promoboxandroid.FragmentAudio">
 
+    <include layout="@layout/player_controls_layout"/>
 
-    <ee.promobox.promoboxandroid.widgets.TurningRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/fragment_main"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center_vertical"
-        android:background="@drawable/player_background"
-        tools:context="ee.promobox.promoboxandroid.FragmentAudio">
-
-        <include layout="@layout/player_controls_layout"/>
-
-    </ee.promobox.promoboxandroid.widgets.TurningRelativeLayout>
+</ee.promobox.promoboxandroid.widgets.TurningRelativeLayout>
 

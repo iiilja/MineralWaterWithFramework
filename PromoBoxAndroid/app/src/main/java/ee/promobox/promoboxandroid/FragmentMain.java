@@ -1,23 +1,17 @@
 package ee.promobox.promoboxandroid;
 
 import android.app.Activity;
-import android.graphics.drawable.AnimationDrawable;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.os.Bundle;
 import android.app.Fragment;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import ee.promobox.promoboxandroid.util.FragmentPlaybackListener;
 import ee.promobox.promoboxandroid.util.StatusEnum;
-import ee.promobox.promoboxandroid.widgets.DownloadingAnimationDrawable;
-import ee.promobox.promoboxandroid.widgets.NotActiveAnimationDrawable;
+import ee.promobox.promoboxandroid.widgets.MyAnimatedDrawable;
 
 
 public class FragmentMain extends Fragment {
@@ -29,8 +23,8 @@ public class FragmentMain extends Fragment {
     private StatusEnum statusEnum = null;
     private String status = "";
 
-    private DownloadingAnimationDrawable downloadingAnimation ;
-    private NotActiveAnimationDrawable notActiveAnimationDrawable;
+    private MyAnimatedDrawable downloadingAnimation ;
+    private MyAnimatedDrawable notActiveAnimationDrawable;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -46,8 +40,8 @@ public class FragmentMain extends Fragment {
         Log.d(TAG,"onAttach");
         mainActivity = (MainActivity) activity;
 
-        notActiveAnimationDrawable = new NotActiveAnimationDrawable(mainActivity.getBaseContext());
-        downloadingAnimation = new  DownloadingAnimationDrawable(mainActivity.getBaseContext());
+        notActiveAnimationDrawable = new MyAnimatedDrawable(mainActivity.getBaseContext(),MyAnimatedDrawable.ZZZ, 0,49);
+        downloadingAnimation = new MyAnimatedDrawable(mainActivity.getBaseContext(),MyAnimatedDrawable.DOWNLOADING,3,51);
         super.onAttach(activity);
     }
 
@@ -68,24 +62,11 @@ public class FragmentMain extends Fragment {
 
     @Override
     public void onDestroy() {
-        recycleBitmap(downloadingAnimation);
-        recycleBitmap(notActiveAnimationDrawable);
+        downloadingAnimation.recycleSelf();
+        notActiveAnimationDrawable.recycleSelf();
         super.onDestroy();
     }
 
-    private void recycleBitmap(AnimationDrawable ad) {
-        if (ad != null) {
-            ad.stop();
-            for (int i = 0; i < ad.getNumberOfFrames(); ++i){
-                Drawable frame = ad.getFrame(i);
-                if (frame instanceof BitmapDrawable) {
-                    ((BitmapDrawable)frame).getBitmap().recycle();
-                }
-                frame.setCallback(null);
-            }
-            ad.setCallback(null);
-        }
-    }
 
 
     public void updateStatus( StatusEnum statusEnum, String status ){

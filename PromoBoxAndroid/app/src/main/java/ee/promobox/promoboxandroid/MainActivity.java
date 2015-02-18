@@ -389,6 +389,16 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
         return campaignFile;
     }
 
+    public void setPreviousFilePosition(){
+        position = position - 2;
+        if (position < 0 && campaign != null && campaign.getFiles() != null) {
+            position = campaign.getFiles().size() + position;
+            if (position < 0) {
+                position = 0;
+            }
+        }
+    }
+
     private void setCurrentFileId(int currentFileId) {
         Log.d(MAIN_ACTIVITY_STRING, "Current file id : " +currentFileId);
         mainService.setCurrentFileId(currentFileId);

@@ -16,6 +16,7 @@
     <string name="device_id">Номер устройства :</string>
     <string name="enter_device_id">Введите номер устройства. Его можно получить на сайте в разделе устройств.</string>
     <string name="enter_uuid_button_txt">Продолжить</string>
+    <string name="player_unknown_time">00:00</string>
     <string name="no_active_campaigns">В ДАННЫЙ МОМЕНТ НЕТ НИ ОДНОЙ ВКТИВНОЙ КАМПАНИИ НА УСТРОЙСТВЕ</string>
     <string name="network_ethernet">Сетевой кабель</string>
     <string name="network_wifi">Беспроводная сеть</string>
@@ -26,9 +27,16 @@
     <string name="network_connecting">CONNECTING...</string>
 
     <string name="cancel">Cancel</string>
+    <string name="connect">Connect</string>
     <string name="signal_strength">Signal level</string>
     <string name="security">Security</string>
     <string name="password">Password</string>
     <string name="show_password">Show password</string>
+
+    <string name="signal_strength_low">Низкий</string>
+    <string name="signal_strength_weak">Слабый</string>
+    <string name="signal_strength_medium">Средний</string>
+    <string name="signal_strength_normal">Хороший</string>
+    <string name="signal_strength_strong">Сильный</string>
 
 </resources>

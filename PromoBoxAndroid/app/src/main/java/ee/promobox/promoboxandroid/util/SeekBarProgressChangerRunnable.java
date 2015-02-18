@@ -11,6 +11,8 @@ import java.lang.ref.WeakReference;
 public class SeekBarProgressChangerRunnable implements Runnable {
     private String TAG = "SeekBarProgressChanger";
 
+    private boolean isKilled = false;
+
     private final WeakReference<SeekBar> seekBarWeakReference;
 
     public SeekBarProgressChangerRunnable(SeekBar seekBar){
@@ -20,10 +22,15 @@ public class SeekBarProgressChangerRunnable implements Runnable {
     @Override
     public void run() {
         SeekBar seekBar = seekBarWeakReference.get();
-        if (seekBar != null && seekBar.getProgress() < seekBar.getMax()) {
+        Log.w(TAG, (isKilled ? "AM KILLED": "am alive") + " my name is " + toString());
+        if (!isKilled && seekBar != null && seekBar.getProgress() < seekBar.getMax()) {
             seekBar.incrementProgressBy(1000);
             Log.d(TAG, "progress = " + seekBar.getProgress());
             seekBar.postDelayed(this, 1000);
         }
     }
+//
+//    public void setKilled(boolean isKilled) {
+//        this.isKilled = isKilled;
+//    }
 }

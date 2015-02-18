@@ -1,13 +1,11 @@
 package ee.promobox.promoboxandroid;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,11 +13,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.SeekBar;
-import android.widget.Toast;
 
 
 import java.io.File;
-import java.util.ArrayList;
 
 import ee.promobox.promoboxandroid.data.CampaignFile;
 import ee.promobox.promoboxandroid.data.CampaignFileType;
@@ -33,6 +29,8 @@ public class FragmentImage extends FragmentWithSeekBar {
 
     private ImageView slide;
     private View imageFragment;
+
+    private long pauseTie;
 
 
     private FragmentPlaybackListener playbackListener;
@@ -79,12 +77,7 @@ public class FragmentImage extends FragmentWithSeekBar {
         if (mainActivity.getOrientation() == MainActivity.ORIENTATION_PORTRAIT_EMULATION) {
             imageFragment.setRotation(270);
         }
-        CampaignFile campaignFile = mainActivity.getNextFile(CampaignFileType.IMAGE);
-        if (campaignFile != null) {
-            playImage(campaignFile);
-        } else {
-            playbackListener.onPlaybackStop();
-        }
+        tryNextFile();
 
     }
 
@@ -150,16 +143,19 @@ public class FragmentImage extends FragmentWithSeekBar {
     final Runnable r = new Runnable() {
         @Override
         public void run() {
-            CampaignFile campaignFile = mainActivity.getNextFile(CampaignFileType.IMAGE);
-            if (campaignFile != null) {
-                cleanUp();
-                playImage(campaignFile);
-
-            } else {
-                playbackListener.onPlaybackStop();
-            }
+            tryNextFile();
         }
     };
+
+    private void tryNextFile(){
+        CampaignFile campaignFile = mainActivity.getNextFile(CampaignFileType.IMAGE);
+        if (campaignFile != null) {
+            cleanUp();
+            playImage(campaignFile);
+        } else {
+            playbackListener.onPlaybackStop();
+        }
+    }
 
 
     private void playImage(CampaignFile campaignFile) {
@@ -183,8 +179,8 @@ public class FragmentImage extends FragmentWithSeekBar {
             slide.setImageBitmap(bitmap);
             int delay = getArguments().getInt("delay");
             super.setSeekBarMax(delay);
+            super.changeSeekBarState(true,0);
             slide.postDelayed(r, delay);
-            super.startSeekBarProgressChanger();
 
 
         } catch (Exception ex) {
@@ -218,5 +214,30 @@ public class FragmentImage extends FragmentWithSeekBar {
     public void onStopTrackingTouch(SeekBar seekBar) {
         slide.removeCallbacks(r);
         slide.postDelayed(r, seekBar.getMax() - seekBar.getProgress());
+    }
+
+    @Override
+    public void onPlayerPause() {
+        slide.removeCallbacks(r);
+
+    }
+
+    @Override
+    public void onPlayerPlay() {
+        slide.removeCallbacks(r);
+        slide.postDelayed(r, getRemainingTime());
+    }
+
+    @Override
+    public void onPlayerPrevious() {
+        slide.removeCallbacks(r);
+        mainActivity.setPreviousFilePosition();
+        tryNextFile();
+    }
+
+    @Override
+    public void onPlayerNext() {
+        slide.removeCallbacks(r);
+        tryNextFile();
     }
 }

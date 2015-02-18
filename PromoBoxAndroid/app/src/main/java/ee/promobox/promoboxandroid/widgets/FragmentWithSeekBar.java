@@ -5,27 +5,34 @@ import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import java.util.concurrent.TimeUnit;
 
 import ee.promobox.promoboxandroid.R;
+import ee.promobox.promoboxandroid.util.PlayerButtonsClickListener;
 import ee.promobox.promoboxandroid.util.PlayerUIVisibilityRunnable;
 import ee.promobox.promoboxandroid.util.SeekBarProgressChangerRunnable;
 
 /**
  * Created by ilja on 12.02.2015.
  */
-public abstract class FragmentWithSeekBar extends Fragment implements View.OnClickListener , SeekBar.OnSeekBarChangeListener{
+public abstract class FragmentWithSeekBar extends Fragment implements PlayerButtonsClickListener , SeekBar.OnSeekBarChangeListener{
+    private static final String TAG = "FragmentWithSeekBar";
+
     private static final long VISIBILITY_DELAY_MS = 60*1000;
 
     private Handler playerUIVisibilityHandler = new Handler();
-    private static Runnable visibilityRunnable;
-    private static Runnable seekBarProgressChanger;
+    private Runnable visibilityRunnable;
+    private SeekBarProgressChangerRunnable seekBarProgressChanger;
+
+    public boolean paused = false;
 
     private SeekBar seekBar;
     private View playerControlsLayout;
@@ -39,6 +46,13 @@ public abstract class FragmentWithSeekBar extends Fragment implements View.OnCli
         seekBarProgressChanger = new SeekBarProgressChangerRunnable(seekBar);
         visibilityRunnable = new PlayerUIVisibilityRunnable(playerControlsLayout);
         playerUIVisibilityHandler.postDelayed(visibilityRunnable, VISIBILITY_DELAY_MS);
+
+        Button pauseButton = (Button) playerControlsLayout.findViewById(R.id.player_pause);
+        Button previousButton = (Button) playerControlsLayout.findViewById(R.id.player_back);
+        Button nextButton = (Button) playerControlsLayout.findViewById(R.id.player_next);
+        pauseButton.setOnClickListener(this);
+        previousButton.setOnClickListener(this);
+        nextButton.setOnClickListener(this);
 
         view.setOnClickListener(this);
     }
@@ -58,8 +72,9 @@ public abstract class FragmentWithSeekBar extends Fragment implements View.OnCli
         playerFullTime.setText(getTimeString(duration));
     }
 
-    protected void startSeekBarProgressChanger(){
-        seekBar.post(seekBarProgressChanger);
+    protected void changeSeekBarState (boolean startingPlaying, int progress){
+        seekBar.setProgress(progress);
+        handleSeekBarRunnable(!startingPlaying);
     }
 
     @Override
@@ -75,11 +90,45 @@ public abstract class FragmentWithSeekBar extends Fragment implements View.OnCli
 
     @Override
     public void onClick(View v) {
+
         playerUIVisibilityHandler.removeCallbacks(visibilityRunnable);
-        int visibility = playerControlsLayout.getVisibility() == View.VISIBLE ? View.INVISIBLE : View.VISIBLE;
-        playerControlsLayout.setVisibility(visibility);
-        if (visibility == View.VISIBLE) {
+        if (playerControlsLayout.getVisibility() == View.VISIBLE) {
             playerUIVisibilityHandler.postDelayed(visibilityRunnable, VISIBILITY_DELAY_MS);
+        }
+
+        switch (v.getId()){
+            case R.id.player_back:
+                onPlayerPrevious();
+                return;
+            case R.id.player_pause:
+                paused = !paused;
+                handleSeekBarRunnable(paused);
+                if (paused) {
+                    onPlayerPause();
+                } else {
+                    onPlayerPlay();
+                }
+                return;
+            case R.id.player_next:
+                onPlayerNext();
+                return;
+        }
+
+        int newVisibility = playerControlsLayout.getVisibility() == View.VISIBLE ? View.INVISIBLE : View.VISIBLE;
+        playerControlsLayout.setVisibility(newVisibility);
+    }
+
+
+    private void handleSeekBarRunnable(boolean isPausedNow){
+        seekBar.removeCallbacks(seekBarProgressChanger);
+        Button pauseButton = (Button) playerControlsLayout.findViewById(R.id.player_pause);
+        if (isPausedNow) {
+            Log.d(TAG, "PAUSED NOW");
+            pauseButton.setBackground(getResources().getDrawable(R.drawable.player_play));
+        } else {
+            Log.d(TAG, "PLAYING NOW");
+            seekBar.post(seekBarProgressChanger);
+            pauseButton.setBackground(getResources().getDrawable(R.drawable.player_pause));
         }
     }
 
@@ -98,5 +147,7 @@ public abstract class FragmentWithSeekBar extends Fragment implements View.OnCli
         return hms;
     }
 
-
+    public int getRemainingTime(){
+        return seekBar.getMax() - seekBar.getProgress();
+    }
 }

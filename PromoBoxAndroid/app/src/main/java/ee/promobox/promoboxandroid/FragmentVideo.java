@@ -81,6 +81,17 @@ public class FragmentVideo extends FragmentWithSeekBar implements TextureView.Su
 
     }
 
+    private void tryNextFile() {
+        CampaignFile campaignFile = mainActivity.getNextFile(CampaignFileType.VIDEO);
+
+        if (campaignFile != null) {
+            playVideo(campaignFile);
+        } else {
+            cleanUp();
+            playbackListener.onPlaybackStop();
+        }
+    }
+
     public void playVideo(CampaignFile campaignFile) {
         try {
             cleanUp();
@@ -166,14 +177,7 @@ public class FragmentVideo extends FragmentWithSeekBar implements TextureView.Su
     public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture, int width, int height) {
         viewOriginalHeight =  videoView.getMeasuredHeight();
         viewOriginalWidth =  videoView.getMeasuredWidth();
-        CampaignFile campaignFile = mainActivity.getNextFile(CampaignFileType.VIDEO);
-
-        if (campaignFile != null) {
-            playVideo(campaignFile);
-        } else {
-            cleanUp();
-            playbackListener.onPlaybackStop();
-        }
+        tryNextFile();
     }
 
     @Override
@@ -227,28 +231,24 @@ public class FragmentVideo extends FragmentWithSeekBar implements TextureView.Su
 
         if (playbackState == ExoPlayer.STATE_READY){
             long duration = exoPlayer.getDuration();
+            long position = exoPlayer.getCurrentPosition();
             Log.d(TAG, "onPlayerStateChanged , exoPlayer.getDuration()" + duration);
             if (duration != ExoPlayer.UNKNOWN_TIME){
-                videoLengthHandler.postDelayed(videoLengthStopper, duration + 10 * 1000);
                 super.setSeekBarMax(duration);
+                if (playWhenReady) {
+                    super.changeSeekBarState(playWhenReady,(int) exoPlayer.getCurrentPosition());
+                    videoLengthHandler.postDelayed(videoLengthStopper, duration - position + 10 * 1000);
+                }
             }
         }
 
         if (playbackState == ExoPlayer.STATE_ENDED) {
-            CampaignFile campaignFile = mainActivity.getNextFile(CampaignFileType.VIDEO);
-
-            if (campaignFile != null) {
-                playVideo(campaignFile);
-            } else {
-                cleanUp();
-                playbackListener.onPlaybackStop();
-            }
+            tryNextFile();
         }
     }
 
     @Override
     public void onPlayWhenReadyCommitted() {
-        super.startSeekBarProgressChanger();
     }
 
     @Override
@@ -309,14 +309,39 @@ public class FragmentVideo extends FragmentWithSeekBar implements TextureView.Su
     public void onStopTrackingTouch(SeekBar seekBar) {
         long progress = seekBar.getProgress();
         if (exoPlayer != null){
-            exoPlayer.stop();
+            onPlayerPause();
             exoPlayer.seekTo(progress);
-            exoPlayer.setPlayWhenReady(true);
-            exoPlayer.prepare(audioRenderer,videoRenderer);
+            onPlayerPlay();
 
             videoLengthHandler.removeCallbacks(videoLengthStopper);
             videoLengthHandler.postDelayed(videoLengthStopper, seekBar.getMax()-progress + 10 * 1000);
         }
+    }
+
+    @Override
+    public void onPlayerPause() {
+        Log.d(TAG, "onPlayerPause");
+        videoLengthHandler.removeCallbacks(videoLengthStopper);
+        exoPlayer.setPlayWhenReady(false);
+    }
+
+    @Override
+    public void onPlayerPlay() {
+        Log.d(TAG, "onPlayerPlay");
+
+        videoLengthHandler.postDelayed(videoLengthStopper, exoPlayer.getDuration()-exoPlayer.getCurrentPosition() + 3 * 1000);
+        exoPlayer.setPlayWhenReady(true);
+    }
+
+    @Override
+    public void onPlayerPrevious() {
+        mainActivity.setPreviousFilePosition();
+        tryNextFile();
+    }
+
+    @Override
+    public void onPlayerNext() {
+        tryNextFile();
     }
 
 
@@ -325,8 +350,8 @@ public class FragmentVideo extends FragmentWithSeekBar implements TextureView.Su
         private final WeakReference<FragmentPlaybackListener> playbackListenerReference;
 
         VideoLengthWatcher( FragmentVideo fragment, FragmentPlaybackListener playbackListener){
-            fragmentReference = new WeakReference<FragmentVideo>(fragment);
-            playbackListenerReference = new WeakReference<FragmentPlaybackListener>(playbackListener);
+            fragmentReference = new WeakReference<>(fragment);
+            playbackListenerReference = new WeakReference<>(playbackListener);
         }
 
         @Override

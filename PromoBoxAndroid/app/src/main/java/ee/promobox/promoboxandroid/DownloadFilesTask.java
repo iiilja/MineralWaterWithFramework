@@ -212,7 +212,9 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
                     && (serviceCampaignFile.getUpdatedDt() < f.getUpdatedDt()
                         || serviceCampaignFile.getUpdatedDt() == 0 && f.getUpdatedDt() == 0 &&
                             file.length() != f.getSize())
-                    || serviceCampaignFile == null && file.length() != f.getSize();
+                    || file.length() != f.getSize()
+                        /*&& serviceCampaignFile == null */ ;
+                        // TODO: Make something in case if network was lost during downloading file
 
 
 

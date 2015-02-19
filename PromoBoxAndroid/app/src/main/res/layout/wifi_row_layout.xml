@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <ImageView
+        android:id="@+id/network_wifi_lock_image"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_margin="10sp"
+        android:src="@drawable/wifi0"
+        />
+
+    <ee.promobox.promoboxandroid.widgets.RoboticTextView
+        android:id="@+id/network_wifi_name"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_margin="10sp"
+        android:text="New Text"
+        android:layout_gravity="center_vertical"
+        android:clickable="false"
+        android:layout_toRightOf="@+id/network_wifi_lock_image"
+        android:layout_toEndOf="@+id/network_wifi_lock_image"
+        android:gravity="center_vertical" />
+
+    <TextView
+        android:id="@+id/network_wifi_status"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:text="@string/network_disconnected"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:gravity="center_vertical" />
+</RelativeLayout>

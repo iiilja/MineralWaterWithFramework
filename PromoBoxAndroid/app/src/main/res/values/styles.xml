@@ -18,8 +18,8 @@
 
     <style name="ButtonBarButton" />
 
-    <style name="myButtonStyle">
-        <item name="android:background">@color/myYellowButtonColor</item>
+    <style name="myButtonStyle" parent="android:Widget.Button">
+        <item name="android:background">@drawable/button</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_margin">5dp</item>

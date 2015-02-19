@@ -1,23 +1,18 @@
 package ee.promobox.promoboxandroid;
 
 import android.app.Activity;
-import android.graphics.drawable.AnimationDrawable;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.os.Bundle;
 import android.app.Fragment;
+import android.graphics.drawable.AnimationDrawable;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import ee.promobox.promoboxandroid.util.FragmentPlaybackListener;
 import ee.promobox.promoboxandroid.util.StatusEnum;
-import ee.promobox.promoboxandroid.widgets.DownloadingAnimationDrawable;
-import ee.promobox.promoboxandroid.widgets.NotActiveAnimationDrawable;
+import ee.promobox.promoboxandroid.widgets.MyAnimatedDrawable;
 
 
 public class FragmentMain extends Fragment {
@@ -29,8 +24,9 @@ public class FragmentMain extends Fragment {
     private StatusEnum statusEnum = null;
     private String status = "";
 
-    private DownloadingAnimationDrawable downloadingAnimation ;
-    private NotActiveAnimationDrawable notActiveAnimationDrawable;
+    private MyAnimatedDrawable downloadingAnimation ;
+    private MyAnimatedDrawable notActiveAnimationDrawable;
+    private AnimationDrawable previousAnimationDrawable;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -46,8 +42,8 @@ public class FragmentMain extends Fragment {
         Log.d(TAG,"onAttach");
         mainActivity = (MainActivity) activity;
 
-        notActiveAnimationDrawable = new NotActiveAnimationDrawable(mainActivity.getBaseContext());
-        downloadingAnimation = new  DownloadingAnimationDrawable(mainActivity.getBaseContext());
+        notActiveAnimationDrawable = new MyAnimatedDrawable(mainActivity.getBaseContext(),MyAnimatedDrawable.ZZZ, 0,49);
+        downloadingAnimation = new MyAnimatedDrawable(mainActivity.getBaseContext(),MyAnimatedDrawable.DOWNLOADING,3,51);
         super.onAttach(activity);
     }
 
@@ -68,24 +64,11 @@ public class FragmentMain extends Fragment {
 
     @Override
     public void onDestroy() {
-        recycleBitmap(downloadingAnimation);
-        recycleBitmap(notActiveAnimationDrawable);
+        downloadingAnimation.recycleSelf();
+        notActiveAnimationDrawable.recycleSelf();
         super.onDestroy();
     }
 
-    private void recycleBitmap(AnimationDrawable ad) {
-        if (ad != null) {
-            ad.stop();
-            for (int i = 0; i < ad.getNumberOfFrames(); ++i){
-                Drawable frame = ad.getFrame(i);
-                if (frame instanceof BitmapDrawable) {
-                    ((BitmapDrawable)frame).getBitmap().recycle();
-                }
-                frame.setCallback(null);
-            }
-            ad.setCallback(null);
-        }
-    }
 
 
     public void updateStatus( StatusEnum statusEnum, String status ){
@@ -97,27 +80,37 @@ public class FragmentMain extends Fragment {
             this.status = status;
         }
         if (imageView != null) {
+            AnimationDrawable newAnimationDrawable = null;
             if (statusEnum != null && !statusEnum.equals(this.statusEnum) || statusEnum != null) {
                 this.statusEnum = statusEnum;
                 switch (statusEnum){
                     case DOWNLOADED:
                         Log.d(TAG, "setting null animation");
-                        imageView.setImageDrawable(null);
                         break;
                     case DOWNLOADING:
                         Log.d(TAG, "setting downloadingAnimation");
-                        imageView.setImageDrawable(downloadingAnimation);
+                        newAnimationDrawable = downloadingAnimation;
                         break;
                     case NO_ACTIVE_CAMPAIGN:
                         Log.d(TAG, "setting ZZZ animation");
-                        imageView.setImageDrawable(notActiveAnimationDrawable);
+                        newAnimationDrawable = notActiveAnimationDrawable;
                         break;
                     case NO_FILES:
+                        Log.d(TAG, "setting ZZZ animation");
+                        newAnimationDrawable = notActiveAnimationDrawable;
                         break;
                 }
-            } else if (statusEnum == null){
-                imageView.setImageDrawable(null);
+            } else {
+                Log.d(TAG, "setting null animation");
             }
+            imageView.setImageDrawable(newAnimationDrawable);
+            if (previousAnimationDrawable != null && !previousAnimationDrawable.equals(newAnimationDrawable)){
+                previousAnimationDrawable.stop();
+            }
+            if (newAnimationDrawable != null  && !newAnimationDrawable.equals(previousAnimationDrawable)) {
+                newAnimationDrawable.start();
+            }
+            previousAnimationDrawable = newAnimationDrawable;
         }
 
     }

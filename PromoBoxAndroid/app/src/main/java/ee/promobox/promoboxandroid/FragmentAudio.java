@@ -1,7 +1,7 @@
 package ee.promobox.promoboxandroid;
 
 import android.app.Activity;
-import android.app.Fragment;
+import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -21,19 +21,17 @@ import com.google.android.exoplayer.SampleSource;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.lang.ref.WeakReference;
-import java.util.concurrent.TimeUnit;
 
 import ee.promobox.promoboxandroid.data.CampaignFile;
 import ee.promobox.promoboxandroid.data.CampaignFileType;
 import ee.promobox.promoboxandroid.data.ErrorMessage;
 import ee.promobox.promoboxandroid.util.FragmentPlaybackListener;
-import ee.promobox.promoboxandroid.util.PlayerUIVisibilityRunnable;
-import ee.promobox.promoboxandroid.util.SeekBarProgressChangerRunnable;
 import ee.promobox.promoboxandroid.widgets.FragmentWithSeekBar;
+import ee.promobox.promoboxandroid.widgets.MyAnimatedDrawable;
 
 
 //https://github.com/felixpalmer/android-visualizer
-public class FragmentAudio extends FragmentWithSeekBar implements ExoPlayer.Listener {
+public class FragmentAudio extends FragmentWithSeekBar implements ExoPlayer.Listener{
 
     private static final String TAG = "AudioActivity ";
 
@@ -47,15 +45,22 @@ public class FragmentAudio extends FragmentWithSeekBar implements ExoPlayer.List
     private static Runnable audioLengthStopper;
 
     private View audioView;
+    private MyAnimatedDrawable audioAnimation;
 
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.d(TAG, "onCreateView");
         View view = inflater.inflate(R.layout.fragment_audio, container, false);
+        audioAnimation = new MyAnimatedDrawable(mainActivity.getBaseContext(), MyAnimatedDrawable.AUDIO, 0, 23);
+        view.setBackground(audioAnimation);
+        audioAnimation.start();
         super.setView(view);
         view.setOnLongClickListener(mainActivity);
         audioView = view;
+
+
         return view;
     }
 
@@ -87,6 +92,7 @@ public class FragmentAudio extends FragmentWithSeekBar implements ExoPlayer.List
     @Override
     public void onDestroy() {
         cleanUp();
+        audioAnimation.recycleSelf();
         super.onDestroy();
     }
 
@@ -132,12 +138,20 @@ public class FragmentAudio extends FragmentWithSeekBar implements ExoPlayer.List
 
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+        if (playbackState == ExoPlayer.STATE_PREPARING){
+            Log.d(TAG, "ExoPlayer.STATE_PREPARING ");
+        }
         if (playbackState == ExoPlayer.STATE_READY){
             long duration = exoPlayer.getDuration();
-            Log.d(TAG, "onPlayerStateChanged , exoPlayer.getDuration()" + duration);
+            long position = exoPlayer.getCurrentPosition();
+            Log.d(TAG, "ExoPlayer.STATE_READY , exoPlayer.getDuration()" + duration);
             if (duration != ExoPlayer.UNKNOWN_TIME){
                 super.setSeekBarMax( duration );
-                audioLengthHandler.postDelayed(audioLengthStopper, duration + 10 * 1000);
+                if (playWhenReady) {
+                    audioAnimation.start();
+                    super.changeSeekBarState(playWhenReady,(int) exoPlayer.getCurrentPosition());
+                    audioLengthHandler.postDelayed(audioLengthStopper, duration -position + 10 * 1000);
+                }
             }
         }
         if (playbackState == ExoPlayer.STATE_ENDED) {
@@ -147,7 +161,7 @@ public class FragmentAudio extends FragmentWithSeekBar implements ExoPlayer.List
 
     @Override
     public void onPlayWhenReadyCommitted() {
-        super.startSeekBarProgressChanger();
+//        Log.d(TAG, "onPlayWhenReadyCommitted");
     }
 
     @Override
@@ -208,8 +222,35 @@ public class FragmentAudio extends FragmentWithSeekBar implements ExoPlayer.List
             exoPlayer.seekTo(progress);
 
             audioLengthHandler.removeCallbacks(audioLengthStopper);
-            audioLengthHandler.postDelayed(audioLengthStopper, seekBar.getMax()-progress + 10 * 1000);
+            audioLengthHandler.postDelayed(audioLengthStopper, seekBar.getMax()-progress + 3 * 1000);
         }
+    }
+
+    @Override
+    public void onPlayerPause() {
+        Log.d(TAG, "onPlayerPause");
+        audioAnimation.stop();
+        audioLengthHandler.removeCallbacks(audioLengthStopper);
+        exoPlayer.setPlayWhenReady(false);
+    }
+
+    @Override
+    public void onPlayerPlay() {
+        Log.d(TAG, "onPlayerPlay");
+
+        audioLengthHandler.postDelayed(audioLengthStopper, exoPlayer.getDuration()-exoPlayer.getCurrentPosition() + 3 * 1000);
+        exoPlayer.setPlayWhenReady(true);
+    }
+
+    @Override
+    public void onPlayerPrevious() {
+        mainActivity.setPreviousFilePosition();
+        tryNextFile();
+    }
+
+    @Override
+    public void onPlayerNext() {
+        tryNextFile();
     }
 
 
@@ -221,11 +262,6 @@ public class FragmentAudio extends FragmentWithSeekBar implements ExoPlayer.List
         AudioLengthWatcher( FragmentAudio fragment, FragmentPlaybackListener playbackListener){
             fragmentAudioReference = new WeakReference<>(fragment);
             fragmentVideoReference =  null;
-            playbackListenerReference = new WeakReference<>(playbackListener);
-        }
-        AudioLengthWatcher( FragmentVideo fragment, FragmentPlaybackListener playbackListener){
-            fragmentVideoReference = new WeakReference<>(fragment);
-            fragmentAudioReference = null;
             playbackListenerReference = new WeakReference<>(playbackListener);
         }
 

@@ -12,11 +12,15 @@ import ee.promobox.service.Session;
 import ee.promobox.service.SessionService;
 import ee.promobox.service.UserService;
 import ee.promobox.util.RequestUtils;
+
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.validator.routines.EmailValidator;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -24,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
@@ -45,6 +50,39 @@ public class UserController {
     private SessionService sessionService;
     
 
+    @RequestMapping("/user/register")
+    public ModelAndView userRegisterHandler(
+    		@RequestBody String json,
+    		HttpServletRequest request,
+    		HttpServletResponse responce) throws Exception {
+    	
+    	JSONObject req = new JSONObject(json);
+    	JSONObject resp = RequestUtils.getErrorResponse();
+    	
+    	String email = req.getString("email");
+    	if (!EmailValidator.getInstance().isValid(email)) { // validate email
+    		
+    		resp.put("response", RequestUtils.ERROR);
+    	} else {
+    		Clients client = new Clients();
+    		client.setCompanyName(req.getString("companyName"));
+    		userService.addClient(client);
+    		
+    		Users user = new Users();
+    		user.setFirstname(req.getString("firstname"));
+    		user.setSurname(req.getString("surname"));
+    		user.setPassword(req.getString("password"));
+    		user.setClientId(client.getId());
+    		user.setCreatedDt(new Date());
+    		user.setActive(false);
+    		userService.addUser(user);
+    		
+    		resp.put("response", RequestUtils.OK);
+    	}
+
+    	return RequestUtils.printResult(resp.toString(), responce);
+    }
+    
     @RequestMapping("/user/login")
     public ModelAndView userLoginHandler(
             @RequestParam String email,

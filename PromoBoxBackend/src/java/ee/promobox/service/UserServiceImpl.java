@@ -421,5 +421,19 @@ public class UserServiceImpl implements UserService {
         session.save(errorLog);
         session.flush();
 	}
+    
+    @Override
+	public void addClient(Clients client) {
+		Session session = sessionFactory.getCurrentSession();
+        session.save(client);
+        session.flush();
+	}
+    
+    @Override
+   	public void addUser(Users user) {
+   		Session session = sessionFactory.getCurrentSession();
+           session.save(user);
+           session.flush();
+   	}
 
 }

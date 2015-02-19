@@ -100,4 +100,7 @@ public interface UserService {
     public void deleteDeviceCampaign(int deviceId, int campaignId);
     
     public void addErrorLog(ErrorLog errorLog);
+    
+    public void addClient(Clients client);
+    public void addUser(Users user);
 }

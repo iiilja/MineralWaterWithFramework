@@ -10,6 +10,7 @@ import ee.promobox.entity.AdCampaigns;
 import ee.promobox.entity.CampaignsFiles;
 import ee.promobox.entity.Devices;
 import ee.promobox.entity.DevicesCampaigns;
+import ee.promobox.entity.ErrorLog;
 import ee.promobox.jms.MailDto;
 import ee.promobox.service.Session;
 import ee.promobox.service.SessionService;
@@ -97,6 +98,8 @@ public class DevicesController {
         	resp.put("currentDt", new Date().getTime());
         	
             JSONObject objectGiven = new JSONObject(json);
+            
+            
 
             d.setFreeSpace(objectGiven.has("freeSpace") ? objectGiven.getLong("freeSpace") : 0);
             d.setCache(objectGiven.has("cache") ? objectGiven.getLong("cache") : 0);
@@ -111,6 +114,21 @@ public class DevicesController {
             
             if (objectGiven.has("ip")) {
                 d.setNetworkData(objectGiven.getJSONArray("ip").toString());
+            }
+            
+            if (objectGiven.has("errors")) {
+            	JSONArray errors = objectGiven.getJSONArray("errors");
+            	for (int i = 0; i < errors.length(); i++) {
+            		JSONObject jsonError = errors.getJSONObject(i);
+            		
+            		ErrorLog errorLog = new ErrorLog();
+            		errorLog.setName(jsonError.getString("name"));
+            		errorLog.setMessage(jsonError.getString("message"));
+            		errorLog.setStackTrace(jsonError.getString("stackTrace"));
+            		errorLog.setCreatedDt(new Date(jsonError.getInt("date")));
+            		
+            		userService.addErrorLog(errorLog);
+            	}
             }
 
             resp.put("audioOut", d.getAudioOut());

@@ -10,8 +10,10 @@ import ee.promobox.entity.CampaignsFiles;
 import ee.promobox.entity.Clients;
 import ee.promobox.entity.Devices;
 import ee.promobox.entity.DevicesCampaigns;
+import ee.promobox.entity.ErrorLog;
 import ee.promobox.entity.Files;
 import ee.promobox.entity.Users;
+
 import java.util.List;
 
 /**
@@ -96,4 +98,6 @@ public interface UserService {
     public List<CampaignsFiles> findCampaignFileByIds(List<Integer> fileIds);
     
     public void deleteDeviceCampaign(int deviceId, int campaignId);
+    
+    public void addErrorLog(ErrorLog errorLog);
 }

@@ -64,6 +64,7 @@ dependencies {
     compile 'commons-httpclient:commons-httpclient:3.1'
     compile 'commons-io:commons-io:2.4'
     compile 'commons-pool:commons-pool:1.6'
+    compile 'commons-validator:commons-validator:1.4.0'
     compile 'log4j:log4j:1.2.17'
     compile 'com.sun.mail:javax.mail:1.5.2'
     compile 'com.sun.mail:smtp:1.5.2'

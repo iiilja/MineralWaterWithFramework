@@ -2,6 +2,7 @@ package ee.promobox.promoboxandroid;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,6 +26,7 @@ public class FragmentMain extends Fragment {
 
     private MyAnimatedDrawable downloadingAnimation ;
     private MyAnimatedDrawable notActiveAnimationDrawable;
+    private AnimationDrawable previousAnimationDrawable;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -78,27 +80,37 @@ public class FragmentMain extends Fragment {
             this.status = status;
         }
         if (imageView != null) {
+            AnimationDrawable newAnimationDrawable = null;
             if (statusEnum != null && !statusEnum.equals(this.statusEnum) || statusEnum != null) {
                 this.statusEnum = statusEnum;
                 switch (statusEnum){
                     case DOWNLOADED:
                         Log.d(TAG, "setting null animation");
-                        imageView.setImageDrawable(null);
                         break;
                     case DOWNLOADING:
                         Log.d(TAG, "setting downloadingAnimation");
-                        imageView.setImageDrawable(downloadingAnimation);
+                        newAnimationDrawable = downloadingAnimation;
                         break;
                     case NO_ACTIVE_CAMPAIGN:
                         Log.d(TAG, "setting ZZZ animation");
-                        imageView.setImageDrawable(notActiveAnimationDrawable);
+                        newAnimationDrawable = notActiveAnimationDrawable;
                         break;
                     case NO_FILES:
+                        Log.d(TAG, "setting ZZZ animation");
+                        newAnimationDrawable = notActiveAnimationDrawable;
                         break;
                 }
-            } else if (statusEnum == null){
-                imageView.setImageDrawable(null);
+            } else {
+                Log.d(TAG, "setting null animation");
             }
+            imageView.setImageDrawable(newAnimationDrawable);
+            if (previousAnimationDrawable != null && !previousAnimationDrawable.equals(newAnimationDrawable)){
+                previousAnimationDrawable.stop();
+            }
+            if (newAnimationDrawable != null  && !newAnimationDrawable.equals(previousAnimationDrawable)) {
+                newAnimationDrawable.start();
+            }
+            previousAnimationDrawable = newAnimationDrawable;
         }
 
     }

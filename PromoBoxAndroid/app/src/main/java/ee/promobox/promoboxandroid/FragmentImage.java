@@ -25,12 +25,10 @@ import ee.promobox.promoboxandroid.widgets.FragmentWithSeekBar;
 
 public class FragmentImage extends FragmentWithSeekBar {
 
-    private final String IMAGE_FRAGMENT_STRING = "ImageFragment ";
+    private static final String TAG = "ImageFragment ";
 
     private ImageView slide;
     private View imageFragment;
-
-    private long pauseTie;
 
 
     private FragmentPlaybackListener playbackListener;
@@ -41,12 +39,12 @@ public class FragmentImage extends FragmentWithSeekBar {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(IMAGE_FRAGMENT_STRING, "onCreate");
+        Log.d(TAG, "onCreate");
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Log.d(IMAGE_FRAGMENT_STRING, "onCreateView");
+        Log.d(TAG, "onCreateView");
         imageFragment = inflater.inflate(R.layout.fragment_image, container, false);
         super.setView(imageFragment);
 
@@ -57,13 +55,13 @@ public class FragmentImage extends FragmentWithSeekBar {
 
     @Override
     public void onInflate(Activity activity, AttributeSet attrs, Bundle savedInstanceState) {
-        Log.d(IMAGE_FRAGMENT_STRING, "onInflate");
+        Log.d(TAG, "onInflate");
         super.onInflate(activity, attrs, savedInstanceState);
     }
 
     @Override
     public void onAttach(Activity activity) {
-        Log.d(IMAGE_FRAGMENT_STRING, "onAttach");
+        Log.d(TAG, "onAttach");
         super.onAttach(activity);
         playbackListener = (FragmentPlaybackListener) activity;
         mainActivity = (MainActivity) activity;
@@ -71,8 +69,9 @@ public class FragmentImage extends FragmentWithSeekBar {
 
     @Override
     public void onResume() {
-        Log.d(IMAGE_FRAGMENT_STRING, "onResume");
+        Log.d(TAG, "onResume");
         super.onResume();
+        slide.removeCallbacks(runnable);
 
         if (mainActivity.getOrientation() == MainActivity.ORIENTATION_PORTRAIT_EMULATION) {
             imageFragment.setRotation(270);
@@ -83,16 +82,17 @@ public class FragmentImage extends FragmentWithSeekBar {
 
     @Override
     public void onPause() {
-        Log.d(IMAGE_FRAGMENT_STRING, "onPause");
-        slide.getHandler().removeCallbacks(r);
+        Log.d(TAG, "onPause");
+        slide.removeCallbacks(runnable);
         recycleBitmap();
+        slide.setImageDrawable(null);
         super.onPause();
     }
 
 
     @Override
     public void onDestroy() {
-        Log.d(IMAGE_FRAGMENT_STRING, "onDestroy");
+        Log.d(TAG, "onDestroy");
 
         slide.destroyDrawingCache();
         slide = null;
@@ -116,7 +116,7 @@ public class FragmentImage extends FragmentWithSeekBar {
 
 
         } catch (Exception ex) {
-            Log.e(IMAGE_FRAGMENT_STRING, ex.getMessage(), ex);
+            Log.e(TAG, ex.getMessage(), ex);
             makeToast(String.format(
                     MainActivity.ERROR_MESSAGE, 21, ex.getClass().getSimpleName()));
             mainActivity.addError(new ErrorMessage(ex), false);
@@ -133,14 +133,14 @@ public class FragmentImage extends FragmentWithSeekBar {
             source.recycle();
             return newBitmap;
         } catch (Exception ex){
-            Log.e(IMAGE_FRAGMENT_STRING, ex.getMessage(), ex);
+            Log.e(TAG, ex.getMessage(), ex);
             makeToast("Error rotating image");
             mainActivity.addError(new ErrorMessage(ex), false);
             return source;
         }
     }
 
-    final Runnable r = new Runnable() {
+    final Runnable runnable = new Runnable() {
         @Override
         public void run() {
             tryNextFile();
@@ -163,11 +163,11 @@ public class FragmentImage extends FragmentWithSeekBar {
         File file = new File(path);
         if (!file.exists()){
             String message = " No file in path " + path;
-            Log.e(IMAGE_FRAGMENT_STRING, message);
+            Log.e(TAG, message);
             makeToast(message);
             mainActivity.addError(new ErrorMessage(
-                    "FileNotFoundException",IMAGE_FRAGMENT_STRING + message,null), false);
-            slide.postDelayed(r, 1000);
+                    "FileNotFoundException", TAG + message,null), false);
+            slide.postDelayed(runnable, 1000);
             return;
         }
         try {
@@ -179,13 +179,13 @@ public class FragmentImage extends FragmentWithSeekBar {
             slide.setImageBitmap(bitmap);
             int delay = getArguments().getInt("delay");
             super.setSeekBarMax(delay);
-            super.changeSeekBarState(true,0);
-            slide.postDelayed(r, delay);
+            super.changeSeekBarState(true, 0);
+            slide.postDelayed(runnable, delay);
 
 
         } catch (Exception ex) {
-            Log.e(IMAGE_FRAGMENT_STRING, ex.getMessage(), ex);
-            Log.e(IMAGE_FRAGMENT_STRING, "Path = " + path );
+            Log.e(TAG, ex.getMessage(), ex);
+            Log.e(TAG, "Path = " + path );
 
             makeToast(String.format(
                     MainActivity.ERROR_MESSAGE, 22, ex.getClass().getSimpleName()));
@@ -212,32 +212,32 @@ public class FragmentImage extends FragmentWithSeekBar {
 
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
-        slide.removeCallbacks(r);
-        slide.postDelayed(r, seekBar.getMax() - seekBar.getProgress());
+        slide.removeCallbacks(runnable);
+        slide.postDelayed(runnable, seekBar.getMax() - seekBar.getProgress());
     }
 
     @Override
     public void onPlayerPause() {
-        slide.removeCallbacks(r);
+        slide.removeCallbacks(runnable);
 
     }
 
     @Override
     public void onPlayerPlay() {
-        slide.removeCallbacks(r);
-        slide.postDelayed(r, getRemainingTime());
+        slide.removeCallbacks(runnable);
+        slide.postDelayed(runnable, getRemainingTime());
     }
 
     @Override
     public void onPlayerPrevious() {
-        slide.removeCallbacks(r);
+        slide.removeCallbacks(runnable);
         mainActivity.setPreviousFilePosition();
         tryNextFile();
     }
 
     @Override
     public void onPlayerNext() {
-        slide.removeCallbacks(r);
+        slide.removeCallbacks(runnable);
         tryNextFile();
     }
 }

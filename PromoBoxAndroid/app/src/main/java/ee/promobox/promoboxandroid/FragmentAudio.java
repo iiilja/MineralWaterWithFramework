@@ -51,6 +51,7 @@ public class FragmentAudio extends FragmentWithSeekBar implements ExoPlayer.List
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.d(TAG, "onCreateView");
         View view = inflater.inflate(R.layout.fragment_audio, container, false);
         audioAnimation = new MyAnimatedDrawable(mainActivity.getBaseContext(), MyAnimatedDrawable.AUDIO, 0, 23);
         view.setBackground(audioAnimation);

@@ -19,10 +19,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
-
-import java.util.ArrayList;
 
 import ee.promobox.promoboxandroid.data.Campaign;
 import ee.promobox.promoboxandroid.data.CampaignFile;
@@ -51,7 +48,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
 
     private static final String NO_ACTIVE_CAMPAIGN = "NO ACTIVE CAMPAIGN AT THE MOMENT";
 
-    public final static String MAIN_ACTIVITY_STRING = "MainActivity";
+    public final static String TAG = "MainActivity";
 
     public final static int RESULT_FINISH_PLAY = 1;
     public final static int RESULT_FINISH_FIRST_START = 2;
@@ -130,7 +127,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
     }
 
     private void startNextFile() {
-        Log.d(MAIN_ACTIVITY_STRING, "startNextFile()");
+        Log.d(TAG, "startNextFile()");
         CampaignFile campaignFile = getNextFile(null);
         Fragment fragment = null;
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
@@ -160,18 +157,20 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
             fragment = videoFragment;
 
         }
-        if (fragment != null && fragment.isAdded() ){
-            //fragment.onPause();
+        if (fragment != null && fragment.equals(currentFragment) ){
+            Log.w(TAG, "Current fragment stays (onPause, onResume)");
+            fragment.onPause();
             fragment.onResume();
         } else if ( fragment != null ){
             transaction.replace(R.id.main_view, fragment);
             transaction.addToBackStack(fragment.toString());
-            transaction.commitAllowingStateLoss();
+            transaction.commit();
         }
+        currentFragment = fragment;
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d(MAIN_ACTIVITY_STRING," onActivityResult() ,requestCode = " + requestCode);
+        Log.d(TAG," onActivityResult() ,requestCode = " + requestCode);
         if (requestCode == RESULT_FINISH_FIRST_START) {
             try {
                 wrongUuid = false;
@@ -200,7 +199,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d(MAIN_ACTIVITY_STRING, "onResume");
+        Log.d(TAG, "onResume");
 
         hideSystemUI();
 
@@ -233,9 +232,14 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
     }
 
     @Override
+    public void onBackPressed() {
+        Log.w(TAG, "Back pressed, do nothing");
+    }
+
+    @Override
     protected void onPause() {
         super.onPause();
-        Log.d(MAIN_ACTIVITY_STRING, "onPause");
+        Log.d(TAG, "onPause");
     }
 
     private void setAudioDeviceFromPrefs() {
@@ -256,7 +260,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.d(MAIN_ACTIVITY_STRING,"onDestroy");
+        Log.d(TAG,"onDestroy");
 
         if (mBound) {
             unbindService(mConnection);
@@ -270,7 +274,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
         public void onServiceConnected(ComponentName className,
                                        IBinder binder) {
 
-            Log.d(MAIN_ACTIVITY_STRING, "onServiceConnected");
+            Log.d(TAG, "onServiceConnected");
             MainService.MainServiceBinder b = (MainService.MainServiceBinder) binder;
 
             mainService = b.getService();
@@ -281,7 +285,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
 
             if (campaign == null || !campaign.equals(mainService.getCurrentCampaign())){
                 campaign = mainService.getCurrentCampaign();
-                campaignWasUpdated(MAIN_ACTIVITY_STRING + " mConnection");
+                campaignWasUpdated(TAG + " mConnection");
             }
 
             if (mainService.getUuid() == null || mainService.getUuid().equals("fail")) {
@@ -331,7 +335,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
 
     @Override
     public void onPlaybackStop() {
-        Log.w(MAIN_ACTIVITY_STRING, "onPlaybackStop");
+        Log.w(TAG, "onPlaybackStop");
         startNextFile();
     }
 
@@ -352,7 +356,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
 
             if (position == campaign.getFiles().size()) {
                 position = 0;
-                Log.i(MAIN_ACTIVITY_STRING, "Starting from position 0");
+                Log.i(TAG, "Starting from position 0");
             }
 
             if (campaign.getFiles().size() == 1) {
@@ -371,10 +375,11 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
         } else {
             if (campaign != null ){
                 mainFragment.updateStatus(StatusEnum.NO_FILES,"No files to play in " + campaign.getCampaignName());
+                mainService.setCurrentFileId(0);
             } else {
                 mainFragment.updateStatus(StatusEnum.NO_ACTIVE_CAMPAIGN,NO_ACTIVE_CAMPAIGN);
             }
-            Log.i(MAIN_ACTIVITY_STRING, "CAMPAIGN = NULL");
+            Log.i(TAG, "CAMPAIGN = NULL");
         }
         CampaignFileType fileType = campaignFile != null ? campaignFile.getType() : null;
         boolean fileTypeOK = fileTypeNeeded != null && fileTypeNeeded.equals(fileType);
@@ -382,7 +387,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
             setCurrentFileId(campaignFile.getId());
             position ++;
         } else if ( fileTypeNeeded != null && !fileTypeNeeded.equals(fileType)){
-            Log.d(MAIN_ACTIVITY_STRING, " file type not as needed");
+            Log.d(TAG, " file type not as needed");
             campaignFile = null;
         }
 
@@ -400,13 +405,13 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
     }
 
     private void setCurrentFileId(int currentFileId) {
-        Log.d(MAIN_ACTIVITY_STRING, "Current file id : " +currentFileId);
+        Log.d(TAG, "Current file id : " +currentFileId);
         mainService.setCurrentFileId(currentFileId);
     }
 
 
     private BroadcastReceiver bReceiver = new BroadcastReceiver() {
-        private final String RECEIVER_STRING = MAIN_ACTIVITY_STRING + "BroadcastReceiver";
+        private final String RECEIVER_STRING = TAG + "BroadcastReceiver";
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();

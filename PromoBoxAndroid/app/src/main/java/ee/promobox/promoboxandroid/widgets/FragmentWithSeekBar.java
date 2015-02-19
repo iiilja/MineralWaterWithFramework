@@ -26,7 +26,7 @@ import ee.promobox.promoboxandroid.util.SeekBarProgressChangerRunnable;
 public abstract class FragmentWithSeekBar extends Fragment implements PlayerButtonsClickListener , SeekBar.OnSeekBarChangeListener{
     private static final String TAG = "FragmentWithSeekBar";
 
-    private static final long VISIBILITY_DELAY_MS = 60*1000;
+    private static final long VISIBILITY_DELAY_MS = 20*1000;
 
     private Handler playerUIVisibilityHandler = new Handler();
     private Runnable visibilityRunnable;
@@ -134,7 +134,7 @@ public abstract class FragmentWithSeekBar extends Fragment implements PlayerButt
 
 
     private String getTimeString ( long timeMillis) {
-        String hms = getResources().getString(R.string.player_unknown_time);
+        String hms;
         if ( TimeUnit.MILLISECONDS.toHours(timeMillis) > 1 ) {
             hms = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(timeMillis),
                     TimeUnit.MILLISECONDS.toMinutes(timeMillis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(timeMillis)),

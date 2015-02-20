@@ -10,6 +10,7 @@ import ee.promobox.entity.CampaignsFiles;
 import ee.promobox.entity.Clients;
 import ee.promobox.entity.Devices;
 import ee.promobox.entity.DevicesCampaigns;
+import ee.promobox.entity.ErrorLog;
 import ee.promobox.entity.Files;
 import ee.promobox.entity.Users;
 
@@ -302,8 +303,6 @@ public class UserServiceImpl implements UserService {
 		return null;
 	}
 
-    
-
 	public void addCampaign(AdCampaigns campaign) {
         Session session = sessionFactory.getCurrentSession();
         session.save(campaign);
@@ -415,5 +414,26 @@ public class UserServiceImpl implements UserService {
 
         q.executeUpdate();
     }
+    
+    @Override
+	public void addErrorLog(ErrorLog errorLog) {
+		Session session = sessionFactory.getCurrentSession();
+        session.save(errorLog);
+        session.flush();
+	}
+    
+    @Override
+	public void addClient(Clients client) {
+		Session session = sessionFactory.getCurrentSession();
+        session.save(client);
+        session.flush();
+	}
+    
+    @Override
+   	public void addUser(Users user) {
+   		Session session = sessionFactory.getCurrentSession();
+           session.save(user);
+           session.flush();
+   	}
 
 }

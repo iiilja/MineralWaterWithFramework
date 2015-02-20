@@ -10,6 +10,7 @@ import ee.promobox.entity.AdCampaigns;
 import ee.promobox.entity.CampaignsFiles;
 import ee.promobox.entity.Devices;
 import ee.promobox.entity.DevicesCampaigns;
+import ee.promobox.entity.ErrorLog;
 import ee.promobox.jms.MailDto;
 import ee.promobox.service.Session;
 import ee.promobox.service.SessionService;
@@ -97,6 +98,8 @@ public class DevicesController {
         	resp.put("currentDt", new Date().getTime());
         	
             JSONObject objectGiven = new JSONObject(json);
+            
+            
 
             d.setFreeSpace(objectGiven.has("freeSpace") ? objectGiven.getLong("freeSpace") : 0);
             d.setCache(objectGiven.has("cache") ? objectGiven.getLong("cache") : 0);
@@ -112,6 +115,21 @@ public class DevicesController {
             if (objectGiven.has("ip")) {
                 d.setNetworkData(objectGiven.getJSONArray("ip").toString());
             }
+            
+            if (objectGiven.has("errors")) {
+            	JSONArray errors = objectGiven.getJSONArray("errors");
+            	for (int i = 0; i < errors.length(); i++) {
+            		JSONObject jsonError = errors.getJSONObject(i);
+            		
+            		ErrorLog errorLog = new ErrorLog();
+            		errorLog.setName(jsonError.getString("name"));
+            		errorLog.setMessage(jsonError.getString("message"));
+            		errorLog.setStackTrace(jsonError.getString("stackTrace"));
+            		errorLog.setCreatedDt(new Date(jsonError.getInt("date")));
+            		
+            		userService.addErrorLog(errorLog);
+            	}
+            }
 
             resp.put("audioOut", d.getAudioOut());
             
@@ -121,6 +139,13 @@ public class DevicesController {
             resp.put("orientation", d.getOrientation());
             resp.put("clearCache", d.isClearCache());
             resp.put("openApp", d.isOpenApp());
+            
+            resp.put("videoWall", d.isVideoWall());
+            resp.put("rowCount", d.getRowCount());
+            resp.put("monitorPerRow", d.getMonitorPerRow());
+            resp.put("resolutionVertical", d.getResolutionVertical());
+            resp.put("resolutionHorizontal", d.getResolutionHorizontal());
+            resp.put("frameSize", d.getFrameSize());
 
             d.setOpenApp(false);
             d.setClearCache(false);
@@ -469,7 +494,14 @@ public class DevicesController {
                 device.setFri(deviceUpdate.getBoolean("fr"));
                 device.setSat(deviceUpdate.getBoolean("sa"));
                 device.setSun(deviceUpdate.getBoolean("su"));
-
+                
+                device.setVideoWall(deviceUpdate.getBoolean("videoWall"));
+                device.setRowCount(deviceUpdate.getInt("rowCount"));
+                device.setMonitorPerRow(deviceUpdate.getInt("monitorPerRow"));
+                device.setResolutionHorizontal(deviceUpdate.getInt("resolutionHorizontal"));
+                device.setResolutionVertical(deviceUpdate.getInt("resolutionVertical"));
+                device.setFrameSize(deviceUpdate.getInt("frameSize"));
+                
                 for (int i = 0; i < deviceUpdate.getJSONArray("campaignIds").length(); i++) {
                     int campaignId = deviceUpdate.getJSONArray("campaignIds").getInt(i);
 

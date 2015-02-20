@@ -10,6 +10,7 @@ import ee.promobox.entity.CampaignsFiles;
 import ee.promobox.entity.Clients;
 import ee.promobox.entity.Devices;
 import ee.promobox.entity.DevicesCampaigns;
+import ee.promobox.entity.DevicesDisplays;
 import ee.promobox.entity.ErrorLog;
 import ee.promobox.entity.Files;
 import ee.promobox.entity.Users;
@@ -415,7 +416,20 @@ public class UserServiceImpl implements UserService {
         q.executeUpdate();
     }
     
+    
+    
     @Override
+	public List<DevicesDisplays> findDevicesDisplays(int deviceId) {
+    	Session session = sessionFactory.getCurrentSession();
+
+    	Query q = session.createQuery("FROM DevicesDisplays WHERE deviceId = :deviceId");
+
+        q.setParameter("deviceId", deviceId);
+    	
+		return q.list();
+	}
+
+	@Override
 	public void addErrorLog(ErrorLog errorLog) {
 		Session session = sessionFactory.getCurrentSession();
         session.save(errorLog);

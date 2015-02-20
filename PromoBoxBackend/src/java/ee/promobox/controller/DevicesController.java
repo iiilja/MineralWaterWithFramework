@@ -10,6 +10,7 @@ import ee.promobox.entity.AdCampaigns;
 import ee.promobox.entity.CampaignsFiles;
 import ee.promobox.entity.Devices;
 import ee.promobox.entity.DevicesCampaigns;
+import ee.promobox.entity.DevicesDisplays;
 import ee.promobox.entity.ErrorLog;
 import ee.promobox.jms.MailDto;
 import ee.promobox.service.Session;
@@ -141,11 +142,22 @@ public class DevicesController {
             resp.put("openApp", d.isOpenApp());
             
             resp.put("videoWall", d.isVideoWall());
-            resp.put("rowCount", d.getRowCount());
-            resp.put("monitorPerRow", d.getMonitorPerRow());
             resp.put("resolutionVertical", d.getResolutionVertical());
             resp.put("resolutionHorizontal", d.getResolutionHorizontal());
-            resp.put("frameSize", d.getFrameSize());
+            
+            JSONArray displaysArray = new JSONArray();
+            for (DevicesDisplays display : userService.findDevicesDisplays(d.getId())) {
+            	JSONObject displayJson = new JSONObject();
+            	displayJson.put("displayId", display.getDisplayId());
+            	displayJson.put("deviceId", display.getDeviceId());
+            	displayJson.put("point1", display.getPoint1());
+            	displayJson.put("point2", display.getPoint2());
+            	displayJson.put("point3", display.getPoint3());
+            	displayJson.put("point4", display.getPoint4());
+            	
+            	displaysArray.put(displayJson);
+            }
+            resp.put("displays", displaysArray);
 
             d.setOpenApp(false);
             d.setClearCache(false);
@@ -494,14 +506,7 @@ public class DevicesController {
                 device.setFri(deviceUpdate.getBoolean("fr"));
                 device.setSat(deviceUpdate.getBoolean("sa"));
                 device.setSun(deviceUpdate.getBoolean("su"));
-                
-                device.setVideoWall(deviceUpdate.getBoolean("videoWall"));
-                device.setRowCount(deviceUpdate.getInt("rowCount"));
-                device.setMonitorPerRow(deviceUpdate.getInt("monitorPerRow"));
-                device.setResolutionHorizontal(deviceUpdate.getInt("resolutionHorizontal"));
-                device.setResolutionVertical(deviceUpdate.getInt("resolutionVertical"));
-                device.setFrameSize(deviceUpdate.getInt("frameSize"));
-                
+           
                 for (int i = 0; i < deviceUpdate.getJSONArray("campaignIds").length(); i++) {
                     int campaignId = deviceUpdate.getJSONArray("campaignIds").getInt(i);
 

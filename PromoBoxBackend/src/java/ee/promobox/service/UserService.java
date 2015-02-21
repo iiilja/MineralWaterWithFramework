@@ -26,6 +26,7 @@ public interface UserService {
     public List<Users> findAllUsers();
 
     public Users findUserByEmailAndPassword(String email, String password);
+    public Users findUserByEmail(String email);
     
     public Clients findClientById(int clientId);
 

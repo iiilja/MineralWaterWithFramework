@@ -13,6 +13,10 @@ WITH (
   OIDS=FALSE
 );
 
+ALTER TABLE devices ADD COLUMN video_wall boolean DEFAULT FALSE;
+ALTER TABLE devices ADD COLUMN resolution_vertical integer;
+ALTER TABLE devices ADD COLUMN resolution_horizontal integer;
+
 CREATE TABLE devices_displays
 (
 	display_id INTEGER NOT NULL,
@@ -24,5 +28,6 @@ CREATE TABLE devices_displays
 	CONSTRAINT pk_devices_displays_id PRIMARY KEY (display_id, device_id)
 );
 
+SELECT setval('clients_id_seq', 10000, true);
 
 COMMIT;

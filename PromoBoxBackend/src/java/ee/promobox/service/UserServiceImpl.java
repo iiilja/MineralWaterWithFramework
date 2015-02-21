@@ -53,6 +53,16 @@ public class UserServiceImpl implements UserService {
 
         return (Users) q.uniqueResult();
     }
+    
+    @Override
+    public Users findUserByEmail(String email) {
+    	Session session = sessionFactory.getCurrentSession();
+
+        Query q = session.createQuery("from Users where email = :email");
+        q.setParameter("email", email);
+
+        return (Users) q.uniqueResult();
+    }
 
     @Override
     public Clients findClientById(int clientId) {

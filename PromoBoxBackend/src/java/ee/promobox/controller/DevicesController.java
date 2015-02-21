@@ -18,6 +18,7 @@ import ee.promobox.service.SessionService;
 import ee.promobox.service.UserService;
 import ee.promobox.util.RequestUtils;
 
+import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -477,6 +478,7 @@ public class DevicesController {
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
+    	
         JSONObject resp = new JSONObject();
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 

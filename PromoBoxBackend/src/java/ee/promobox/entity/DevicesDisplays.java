@@ -1,5 +1,6 @@
 package ee.promobox.entity;
 
+import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -9,7 +10,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Entity
 @Table(name = "devices_displays")
 @XmlRootElement
-public class DevicesDisplays {
+public class DevicesDisplays  implements Serializable {
 
 	@Id
 	@Column(name = "display_id", nullable = false)

@@ -813,6 +813,8 @@ input[readonly] {
     border:1px solid #dddddd;
     display: inline-block;
     vertical-align: top;
+    overflow-y:auto;
+    overflow-x:hidden;
 }
 #sorting .files-list {
     padding: 0;

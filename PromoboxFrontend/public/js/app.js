@@ -172,9 +172,29 @@ app.controller('LoginController', ['$scope', '$location', '$http', 'token', '$ro
     }]);
 
 //Update When Create new Design
-app.controller('RegistrationController', ['$scope', '$http', 'token', 'sysLocation', '$rootScope',
-    function ($scope, $http, token, sysLocation, $rootScope) {
+app.controller('RegistrationController', ['$scope', '$http', 'token', 'sysLocation', '$rootScope', 'sysMessage', '$filter', 'Clients', 
+    function ($scope, $http, token, sysLocation, $rootScope, sysMessage, $filter, Clients) {
         $rootScope.bodyClass = 'main_bg';
+
+        $scope.register = function() {
+            Clients.register({
+                firstname: $scope.register_form.firstname,
+                surname: $scope.register_form.surname,
+                companyName: $scope.register_form.companyName,
+                email: $scope.register_form.email,
+            }, function(response) {
+                if(response.response == "ERROR") {
+                    if (response.reason == "invalidEmail") {
+                        sysMessage.error($filter('translate')('login_form_register') + ' ' + $filter('translate')('registration_form_email_exists'));
+                    } else if (response.reason == "emailExist") {
+                        sysMessage.error($filter('translate')('login_form_register') + ' ' + $filter('translate')('registration_form_invalid_email'));
+                    }
+                    
+                } else {
+                    sysMessage.registration_success($filter('translate')('registration_form_success'))
+                }
+            });
+        }
     }]);
 
 app.controller('CampaignNewController', ['token', 'Campaign', 'sysLocation',

@@ -13,6 +13,7 @@ import ee.promobox.service.SessionService;
 import ee.promobox.service.UserService;
 import ee.promobox.util.RequestUtils;
 
+import java.net.URLDecoder;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -56,22 +57,29 @@ public class UserController {
     		HttpServletRequest request,
     		HttpServletResponse responce) throws Exception {
     	
-    	JSONObject req = new JSONObject(json);
-    	JSONObject resp = RequestUtils.getErrorResponse();
+    	json = URLDecoder.decode(json, "UTF-8");
+    	log.info(json);
     	
-    	String email = req.getString("email");
-    	if (!EmailValidator.getInstance().isValid(email)) { // validate email
+    	JSONObject objectGiven = new JSONObject(json);
+    	JSONObject resp = RequestUtils.getErrorResponse();
+    	resp.put("response", RequestUtils.ERROR);
+    	
+    	String email = objectGiven.getString("email");
+    	if (!EmailValidator.getInstance().isValid(email)) { 
+    		resp.put("reason", "invalidEmail");
     		
-    		resp.put("response", RequestUtils.ERROR);
+    	} else if (userService.findUserByEmail(email) != null) {
+    		resp.put("reason", "emailExist");
     	} else {
     		Clients client = new Clients();
-    		client.setCompanyName(req.getString("companyName"));
+    		client.setCompanyName(objectGiven.getString("companyName"));
     		userService.addClient(client);
     		
     		Users user = new Users();
-    		user.setFirstname(req.getString("firstname"));
-    		user.setSurname(req.getString("surname"));
-    		user.setPassword(req.getString("password"));
+    		user.setFirstname(objectGiven.getString("firstname"));
+    		user.setSurname(objectGiven.getString("surname"));
+    		user.setEmail(email);
+    		user.setPassword("");
     		user.setClientId(client.getId());
     		user.setCreatedDt(new Date());
     		user.setActive(false);

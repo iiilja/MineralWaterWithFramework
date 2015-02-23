@@ -10,6 +10,7 @@ import ee.promobox.entity.CampaignsFiles;
 import ee.promobox.entity.Clients;
 import ee.promobox.entity.Devices;
 import ee.promobox.entity.DevicesCampaigns;
+import ee.promobox.entity.DevicesDisplays;
 import ee.promobox.entity.ErrorLog;
 import ee.promobox.entity.Files;
 import ee.promobox.entity.Users;
@@ -25,6 +26,7 @@ public interface UserService {
     public List<Users> findAllUsers();
 
     public Users findUserByEmailAndPassword(String email, String password);
+    public Users findUserByEmail(String email);
     
     public Clients findClientById(int clientId);
 
@@ -90,6 +92,8 @@ public interface UserService {
     public Devices findDeviceByIdAndClientId(int id, int clientId);
     
     public List<Devices> findDevicesByCampaignId(int id, int clientId);
+    
+    public List<DevicesDisplays> findDevicesDisplays(int deviceId);
     
     public void addDeviceAdCampaign(DevicesCampaigns dc);
     

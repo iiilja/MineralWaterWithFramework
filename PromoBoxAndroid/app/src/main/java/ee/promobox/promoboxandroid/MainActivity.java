@@ -1,7 +1,8 @@
 package ee.promobox.promoboxandroid;
 
 import android.app.Activity;
-import android.app.ActivityManager;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -11,33 +12,31 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.media.AudioManager;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import ee.promobox.promoboxandroid.data.Campaign;
 import ee.promobox.promoboxandroid.data.CampaignFile;
 import ee.promobox.promoboxandroid.data.CampaignFileType;
 import ee.promobox.promoboxandroid.data.ErrorMessage;
 import ee.promobox.promoboxandroid.util.ExceptionHandler;
+import ee.promobox.promoboxandroid.util.FragmentPlaybackListener;
+import ee.promobox.promoboxandroid.util.InternetConnectionUtil;
+import ee.promobox.promoboxandroid.util.StatusEnum;
 
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements FragmentPlaybackListener , View.OnLongClickListener{
 
     private final static String AUDIO_DEVICE_PARAM = "audio_devices_out_active";
     public final static  String AUDIO_DEVICE_PREF = "audio_device";
 
     public static final String CAMPAIGN_UPDATE  = "ee.promobox.promoboxandroid.UPDATE";
-    public static final String ACTIVITY_FINISH  = "ee.promobox.promoboxandroid.FINISH";
-    public static final String CURRENT_FILE_ID  = "ee.promobox.promoboxandroid.CURRENT_FILE_ID";
     public static final String MAKE_TOAST       = "ee.promobox.promoboxandroid.MAKE_TOAST";
     public static final String APP_START        = "ee.promobox.promoboxandroid.START";
     public static final String SET_STATUS       = "ee.promobox.promoboxandroid.SET_STATUS";
@@ -47,31 +46,37 @@ public class MainActivity extends Activity {
 
     public static final String ERROR_MESSAGE       = "Error %d , ( %s )";
 
-    private static final String NO_ACTIVE_CAMPAIGN       = "no active campaign";
+    private static final String NO_ACTIVE_CAMPAIGN = "NO ACTIVE CAMPAIGN AT THE MOMENT";
 
-    public final static String MAIN_ACTIVITY_STRING = "MainActivity";
+    public final static String TAG = "MainActivity";
 
     public final static int RESULT_FINISH_PLAY = 1;
     public final static int RESULT_FINISH_FIRST_START = 2;
+    public static final int RESULT_FINISH_NETWORK_SETTING = 3;
 
     public static final int ORIENTATION_LANDSCAPE = 1;
     public static final int ORIENTATION_PORTRAIT = 2;
     public static final int ORIENTATION_PORTRAIT_EMULATION = 3;
-
-    LocalBroadcastManager bManager;
+    private LocalBroadcastManager bManager;
 
     private MainService mainService;
     private int position;
     private Campaign campaign;
 
     private CampaignFile nextSpecificFile = null;
-    private boolean nextSpecificFilePlaying = false;
+
     private boolean wrongUuid = false;
 
     private String exceptionHandlerError;
 
     private boolean mBound = false;
-    private boolean active = true;
+
+    FragmentMain mainFragment = new FragmentMain();
+    Fragment audioFragment = new FragmentAudio();
+    Fragment videoFragment = new FragmentVideo();
+    Fragment imageFragment = new FragmentImage();
+    Fragment currentFragment;
+
 
     private void hideSystemUI() {
 
@@ -86,14 +91,7 @@ public class MainActivity extends Activity {
 
         View view = findViewById(R.id.main_view);
 
-        view.setOnLongClickListener(new View.OnLongClickListener() {
-
-            public boolean onLongClick(View view) {
-                Intent i = new Intent(MainActivity.this, SettingsActivity.class);
-                startActivity(i);
-                return true;
-            }
-        });
+        view.setOnLongClickListener(this);
     }
 
 
@@ -111,7 +109,6 @@ public class MainActivity extends Activity {
         IntentFilter intentFilter = new IntentFilter();
 
         intentFilter.addAction(CAMPAIGN_UPDATE);
-        intentFilter.addAction(CURRENT_FILE_ID);
         intentFilter.addAction(MAKE_TOAST);
         intentFilter.addAction(PLAY_SPECIFIC_FILE);
         intentFilter.addAction(SET_STATUS);
@@ -120,6 +117,8 @@ public class MainActivity extends Activity {
 
         bManager.registerReceiver(bReceiver, intentFilter);
 
+        getFragmentManager().beginTransaction().add(R.id.main_view, mainFragment).addToBackStack(mainFragment.toString()).commit();
+        currentFragment = mainFragment;
         Intent start = new Intent();
         start.setAction(MainActivity.APP_START);
         sendBroadcast(start);
@@ -127,116 +126,62 @@ public class MainActivity extends Activity {
         setAudioDeviceFromPrefs();
     }
 
-
-
     private void startNextFile() {
-        if (!active){
-            Log.e(MAIN_ACTIVITY_STRING, "AM NOT ACTIVE");
-            return;
-        }
-        if (campaign != null && nextSpecificFile == null &&
-                campaign.getFiles() != null && campaign.getFiles().size() > 0) {
+        Log.d(TAG, "startNextFile()");
+        CampaignFile campaignFile = getNextFile(null);
+        Fragment fragment = null;
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        CampaignFileType fileType = null;
 
-            Log.d(MAIN_ACTIVITY_STRING, "startNextFile() in " + campaign.getCampaignName());
-            active = false;
-            if (nextSpecificFilePlaying) nextSpecificFilePlaying = false;
-
-
-            if (position == campaign.getFiles().size()) {
-                position = 0;
-                Log.i(MAIN_ACTIVITY_STRING, "Starting from position 0");
-            }
-
-            CampaignFileType fileType = null;
-            ArrayList<CampaignFile> filePack = new ArrayList<CampaignFile>();
-
-
-            for (int i = position; i < campaign.getFiles().size(); i++) {
-                CampaignFile cFile = campaign.getFiles().get(i);
-
-                if (fileType == null) {
-                    fileType = cFile.getType();
-                }
-                if (cFile.getType() == fileType) {
-
-                    filePack.add(cFile);
-                    fileType = cFile.getType();
-                    position++;
-
-                } else {
-                    break;
-                }
-            }
-            if (campaign.getFiles().size() == 1) {
-                campaign.setDelay(60 * 60 * 12);
-            }
-
-            startPlayingActivity(fileType,filePack);
-
-
-        } else if (nextSpecificFile != null) {
-            ArrayList<CampaignFile> filePack = new ArrayList<CampaignFile>();
-            filePack.add(nextSpecificFile);
-            startPlayingActivity(nextSpecificFile.getType(), filePack);
-            nextSpecificFile = null;
-            nextSpecificFilePlaying = true;
+        if (campaignFile == null){
+            fragment = mainFragment;
         } else {
-            if (campaign != null ){
-                updateStatus("No files to play in " + campaign.getCampaignName());
-            } else {
-                updateStatus(NO_ACTIVE_CAMPAIGN);
-            }
-            Log.i(MAIN_ACTIVITY_STRING, "CAMPAIGN = NULL");
+            fileType = campaignFile.getType();
         }
-    }
 
-    private void startPlayingActivity(CampaignFileType fileType, ArrayList<CampaignFile> filePack){
         if (fileType == CampaignFileType.IMAGE) {
-            Intent i = new Intent(this, ImageActivity.class);
-            i.putParcelableArrayListExtra("files", filePack);
-            i.putExtra("delay", campaign.getDelay());
-            i.putExtra("orientation", mainService.getOrientation());
-            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-            startActivityForResult(i, RESULT_FINISH_PLAY);
-
-            this.overridePendingTransition(0, 0);
+            fragment = imageFragment;
+            Bundle data = fragment.getArguments();
+            if (data != null){
+                data.putInt("delay",campaign.getDelay()*1000);
+            } else {
+                data = new Bundle();
+                data.putInt("delay",campaign.getDelay() * 1000);
+                fragment.setArguments(data);
+            }
 
         } else if (fileType == CampaignFileType.AUDIO) {
-            Intent i = new Intent(this, AudioActivity.class);
-            i.putParcelableArrayListExtra("files", filePack);
-            i.putExtra("orientation", mainService.getOrientation());
-            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-            startActivityForResult(i, RESULT_FINISH_PLAY);
+            fragment = audioFragment;
 
         } else if (fileType == CampaignFileType.VIDEO) {
+            fragment = videoFragment;
 
-            Intent i = new Intent(this, VideoActivity.class);
-            i.putParcelableArrayListExtra("files", filePack);
-            i.putExtra("orientation", mainService.getOrientation());
-            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-            startActivityForResult(i, RESULT_FINISH_PLAY);
-
-            this.overridePendingTransition(0, 0);
         }
+        if (fragment != null && fragment.equals(currentFragment) ){
+            Log.w(TAG, "Current fragment stays (onPause, onResume)");
+            fragment.onPause();
+            fragment.onResume();
+        } else if ( fragment != null ){
+            transaction.replace(R.id.main_view, fragment);
+            transaction.addToBackStack(fragment.toString());
+            transaction.commit();
+        }
+        currentFragment = fragment;
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d(MAIN_ACTIVITY_STRING," onActivityResult() ,requestCode = " + requestCode);
-        if (requestCode == RESULT_FINISH_PLAY) {
-
-////            startNextFile();
-
-        } else if (requestCode == RESULT_FINISH_FIRST_START) {
+        Log.d(TAG," onActivityResult() ,requestCode = " + requestCode);
+        if (requestCode == RESULT_FINISH_FIRST_START) {
             try {
-
                 wrongUuid = false;
-                mainService.setUuid(data.getStringExtra("deviceUuid"));
-                mainService.checkAndDownloadCampaign();
+                if (mainService != null && data != null){
+                    mainService.setUuid(data.getStringExtra("deviceUuid"));
+                    mainService.checkAndDownloadCampaign();
+                } else if (data == null) {
+                    wrongUuid = true;
+                    startActivityForResult(new Intent(MainActivity.this, FirstActivity.class), RESULT_FINISH_FIRST_START);
+                }
 
-//                startNextFile();
 
             } catch (Exception ex) {
                 Toast.makeText(this, String.format(
@@ -245,13 +190,16 @@ public class MainActivity extends Activity {
                 Log.e(this.getClass().getName(), ex.getMessage(), ex);
                 mainService.addError(new ErrorMessage(ex.toString(),ex.getMessage(),ex.getStackTrace()), false);
             }
+        } else if (requestCode == RESULT_FINISH_NETWORK_SETTING) {
+            wrongUuid = false;
+            mainService.checkAndDownloadCampaign();
         }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d(MAIN_ACTIVITY_STRING, "onResume");
+        Log.d(TAG, "onResume");
 
         hideSystemUI();
 
@@ -267,8 +215,6 @@ public class MainActivity extends Activity {
         if (mainService != null) {
             if (mainService.getOrientation() == ORIENTATION_PORTRAIT) {
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-            } else if ( mainService.getOrientation() == ORIENTATION_PORTRAIT_EMULATION){
-                findViewById(R.id.main_view).setRotation(270);
             } else {
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
             }
@@ -280,20 +226,20 @@ public class MainActivity extends Activity {
         } else {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
-        active = true;
-        if ( !wrongUuid ) {
-            startNextFile();
-        } else {
-            wrongUuid = false;
+        if ( wrongUuid ) {
             startActivityForResult(new Intent(MainActivity.this, FirstActivity.class), RESULT_FINISH_FIRST_START);
         }
     }
 
     @Override
+    public void onBackPressed() {
+        Log.w(TAG, "Back pressed, do nothing");
+    }
+
+    @Override
     protected void onPause() {
         super.onPause();
-        active = false;
-        Log.d(MAIN_ACTIVITY_STRING, "onPause");
+        Log.d(TAG, "onPause");
     }
 
     private void setAudioDeviceFromPrefs() {
@@ -310,9 +256,11 @@ public class MainActivity extends Activity {
         }
     }
 
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        Log.d(TAG,"onDestroy");
 
         if (mBound) {
             unbindService(mConnection);
@@ -326,7 +274,7 @@ public class MainActivity extends Activity {
         public void onServiceConnected(ComponentName className,
                                        IBinder binder) {
 
-            Log.d(MAIN_ACTIVITY_STRING, "onServiceConnected");
+            Log.d(TAG, "onServiceConnected");
             MainService.MainServiceBinder b = (MainService.MainServiceBinder) binder;
 
             mainService = b.getService();
@@ -335,10 +283,21 @@ public class MainActivity extends Activity {
                 mainService.addError(new ErrorMessage("UncaughtException", exceptionHandlerError, null), true);
             }
 
-            campaign = mainService.getCurrentCampaign();
+            if (campaign == null || !campaign.equals(mainService.getCurrentCampaign())){
+                campaign = mainService.getCurrentCampaign();
+                campaignWasUpdated(TAG + " mConnection");
+            }
 
             if (mainService.getUuid() == null || mainService.getUuid().equals("fail")) {
-                startActivityForResult(new Intent(MainActivity.this, FirstActivity.class), RESULT_FINISH_FIRST_START);
+                if (! wrongUuid ){
+                    wrongUuid = true;
+                    ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+                    if ( !InternetConnectionUtil.isNetworkConnected(cm) ) {
+                        startActivityForResult(new Intent(MainActivity.this, WifiActivity.class), RESULT_FINISH_NETWORK_SETTING);
+                    } else {
+                        startActivityForResult(new Intent(MainActivity.this, FirstActivity.class), RESULT_FINISH_FIRST_START);
+                    }
+                }
             }
 
         }
@@ -348,82 +307,162 @@ public class MainActivity extends Activity {
         }
     };
 
-    private void updateStatus( String status ){
-        TextView textView = (TextView) findViewById(R.id.main_activity_status);
-        textView.setText(status);
+    public void addError(ErrorMessage message, boolean broadcastNow){
+        mainService.addError(message, broadcastNow);
     }
 
+    public void makeToast(String toast){
+        boolean silentMode = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("silent_mode", false);
+        if (!silentMode){
+            Toast.makeText(this,toast ,Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public int getOrientation(){
+        if (mainService == null) {
+            return ORIENTATION_LANDSCAPE;
+        }
+        return mainService.getOrientation();
+    }
+
+    private void campaignWasUpdated(String tag) {
+        Log.d(tag, "CAMPAIGN_UPDATE to " + (campaign != null ? campaign.getCampaignName() : "NONE"));
+        StatusEnum statusEnum = campaign != null ? StatusEnum.NO_ACTIVE_CAMPAIGN : null;
+        mainFragment.updateStatus(statusEnum, campaign != null ? campaign.getCampaignName() : NO_ACTIVE_CAMPAIGN);
+        position = 0;
+        startNextFile();
+    }
+
+    @Override
+    public void onPlaybackStop() {
+        Log.w(TAG, "onPlaybackStop");
+        startNextFile();
+    }
+
+
+    @Override
+    public boolean onLongClick(View view) {
+        Intent i = new Intent(MainActivity.this, SettingsActivity.class);
+        startActivity(i);
+        return true;
+    }
+
+    public CampaignFile getNextFile(CampaignFileType fileTypeNeeded) {
+        CampaignFile campaignFile = null;
+        boolean playingSpecificFile = false;
+
+        if (campaign != null && nextSpecificFile == null &&
+                campaign.getFiles() != null && campaign.getFiles().size() > 0) {
+
+            if (position == campaign.getFiles().size()) {
+                position = 0;
+                Log.i(TAG, "Starting from position 0");
+            }
+
+            if (campaign.getFiles().size() == 1) {
+                campaign.setDelay(60 * 60 * 12);
+            }
+
+            campaignFile = campaign.getFiles().get(position);
+
+        } else if (nextSpecificFile != null) {
+            campaignFile = nextSpecificFile;
+            playingSpecificFile = true;
+            if (fileTypeNeeded != null){
+                nextSpecificFile = null;
+            }
+
+        } else {
+            if (campaign != null ){
+                mainFragment.updateStatus(StatusEnum.NO_FILES,"No files to play in " + campaign.getCampaignName());
+                mainService.setCurrentFileId(0);
+            } else {
+                mainFragment.updateStatus(StatusEnum.NO_ACTIVE_CAMPAIGN,NO_ACTIVE_CAMPAIGN);
+            }
+            Log.i(TAG, "CAMPAIGN = NULL");
+        }
+        CampaignFileType fileType = campaignFile != null ? campaignFile.getType() : null;
+        boolean fileTypeOK = fileTypeNeeded != null && fileTypeNeeded.equals(fileType);
+        if (fileTypeOK && !playingSpecificFile){
+            setCurrentFileId(campaignFile.getId());
+            position ++;
+        } else if ( fileTypeNeeded != null && !fileTypeNeeded.equals(fileType)){
+            Log.d(TAG, " file type not as needed");
+            campaignFile = null;
+        }
+
+        return campaignFile;
+    }
+
+    public void setPreviousFilePosition(){
+        position = position - 2;
+        if (position < 0 && campaign != null && campaign.getFiles() != null) {
+            position = campaign.getFiles().size() + position;
+            if (position < 0) {
+                position = 0;
+            }
+        }
+    }
+
+    private void setCurrentFileId(int currentFileId) {
+        Log.d(TAG, "Current file id : " +currentFileId);
+        mainService.setCurrentFileId(currentFileId);
+    }
+
+
     private BroadcastReceiver bReceiver = new BroadcastReceiver() {
-        private final String RECEIVER_STRING = MAIN_ACTIVITY_STRING + "BroadcastReceiver";
+        private final String RECEIVER_STRING = TAG + "BroadcastReceiver";
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if (action.equals(CAMPAIGN_UPDATE)) {
+            switch (action) {
+                case CAMPAIGN_UPDATE:
 
-                if (mainService == null) return;
+                    if (mainService == null ||
+                            (campaign != null && campaign.equals(mainService.getCurrentCampaign())))
+                        return;
 
-                campaign = mainService.getCurrentCampaign();
-                mainService.setActivityReceivedUpdate(true);
-                Log.d(RECEIVER_STRING, "CAMPAIGN_UPDATE to " + (campaign != null ? campaign.getCampaignName() : "NONE"));
-                updateStatus( campaign != null ? campaign.getCampaignName() : NO_ACTIVE_CAMPAIGN);
-                position = 0;
-                if (active){
-                    Log.d(RECEIVER_STRING, MAIN_ACTIVITY_STRING + " active, start next file from receiver");
+                    campaign = mainService.getCurrentCampaign();
+                    mainService.setActivityReceivedUpdate(true);
+
+                    campaignWasUpdated(RECEIVER_STRING);
+
+                    break;
+                case MAKE_TOAST:
+
+                    String toastString = intent.getStringExtra("Toast");
+                    Log.d(RECEIVER_STRING, "Make TOAST :" + toastString);
+                    makeToast(toastString);
+
+                    break;
+                case PLAY_SPECIFIC_FILE:
+
+                    nextSpecificFile = intent.getParcelableExtra("campaignFile");
+                    Log.d(RECEIVER_STRING, "PLAY_SPECIFIC_FILE with id " + nextSpecificFile.getId());
                     startNextFile();
-                } else {
-                    Log.d(RECEIVER_STRING, "Broadcasting to finish active activity");
-                    bManager.sendBroadcast(new Intent(ACTIVITY_FINISH));
-                }
+                    break;
+                case SET_STATUS:
 
-            } else if (action.equals(CURRENT_FILE_ID)) {
+                    String status = intent.getStringExtra("status");
+                    StatusEnum statusEnum = (StatusEnum) intent.getSerializableExtra("statusEnum");
+                    Log.d(RECEIVER_STRING, SET_STATUS + " " + status + " statusEnum = " + statusEnum.toString());
+                    mainFragment.updateStatus(statusEnum, intent.getStringExtra("status"));
+                    break;
+                case ADD_ERROR_MSG:
 
-                mainService.setCurrentFileId(intent.getExtras().getInt("fileId"));
-                Log.d(RECEIVER_STRING, "CURRENT_FILE_ID = " + mainService.getCurrentFileId());
-            } else if (action.equals(MAKE_TOAST)){
+                    ErrorMessage message = intent.getParcelableExtra("message");
+                    Log.d(RECEIVER_STRING, "Got error MSG " + message.getMessage());
+                    addError(message, false);
+                    break;
+                case WRONG_UUID:
 
-                String toastString = intent.getStringExtra("Toast");
-                Log.d(RECEIVER_STRING, "Make TOAST :" + toastString);
-                Toast.makeText(MainActivity.this,toastString, Toast.LENGTH_LONG).show();
-
-            } else if (action.equals(PLAY_SPECIFIC_FILE)){
-
-                nextSpecificFile = intent.getParcelableExtra("campaignFile");
-                Log.d(RECEIVER_STRING, "PLAY_SPECIFIC_FILE with id " + nextSpecificFile.getId());
-                if (active){
-                    startNextFile();
-                } else {
-                    if (campaign != null){
-                        if ( !nextSpecificFilePlaying ) {
-                            int fileId = mainService.getCurrentFileId();
-                            position = campaign.getCampaignFilePositionById(fileId);
-                            position ++;
-                        }
+                    Log.d(RECEIVER_STRING, WRONG_UUID);
+                    if (!wrongUuid) {
+                        wrongUuid = true;
+                        startActivityForResult(new Intent(MainActivity.this, FirstActivity.class), RESULT_FINISH_FIRST_START);
                     }
-                    bManager.sendBroadcast(new Intent(ACTIVITY_FINISH));
-                }
-            } else if ( action.equals(SET_STATUS)){
-
-                String status = intent.getStringExtra("status");
-                Log.d(RECEIVER_STRING, SET_STATUS +" "+ status);
-                updateStatus(intent.getStringExtra("status"));
-            } else if ( action.equals(ADD_ERROR_MSG)){
-
-                ErrorMessage message = intent.getParcelableExtra("message");
-                Log.d(RECEIVER_STRING, "Got error MSG " + message.getMessage());
-                mainService.addError(message, false);
-            } else if ( action.equals(WRONG_UUID)){
-
-                Log.d(RECEIVER_STRING, WRONG_UUID );
-                if (wrongUuid) return;
-                if (active){
-                    startActivityForResult(new Intent(MainActivity.this, FirstActivity.class), RESULT_FINISH_FIRST_START);
-                } else {
-                    wrongUuid = true;
-                    bManager.sendBroadcast(new Intent(ACTIVITY_FINISH));
-                }
+                    break;
             }
         }
     };
-
-
 }

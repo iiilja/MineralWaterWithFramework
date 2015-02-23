@@ -105,7 +105,7 @@
                                     <a class="close" ng-click="delete_device_campaign(device, campaign.id)"><span class="glyphicon glyphicon-remove"></span></a>
                                 </li>     
                             </ul>
-                            <button type="button" class="btn btn-info pull-right"
+                            <button type="button" class="btn btn-info"
                                     data-toggle="modal" data-target="#add-company"
                                     ng-click="open_add_campaign(device)">{{ 'device_addcampaign' | translate }}</button>
                         </div>
@@ -147,10 +147,8 @@
                 <div class="button-wrap">
                     <div class="form-group">
                         <button type="submit" ng-click="change_device(device)" class="btn btn-primary ng-binding">{{ 'device_save' | translate }}</button>
-                        <button type="button" ng-click="showDeviceSettings(0)" class="btn btn-default ng-binding" style="margin-left: 15px;">Отмена</button>
-                        <!--
+                        <button type="button" ng-click="showDeviceSettings(0)" class="btn btn-default ng-binding" style="margin-left: 15px;">{{ 'device_cancel' | translate }}</button>
                         <button type="button" ng-click="delete_device(device)" class="btn btn-default pull-right" >{{ 'device_remove' | translate }}</button>
-                        -->
                     </div>
                 </div>
             </div>

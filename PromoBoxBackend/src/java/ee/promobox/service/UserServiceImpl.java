@@ -10,6 +10,8 @@ import ee.promobox.entity.CampaignsFiles;
 import ee.promobox.entity.Clients;
 import ee.promobox.entity.Devices;
 import ee.promobox.entity.DevicesCampaigns;
+import ee.promobox.entity.DevicesDisplays;
+import ee.promobox.entity.ErrorLog;
 import ee.promobox.entity.Files;
 import ee.promobox.entity.Users;
 
@@ -48,6 +50,16 @@ public class UserServiceImpl implements UserService {
         Query q = session.createQuery("from Users where email = :email and password = :password");
         q.setParameter("email", email);
         q.setParameter("password", password);
+
+        return (Users) q.uniqueResult();
+    }
+    
+    @Override
+    public Users findUserByEmail(String email) {
+    	Session session = sessionFactory.getCurrentSession();
+
+        Query q = session.createQuery("from Users where email = :email");
+        q.setParameter("email", email);
 
         return (Users) q.uniqueResult();
     }
@@ -281,8 +293,28 @@ public class UserServiceImpl implements UserService {
         
         return (Files) q.uniqueResult();
     }
+    
+    @Override
+	public String findDeviceUuid() {
+    	Session session = sessionFactory.getCurrentSession();
+    	
+    	String devUuid = "substr(CAST(uuid_in(CAST(md5(CAST(now() + CAST(s || ' minute' AS interval) AS text)) AS cstring)) AS TEXT), 0, 5)";
+        
+    	Query q = session.createSQLQuery(""
+    			+ "SELECT " + devUuid +  " AS uuid "
+    			+ "FROM generate_series(1, 10) AS s "
+    			+ "WHERE NOT EXISTS (SELECT 1 FROM devices d WHERE d.uuid = " + devUuid + ")");
+    	
+    	List<String> uuids = q.list();
+    	
+    	if (!uuids.isEmpty()) {
+    		return uuids.get(0);
+    	}
+    	
+		return null;
+	}
 
-    public void addCampaign(AdCampaigns campaign) {
+	public void addCampaign(AdCampaigns campaign) {
         Session session = sessionFactory.getCurrentSession();
         session.save(campaign);
         session.flush();
@@ -393,5 +425,39 @@ public class UserServiceImpl implements UserService {
 
         q.executeUpdate();
     }
+    
+    
+    
+    @Override
+	public List<DevicesDisplays> findDevicesDisplays(int deviceId) {
+    	Session session = sessionFactory.getCurrentSession();
+
+    	Query q = session.createQuery("FROM DevicesDisplays WHERE deviceId = :deviceId");
+
+        q.setParameter("deviceId", deviceId);
+    	
+		return q.list();
+	}
+
+	@Override
+	public void addErrorLog(ErrorLog errorLog) {
+		Session session = sessionFactory.getCurrentSession();
+        session.save(errorLog);
+        session.flush();
+	}
+    
+    @Override
+	public void addClient(Clients client) {
+		Session session = sessionFactory.getCurrentSession();
+        session.save(client);
+        session.flush();
+	}
+    
+    @Override
+   	public void addUser(Users user) {
+   		Session session = sessionFactory.getCurrentSession();
+           session.save(user);
+           session.flush();
+   	}
 
 }

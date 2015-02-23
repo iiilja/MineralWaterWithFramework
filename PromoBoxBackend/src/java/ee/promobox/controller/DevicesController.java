@@ -10,12 +10,15 @@ import ee.promobox.entity.AdCampaigns;
 import ee.promobox.entity.CampaignsFiles;
 import ee.promobox.entity.Devices;
 import ee.promobox.entity.DevicesCampaigns;
+import ee.promobox.entity.DevicesDisplays;
+import ee.promobox.entity.ErrorLog;
 import ee.promobox.jms.MailDto;
 import ee.promobox.service.Session;
 import ee.promobox.service.SessionService;
 import ee.promobox.service.UserService;
 import ee.promobox.util.RequestUtils;
 
+import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -97,6 +100,8 @@ public class DevicesController {
         	resp.put("currentDt", new Date().getTime());
         	
             JSONObject objectGiven = new JSONObject(json);
+            
+            
 
             d.setFreeSpace(objectGiven.has("freeSpace") ? objectGiven.getLong("freeSpace") : 0);
             d.setCache(objectGiven.has("cache") ? objectGiven.getLong("cache") : 0);
@@ -112,6 +117,21 @@ public class DevicesController {
             if (objectGiven.has("ip")) {
                 d.setNetworkData(objectGiven.getJSONArray("ip").toString());
             }
+            
+            if (objectGiven.has("errors")) {
+            	JSONArray errors = objectGiven.getJSONArray("errors");
+            	for (int i = 0; i < errors.length(); i++) {
+            		JSONObject jsonError = errors.getJSONObject(i);
+            		
+            		ErrorLog errorLog = new ErrorLog();
+            		errorLog.setName(jsonError.getString("name"));
+            		errorLog.setMessage(jsonError.getString("message"));
+            		errorLog.setStackTrace(jsonError.getString("stackTrace"));
+            		errorLog.setCreatedDt(new Date(jsonError.getInt("date")));
+            		
+            		userService.addErrorLog(errorLog);
+            	}
+            }
 
             resp.put("audioOut", d.getAudioOut());
             
@@ -121,6 +141,24 @@ public class DevicesController {
             resp.put("orientation", d.getOrientation());
             resp.put("clearCache", d.isClearCache());
             resp.put("openApp", d.isOpenApp());
+            
+            resp.put("videoWall", d.isVideoWall());
+            resp.put("resolutionVertical", d.getResolutionVertical());
+            resp.put("resolutionHorizontal", d.getResolutionHorizontal());
+            
+            JSONArray displaysArray = new JSONArray();
+            for (DevicesDisplays display : userService.findDevicesDisplays(d.getId())) {
+            	JSONObject displayJson = new JSONObject();
+            	displayJson.put("displayId", display.getDisplayId());
+            	displayJson.put("deviceId", display.getDeviceId());
+            	displayJson.put("point1", display.getPoint1());
+            	displayJson.put("point2", display.getPoint2());
+            	displayJson.put("point3", display.getPoint3());
+            	displayJson.put("point4", display.getPoint4());
+            	
+            	displaysArray.put(displayJson);
+            }
+            resp.put("displays", displaysArray);
 
             d.setOpenApp(false);
             d.setClearCache(false);
@@ -440,6 +478,7 @@ public class DevicesController {
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
+    	
         JSONObject resp = new JSONObject();
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
@@ -469,7 +508,7 @@ public class DevicesController {
                 device.setFri(deviceUpdate.getBoolean("fr"));
                 device.setSat(deviceUpdate.getBoolean("sa"));
                 device.setSun(deviceUpdate.getBoolean("su"));
-
+           
                 for (int i = 0; i < deviceUpdate.getJSONArray("campaignIds").length(); i++) {
                     int campaignId = deviceUpdate.getJSONArray("campaignIds").getInt(i);
 
@@ -671,7 +710,7 @@ public class DevicesController {
             device.setLastDeviceRequestDt(new Date());
             device.setStatus(Devices.STATUS_USED);
             device.setAudioOut(Devices.AUDIO_OUT_HDMI);
-            device.setUuid(UUID.randomUUID().toString().substring(0, 4));
+            device.setUuid(userService.findDeviceUuid());
             device.setDescription("");
             device.setNetworkData("");
             device.setCreatedDt(new Date());

@@ -10,8 +10,11 @@ import ee.promobox.entity.CampaignsFiles;
 import ee.promobox.entity.Clients;
 import ee.promobox.entity.Devices;
 import ee.promobox.entity.DevicesCampaigns;
+import ee.promobox.entity.DevicesDisplays;
+import ee.promobox.entity.ErrorLog;
 import ee.promobox.entity.Files;
 import ee.promobox.entity.Users;
+
 import java.util.List;
 
 /**
@@ -23,6 +26,7 @@ public interface UserService {
     public List<Users> findAllUsers();
 
     public Users findUserByEmailAndPassword(String email, String password);
+    public Users findUserByEmail(String email);
     
     public Clients findClientById(int clientId);
 
@@ -45,6 +49,8 @@ public interface UserService {
     public AdCampaigns findCampaignByIdAndClientId(int id, int clientId);
     
     public void addDevice(Devices devices);
+    
+    public String findDeviceUuid();
     
     // public AdCampaigns findCampaignByUuid(String uuid);
     
@@ -87,6 +93,8 @@ public interface UserService {
     
     public List<Devices> findDevicesByCampaignId(int id, int clientId);
     
+    public List<DevicesDisplays> findDevicesDisplays(int deviceId);
+    
     public void addDeviceAdCampaign(DevicesCampaigns dc);
     
     public CampaignsFiles findCampaignFileById(int fileId);
@@ -94,4 +102,9 @@ public interface UserService {
     public List<CampaignsFiles> findCampaignFileByIds(List<Integer> fileIds);
     
     public void deleteDeviceCampaign(int deviceId, int campaignId);
+    
+    public void addErrorLog(ErrorLog errorLog);
+    
+    public void addClient(Clients client);
+    public void addUser(Users user);
 }

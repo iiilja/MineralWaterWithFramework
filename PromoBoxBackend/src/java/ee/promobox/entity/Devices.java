@@ -145,6 +145,16 @@ public class Devices implements Serializable {
     @Column(name = "open_app")
     private boolean openApp;
     
+    @Column(name = "video_wall")
+    private boolean videoWall;
+    
+    @Column(name = "resolution_vertical")
+    private Integer resolutionVertical;
+    
+    @Column(name = "resolution_horizontal")
+    private Integer resolutionHorizontal;
+
+    
     @Column(name = "created_dt")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDt;
@@ -427,6 +437,29 @@ public class Devices implements Serializable {
 	public void setOpenApp(boolean openApp) {
 		this.openApp = openApp;
 	}
+
+	public boolean isVideoWall() {
+		return videoWall;
+	}
+
+	public void setVideoWall(boolean videoWall) {
+		this.videoWall = videoWall;
+	}
+
+	public Integer getResolutionVertical() {
+		return resolutionVertical;
+	}
+
+	public void setResolutionVertical(Integer resolutionVertical) {
+		this.resolutionVertical = resolutionVertical;
+	}
+
+	public Integer getResolutionHorizontal() {
+		return resolutionHorizontal;
+	}
+
+	public void setResolutionHorizontal(Integer resolutionHorizontal) {
+		this.resolutionHorizontal = resolutionHorizontal;
+	}
 	
-    
 }

@@ -76,10 +76,15 @@ services.factory("Clients", ['$resource',
         return $resource('',{},{
             getClient: {
                 method: 'GET',
-                url: apiEndpoint + "/user/data/:token",
+                url: apiEndpoint + "user/data/:token",
                 params: {
                     token: '@token'
                 }
+            },
+            register: {
+                method: 'POST',
+                url: apiEndpoint + "user/register",
+                params: {}
             }
         });
     }]);
@@ -129,6 +134,9 @@ services.factory("sysMessage", ['toaster','$filter', function (toaster, $filter)
         },
         login_failed: function (message) {
             toaster.pop('error', $filter('translate')('system_error'), message);
+        },
+        registration_success: function(message) {
+            toaster.pop('success', $filter('translate')('login_form_register'), message);
         },
         error: function (message) {
             toaster.pop('error', $filter('translate')('system_error'), message);

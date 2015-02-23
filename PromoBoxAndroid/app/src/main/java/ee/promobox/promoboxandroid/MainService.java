@@ -16,6 +16,7 @@ import android.util.Log;
 
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -96,7 +97,7 @@ public class MainService extends Service {
         setUuid(getSharedPref().getString("uuid", "fail"));
         setOrientation(getSharedPref().getInt("orientation", MainActivity.ORIENTATION_LANDSCAPE));
 
-        checkAndDownloadCampaign();
+
         if ( startMainActivity || !startedFromMainActivity && firstStartWatchDog ) {
             if (!startedFromMainActivity && firstStartWatchDog){
                 Log.d("WatchDog", "Activity started from watchdog");
@@ -104,6 +105,8 @@ public class MainService extends Service {
             startMainActivity();
         }
         firstStartWatchDog = false;
+
+        checkAndDownloadCampaign();
         return Service.START_NOT_STICKY;
     }
 
@@ -183,7 +186,14 @@ public class MainService extends Service {
             if (data.exists() && firstStart) {
                 firstStart = false;
                 String dataString = FileUtils.readFileToString(data);
-                JSONObject dataJSON =  new JSONObject(dataString);
+                JSONObject dataJSON = new JSONObject();
+                try {
+                    dataJSON = new JSONObject(dataString);
+                }  catch (JSONException ex ){
+                    Log.e(MAIN_SERVICE_STRING, "Can not read JSON : " + dataString);
+                    bManager.sendBroadcast(new ToastIntent(String.format(MainActivity.ERROR_MESSAGE, 62, ex.getClass().getSimpleName())));
+                    errors.addError(new ErrorMessage(JSONException.class.getSimpleName(),dataString,ex.getStackTrace()));
+                }
                 JSONArray campaignsJSON = new JSONArray();
 
                 if (dataJSON.has("campaigns")){
@@ -200,7 +210,7 @@ public class MainService extends Service {
         catch (Exception ex){
             Log.e(MAIN_SERVICE_STRING, ex.getMessage(), ex);
             bManager.sendBroadcast(new ToastIntent(String.format(MainActivity.ERROR_MESSAGE, 62, ex.getClass().getSimpleName())));
-            errors.addError(new ErrorMessage(ex.toString(),ex.getMessage(),ex.getStackTrace()));
+            errors.addError(new ErrorMessage(ex));
         }
     }
 

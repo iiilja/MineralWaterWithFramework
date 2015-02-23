@@ -94,8 +94,8 @@ public class FileDtoConsumer implements Runnable {
 
 	}
 	
-	public boolean createMultipageCampaingsFiles(CampaignsFiles cFile) {
-		boolean hasManyFiles = false;
+	public int createMultipageCampaingsFiles(CampaignsFiles cFile) {
+		int filesCount = 1;
 		
 		File clientDir = fileService.getClientFolder(cFile.getClientId());
 		
@@ -111,12 +111,12 @@ public class FileDtoConsumer implements Runnable {
 		});
 
 		if (pagesFiles.length > 1) {
-			hasManyFiles = true;
+			filesCount = 0;
 			for (int i = 0; i < pagesFiles.length; i++) {
 				try {
 					File pageFile = pagesFiles[i];
 					String filename = pageFile.getName();
-					log.info("Process file: " + filename);
+
 					String[] part = filename.split("-");
 					int page = Integer.parseInt(part[1]);
 					
@@ -150,13 +150,15 @@ public class FileDtoConsumer implements Runnable {
 						}
 					}
 					
+					filesCount++;
+					
 				} catch (Exception e) {
 					log.error(e.getMessage(), e);
 				}
 			}
 		}
 		
-		return hasManyFiles;
+		return filesCount;
 	}
 
 	public void handleMessage(FileDto fileDto) {
@@ -171,12 +173,12 @@ public class FileDtoConsumer implements Runnable {
 		if (result) {
 			cFile.setStatus(CampaignsFiles.STATUS_ACTIVE);
 			
-			boolean manyFiles = createMultipageCampaingsFiles(cFile);
+			int filesCount = createMultipageCampaingsFiles(cFile);
 
 			File mp4File = fileService.getOutputMp4File(fileDto.getClientId(), cFile.getFileId());
 			if (mp4File.exists()) {
 				cFile.setSize((int) mp4File.length());
-			} else if (!manyFiles) {
+			} else if (filesCount == 1) {
 			
 				File file = fileService.getOutputFile(fileDto.getClientId(),
 						cFile.getFileId(), null);
@@ -192,7 +194,7 @@ public class FileDtoConsumer implements Runnable {
 			camp.setUpdateDate(new Date());
 
 			if (!fileDto.isRotate()) {
-				camp.setCountFiles(camp.getCountFiles() + 1);
+				camp.setCountFiles(camp.getCountFiles() + filesCount);
 				if (fileDto.getFileType() == FileTypeUtils.FILE_TYPE_AUDIO) {
 					camp.setCountAudios(camp.getCountAudios() + 1);
 					camp.setAudioLength(camp.getAudioLength()
@@ -202,7 +204,7 @@ public class FileDtoConsumer implements Runnable {
 					camp.setVideoLength(camp.getVideoLength()
 							+ dbFile.getContentLength());
 				} else {
-					camp.setCountImages(camp.getCountImages() + 1);
+					camp.setCountImages(camp.getCountImages() + filesCount);
 				}
 			}
 

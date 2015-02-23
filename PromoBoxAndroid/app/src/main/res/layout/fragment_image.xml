@@ -17,7 +17,7 @@
             android:baselineAlignBottom="false" />-->
 
     <!--Wall test-->
-    <ee.promobox.promoboxandroid.widgets.VideoWallImageView
+    <ee.promobox.promoboxandroid.widgets.WallImageView
             android:id="@+id/slide_1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

@@ -8,13 +8,13 @@ import android.graphics.Point;
 public class TriangleEquilateral {
 
     // clockWise
-    private static final int QUARTER_ONE = 0;
-    private static final int QUARTER_TWO = 1;
-    private static final int QUARTER_THREE = 2;
-    private static final int QUARTER_FOUR = 3;
+    private static final double QUARTER_ONE = 0d;
+    private static final double QUARTER_TWO = 1d;
+    private static final double QUARTER_THREE = 2d;
+    private static final double QUARTER_FOUR = 3d;
 
 
-    private int quarter;
+    private double quarter;
 
     private Point a,b,c;
 
@@ -34,7 +34,7 @@ public class TriangleEquilateral {
     }
 
     public double getAngleAlpha(){
-        return Math.sin(getLineLength(b,c) / getLineLength(a,b)) + 180 * quarter;
+        return Math.floor(Math.sin(getLineLength(b,c) / getLineLength(a,b)) + 180 * quarter);
     }
 
     private Point getC (Point a, Point b){

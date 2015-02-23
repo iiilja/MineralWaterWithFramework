@@ -23,7 +23,7 @@ import ee.promobox.promoboxandroid.data.CampaignFileType;
 import ee.promobox.promoboxandroid.data.ErrorMessage;
 import ee.promobox.promoboxandroid.util.FragmentPlaybackListener;
 import ee.promobox.promoboxandroid.widgets.FragmentWithSeekBar;
-import ee.promobox.promoboxandroid.widgets.VideoWallImageView;
+import ee.promobox.promoboxandroid.widgets.WallImageView;
 
 public class FragmentImage extends FragmentWithSeekBar {
 
@@ -175,9 +175,10 @@ public class FragmentImage extends FragmentWithSeekBar {
         try {
 //            Bitmap bitmap = decodeBitmap(file);
             Point[] p = {new Point(), new Point(), new Point(), new Point()};
-            VideoWallImageView imageView = (VideoWallImageView) slide;
+            WallImageView imageView = (WallImageView) slide;
             recycleBitmap();
-            imageView.setImageDrawable(file.getPath(),1920,3240,p);
+            imageView.setImageDrawable(file.getPath(),1920,2160,p);
+//            imageView.setImageDrawable(file.getPath(),1920,3240,p);
 //            slide.setImageBitmap(bitmap);
             int delay = getArguments().getInt("delay");
             super.setSeekBarMax(delay);

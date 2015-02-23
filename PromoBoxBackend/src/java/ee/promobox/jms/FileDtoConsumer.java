@@ -111,6 +111,7 @@ public class FileDtoConsumer implements Runnable {
 		});
 
 		if (pagesFiles.length > 1) {
+			filesCount = 0;
 			for (int i = 0; i < pagesFiles.length; i++) {
 				try {
 					File pageFile = pagesFiles[i];

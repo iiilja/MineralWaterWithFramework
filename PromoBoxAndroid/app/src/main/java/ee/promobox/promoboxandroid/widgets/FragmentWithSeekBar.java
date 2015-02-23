@@ -1,6 +1,7 @@
 package ee.promobox.promoboxandroid.widgets;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,7 +16,9 @@ import android.widget.TextView;
 
 import java.util.concurrent.TimeUnit;
 
+import ee.promobox.promoboxandroid.MainActivity;
 import ee.promobox.promoboxandroid.R;
+import ee.promobox.promoboxandroid.SettingsActivity;
 import ee.promobox.promoboxandroid.util.PlayerButtonsClickListener;
 import ee.promobox.promoboxandroid.util.PlayerUIVisibilityRunnable;
 import ee.promobox.promoboxandroid.util.SeekBarProgressChangerRunnable;
@@ -50,9 +53,11 @@ public abstract class FragmentWithSeekBar extends Fragment implements PlayerButt
         Button pauseButton = (Button) playerControlsLayout.findViewById(R.id.player_pause);
         Button previousButton = (Button) playerControlsLayout.findViewById(R.id.player_back);
         Button nextButton = (Button) playerControlsLayout.findViewById(R.id.player_next);
+        Button settingsButton = (Button) playerControlsLayout.findViewById(R.id.player_settings);
         pauseButton.setOnClickListener(this);
         previousButton.setOnClickListener(this);
         nextButton.setOnClickListener(this);
+        settingsButton.setOnClickListener(this);
 
         view.setOnClickListener(this);
     }
@@ -97,6 +102,10 @@ public abstract class FragmentWithSeekBar extends Fragment implements PlayerButt
         }
 
         switch (v.getId()){
+            case R.id.player_settings:
+                Intent i = new Intent(getActivity(), SettingsActivity.class);
+                startActivity(i);
+                return;
             case R.id.player_back:
                 onPlayerPrevious();
                 return;

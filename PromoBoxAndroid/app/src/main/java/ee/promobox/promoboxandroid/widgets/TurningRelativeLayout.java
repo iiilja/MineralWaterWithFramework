@@ -53,4 +53,16 @@ public class TurningRelativeLayout extends RelativeLayout {
         rotationSet = true;
         super.setRotation(rotation);
     }
+
+    public boolean isRotationSet() {
+        return rotationSet;
+    }
+
+    public int getInitialWidth(){
+        return MeasureSpec.getSize(widthMeasureSpec);
+    }
+
+    public int getInitialHeight(){
+        return MeasureSpec.getSize(heightMeasureSpec);
+    }
 }

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.util.AttributeSet;
@@ -22,6 +23,7 @@ import ee.promobox.promoboxandroid.data.CampaignFileType;
 import ee.promobox.promoboxandroid.data.ErrorMessage;
 import ee.promobox.promoboxandroid.util.FragmentPlaybackListener;
 import ee.promobox.promoboxandroid.widgets.FragmentWithSeekBar;
+import ee.promobox.promoboxandroid.widgets.VideoWallImageView;
 
 public class FragmentImage extends FragmentWithSeekBar {
 
@@ -171,12 +173,12 @@ public class FragmentImage extends FragmentWithSeekBar {
             return;
         }
         try {
-            Bitmap bitmap = decodeBitmap(file);
-//            if (mainActivity.getOrientation() == MainActivity.ORIENTATION_PORTRAIT_EMULATION) {
-//                bitmap = rotateBitmap(bitmap, 270);
-//            }
+//            Bitmap bitmap = decodeBitmap(file);
+            Point[] p = {new Point(), new Point(), new Point(), new Point()};
+            VideoWallImageView imageView = (VideoWallImageView) slide;
             recycleBitmap();
-            slide.setImageBitmap(bitmap);
+            imageView.setImageDrawable(file.getPath(),1920,3240,p);
+//            slide.setImageBitmap(bitmap);
             int delay = getArguments().getInt("delay");
             super.setSeekBarMax(delay);
             super.changeSeekBarState(true, 0);

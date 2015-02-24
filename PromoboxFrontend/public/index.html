@@ -148,10 +148,38 @@
 
     </head>
     <body class="{{$root.bodyClass}}">
-        <div class="container-fluid">
-             <toaster-container toaster-options="{'time-out': 3000}"></toaster-container>
-             <div ui-view="topView"></div>
-             <div ui-view="contentView"></div>
+        <div id="main-wrap">
+            <div class="container-fluid">
+                 <toaster-container toaster-options="{'time-out': 3000}"></toaster-container>
+                 <div ui-view="topView"></div>
+                 <div ui-view="contentView"></div>
+            </div>
         </div>
+
+        <footer id="footer">    
+            <a class="copy-land" href="#">© 2015 Promobox</a>
+
+            <ul class="footer-nav">
+                <li><a href="#">О нас</a></li>
+                <li class="line"></li>
+                <li><a href="#">Политика конфиденциальности</a></li>
+                <li class="line"></li>
+                <li><a href="#">Услования использования</a></li>
+                <li class="line"></li>
+                <li><a href="#">Контакт</a></li>
+            </ul>
+
+
+            <div class="lang">
+                <select>
+                    <option>-- Выберите язык --</option>
+                    <option class="lang-en">Английский</option>
+                    <option class="lang-es">Испанский</option>
+                    <option class="lang-de">Немецкий</option>
+                    <option class="lang-ru">Русский</option>
+                    <option class="lang-fr">Французский</option>
+                </select>
+            </div><!-- .sec -->
+        </footer>
     </body>
 </html>

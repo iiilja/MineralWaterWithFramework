@@ -160,6 +160,7 @@ app.controller('FooterController', ['$scope', '$location', '$http', 'token', '$r
             $translate.use(lang);
             $scope.currentLang = lang;
         }
+        setTimeout(function(){jQuery('input,select').styler();}, 50);
     }]);
 
 //Update When Create new Design

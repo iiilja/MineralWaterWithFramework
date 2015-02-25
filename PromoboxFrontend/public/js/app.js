@@ -10,35 +10,40 @@ app.config(['$routeProvider','$stateProvider','$urlRouterProvider', function ($r
             url: "/",
             views: {
                 "topView": { controller: 'TopMenuController',templateUrl: '/views/top_clean_menu.html' },
-                "contentView": { controller: 'LoginController',templateUrl: '/views/login.html' }
+                "contentView": { controller: 'LoginController',templateUrl: '/views/login.html' },
+                "footerView": {controller: 'FooterController', templateUrl: '/views/footer.html'}
             }
         })
         .state('registration', {
             url: "/registration",
             views: {
                 "topView": { controller: 'TopMenuController',templateUrl: '/views/top_clean_menu.html' },
-                "contentView": { controller: 'RegistrationController',templateUrl: '/views/register.html' }
+                "contentView": { controller: 'RegistrationController',templateUrl: '/views/register.html' },
+                "footerView": {controller: 'FooterController', templateUrl: '/views/footer.html'}
             }
         })
         .state('list', {
             url: "/list",
             views: {
                 "topView": { controller: 'TopMenuController',templateUrl: '/views/top_menu.html' },
-                "contentView": { controller: 'CampaignsController',templateUrl: '/views/list.html' }
+                "contentView": { controller: 'CampaignsController',templateUrl: '/views/list.html' },
+                "footerView": {controller: 'FooterController', templateUrl: '/views/footer.html'}
             }
         })
         .state('campaign_edit', {
             url: "/campaign/edit/:cId",
             views: {
                 "topView": { controller: 'TopMenuController',templateUrl: '/views/top_menu.html' },
-                "contentView": { controller: "CampaignEditController", templateUrl: '/views/campaign_edit.html' }
+                "contentView": { controller: "CampaignEditController", templateUrl: '/views/campaign_edit.html' },
+                "footerView": {controller: 'FooterController', templateUrl: '/views/footer.html'}
             }
         })
         .state('device', {
             url: "/device",
             views: {
                 "topView": { controller: 'TopMenuController',templateUrl: '/views/top_menu.html' },
-                "contentView": { controller: 'DevicesController',templateUrl: '/views/device.html' }
+                "contentView": { controller: 'DevicesController',templateUrl: '/views/device.html' },
+                "footerView": {controller: 'FooterController', templateUrl: '/views/footer.html'}
             }
         })
         .state('campaign_new', {
@@ -138,10 +143,24 @@ app.controller('TopMenuController', ['$scope', '$location', '$http', 'token', 'C
             $scope.compName = response.compName;
         });
 
+        
+
+    }]);
+
+app.controller('FooterController', ['$scope', '$location', '$http', 'token', '$rootScope', '$translate', '$filter',
+    function ($scope, $location, $http, token, $rootScope, $translate, $filter) {
+
+        $scope.currentLang = "en";
+        $scope.langs = [{value: "en", label: $filter('translate')('lang_en')},
+                        {value: "es", label: $filter('translate')('lang_es')},
+                        {value: "de", label: $filter('translate')('lang_de')},
+                        {value: "ru", label: $filter('translate')('lang_ru')},
+                        {value: "fr", label: $filter('translate')('lang_fr')}];
+
         $scope.change_language = function(lang) {
             $translate.use(lang);
+            $scope.currentLang = lang;
         }
-
     }]);
 
 //Update When Create new Design

@@ -152,10 +152,9 @@ app.controller('FooterController', ['$scope', '$location', '$http', 'token', '$r
 
         $scope.currentLang = "en";
         $scope.langs = [{value: "en", label: $filter('translate')('lang_en')},
-                        {value: "es", label: $filter('translate')('lang_es')},
-                        {value: "de", label: $filter('translate')('lang_de')},
-                        {value: "ru", label: $filter('translate')('lang_ru')},
-                        {value: "fr", label: $filter('translate')('lang_fr')}];
+                        {value: "et", label: $filter('translate')('lang_et')},
+                        {value: "lv", label: $filter('translate')('lang_lv')},
+                        {value: "ru", label: $filter('translate')('lang_ru')}];
 
         $scope.change_language = function(lang) {
             $translate.use(lang);

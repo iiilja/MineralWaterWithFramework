@@ -7,11 +7,16 @@ html {height: 100%;}
 body {
     font-family: 'Open Sans', sans-serif;
     height: 100%;
+    background: #222425;
 }
 
 #main-wrap {
     min-height: 100%;
     padding-bottom: 57px;
+    width: 90%;
+    max-width: 1170px;
+    margin: auto;
+    position: relative;
 }
 
 h1,h2,h3,h4,h5,h6,p,a,div {font-family: 'Open Sans', sans-serif;}
@@ -27,9 +32,6 @@ and open the template in the editor.
     Created on : Aug 14, 2014, 10:43:44 AM
     Author     : AlDrac
 */
-
-.main_bg {background: #222425;}
-.content_bg {background: url(../img/content_bg.png) #f6f6f6  left top repeat-x;}
 
 /* enable absolute positioning */
 .inner-addon {
@@ -91,20 +93,9 @@ and open the template in the editor.
 .btn-custom-lighten {
     margin-right: 15px;
     outline: 0 !important;
-    color: #C2C2C2;
-    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
-    background-color: #414649;
-    background-image: -moz-linear-gradient(top, #414649, #414649);
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#414649), to(#414649));
-    background-image: -webkit-linear-gradient(top, #414649, #414649);
-    background-image: -o-linear-gradient(top, #414649, #414649);
-    background-image: linear-gradient(to bottom, #414649, #414649);
-    background-repeat: repeat-x;
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff414649', endColorstr='#ff414649', GradientType=0);
-    border-color: #596064 #596064 #35393c;
-    border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
-    /* Darken IE7 buttons by default so they stand out more given they won't have borders */
-    filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+    color: #bbbbbc;
+    background: #414649;
+    border-bottom:1px solid #242627;
 }
 .btn-custom-lighten:hover,
 .btn-custom-lighten:focus,
@@ -1488,24 +1479,77 @@ input[readonly] {
     right: 0;
 }
 
+#footer .lang .jq-selectbox__select {
+    height: 31px;
+    border:0;
+    border-radius:0;
+    background: #313436;
+    padding: 0 20px 0 5px;
+}
 
-.lang-en,
-.lang-en .jq-selectbox__select-text {
-    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAbpJREFUeNqkk81LW0EUxc8zz0YRBaEqCBrswm7dWqhB7KYLFdEqBU0pdNXi1m7Ff6Ab240bv7ALKWjiWshTWpBGsBGNgrFPa+pHkaio+PFyvBMnmKa4SHPh8HvzZubOmZk7BknkEnnIMUzj1dAUrpxWOAlpZrjJcwEPinA46kNcmk5al3G7+ldTTZ7sbUFHfSXGglvo8VZjzBI2VGPE2kZ3QxVczQ5KXW49TUFY4Mbm87YnQNdHqkDjBL9H40TTZ4Y0F6JHxLMvvJT+P6J9rQPRoSgQiYjlrkH2T28xZJ8QzX7++KUY0JyhtXNNukEWahWI8kUfBvgzuWdJkEiIg/ZZhndOiRezXI6dJbkUOyc6v/Eqw8F+ysHKqiR4+Ymd47sM/b4kekJc2hP6UlxkUI0ukxXLRRWaD0V9r7UD3whtdQZvY7Tiwnd3DCZ5wPP7HKxGaBxJlpI3TwFr7u5+0kPdbOqGmfbP64U9HIQ5H1mD93EtLv6tgr9yZPaZovD7dRhqH54WD7BtZ1eCVR7YfhtmeCOK0kc1uM6yhKVGsRzdhLEBHMt3cbZPSh/ViWKdTvg/4Ri5PucbAQYA8gA3rogcqYQAAAAASUVORK5CYII=) no-repeat 0 7px;
+#footer .lang  .jq-selectbox__trigger {border:0;}
+
+.jq-selectbox__trigger-arrow {
+    border-bottom: 4px solid #bcbcbc;
+    border-right: 3px solid transparent;
+    border-top: transparent;
+    border-left: 3px solid transparent;
 }
-.lang-es,
-.lang-es .jq-selectbox__select-text {
-    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAaFJREFUeNqkk79LHEEUxz8zOx4GdSGVcIRwEEhhZSMBBSF1ENOliUHs0kSwTiv+CWKtdeKZPyDY5ooELESROwJGEe7HnkcgrLczvpk9udNGLvfY786vfd/3fe/NKucco5gamaAK+0KxPCyNylFWZ+Cmy9+g25UdLVCPuEooa8EYrpaXMJls2YuEq48rQymY3t7D+5qXu/J+nxC/6+vyQbD9gGHuBube81mdeAo0HVmkLcLoER9QPfokYxnask6EMdF9+L1rj0b43gTGtBHYa3+gvrNBe3yR1G4xJr4vinKQqb6CO6TNoEYHmbbpqfhr5vlyOEPtIOHpz0065hVEvbQeWrceBkMkp0oUFODiwznzb49pJhP8ujlBryfw1efs8u4MKlASVHw1sRxMCNskVD6v8vxNi/OFiH9JjR8bazDl6yIese2BHE/EJ9aoE+Ervp6D31WiyMlV0MgjQZy025F1IzKrcfcukUWXSlx+r2B8imPj19hiIe+a8l2666WodKpXqEHTROITynMqDdG50KFNEur4ULPktf4fy0b+G28FGACzeZrTM/MAlgAAAABJRU5ErkJggg==) no-repeat 0 7px;
+
+.jq-selectbox__select-text {
+    color: #a4a4a4;
+    text-shadow:none;
+    padding-left: 13px;
 }
-.lang-de,
-.lang-de .jq-selectbox__select-text {
-    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAATxJREFUeNqkkztKBEEQhv/q7mkf+EC8gRi5iYOYeQDBwEu4N1gx8gCiBxDWyBNo5h3EMyiC4S4yujPa0w+rRgMjZ9Zt6KApvvr/quqilBJmOQozHpPn+Y1z7jDGOJ2yUrDW3tJWr5eGwyuEEEBEoBZQCpaytdbo949gHD+KssTg+ARZZjjcnqKuPS7OzyCs2fh4RxiPsOkraGVB6u+2JC41eNcwwprTl2fsjR9xUD9xeI4NtDiQqdWfADOrzJpKBH0JrC8BOuPutCSInCBkDSOsCdJ8PwFWFhk23RzErGGENZ7doHLsnh0o3amJiKFhhKV0rRL2d4Di/gfuNEh2vAvcPcBgwoXQK2BZPXX8mBS/GWYNEiuujYAF1UH91wbMM8Ms+Utb6IhlxOm3KCi8ieQ2X/3PXQo06zp/CTAALyGCuAjgGMwAAAAASUVORK5CYII=) no-repeat 0 7px;
+
+.en,
+.en .jq-selectbox__select-text {
+    background: url(../img/en.png) no-repeat 2px center;
 }
-.lang-ru,
-.lang-ru .jq-selectbox__select-text {
-    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAASxJREFUeNqkk01Ow0AMhZ8zTlMRUUSQuqg4AWyqHCKwoldhzQF6HmADtLkCWSCBxAHYIPEjugCUzEzthn2mxJJnMdI3fs8ek/cefSJCz+CyLC+dczPJ7SpHkeYVe4GLokBjrVyH2iGwMVguFjNmaiH7+yPXYaEE76RQlh/eGky/Gzy+rESSvk0dsIe6PT5MoCyf37zjNX3G/PpJjAlMHTp0as7j4uwIc2EZA/FDMcbZCLGhIAW19Rtmw0KaUbsB9tM9GFEQIsCKAmWUZSQjfCQZOFMHYQ+QHMooS/cD+PzkFHVVtT3onEXbgzjPUd3dgj+HIikewk4m8BQ2SFUQCaMsOxmdiQlmfPBXPECBfgRhlKVlhi/vsLvtTqlYirDSclNJ889dstR3ndcCDABI0W9vitkDJAAAAABJRU5ErkJggg==) no-repeat 0 7px;
+
+.ru,
+.ru .jq-selectbox__select-text {
+    background: url(../img/ru.png) no-repeat 2px center;
 }
-.lang-fr,
-.lang-fr .jq-selectbox__select-text {
-    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAcRJREFUeNqkk71OG0EUhc+dn13bYGwlZZQ8QHCRgipSKiRaKhrEI4CiPFFSIqWAFJHSR6KhpSASTxDFFhvzY5udmZyZ9S4LZTzSaHdn9p77nXtnJISAVYbCisPI0ckpSr8LT5JIMw+4OHyFYhHg/JJOa/jBAK9HI/in2c9MDP7+cYePuBUwXQCbbzPcLTxc7U4puLUeht++AuvrgDDUGlx92H5vYuZiXmL/y6/KEDNvf3qJ6/mjQFAabmOA4cEe0M9BNODzcWUBAkz4M7qaAvxQAb1Ohnu0BGjBdTvMzgz9HgVKYFosBTgmxEUmJBMEvlprYZhF/KOAMhmQM0nOEMdEN9ctgpljFDclrgRk9JdRoKwrFgm4BivVNCS5bRM8RIFlR42HNpY1cg1BFNCmFtBV/RuCJBAgRqcupBVasE49EfBpXZLVhHrXsvCndFDcTG03klpk6bMtkOpZWxDO+4ZAMClJQDThQQouEuawWbRQHyRTCeSqKqTmc/a3JhCMA6vczdiB+FtSYAzn83PbN9UkEVwjgOn453m/Ocozj8ut3xjPYheWBCygH77Amx8FSYpGj7vTWJF3EfI/75KTVa/zPwEGAOCWsO19nu/2AAAAAElFTkSuQmCC) no-repeat 0 7px;
+
+
+.et,
+.et .jq-selectbox__select-text {
+    background: url(../img/et.png) no-repeat 2px center;
+}
+
+.lv,
+.lv .jq-selectbox__select-text {
+    background: url(../img/lv.png) no-repeat 2px center;
+}
+
+
+/* menu-nav styles*/
+
+.menu-nav {
+    display: none;
+    width: 250px;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: #222425;
+}
+
+.content_bg .menu-nav {display: block;}
+
+.content_bg .main-content {
+    width: auto;
+    margin-left: 250px;
+    padding: 0;
+}
+
+.content_bg .header-nav {
+    height: 58px;
+    line-height: 58px;
+    background: #383c3e;
+}
+
+.content_bg #main-wrap {
+    background: #f6f6f6;
 }

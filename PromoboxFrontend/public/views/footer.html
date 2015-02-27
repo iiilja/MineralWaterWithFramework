@@ -14,6 +14,6 @@
 <div class="lang">
     <select ng-model="currentLang" 
             ng-change="change_language(currentLang)">
-            <option ng-repeat="lang in langs" value="{{lang.value}}">{{lang.label}}</option>
+            <option ng-repeat="lang in langs" value="{{lang.value}}" class="{{lang.value}}">{{lang.label}}</option>
     </select>
 </div><!-- .sec -->

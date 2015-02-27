@@ -149,10 +149,17 @@
     </head>
     <body class="{{$root.bodyClass}}">
         <div id="main-wrap">
-            <div class="container-fluid">
-                 <toaster-container toaster-options="{'time-out': 3000}"></toaster-container>
-                 <div ui-view="topView"></div>
-                 <div ui-view="contentView"></div>
+            <div class="menu-nav">
+                <img style="margin-top: 5px;margin-bottom: 6px;margin-left: 40px;" src="img/small_logo.png" alt="" />
+
+                <a ui-sref="list" class="top_link {{$root.top_link_active_list}}" href>{{ 'top_menu_advertisingcampaigns' | translate }}</a>
+                <a ui-sref="device" class="top_link {{$root.top_link_active_device}}" href>{{ 'top_menu_devices' | translate }}</a>
+            </div>
+
+            <div class="container-fluid main-content">
+                <toaster-container toaster-options="{'time-out': 3000}"></toaster-container>
+                <div ui-view="topView" class="header-nav"></div>
+                <div ui-view="contentView"></div>
             </div>
         </div>
 

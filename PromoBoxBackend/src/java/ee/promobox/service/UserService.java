@@ -24,9 +24,11 @@ import java.util.List;
 public interface UserService {
 
     public List<Users> findAllUsers();
+    public List<Users> findUsersByClientId(int clientId);
 
     public Users findUserByEmailAndPassword(String email, String password);
     public Users findUserByEmail(String email);
+    public Users findUserById(int id);
     
     public Clients findClientById(int clientId);
 
@@ -107,4 +109,5 @@ public interface UserService {
     
     public void addClient(Clients client);
     public void addUser(Users user);
+    public void updateUser(Users user);
 }

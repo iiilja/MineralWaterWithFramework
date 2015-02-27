@@ -67,6 +67,8 @@ public class Users implements Serializable {
     private Date lastLoginDt;
     @Column(name = "active")
     private Boolean active;
+    @Column(name = "admin")
+    private Boolean admin;
 
     public Users() {
     }
@@ -162,7 +164,15 @@ public class Users implements Serializable {
         return hash;
     }
 
-    @Override
+    public Boolean getAdmin() {
+		return admin;
+	}
+
+	public void setAdmin(Boolean admin) {
+		this.admin = admin;
+	}
+
+	@Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Users)) {

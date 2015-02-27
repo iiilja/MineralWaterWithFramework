@@ -17,6 +17,7 @@ import java.util.Map;
 public class Session {
     private String uuid;
     private int userId;
+    private boolean admin;
     private int clientId;
     private String ip;
     private Date createdDate;
@@ -106,5 +107,13 @@ public class Session {
     public void setClientId(int clientId) {
         this.clientId = clientId;
     }
+
+	public boolean isAdmin() {
+		return admin;
+	}
+
+	public void setAdmin(boolean admin) {
+		this.admin = admin;
+	}
     
 }

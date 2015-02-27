@@ -21,6 +21,8 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.RandomStringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -31,7 +33,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
@@ -51,14 +55,13 @@ public class UserController {
     private SessionService sessionService;
     
 
-    @RequestMapping("/user/register")
+    @RequestMapping(value="/user/register", method=RequestMethod.POST)
     public ModelAndView userRegisterHandler(
     		@RequestBody String json,
     		HttpServletRequest request,
     		HttpServletResponse responce) throws Exception {
     	
     	json = URLDecoder.decode(json, "UTF-8");
-    	log.info(json);
     	
     	JSONObject objectGiven = new JSONObject(json);
     	JSONObject resp = RequestUtils.getErrorResponse();
@@ -79,16 +82,141 @@ public class UserController {
     		user.setFirstname(objectGiven.getString("firstname"));
     		user.setSurname(objectGiven.getString("surname"));
     		user.setEmail(email);
-    		user.setPassword("");
+    		user.setPassword(genereateRandomPass());
     		user.setClientId(client.getId());
     		user.setCreatedDt(new Date());
     		user.setActive(false);
+    		user.setAdmin(true);
     		userService.addUser(user);
     		
     		resp.put("response", RequestUtils.OK);
     	}
 
     	return RequestUtils.printResult(resp.toString(), responce);
+    }
+    
+    @RequestMapping(value = "token/{token}/users", method = RequestMethod.GET)
+    public @ResponseBody String listUsers(
+            @PathVariable("token") String token,
+            HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+    	
+    	JSONObject resp = new JSONObject();
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+        Session session = sessionService.findSession(token);
+
+        if (session != null) {
+        	if (session.isAdmin()) {
+        		
+        		JSONArray usersArray = new JSONArray();
+        		for (Users u: userService.findUsersByClientId(session.getClientId())) {
+        			JSONObject userJson = new JSONObject();
+        			userJson.put("id", u.getId());
+        			userJson.put("firstname", u.getFirstname());
+        			userJson.put("surname", u.getSurname());
+        			userJson.put("email", u.getEmail());
+        			
+        			usersArray.put(userJson);
+        		}
+        		
+        		resp.put("users", usersArray);
+        		resp.put("response", RequestUtils.OK);
+        	}
+        }
+        
+        return resp.toString();
+    }
+    
+    @RequestMapping(value = "token/{token}/users", method = RequestMethod.POST)
+    public void createUser(
+            @PathVariable("token") String token,
+            HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+    	
+    	JSONObject resp = new JSONObject();
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+        Session session = sessionService.findSession(token);
+
+        if (session != null) {
+        	if (session.isAdmin()) {
+        		int clientId = session.getClientId();
+        		
+        		Users user = new Users();
+        		user.setFirstname("");
+        		user.setSurname("");
+        		user.setEmail("");
+        		user.setPassword(genereateRandomPass());
+        		user.setClientId(clientId);
+        		user.setCreatedDt(new Date());
+        		user.setActive(true);
+        		user.setAdmin(true);
+        		userService.addUser(user);
+        		
+        		resp.put("response", RequestUtils.OK);
+        	}
+        	
+        } else {
+            RequestUtils.sendUnauthorized(response);
+        }
+    }
+    
+    @RequestMapping(value = "token/{token}/users/{id}", method = RequestMethod.PUT)
+    public void updateUser(
+    		@PathVariable("id") int userId,
+            @PathVariable("token") String token,
+            @RequestBody String json,
+            HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+    	
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+        JSONObject resp = RequestUtils.getErrorResponse();
+        Session session = sessionService.findSession(token);
+
+        if (session != null) {
+        	if (session.isAdmin()) {
+        		
+        		JSONObject objectGiven = new JSONObject(json);
+            	
+            	resp.put("response", RequestUtils.ERROR);
+            	
+            	String email = objectGiven.getString("email");
+            	if (!EmailValidator.getInstance().isValid(email)) { 
+            		resp.put("reason", "invalidEmail");
+            		
+            	} else if (userService.findUserByEmail(email) != null) {
+            		resp.put("reason", "emailExist");
+            	} else {
+	        		int clientId = session.getClientId();
+	        		
+	        		Users user = userService.findUserById(userId);
+	        		user.setFirstname(objectGiven.getString("firstname"));
+	        		user.setSurname(objectGiven.getString("surname"));
+	        		user.setEmail(email);
+	        		
+	        		user.setClientId(clientId);
+	        		//user.setUsername(username);
+	        		user.setActive(true);
+	        		user.setAdmin(false);
+	        		
+	        		if (objectGiven.has("password")) {
+	        			String password = objectGiven.getString("password");
+	        			if (StringUtils.trimToNull(password) != null) {
+	        				user.setPassword(password);
+	        			}
+	        		}
+	        		
+	        		userService.updateUser(user);
+	        		
+	        		resp.put("response", RequestUtils.OK);
+            	}
+        	}
+        	
+        } else {
+            RequestUtils.sendUnauthorized(response);
+        }
     }
     
     @RequestMapping("/user/login")
@@ -110,6 +238,7 @@ public class UserController {
             
             session.setIp(request.getRemoteAddr());
             session.setUserId(user.getId());
+            session.setAdmin(user.getAdmin());
             session.setClientId(user.getClientId());
             session.setCreatedDate(new Date());
             session.setUuid(UUID.randomUUID().toString().replaceAll("-", ""));
@@ -181,6 +310,10 @@ public class UserController {
         }
 
         
+    }
+    
+    private static String genereateRandomPass() {
+    	return RandomStringUtils.random(8, true, true);
     }
 
 

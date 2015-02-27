@@ -149,26 +149,7 @@
     </head>
     <body class="{{$root.bodyClass}}">
         <div id="main-wrap">
-            <div class="menu-nav">
-                <img style="margin-top: 5px;margin-bottom: 6px;margin-left: 40px;" src="img/small_logo.png" alt="" />
-
-                <ul>
-                    <li><a ui-sref="list" class="top_link {{$root.top_link_active_list}}" href>{{ 'top_menu_advertisingcampaigns' | translate }}</a></li>
-                    <li><a ui-sref="device" class="top_link {{$root.top_link_active_device}}" href>{{ 'top_menu_devices' | translate }}</a></li>
-                </ul>
-
-                <div class="setting-block">
-                    <a href="">Настройки</a>
-
-                    <ul>
-                        <li><a href="#">Аккаунт</a></li>
-                        <li><a href="#">Пользователи</a></li>
-                        <li><a href="#">Устройства</a></li>
-                        <li><a href="#">Кампании</a></li>
-                        <li><a href="#">Оплата</a></li>
-                    </ul>
-                </div>
-            </div>
+            <div ui-view="leftMenuView" class="menu-nav"></div>
 
             <div class="container-fluid main-content">
                 <toaster-container toaster-options="{'time-out': 3000}"></toaster-container>

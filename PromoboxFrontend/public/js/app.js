@@ -26,14 +26,17 @@ app.config(['$routeProvider','$stateProvider','$urlRouterProvider', function ($r
             url: "/list",
             views: {
                 "topView": { controller: 'TopMenuController',templateUrl: '/views/top_menu.html' },
+                "leftMenuView": {controller: 'LeftMenuController',templateUrl: '/views/left_menu.html' },
                 "contentView": { controller: 'CampaignsController',templateUrl: '/views/list.html' },
-                "footerView": {controller: 'FooterController', templateUrl: '/views/footer.html'}
+                "footerView": {controller: 'FooterController', templateUrl: '/views/footer.html'},
+
             }
         })
         .state('campaign_edit', {
             url: "/campaign/edit/:cId",
             views: {
                 "topView": { controller: 'TopMenuController',templateUrl: '/views/top_menu.html' },
+                "leftMenuView": {controller: 'LeftMenuController',templateUrl: '/views/left_menu.html' },
                 "contentView": { controller: "CampaignEditController", templateUrl: '/views/campaign_edit.html' },
                 "footerView": {controller: 'FooterController', templateUrl: '/views/footer.html'}
             }
@@ -42,7 +45,53 @@ app.config(['$routeProvider','$stateProvider','$urlRouterProvider', function ($r
             url: "/device",
             views: {
                 "topView": { controller: 'TopMenuController',templateUrl: '/views/top_menu.html' },
+                "leftMenuView": {controller: 'LeftMenuController',templateUrl: '/views/left_menu.html' },
                 "contentView": { controller: 'DevicesController',templateUrl: '/views/device.html' },
+                "footerView": {controller: 'FooterController', templateUrl: '/views/footer.html'}
+            }
+        })
+        .state('setting_account', {
+            url: "/setting/account",
+            views: {
+                "topView": { controller: 'TopMenuController',templateUrl: '/views/top_menu.html' },
+                "leftMenuView": {controller: 'LeftMenuController',templateUrl: '/views/left_menu.html' },
+                "contentView": { controller: 'SettingAccountController',templateUrl: '/views/settings/account.html' },
+                "footerView": {controller: 'FooterController', templateUrl: '/views/footer.html'}
+            }
+        })
+        .state('setting_campaign', {
+            url: "/setting/campaign",
+            views: {
+                "topView": { controller: 'TopMenuController',templateUrl: '/views/top_menu.html' },
+                "leftMenuView": {controller: 'LeftMenuController',templateUrl: '/views/left_menu.html' },
+                "contentView": { controller: 'SettingCampaignController',templateUrl: '/views/settings/campaigns.html' },
+                "footerView": {controller: 'FooterController', templateUrl: '/views/footer.html'}
+            }
+        })
+        .state('setting_device', {
+            url: "/setting/device",
+            views: {
+                "topView": { controller: 'TopMenuController',templateUrl: '/views/top_menu.html' },
+                "leftMenuView": {controller: 'LeftMenuController',templateUrl: '/views/left_menu.html' },
+                "contentView": { controller: 'SettingDeviceController',templateUrl: '/views/settings/devices.html' },
+                "footerView": {controller: 'FooterController', templateUrl: '/views/footer.html'}
+            }
+        })
+        .state('setting_payment', {
+            url: "/setting/payment",
+            views: {
+                "topView": { controller: 'TopMenuController',templateUrl: '/views/top_menu.html' },
+                "leftMenuView": {controller: 'LeftMenuController',templateUrl: '/views/left_menu.html' },
+                "contentView": { controller: 'SettingPaymentController',templateUrl: '/views/settings/payments.html' },
+                "footerView": {controller: 'FooterController', templateUrl: '/views/footer.html'}
+            }
+        })
+        .state('setting_user', {
+            url: "/setting/user",
+            views: {
+                "topView": { controller: 'TopMenuController',templateUrl: '/views/top_menu.html' },
+                "leftMenuView": {controller: 'LeftMenuController',templateUrl: '/views/left_menu.html' },
+                "contentView": { controller: 'SettingUserController',templateUrl: '/views/settings/users.html' },
                 "footerView": {controller: 'FooterController', templateUrl: '/views/footer.html'}
             }
         })
@@ -132,11 +181,41 @@ app.controller('Exit', ['token',
         token.remove();
     }]);
 
+app.controller('LeftMenuController', ['$scope', '$location', '$http', 'token', 'Clients', '$rootScope', '$translate',
+    function ($scope, $location, $http, token, Clients, $rootScope, $translate) {
+
+    }]);
+
+
+app.controller('SettingAccountController', ['$scope', '$location', '$http', 'token', 'Clients', '$rootScope', '$translate',
+    function ($scope, $location, $http, token, Clients, $rootScope, $translate) {
+        $rootScope.left_menu_active = 'setting_account';
+    }]);
+
+app.controller('SettingCampaignController', ['$scope', '$location', '$http', 'token', 'Clients', '$rootScope', '$translate',
+    function ($scope, $location, $http, token, Clients, $rootScope, $translate) {
+        $rootScope.left_menu_active = 'setting_campaign';
+    }]);
+
+app.controller('SettingDeviceController', ['$scope', '$location', '$http', 'token', 'Clients', '$rootScope', '$translate',
+    function ($scope, $location, $http, token, Clients, $rootScope, $translate) {
+        $rootScope.left_menu_active = 'setting_device';
+    }]);
+
+app.controller('SettingPaymentController', ['$scope', '$location', '$http', 'token', 'Clients', '$rootScope', '$translate',
+    function ($scope, $location, $http, token, Clients, $rootScope, $translate) {
+        $rootScope.left_menu_active = 'setting_payment';
+    }]);
+
+app.controller('SettingUserController', ['$scope', '$location', '$http', 'token', 'Clients', '$rootScope', '$translate',
+    function ($scope, $location, $http, token, Clients, $rootScope, $translate) {
+        $rootScope.left_menu_active = 'setting_user';
+    }]);
+
 app.controller('TopMenuController', ['$scope', '$location', '$http', 'token', 'Clients', '$rootScope', '$translate',
     function ($scope, $location, $http, token, Clients, $rootScope, $translate) {
         $rootScope.bodyClass = 'content_bg';
-        $rootScope.top_link_active_list = '';
-        $rootScope.top_link_active_device = '';
+        $rootScope.left_menu_active = '';
         
         Clients.getClient({token: token.get()}, function(response) {
             console.log(response);
@@ -225,7 +304,7 @@ app.controller('CampaignNewController', ['token', 'Campaign', 'sysLocation',
 
 app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Campaign', '$location', '$http', 'toaster', 'Files','sysMessage', 'sysLocation', 'FileUploader', '$rootScope', '$filter', 'orderByFilter', '$timeout', 'browser',
     function ($scope, $stateParams, token, Campaign, $location, $http, toaster, Files, sysMessage, sysLocation, FileUploader, $rootScope, $filter, orderByFilter, $timeout, browser) {
-        $rootScope.top_link_active_list = 'top_link_active';
+        $rootScope.left_menu_active = 'campaign';
         $scope.filesArray = [];
         $scope.checkedDays = [];
         $scope.checkedHours = [];
@@ -640,7 +719,7 @@ app.controller('CampaignsController', ['$scope', 'token', 'Campaign', 'sysMessag
                 return timeConvert;
             };
 
-            $rootScope.top_link_active_list = 'top_link_active';
+            $rootScope.left_menu_active = 'campaign';
             $scope.currentCampaign = {};
             Campaign.get_all_campaigns({token: token.get()}, function (response) {
                 console.log(response);
@@ -675,7 +754,7 @@ app.controller('DevicesController', ['$scope', 'token', 'Device', 'sysMessage', 
                 return timeConvert;
             };
 
-            $rootScope.top_link_active_device = 'top_link_active';
+            $rootScope.left_menu_active = 'device';
             Device.get_data({token: token.get()}, function (response) {
                 console.log(response);
                 

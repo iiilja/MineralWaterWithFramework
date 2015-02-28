@@ -16,10 +16,12 @@
     
 </ul>
 
-<div class="setting-block">
-    <p class='btn-setting' href="#">Настройки <span></span></p>
+<div class="setting-block" ng-class="{active: $root.showSettings}">
 
-    <ul>
+    <p class='btn-setting' href="#" 
+        ng-click="$root.showSettings = !$root.showSettings">Настройки <span></span></p>
+
+    <ul ng-show="$root.showSettings">
         <li>
             <a ui-sref="setting_account" ng-class="$root.left_menu_active == 'setting_account' ? 'active' : ''">
                 <span class="ico-block acc-ico"></span>

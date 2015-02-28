@@ -240,6 +240,7 @@ app.controller('FooterController', ['$scope', '$location', '$http', 'token', '$r
             $scope.currentLang = lang;
         }
         setTimeout(function(){jQuery('input,select').styler();}, 50);
+
     }]);
 
 //Update When Create new Design
@@ -706,8 +707,6 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         console.info('uploader', uploader);
         
         setTimeout(function(){jQuery('.styler').styler();}, 800);
-        //jQuery(function(){jQuery('.styler').styler()});
-        console.log("styler")
     }]);
 
 app.controller('CampaignsController', ['$scope', 'token', 'Campaign', 'sysMessage', '$rootScope', '$filter',
@@ -890,6 +889,5 @@ app.controller('DevicesController', ['$scope', 'token', 'Device', 'sysMessage', 
             $scope.showDeviceSettings = function(id) {
                 $scope.visibleDeviceSettings = id;
             };
-            
         };
     }]);

@@ -1,18 +1,54 @@
-<img style="margin-top: 5px;margin-bottom: 6px;margin-left: 40px;" src="img/small_logo.png" alt="" />
+<img class="small-logo" src="img/small_logo.png" alt="" />
 
-<ul>
-    <li><a ui-sref="list" ng-class="$root.left_menu_active == 'campaign' ? 'active' : ''" class="top_link" href>{{ 'top_menu_advertisingcampaigns' | translate }}</a></li>
-    <li><a ui-sref="device" ng-class="$root.left_menu_active == 'device' ? 'active' : ''" href>{{ 'top_menu_devices' | translate }}</a></li>
+<ul class="menu-nav-list">
+    <li>
+        <a ui-sref="device" ng-class="$root.left_menu_active == 'device' ? 'active' : ''" href>
+            <span class="ico-block devices-ico"></span>
+            {{ 'top_menu_devices' | translate }}
+        </a>
+    </li>
+    <li>
+        <a ui-sref="list" ng-class="$root.left_menu_active == 'campaign' ? 'active' : ''" href>
+            <span class="ico-block comps-ico"></span>
+            {{ 'top_menu_advertisingcampaigns' | translate }}
+        </a>
+    </li>
+    
 </ul>
 
 <div class="setting-block">
-    <a href="">Настройки</a>
+    <p class='btn-setting' href="#">Настройки <span></span></p>
 
     <ul>
-        <li><a ui-sref="setting_account" ng-class="$root.left_menu_active == 'setting_account' ? 'active' : ''" class="top_link">Аккаунт</a></li>
-        <li><a ui-sref="setting_user" ng-class="$root.left_menu_active == 'setting_user' ? 'active' : ''" class="top_link">Пользователи</a></li>
-        <li><a ui-sref="setting_device" ng-class="$root.left_menu_active == 'setting_device' ? 'active' : ''" class="top_link">Устройства</a></li>
-        <li><a ui-sref="setting_campaign" ng-class="$root.left_menu_active == 'setting_campaign' ? 'active' : ''" class="top_link">Кампании</a></li>
-        <li><a ui-sref="setting_payment" ng-class="$root.left_menu_active == 'setting_payment' ? 'active' : ''" class="top_link">Оплата</a></li>
+        <li>
+            <a ui-sref="setting_account" ng-class="$root.left_menu_active == 'setting_account' ? 'active' : ''">
+                <span class="ico-block acc-ico"></span>
+                Аккаунт
+            </a>
+        </li>
+        <li>
+            <a ui-sref="setting_user" ng-class="$root.left_menu_active == 'setting_user' ? 'active' : ''">
+                <span class="ico-block user-ico"></span>
+                Пользователи
+            </a>
+        </li>
+        <li>
+            <a ui-sref="setting_device" ng-class="$root.left_menu_active == 'setting_device' ? 'active' : ''">
+                <span class="ico-block device-settings-ico"></span>
+                Устройства
+            </a>
+        </li>
+        <li>
+            <a ui-sref="setting_campaign" ng-class="$root.left_menu_active == 'setting_campaign' ? 'active' : ''">
+                <span class="ico-block comp-settings-ico"></span>
+                Кампании
+            </a>
+        </li>
+        <li>
+            <a ui-sref="setting_payment" ng-class="$root.left_menu_active == 'setting_payment' ? 'active' : ''">
+                <span class="ico-block payment-ico"></span>
+                Оплата
+            </a>
+        </li>
     </ul>
 </div>

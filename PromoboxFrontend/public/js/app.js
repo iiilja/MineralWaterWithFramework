@@ -183,9 +183,7 @@ app.controller('Exit', ['token',
 
 app.controller('LeftMenuController', ['$scope', '$location', '$http', 'token', 'Clients', '$rootScope', '$translate',
     function ($scope, $location, $http, token, Clients, $rootScope, $translate) {
-        //$scope.showSettings = false;
 
-        console.log($rootScope.showSettings)
     }]);
 
 

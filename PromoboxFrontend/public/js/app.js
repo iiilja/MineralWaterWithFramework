@@ -239,7 +239,7 @@ app.controller('FooterController', ['$scope', '$location', '$http', 'token', '$r
             $translate.use(lang);
             $scope.currentLang = lang;
         }
-        setTimeout(function(){jQuery('input,select').styler();}, 50);
+        setTimeout(function(){jQuery('input[type="checkbox"], input[type="radio"],select').styler();}, 50);
 
     }]);
 

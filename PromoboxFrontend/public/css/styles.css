@@ -8,6 +8,7 @@ body {
     font-family: 'Open Sans', sans-serif;
     height: 100%;
     background: #282828;
+    min-width: 1200px;
 }
 
 #main-wrap {
@@ -92,11 +93,10 @@ and open the template in the editor.
 .btn-custom-lighten.active {background-color: #313537 ;}
 
 .center-block {
-    margin-top: 15px;
-    display: table;
-    margin-left: auto;
-    margin-right: auto;
+    margin-left: 0;
+    margin-right:0;
     float:none;
+    padding: 0 30px;
 }
 
 .campaigns_link {
@@ -825,10 +825,11 @@ input[readonly] {
     border-radius: 5px;
 }
 
-.campaigns-top-wrap {padding: 0;}
+.campaigns-top-wrap {padding: 15px;}
 
 .device .device-info {
-    width: 445px;
+    width: 50%;
+    max-width: 445px;
     height: 202px;
     border:1px solid #cccccc;
     -webkit-border-radius: 5px 0 0 5px;
@@ -896,7 +897,8 @@ input[readonly] {
 .device .bottom-block {padding: 7px 0 0 0;}
 
 .device .company-info {
-    width: 382px;
+    width: 50%;
+    max-width: 382px;
     height: 202px;
     -webkit-border-radius: 0 5px 5px 0;
     -moz-border-radius: 0 5px 5px 0;
@@ -1050,7 +1052,7 @@ input[readonly] {
 
 
 .opting-list li {
-    border-top:1px solid #cccccc;
+/*    border-top:1px solid #cccccc;*/
     position: relative;
     width: 279px;
 }
@@ -1476,7 +1478,7 @@ input[readonly] {
 
 #footer .lang  .jq-selectbox__trigger {border:0;}
 
-.jq-selectbox__trigger-arrow {
+.lang .jq-selectbox__trigger-arrow {
     border-bottom: 4px solid #bcbcbc;
     border-right: 3px solid transparent;
     border-top: transparent;
@@ -1529,7 +1531,7 @@ input[readonly] {
 .content_bg .main-content {
     width: auto;
     margin-left: 250px;
-    padding: 0;
+    padding: 0 0 20px 0;
 }
 
 .content_bg .header-nav {
@@ -1679,7 +1681,7 @@ input[readonly] {
     border-width: 0 4.5px 7px 4.5px;
     border-color: transparent transparent #858f94 transparent;
 }
-.setting-block.active .btn-setting:hover span {height: 72px;}
+.setting-block.active .btn-setting span {height: 72px;}
 .setting-block.active .btn-setting:hover span:after {border-color: transparent transparent #fff transparent;}
 .setting-block .btn-setting {
     line-height: 50px;
@@ -1894,3 +1896,5 @@ input[readonly] {
 }
 
 .setting-item h4 .delete:hover {color: #A20B0B;}
+
+.label {font-size: 10pt;}

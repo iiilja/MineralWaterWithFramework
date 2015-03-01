@@ -823,6 +823,24 @@ input[readonly] {
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
     border-radius: 5px;
+    overflow: hidden;
+    padding: 0 10px;
+}
+
+.campaigns_wrap .name {
+    display: inline-block;
+    vertical-align: top;
+    margin-left: 15px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: 225px;
+}
+
+.campaigns_wrap .date {
+    margin-left: 15px; 
+    color: #bfbfbf; 
+    font-size: 12px;
 }
 
 .campaigns-top-wrap {padding: 15px;}

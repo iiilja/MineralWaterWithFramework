@@ -1675,7 +1675,12 @@ input[readonly] {
 
 .setting-block {margin: 10px 0 0 0;}
 
-
+.setting-block.active .btn-setting span:after {
+    border-width: 0 4.5px 7px 4.5px;
+    border-color: transparent transparent #858f94 transparent;
+}
+.setting-block.active .btn-setting:hover span {height: 72px;}
+.setting-block.active .btn-setting:hover span:after {border-color: transparent transparent #fff transparent;}
 .setting-block .btn-setting {
     line-height: 50px;
     height: 50px;
@@ -1719,9 +1724,6 @@ input[readonly] {
     border-width: 7px 4.5px 0 4.5px;
     border-color: #858f94 transparent transparent transparent;
     content: "";
-    -webkit-transition:0.3s all ease;
-    -moz-transition:0.3s all ease;
-    transition:0.3s all ease;
 }
 
 .setting-block ul {
@@ -1791,3 +1793,104 @@ input[readonly] {
     border-radius: 5px;
     background: #ffffff;
 }
+
+/* user-grid & add user*/
+
+.user-grid .add-company-list {
+    width: 285px;
+    display: inline-block;
+    vertical-align: top;
+}
+
+.user-grid .right-block {
+    width: 95px;
+    display: inline-block;
+    vertical-align: top;
+}
+
+.user-grid .right-block label {padding-left: 10px;}
+
+.user-grid .modal-footer ,
+.add-user .modal-footer {text-align: left;}
+
+.user-grid .modal-dialog ,
+.add-user .modal-dialog {width: 420px;}
+
+.user-grid .modal-body,
+.add-user .modal-body {padding-bottom: 0;}
+
+.user-grid .modal-footer,
+.add-user .modal-footer {padding-top: 0;}
+
+/* setting-row */
+
+.setting-row {
+    border: 1px solid #dcdcdc;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    background: #fff;
+    margin-left: 6px;
+    margin-right: 6px;
+    max-width: 838px;
+    margin-bottom: 7px;
+}
+
+.setting-row .setting-header {
+    height: 41px;
+    border-bottom: 1px solid #dcdcdc;
+}
+
+.setting-row .setting-header h3 {
+    padding-left: 14px;
+    margin: 0;
+    line-height: 41px;
+    font-size: 11pt;
+}
+
+.setting-row .setting-header .btn {margin: 3px 3px 0 0;}
+
+.setting-item {padding: 3px;}
+
+.setting-body {
+    margin: 0;
+    padding:3px;
+}
+
+.setting-item h4 {
+    height: 34px;
+    line-height: 34px;
+    margin: 0;
+    display: block;
+    border:1px solid #dddddd;
+    white-space: nowrap;
+    text-overflow:ellipsis;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    overflow: hidden;
+    padding-right: 40px;
+    padding-left: 13px;
+    position: relative;
+    overflow: hidden;
+    font-size: 10pt;
+}
+
+.setting-item h4 a {
+    font-size: 9pt;
+    position: absolute;
+    top: 0;
+}
+
+.setting-item h4 .edit {
+    right: 26px;
+    color: #cbcbcb;
+}
+.setting-item h4 .edit:hover {color: #428bca;}
+
+.setting-item h4 .delete {
+    right: 7px;
+    color: #cc4f4f;
+}
+
+.setting-item h4 .delete:hover {color: #A20B0B;}

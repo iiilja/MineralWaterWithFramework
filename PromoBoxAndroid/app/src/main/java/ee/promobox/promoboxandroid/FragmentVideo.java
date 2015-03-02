@@ -31,12 +31,11 @@ import com.google.android.exoplayer.SampleSource;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
-import java.lang.ref.WeakReference;
 
 import ee.promobox.promoboxandroid.data.CampaignFile;
 import ee.promobox.promoboxandroid.data.CampaignFileType;
 import ee.promobox.promoboxandroid.data.ErrorMessage;
-import ee.promobox.promoboxandroid.util.FragmentPlaybackListener;
+import ee.promobox.promoboxandroid.interfaces.FragmentPlaybackListener;
 import ee.promobox.promoboxandroid.util.PlayerLengthWatcher;
 import ee.promobox.promoboxandroid.widgets.FragmentWithSeekBar;
 

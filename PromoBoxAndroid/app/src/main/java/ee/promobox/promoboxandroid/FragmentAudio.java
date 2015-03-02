@@ -1,7 +1,6 @@
 package ee.promobox.promoboxandroid;
 
 import android.app.Activity;
-import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,12 +19,11 @@ import com.google.android.exoplayer.SampleSource;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.lang.ref.WeakReference;
 
 import ee.promobox.promoboxandroid.data.CampaignFile;
 import ee.promobox.promoboxandroid.data.CampaignFileType;
 import ee.promobox.promoboxandroid.data.ErrorMessage;
-import ee.promobox.promoboxandroid.util.FragmentPlaybackListener;
+import ee.promobox.promoboxandroid.interfaces.FragmentPlaybackListener;
 import ee.promobox.promoboxandroid.util.PlayerLengthWatcher;
 import ee.promobox.promoboxandroid.widgets.FragmentWithSeekBar;
 import ee.promobox.promoboxandroid.widgets.MyAnimatedDrawable;

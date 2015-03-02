@@ -1,4 +1,4 @@
-package ee.promobox.promoboxandroid.util;
+package ee.promobox.promoboxandroid.interfaces;
 
 /**
  * Created by ilja on 27.02.2015.

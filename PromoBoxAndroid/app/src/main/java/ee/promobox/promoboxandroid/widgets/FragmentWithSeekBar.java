@@ -13,12 +13,9 @@ import java.util.concurrent.TimeUnit;
 
 import ee.promobox.promoboxandroid.R;
 import ee.promobox.promoboxandroid.SettingsActivity;
-import ee.promobox.promoboxandroid.util.PlayerButtonsClickListener;
+import ee.promobox.promoboxandroid.interfaces.PlayerButtonsClickListener;
 import ee.promobox.promoboxandroid.util.PlayerUIVisibilityRunnable;
 import ee.promobox.promoboxandroid.util.SeekBarProgressChangerRunnable;
-import ee.promobox.promoboxandroid.util.VideoWallMethods;
-import ee.promobox.promoboxandroid.util.udp_multicasting.messages.PlayMessage;
-import ee.promobox.promoboxandroid.util.udp_multicasting.UDPMessenger;
 
 /**
  * Created by ilja on 12.02.2015.

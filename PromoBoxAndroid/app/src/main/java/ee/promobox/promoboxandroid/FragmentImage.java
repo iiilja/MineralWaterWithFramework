@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.util.AttributeSet;
@@ -21,10 +20,8 @@ import java.io.File;
 import ee.promobox.promoboxandroid.data.CampaignFile;
 import ee.promobox.promoboxandroid.data.CampaignFileType;
 import ee.promobox.promoboxandroid.data.ErrorMessage;
-import ee.promobox.promoboxandroid.util.FragmentPlaybackListener;
-import ee.promobox.promoboxandroid.util.geom.TriangleEquilateral;
+import ee.promobox.promoboxandroid.interfaces.FragmentPlaybackListener;
 import ee.promobox.promoboxandroid.widgets.FragmentWithSeekBar;
-import ee.promobox.promoboxandroid.widgets.WallImageView;
 
 public class FragmentImage extends FragmentWithSeekBar {
 

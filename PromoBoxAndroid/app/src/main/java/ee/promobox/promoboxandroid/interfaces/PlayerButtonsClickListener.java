@@ -1,7 +1,6 @@
-package ee.promobox.promoboxandroid.util;
+package ee.promobox.promoboxandroid.interfaces;
 
 import android.view.View;
-import android.widget.Button;
 
 /**
  * Created by ilja on 18.02.2015.

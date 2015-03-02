@@ -5,8 +5,6 @@ import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,8 +14,8 @@ import android.view.ViewGroup;
 import ee.promobox.promoboxandroid.data.CampaignFile;
 import ee.promobox.promoboxandroid.data.CampaignFileType;
 import ee.promobox.promoboxandroid.data.ErrorMessage;
-import ee.promobox.promoboxandroid.util.FragmentPlaybackListener;
-import ee.promobox.promoboxandroid.util.VideoWallMasterListener;
+import ee.promobox.promoboxandroid.interfaces.FragmentPlaybackListener;
+import ee.promobox.promoboxandroid.interfaces.VideoWallMasterListener;
 import ee.promobox.promoboxandroid.util.geom.TriangleEquilateral;
 import ee.promobox.promoboxandroid.widgets.FragmentVideoWall;
 import ee.promobox.promoboxandroid.widgets.WallImageView;
@@ -111,7 +109,7 @@ public class FragmentWallImage extends FragmentVideoWall {
 
         slide.setInitialValues(1920,3240,monitorPoints);
 
-        slide.setRotation((float) -TriangleEquilateral.getAngleAlpha(monitorPoints[3], monitorPoints[0]));
+        slide.setRotation((float) Math.abs(TriangleEquilateral.getAngleAlpha(monitorPoints[3], monitorPoints[0])));
 
         if ( amMaster ){
             if (preparedBitmap == null){

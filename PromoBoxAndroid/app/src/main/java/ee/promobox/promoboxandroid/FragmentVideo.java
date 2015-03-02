@@ -37,6 +37,7 @@ import ee.promobox.promoboxandroid.data.CampaignFile;
 import ee.promobox.promoboxandroid.data.CampaignFileType;
 import ee.promobox.promoboxandroid.data.ErrorMessage;
 import ee.promobox.promoboxandroid.util.FragmentPlaybackListener;
+import ee.promobox.promoboxandroid.util.PlayerLengthWatcher;
 import ee.promobox.promoboxandroid.widgets.FragmentWithSeekBar;
 
 
@@ -66,6 +67,7 @@ public class FragmentVideo extends FragmentWithSeekBar implements TextureView.Su
         fragmentVideoLayout =  inflater.inflate(R.layout.fragment_video,container,false);
         super.setView(fragmentVideoLayout);
         videoView = (TextureView) fragmentVideoLayout.findViewById(R.id.video_texture_view);
+        fragmentVideoLayout.setOnLongClickListener(mainActivity);
         return fragmentVideoLayout;
     }
 
@@ -77,7 +79,7 @@ public class FragmentVideo extends FragmentWithSeekBar implements TextureView.Su
         playbackListener = (FragmentPlaybackListener) activity;
         mainActivity = (MainActivity) activity;
 
-        videoLengthStopper = new VideoLengthWatcher(this,playbackListener);
+        videoLengthStopper = new PlayerLengthWatcher(this,playbackListener);
 
     }
 
@@ -156,7 +158,7 @@ public class FragmentVideo extends FragmentWithSeekBar implements TextureView.Su
 
     }
 
-    protected void cleanUp() {
+    public void cleanUp() {
         super.cleanUp();
         if(exoPlayer != null){
             exoPlayer.release();
@@ -345,24 +347,4 @@ public class FragmentVideo extends FragmentWithSeekBar implements TextureView.Su
     }
 
 
-    private static final class VideoLengthWatcher implements Runnable {
-        private final WeakReference<FragmentVideo> fragmentReference;
-        private final WeakReference<FragmentPlaybackListener> playbackListenerReference;
-
-        VideoLengthWatcher( FragmentVideo fragment, FragmentPlaybackListener playbackListener){
-            fragmentReference = new WeakReference<>(fragment);
-            playbackListenerReference = new WeakReference<>(playbackListener);
-        }
-
-        @Override
-        public void run() {
-            Log.e(FragmentVideo.TAG,"Executing runnable, smth wrong with player");
-            FragmentVideo fragment = fragmentReference.get();
-            FragmentPlaybackListener playbackListener = playbackListenerReference.get();
-            if (fragment != null && playbackListener != null){
-                fragment.cleanUp();
-                playbackListener.onPlaybackStop();
-            }
-        }
-    }
 }

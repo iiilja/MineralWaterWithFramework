@@ -26,6 +26,7 @@ import ee.promobox.promoboxandroid.data.CampaignFile;
 import ee.promobox.promoboxandroid.data.CampaignFileType;
 import ee.promobox.promoboxandroid.data.ErrorMessage;
 import ee.promobox.promoboxandroid.util.FragmentPlaybackListener;
+import ee.promobox.promoboxandroid.util.PlayerLengthWatcher;
 import ee.promobox.promoboxandroid.widgets.FragmentWithSeekBar;
 import ee.promobox.promoboxandroid.widgets.MyAnimatedDrawable;
 
@@ -52,16 +53,15 @@ public class FragmentAudio extends FragmentWithSeekBar implements ExoPlayer.List
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView");
-        View view = inflater.inflate(R.layout.fragment_audio, container, false);
+        audioView = inflater.inflate(R.layout.fragment_audio, container, false);
         audioAnimation = new MyAnimatedDrawable(mainActivity.getBaseContext(), MyAnimatedDrawable.AUDIO, 0, 23);
-        view.setBackground(audioAnimation);
+        audioView.setBackground(audioAnimation);
         audioAnimation.start();
-        super.setView(view);
-        view.setOnLongClickListener(mainActivity);
-        audioView = view;
+        super.setView(audioView);
+        audioView.setOnLongClickListener(mainActivity);
 
 
-        return view;
+        return audioView;
     }
 
     @Override
@@ -69,7 +69,7 @@ public class FragmentAudio extends FragmentWithSeekBar implements ExoPlayer.List
         Log.d(TAG, "onAttach");
         playbackListener = (FragmentPlaybackListener) activity;
 
-        audioLengthStopper = new AudioLengthWatcher(this,playbackListener);
+        audioLengthStopper = new PlayerLengthWatcher(this,playbackListener);
 
         mainActivity = (MainActivity) activity;
         super.onAttach(activity);
@@ -123,7 +123,7 @@ public class FragmentAudio extends FragmentWithSeekBar implements ExoPlayer.List
         exoPlayer.addListener(this);
     }
 
-    protected void cleanUp() {
+    public void cleanUp() {
         super.cleanUp();
         if (exoPlayer != null) {
             exoPlayer.release();
@@ -254,26 +254,4 @@ public class FragmentAudio extends FragmentWithSeekBar implements ExoPlayer.List
     }
 
 
-    private static final class AudioLengthWatcher implements Runnable {
-        private final WeakReference<FragmentAudio> fragmentAudioReference;
-        private final WeakReference<FragmentVideo> fragmentVideoReference;
-        private final WeakReference<FragmentPlaybackListener> playbackListenerReference;
-
-        AudioLengthWatcher( FragmentAudio fragment, FragmentPlaybackListener playbackListener){
-            fragmentAudioReference = new WeakReference<>(fragment);
-            fragmentVideoReference =  null;
-            playbackListenerReference = new WeakReference<>(playbackListener);
-        }
-
-        @Override
-        public void run() {
-            Log.e(FragmentAudio.TAG,"Executing runnable, smth wrong with player");
-            FragmentAudio fragment = fragmentAudioReference.get();
-            FragmentPlaybackListener playbackListener = playbackListenerReference.get();
-            if (fragment != null && playbackListener != null){
-                fragment.cleanUp();
-                playbackListener.onPlaybackStop();
-            }
-        }
-    }
 }

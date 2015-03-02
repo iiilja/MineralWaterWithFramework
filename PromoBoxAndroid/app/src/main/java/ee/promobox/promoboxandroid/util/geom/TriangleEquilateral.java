@@ -1,6 +1,7 @@
 package ee.promobox.promoboxandroid.util.geom;
 
 import android.graphics.Point;
+import android.util.Log;
 
 /**
  * Created by ilja on 20.02.2015.
@@ -34,12 +35,17 @@ public class TriangleEquilateral {
     }
 
     public double getAngleAlpha(){
-        return Math.floor(Math.sin(getLineLength(b,c) / getLineLength(a,b)) + 180 * quarter);
+        Log.d("TRIANGLE" , "quarter = " + quarter);
+        Log.d("TRIANGLE" , "a = ("+a.x+";"+a.y+") b = ("+b.x+";"+b.y+") c = ("+c.x+";"+c.y+")");
+        double lineA = getLineLength(b,c);
+        double lineC = getLineLength(a,b);
+        Log.d("TRIANGLE" , "lineA length = " + lineA + " lineC length = " + lineC);
+        return Math.floor(Math.sin( lineC != 0 ? (lineA / lineC): 0 ) + 90 * quarter);
     }
 
     private Point getC (Point a, Point b){
         Point c = new Point();
-        if (a.x < b.x) { // a levee
+        if (a.x <= b.x) { // a levee
             if (a.y < b.y ) { // i nizhe
                 c.x = a.x;
                 c.y = b.y;

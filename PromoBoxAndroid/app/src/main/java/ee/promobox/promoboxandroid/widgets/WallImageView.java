@@ -1,24 +1,23 @@
 package ee.promobox.promoboxandroid.widgets;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapRegionDecoder;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.Gravity;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import java.io.IOException;
 
-import ee.promobox.promoboxandroid.data.ErrorMessage;
 import ee.promobox.promoboxandroid.intents.ErrorMessageIntent;
 import ee.promobox.promoboxandroid.intents.ToastIntent;
 import ee.promobox.promoboxandroid.util.geom.Rectangle;
@@ -27,6 +26,8 @@ import ee.promobox.promoboxandroid.util.geom.Rectangle;
  * Created by ilja on 19.02.2015.
  */
 public class WallImageView extends ImageView{
+
+    private float wholeViewRotation;
 
 
     private static final String TAG = "VideoWallImageView";
@@ -43,8 +44,20 @@ public class WallImageView extends ImageView{
             {RelativeLayout.CENTER_VERTICAL , RelativeLayout.CENTER_HORIZONTAL}
     };
 
+
     private LocalBroadcastManager bManager;
     private double ratio;
+    private int monitorVirtualWidth;
+    private int monitorVirtualHeight;
+
+    private RelativeLayout.LayoutParams futureLayoutParams;
+
+    private Rect outerMonitorRect;
+    private int wallWidth;
+    private int wallHeight;
+
+    private Integer measuredWidth;
+    private Integer measuredHeight;
 
     public WallImageView(Context context) {
         super(context);
@@ -70,6 +83,10 @@ public class WallImageView extends ImageView{
             super.onMeasure(widthMeasureSpec, heightMeasureSpec);
             return;
         }
+        if (measuredHeight == null || measuredWidth == null){
+            measuredWidth = MeasureSpec.getSize(widthMeasureSpec);
+            measuredHeight = MeasureSpec.getSize(heightMeasureSpec);
+        }
         try {
 //            Log.w(TAG, "onMeasure");
             Drawable drawable = getDrawable();
@@ -77,66 +94,24 @@ public class WallImageView extends ImageView{
             if (drawable == null) {
                 setMeasuredDimension(0, 0);
             } else {
-                float imageSideRatio = (float)drawable.getIntrinsicWidth() / (float)drawable.getIntrinsicHeight();
-                float viewSideRatio = (float)MeasureSpec.getSize(widthMeasureSpec) / (float)MeasureSpec.getSize(heightMeasureSpec);
-                int width;
-                int height;
-                if (imageSideRatio <= viewSideRatio) {
-                    // Image is taller than the display (ratio)
-                    if ( viewSideRatio > 1 ) { // Wide monitor
-                        if (imageSideRatio > 1) { // Wide picture
-                            Log.w(TAG, "*** 1 ***");
-                            width = MeasureSpec.getSize(widthMeasureSpec);
-                            height = (int)(width / imageSideRatio);
-                            setMeasuredDimension(width, height);
-                        } else { // Tall picture
-                            Log.w(TAG, "*** 2 ***");
-                            height = MeasureSpec.getSize(heightMeasureSpec);
-                            width = (int)(height * imageSideRatio);
-                            setMeasuredDimension(width, height);
-                        }
-                    } else { // Tall monitor
-                        if (imageSideRatio > 1) { // Wide picture
-                            Log.w(TAG, "*** 3 ***");
-                            Log.e(TAG, "This is not real");
-                            width = MeasureSpec.getSize(widthMeasureSpec);
-                            height = (int)(width / imageSideRatio);
-                            setMeasuredDimension(width, height);
-                        } else { // Tall picture
-                            Log.w(TAG, "*** 4 ***");
-                            height = MeasureSpec.getSize(heightMeasureSpec);
-                            width = (int)(height * imageSideRatio);
-                            setMeasuredDimension(width, height);
-                        }
-                    }
-                } else {
-                    // Image is wider than the display (ratio)
-                    if ( viewSideRatio > 1 ) { // Wide monitor
-                        if (imageSideRatio > 1) { // Wide picture
-                            Log.w(TAG, "*** 5 ***");
-                            width = MeasureSpec.getSize(widthMeasureSpec);
-                            height = (int)(width / imageSideRatio);
-                            setMeasuredDimension(width, height);
-                        } else { // Tall picture
-                            Log.w(TAG, "*** 6 ***");
-                            Log.e(TAG, "This is not real");
-                            height = MeasureSpec.getSize(heightMeasureSpec);
-                            width = (int)(height * imageSideRatio);
-                            setMeasuredDimension(width, height);
-                        }
-                    } else { // Tall monitor
-                        if (imageSideRatio > 1) { // Wide picture
-                            Log.w(TAG, "*** 7 ***");
-                            width = MeasureSpec.getSize(widthMeasureSpec);
-                            height = (int)(width / imageSideRatio);
-                            setMeasuredDimension(width, height);
-                        } else { // Tall picture
-                            Log.w(TAG, "*** 8 ***");
-                            height = MeasureSpec.getSize(heightMeasureSpec);
-                            width = (int)(height * imageSideRatio);
-                            setMeasuredDimension(width, height);
-                        }
-                    }
+                int width, height;
+                width = measuredWidth;
+                height = measuredHeight;
+//                Log.d(TAG,"Measured width = " + width + " measuredHeight = " +height );
+                width = width > height ? width : height;
+                int virtualWidth = monitorVirtualWidth > monitorVirtualHeight ? monitorVirtualWidth : monitorVirtualHeight;
+//                Log.d(TAG,"width to ratioNew = " + width + "monitorVirtualwidth = " +virtualWidth );
+                double ratioNew = (double)width/(double)virtualWidth;
+                int drawableWidth = drawable.getIntrinsicWidth();
+                int drawableHeight = drawable.getIntrinsicHeight();
+                width = (int) (drawableWidth * ratioNew / ratio);
+                height = (int) (drawableHeight * ratioNew / ratio);
+//                Log.d(TAG, "Setting dimension width = " + width + " height = " + height +" with ratioNew = "+ratioNew+" /ratio = " + ratio);
+                if (width != 0 && height != 0){
+                    setMeasuredDimension(width, height);
+                }
+                else {
+                    super.onMeasure(widthMeasureSpec, heightMeasureSpec);
                 }
             }
         } catch (Exception e) {
@@ -144,36 +119,29 @@ public class WallImageView extends ImageView{
         }
     }
 
-    public void setImageDrawable(String filePath, int wallHeight, int wallWidth, Point[] monitorPoints) {
-        monitorPoints[0] = new Point(1080,1920);
-        monitorPoints[1] = new Point(1080,0);
-        monitorPoints[2] = new Point(0,0);
-        monitorPoints[3] = new Point(0,1920);
-
-//        monitorPoints[0] = new Point(2160,1920);
-//        monitorPoints[1] = new Point(2160,0);
-//        monitorPoints[2] = new Point(1080,0);
-//        monitorPoints[3] = new Point(1080,1920);
-
-//        monitorPoints[0] = new Point(3240,1920);
-//        monitorPoints[1] = new Point(3240,0);
-//        monitorPoints[2] = new Point(2160,0);
-//        monitorPoints[3] = new Point(2160,1920);
-
+    public void setInitialValues(int wallHeight, int wallWidth, Point[] monitorPoints){
         Point topLeft = monitorPoints[0];
         Point topRight = monitorPoints[1];
-        Point bottomLeft = monitorPoints[2];
-        Point bottomRight = monitorPoints[3];
+        Point bottomRight = monitorPoints[2];
+        Point bottomLeft = monitorPoints[3];
+
+        this.wallHeight = wallHeight;
+        this.wallWidth = wallWidth;
 
         Rectangle rectangle = new Rectangle(topLeft,topRight,bottomRight,bottomLeft);
 
         Log.d(TAG, " Rotation =" + rectangle.getAvgAngle());
-        setRotation((float) rectangle.getAvgAngle());
+//        setRotation((float) -rectangle.getAvgAngle());
 
-        Rect outerMonitorRect = rectangle.getOuterRect();
-        Log.w(TAG, "outerMonitorRect :");
-        Log.d(TAG, "bottom = " + outerMonitorRect.bottom + " top " + outerMonitorRect.top);
-        Log.d(TAG, "left = " + outerMonitorRect.left + " right " + outerMonitorRect.right);
+        outerMonitorRect = rectangle.getOuterRect();
+//        Log.w(TAG, "outerMonitorRect :");
+//        Log.d(TAG, "bottom = " + outerMonitorRect.bottom + " top " + outerMonitorRect.top);
+//        Log.d(TAG, "left = " + outerMonitorRect.left + " right " + outerMonitorRect.right);
+        monitorVirtualWidth = Math.abs(outerMonitorRect.width());
+        monitorVirtualHeight = Math.abs(outerMonitorRect.height());
+    }
+
+    public Bitmap getImageBitmap(String filePath) {
 
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
@@ -183,15 +151,63 @@ public class WallImageView extends ImageView{
         int imageHeight = options.outHeight;
 
         Rect wholeWallImageRect = measureWholeWallImageSize(wallWidth,wallHeight,imageWidth,imageHeight);
-        Log.w(TAG, "wholeWallImageRect :");
-        Log.d(TAG, "bottom = " + wholeWallImageRect.bottom + " top " + wholeWallImageRect.top);
-        Log.d(TAG, "left = " + wholeWallImageRect.left + " right " + wholeWallImageRect.right);
+//        Log.w(TAG, "wholeWallImageRect :");
+//        Log.d(TAG, "bottom = " + wholeWallImageRect.bottom + " top " + wholeWallImageRect.top);
+//        Log.d(TAG, "left = " + wholeWallImageRect.left + " right " + wholeWallImageRect.right);
 
         ratio = (double)imageWidth / (double)wholeWallImageRect.width();
-        Log.d(TAG, "imageWidth = " + imageWidth + " wholeWallImageRect.width() " + wholeWallImageRect.width());
-        Log.d(TAG, "imageHeight = " + imageHeight + " wholeWallImageRect.height() " + wholeWallImageRect.height());
-        Rect realImageCuttingRect = calculateImageCuttingRect(ratio,outerMonitorRect,wholeWallImageRect,
-                imageHeight,imageWidth);
+//        Log.d(TAG, "imageWidth = " + imageWidth + " wholeWallImageRect.width() " + wholeWallImageRect.width());
+//        Log.d(TAG, "imageHeight = " + imageHeight + " wholeWallImageRect.height() " + wholeWallImageRect.height());
+
+        Rect imagePart =  getImagePartInMonitorRect(outerMonitorRect,wholeWallImageRect);
+
+//        Log.w(TAG, "*** ImagePart");
+//        Log.d(TAG, "bottom = " + imagePart.bottom + " top " + imagePart.top);
+//        Log.d(TAG, "left = " + imagePart.left + " right " + imagePart.right);
+//
+//        Log.w(TAG, "*** OuterMonitorRect");
+//        Log.d(TAG, "bottom = " + outerMonitorRect.bottom + " top " + outerMonitorRect.top);
+//        Log.d(TAG, "left = " + outerMonitorRect.left + " right " + outerMonitorRect.right);
+
+        // Rects to create transparent bitmap
+        Rect outerMonitorRectCopy = copyRect(outerMonitorRect);
+        Rect imagePartRectCopy = copyRect(imagePart);
+        toZeroXY(outerMonitorRectCopy,imagePartRectCopy);
+
+        int transparentWidth = (int) Math.abs(outerMonitorRectCopy.width() * ratio);
+        int transparentHeight = (int) Math.abs(outerMonitorRectCopy.height() * ratio);
+        float overlayLeft = (float) (imagePartRectCopy.left * ratio);
+        float overlayTop = (float) (imagePartRectCopy.bottom * ratio);
+
+        boolean shouldOverlay = imagePartRectCopy.width() != outerMonitorRectCopy.width() ||
+                imagePartRectCopy.height() != outerMonitorRectCopy.height();
+
+        Bitmap transparentBitmap = null;
+        if (shouldOverlay){
+            transparentBitmap = Bitmap.createBitmap(transparentWidth,transparentHeight, Bitmap.Config.ARGB_8888);
+        }
+
+//        Log.w(TAG, "*** ImagePart TOZERO");
+//        Log.d(TAG, "bottom = " + imagePartRectCopy.bottom + " top " + imagePartRectCopy.top);
+//        Log.d(TAG, "left = " + imagePartRectCopy.left + " right " + imagePartRectCopy.right);
+//
+//        Log.w(TAG, "*** OuterMonitorRect TOZERO");
+//        Log.d(TAG, "bottom = " + outerMonitorRectCopy.bottom + " top " + outerMonitorRectCopy.top);
+//        Log.d(TAG, "left = " + outerMonitorRectCopy.left + " right " + outerMonitorRectCopy.right);
+
+        int indentLeft = wholeWallImageRect.left;
+        int indentBottom = wholeWallImageRect.bottom;
+
+        imagePart.left = imagePart.left - indentLeft;
+        imagePart.right = imagePart.right - indentLeft;
+        imagePart.bottom = imagePart.bottom - indentBottom;
+        imagePart.top = imagePart.top - indentBottom;
+
+//        Log.w(TAG, "ImagePartInMonitorRect after indent :");
+//        Log.d(TAG, "bottom = " + imagePart.bottom + " top " + imagePart.top);
+//        Log.d(TAG, "left = " + imagePart.left + " right " + imagePart.right);
+
+        Rect realImageCuttingRect = calculateImageCuttingRect(imagePart,ratio,imageHeight,imageWidth);
 
 
         options = new BitmapFactory.Options();
@@ -205,6 +221,9 @@ public class WallImageView extends ImageView{
             if (realImageCuttingRect.width() != 0 && realImageCuttingRect.height() != 0){
                 BitmapRegionDecoder decoder = BitmapRegionDecoder.newInstance(filePath,false);
                 bitmap = decoder.decodeRegion(realImageCuttingRect, options);
+                if (shouldOverlay){
+                    bitmap = overlay(transparentBitmap,bitmap,overlayLeft,overlayTop);
+                }
             }
         } catch (IOException e) {
             bManager.sendBroadcast(new ToastIntent("Error finding image"));
@@ -215,25 +234,36 @@ public class WallImageView extends ImageView{
 //            bManager.sendBroadcast(new ErrorMessageIntent(e));
             Log.e(TAG,e.getMessage());
         }
-        setImageBitmap(bitmap);
+        return bitmap;
     }
 
-    private Rect calculateImageCuttingRect(
-            double ratioRealDivideNew,Rect outerMonitorRect, Rect wholeWallImageRect, int imageHeight,int imageWidth){
+    private void toZeroXY(Rect outerMonitorRectCopy, Rect imagePartRectCopy) {
+        int indentLeft = outerMonitorRectCopy.left;
+        int indentBottom = outerMonitorRectCopy.bottom;
 
-        int indentLeft = wholeWallImageRect.left;
-        int indentBottom = wholeWallImageRect.bottom;
+        outerMonitorRectCopy.left -= indentLeft;
+        outerMonitorRectCopy.right -= indentLeft;
+        outerMonitorRectCopy.bottom -= indentBottom;
+        outerMonitorRectCopy.top -= indentBottom;
+        imagePartRectCopy.right -= indentLeft;
+        imagePartRectCopy.left -= indentLeft;
+        imagePartRectCopy.bottom -= indentBottom;
+        imagePartRectCopy.top -= indentBottom;
+
+    }
+
+    private Rect copyRect(Rect rect) {
+        return new Rect(rect.left,rect.top,rect.right,rect.bottom);
+    }
+
+    private Rect calculateImageCuttingRect( Rect imagePart,
+            double ratioRealDivideNew,int imageHeight,int imageWidth){
 
 
-        Rect imagePart =  getImagePartInMonitorRect(outerMonitorRect,wholeWallImageRect, indentLeft, indentBottom);
         int leftX = imagePart.left;
         int rightX =imagePart.right;
         int topY =  imagePart.top;
         int bottomY = imagePart.bottom;
-
-        Log.w(TAG, "calculating before ratio adding :");
-        Log.d(TAG, "bottom = " + bottomY + " top " + topY);
-        Log.d(TAG, "left = " + leftX + " right " + rightX);
 
         leftX = (int) (leftX * ratioRealDivideNew);
         leftX = leftX < 0 ? 0 : leftX;
@@ -243,105 +273,41 @@ public class WallImageView extends ImageView{
         topY = topY > imageHeight ? imageHeight : topY;
         bottomY = (int) (bottomY * ratioRealDivideNew);
         bottomY = bottomY < 0 ? 0 : bottomY;
-        Log.w(TAG, "realImageCuttingRect :");
-        Log.d(TAG, "bottom = " + bottomY + " top " + topY);
-        Log.d(TAG, "left = " + leftX + " right " + rightX);
+
+//        Log.w(TAG, "realImageCuttingRect :");
+//        Log.d(TAG, "bottom = " + bottomY + " top " + topY);
+//        Log.d(TAG, "left = " + leftX + " right " + rightX);
         return new Rect(leftX,bottomY,rightX,topY);
     }
 
-    private Rect getImagePartInMonitorRect(Rect monitorRect, Rect imageRect, int indentLeft, int indentBottom) {
+    private Rect getImagePartInMonitorRect(Rect monitorRect, Rect imageRect) {
         Rect rect = new Rect();
-        boolean moveToRight = false;
-        boolean moveToLeft = false;
-        boolean moveUp = false;
-        boolean moveDown = false;
-
 
         if (monitorRect.left < imageRect.left) {
             rect.left = imageRect.left;
-            moveToRight = true;
         } else {
             rect.left = monitorRect.left;
         }
         if (monitorRect.bottom < imageRect.bottom) {
             rect.bottom = imageRect.bottom;
-            moveUp = true;
         } else {
             rect.bottom = monitorRect.bottom;
         }
         if (monitorRect.right > imageRect.right) {
             rect.right = imageRect.right;
-            moveToLeft = true;
         } else {
             rect.right = monitorRect.right;
         }
         if (monitorRect.top > imageRect.top) {
             rect.top = imageRect.top;
-            moveDown = true;
         } else {
             rect.top = monitorRect.top;
         }
 
-        int gravity[] = gravitiesRelative[8];
+//        Log.w(TAG, "ImagePartInMonitorRect :");
+//        Log.d(TAG, "bottom = " + rect.bottom + " top " + rect.top);
+//        Log.d(TAG, "left = " + rect.left + " right " + rect.right);
 
-        Log.d(TAG, " moveUp = "+moveUp+" moveToRight = "+moveToRight+" moveDown = "+moveDown+" moveToLeft = "+moveToLeft);
-
-        if (moveUp && moveToRight && moveDown && moveToLeft) {
-            Log.e(TAG, "Move to center, cant be possible");
-        }
-        if (moveUp && !moveToRight && !moveDown && moveToLeft) {
-            Log.d(TAG,"Top - Left");
-            gravity = gravitiesRelative[0];
-        }
-        if (moveUp && !moveDown && (moveToLeft && moveToRight || !moveToLeft && !moveToRight)) {
-            Log.d(TAG,"Top - Center");
-            gravity = gravitiesRelative[1];
-        }
-        if (moveUp && moveToRight && !moveDown && !moveToLeft) {
-            Log.d(TAG,"Top - Right");
-            gravity = gravitiesRelative[2];
-        }
-        if (moveToRight && !moveToLeft && ( moveUp && moveDown || !moveUp && !moveDown)) {
-            Log.d(TAG,"Right - Center");
-            gravity = gravitiesRelative[3];
-        }
-        if (!moveUp && moveToRight && moveDown && !moveToLeft) {
-            Log.d(TAG,"Bottom - Right");
-            gravity = gravitiesRelative[4];
-        }
-        if (!moveUp && moveDown && ( moveToRight  && moveToLeft || !moveToRight  && !moveToLeft)) {
-            Log.d(TAG,"Bottom - Center");
-            gravity = gravitiesRelative[5];
-        }
-        if (!moveUp && !moveToRight && moveDown && moveToLeft) {
-            Log.d(TAG,"Bottom - Left");
-            gravity = gravitiesRelative[6];
-        }
-        if (!moveToRight && moveToLeft && ( moveDown && moveUp || !moveDown && !moveUp )) {
-            Log.d(TAG,"Left - Center");
-            gravity = gravitiesRelative[7];
-        }
-        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) getLayoutParams();
-//        for (int i = 0; i < 22; i++) {
-//            params.removeRule(i);
-//        }
-        for (int i = 0; i < gravity.length; i++) {
-            params.addRule(gravity[i]);
-        }
-        setLayoutParams(params);
-
-        Log.w(TAG, "ImagePartInMonitorRect :");
-        Log.d(TAG, "bottom = " + rect.bottom + " top " + rect.top);
-        Log.d(TAG, "left = " + rect.left + " right " + rect.right);
-
-
-        rect.left = rect.left - indentLeft;
-        rect.right = rect.right - indentLeft;
-        rect.bottom = rect.bottom - indentBottom;
-        rect.top = rect.top - indentBottom;
-        Log.w(TAG, "ImagePartInMonitorRect after indent :");
-        Log.d(TAG, "bottom = " + rect.bottom + " top " + rect.top);
-        Log.d(TAG, "left = " + rect.left + " right " + rect.right);
         return rect;
     }
 
@@ -413,6 +379,16 @@ public class WallImageView extends ImageView{
         return null;
     }
 
+    public static Bitmap overlay(Bitmap bmp1, Bitmap bmp2, float left, float top) {
+        Log.d(TAG, "BITMAP OVERLAY left = " + left+ " top = " + top);
+        //Bitmap bmOverlay = Bitmap.createBitmap(bmp1.getWidth(), bmp1.getHeight(), bmp1.getConfig());
+        Canvas canvas = new Canvas(bmp1);
+//        canvas.drawBitmap(bmp1, new Matrix(), null);
+        canvas.drawBitmap(bmp2, left, top, null);
+        return bmp1;
+    }
+
+
     private static Rect getImageRect(int originalWallWidth, int originalWallHeight, int imageWidth, int imageHeight){
         int leftX = originalWallWidth / 2 - imageWidth / 2;
         int topY = originalWallHeight / 2 + imageHeight/ 2;
@@ -421,4 +397,7 @@ public class WallImageView extends ImageView{
         return new Rect(leftX,topY,rightX,bottomY);
     }
 
+    public float getWholeViewRotation() {
+        return wholeViewRotation;
+    }
 }

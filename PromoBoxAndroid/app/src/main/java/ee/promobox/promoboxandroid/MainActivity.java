@@ -14,7 +14,10 @@ import android.content.pm.ActivityInfo;
 import android.media.AudioManager;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -29,9 +32,16 @@ import ee.promobox.promoboxandroid.util.ExceptionHandler;
 import ee.promobox.promoboxandroid.util.FragmentPlaybackListener;
 import ee.promobox.promoboxandroid.util.InternetConnectionUtil;
 import ee.promobox.promoboxandroid.util.StatusEnum;
+import ee.promobox.promoboxandroid.util.VideoWallMasterListener;
+import ee.promobox.promoboxandroid.util.udp_multicasting.MessageReceivedListener;
+import ee.promobox.promoboxandroid.util.udp_multicasting.UDPMessenger;
+import ee.promobox.promoboxandroid.util.udp_multicasting.messages.MultiCastMessage;
+import ee.promobox.promoboxandroid.util.udp_multicasting.messages.PlayMessage;
+import ee.promobox.promoboxandroid.util.udp_multicasting.messages.PrepareMessage;
+import ee.promobox.promoboxandroid.widgets.FragmentVideoWall;
 
 
-public class MainActivity extends Activity implements FragmentPlaybackListener , View.OnLongClickListener{
+public class MainActivity extends Activity implements FragmentPlaybackListener , View.OnLongClickListener, MessageReceivedListener, VideoWallMasterListener{
 
     private final static String AUDIO_DEVICE_PARAM = "audio_devices_out_active";
     public final static  String AUDIO_DEVICE_PREF = "audio_device";
@@ -76,6 +86,10 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
     Fragment videoFragment = new FragmentVideo();
     Fragment imageFragment = new FragmentImage();
     Fragment currentFragment;
+
+    private UDPMessenger udpMessenger;
+    private boolean videoWall = false;
+    private boolean master = true;
 
 
     private void hideSystemUI() {
@@ -124,44 +138,51 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
         sendBroadcast(start);
 
         setAudioDeviceFromPrefs();
+
+        Handler messageHandler = new Handler(Looper.getMainLooper()) {
+            @Override
+            public void handleMessage(Message msg) {
+                MultiCastMessage message = (MultiCastMessage) msg.obj;
+                switch (message.getType()) {
+                    case MultiCastMessage.PLAY:
+                        onPlayMessageReceived((PlayMessage) message);
+                        break;
+                    case MultiCastMessage.PREPARE:
+                        onPrepareMessageReceived((PrepareMessage) message);
+                        break;
+                }
+            }
+        };
+
+        udpMessenger = new UDPMessenger(getBaseContext(), messageHandler, "Lala", 47654) ;
+        udpMessenger.startMessageReceiver();
     }
 
     private void startNextFile() {
         Log.d(TAG, "startNextFile()");
         CampaignFile campaignFile = getNextFile(null);
-        Fragment fragment = null;
+        Fragment fragment;
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
-        CampaignFileType fileType = null;
+        CampaignFileType fileType = campaignFile != null ? campaignFile.getType() : null;
 
-        if (campaignFile == null){
-            fragment = mainFragment;
-        } else {
-            fileType = campaignFile.getType();
+        fragment = getFragmentByFileType(fileType);
+
+        Bundle data = fragment.getArguments();
+
+        int delay = campaign != null ? campaign.getDelay() : 0;
+        if (data != null){
+            data.putInt("delay",delay*100);
+        } else if (!fragment.equals(currentFragment) ){
+            data = new Bundle();
+            data.putInt("delay",delay * 100);
+            fragment.setArguments(data);
         }
 
-        if (fileType == CampaignFileType.IMAGE) {
-            fragment = imageFragment;
-            Bundle data = fragment.getArguments();
-            if (data != null){
-                data.putInt("delay",campaign.getDelay()*1000);
-            } else {
-                data = new Bundle();
-                data.putInt("delay",campaign.getDelay() * 1000);
-                fragment.setArguments(data);
-            }
-
-        } else if (fileType == CampaignFileType.AUDIO) {
-            fragment = audioFragment;
-
-        } else if (fileType == CampaignFileType.VIDEO) {
-            fragment = videoFragment;
-
-        }
-        if (fragment != null && fragment.equals(currentFragment) ){
+        if (fragment.equals(currentFragment) ){
             Log.w(TAG, "Current fragment stays (onPause, onResume)");
             fragment.onPause();
             fragment.onResume();
-        } else if ( fragment != null ){
+        } else {
             transaction.replace(R.id.main_view, fragment);
             transaction.addToBackStack(fragment.toString());
             transaction.commit();
@@ -232,14 +253,25 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
     }
 
     @Override
-    public void onBackPressed() {
-        Log.w(TAG, "Back pressed, do nothing");
-    }
-
-    @Override
     protected void onPause() {
         super.onPause();
         Log.d(TAG, "onPause");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG,"onDestroy");
+
+        if (mBound) {
+            unbindService(mConnection);
+            mBound = false;
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        Log.w(TAG, "Back pressed, do nothing");
     }
 
     private void setAudioDeviceFromPrefs() {
@@ -257,16 +289,6 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
     }
 
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Log.d(TAG,"onDestroy");
-
-        if (mBound) {
-            unbindService(mConnection);
-            mBound = false;
-        }
-    }
 
 
     private ServiceConnection mConnection = new ServiceConnection() {
@@ -285,6 +307,10 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
 
             if (campaign == null || !campaign.equals(mainService.getCurrentCampaign())){
                 campaign = mainService.getCurrentCampaign();
+                if (! videoWall ){
+                    imageFragment = new FragmentWallImage();
+                    videoWall = true;
+                }
                 campaignWasUpdated(TAG + " mConnection");
             }
 
@@ -323,6 +349,22 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
             return ORIENTATION_LANDSCAPE;
         }
         return mainService.getOrientation();
+    }
+
+    private Fragment getFragmentByFileType(CampaignFileType fileType){
+        if (fileType == null ){
+            return mainFragment;
+        }
+        switch ( fileType ){
+            case IMAGE:
+                return imageFragment;
+            case AUDIO:
+                return audioFragment;
+            case VIDEO:
+                return videoFragment;
+            default:
+                return mainFragment;
+        }
     }
 
     private void campaignWasUpdated(String tag) {
@@ -392,6 +434,14 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
         }
 
         return campaignFile;
+    }
+
+    public boolean isMaster() {
+        return master;
+    }
+
+    public boolean isVideoWall() {
+        return videoWall;
     }
 
     public void setPreviousFilePosition(){
@@ -465,4 +515,44 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
             }
         }
     };
+
+    @Override
+    public void onPlayMessageReceived(PlayMessage message) {
+        Log.d(TAG, "onPlayMessageReceived");
+        if (!videoWall){
+            onPrepareMessageReceived(new PrepareMessage("1111",message.getCampaignId(),message.getFileId()));
+        }
+        if (mainService == null || mainService.getCampaigns() == null) return;
+        CampaignFile campaignFile = mainService.getCampaigns().getCampaignWithId(message.getCampaignId()).getFileById(message.getFileId());
+        FragmentVideoWall fragmentByType = (FragmentVideoWall) getFragmentByFileType(campaignFile.getType());
+        if ( !fragmentByType.equals(currentFragment) ) {
+            startNextFile();
+        }
+        fragmentByType.playFile(campaignFile,message.getFrameId());
+
+    }
+
+    @Override
+    public void onPrepareMessageReceived(PrepareMessage message) {
+        Log.d(TAG, "onPrepareMessageReceived");
+        if (!videoWall){
+            imageFragment = new FragmentWallImage();
+            videoWall = true;
+        }
+        if (mainService == null || mainService.getCampaigns() == null) return;
+        CampaignFile campaignFile = mainService.getCampaigns().getCampaignWithId(message.getCampaignId()).getFileById(message.getFileId());
+        FragmentVideoWall fragment = (FragmentVideoWall) getFragmentByFileType(campaignFile.getType());
+        fragment.prepareFile(campaignFile);
+    }
+
+
+    @Override
+    public void onFileNotPrepared() {
+        udpMessenger.sendMessage(new PrepareMessage("1111",campaign.getCampaignId(),getNextFile(null).getId()));
+    }
+
+    @Override
+    public void onFileStartedPlaying(int fileId, long frameId) {
+        udpMessenger.sendMessage(new PlayMessage("1111",campaign.getCampaignId(),fileId,frameId));
+    }
 }

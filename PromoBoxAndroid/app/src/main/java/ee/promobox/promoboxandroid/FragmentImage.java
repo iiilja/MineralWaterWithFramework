@@ -22,6 +22,7 @@ import ee.promobox.promoboxandroid.data.CampaignFile;
 import ee.promobox.promoboxandroid.data.CampaignFileType;
 import ee.promobox.promoboxandroid.data.ErrorMessage;
 import ee.promobox.promoboxandroid.util.FragmentPlaybackListener;
+import ee.promobox.promoboxandroid.util.geom.TriangleEquilateral;
 import ee.promobox.promoboxandroid.widgets.FragmentWithSeekBar;
 import ee.promobox.promoboxandroid.widgets.WallImageView;
 
@@ -48,6 +49,7 @@ public class FragmentImage extends FragmentWithSeekBar {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView");
         imageFragment = inflater.inflate(R.layout.fragment_image, container, false);
+        imageFragment.setOnLongClickListener(mainActivity);
         super.setView(imageFragment);
 
         slide = (ImageView) imageFragment.findViewById(R.id.slide_1);
@@ -173,13 +175,10 @@ public class FragmentImage extends FragmentWithSeekBar {
             return;
         }
         try {
-//            Bitmap bitmap = decodeBitmap(file);
-            Point[] p = {new Point(), new Point(), new Point(), new Point()};
-            WallImageView imageView = (WallImageView) slide;
+            Bitmap bitmap = decodeBitmap(file);
             recycleBitmap();
-            imageView.setImageDrawable(file.getPath(),1920,2160,p);
 //            imageView.setImageDrawable(file.getPath(),1920,3240,p);
-//            slide.setImageBitmap(bitmap);
+            slide.setImageBitmap(bitmap);
             int delay = getArguments().getInt("delay");
             super.setSeekBarMax(delay);
             super.changeSeekBarState(true, 0);

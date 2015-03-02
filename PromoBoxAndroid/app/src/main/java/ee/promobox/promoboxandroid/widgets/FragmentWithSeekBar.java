@@ -2,31 +2,29 @@ package ee.promobox.promoboxandroid.widgets;
 
 import android.app.Fragment;
 import android.content.Intent;
-import android.graphics.drawable.AnimationDrawable;
-import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.Nullable;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import java.util.concurrent.TimeUnit;
 
-import ee.promobox.promoboxandroid.MainActivity;
 import ee.promobox.promoboxandroid.R;
 import ee.promobox.promoboxandroid.SettingsActivity;
 import ee.promobox.promoboxandroid.util.PlayerButtonsClickListener;
 import ee.promobox.promoboxandroid.util.PlayerUIVisibilityRunnable;
 import ee.promobox.promoboxandroid.util.SeekBarProgressChangerRunnable;
+import ee.promobox.promoboxandroid.util.VideoWallMethods;
+import ee.promobox.promoboxandroid.util.udp_multicasting.messages.PlayMessage;
+import ee.promobox.promoboxandroid.util.udp_multicasting.UDPMessenger;
 
 /**
  * Created by ilja on 12.02.2015.
  */
-public abstract class FragmentWithSeekBar extends Fragment implements PlayerButtonsClickListener , SeekBar.OnSeekBarChangeListener{
+public abstract class FragmentWithSeekBar extends Fragment implements PlayerButtonsClickListener ,
+        SeekBar.OnSeekBarChangeListener{
     private static final String TAG = "FragmentWithSeekBar";
 
     private static final long VISIBILITY_DELAY_MS = 20*1000;
@@ -62,7 +60,7 @@ public abstract class FragmentWithSeekBar extends Fragment implements PlayerButt
         view.setOnClickListener(this);
     }
 
-    protected void cleanUp(){
+    public void cleanUp(){
         if (seekBar != null ){
             seekBar.removeCallbacks(seekBarProgressChanger);
             seekBar.setProgress(0);

@@ -1,27 +1,27 @@
-<div class="row">
-    <div class="col-md-10 center-block campaigns-top-wrap">
-        <div class="alert alert-info" role="alert" ng-show="campaigns.length == 0">
-            <strong>{{ 'list_empty' | translate }}!</strong> {{ 'list_createnewcampaign' | translate }}.
-        </div>
-
-        <button ui-sref="campaign_new" type="button" class="new-company-btn btn btn-primary">{{ 'list_newcampaign' | translate }}</button>
+<div class="center-block campaigns-top-wrap">
+    <div class="alert alert-info" role="alert" ng-show="campaigns.length == 0">
+        <strong>{{ 'list_empty' | translate }}!</strong> {{ 'list_createnewcampaign' | translate }}.
     </div>
+
+    <button ui-sref="campaign_new" type="button" class="new-company-btn btn btn-primary">{{ 'list_newcampaign' | translate }}</button>
 </div>
-<div class="row" ng-repeat="campaign in campaigns">
-    <div class="col-md-10 center-block campaigns_wrap">
+
+
+<div ng-repeat="campaign in campaigns" style="margin:0 15px 10px 15px;">
+    <div class=" center-block campaigns_wrap">
         <span ng-if="campaign.status == 2" class="label label-success">{{ 'list_works' | translate }}</span>
         <span ng-if="campaign.status == 3" class="label label-warning">{{ 'list_waiting' | translate }}</span>
-        <span style="margin-left: 15px;">{{campaign.name}}</span>
-        <span style="margin-left: 15px; color: #bfbfbf; font-size: 12px;">{{timeconvert(campaign.start)}}-{{timeconvert(campaign.finish)}}</span>
-                <span class="pull-right">
-                    <a class="campaigns_link" data-toggle="modal" data-target=".stat" style="margin-right: 15px;"
-                       ng-click="show_statistics(campaign)"><i class="glyphicon glyphicon-signal"></i> {{ 'list_statistics' | translate }}</a>
-                    <a class="campaigns_link" href="/#/campaign/edit/{{campaign.id}}" style="margin-right: 15px;"><i class="glyphicon glyphicon-pencil"></i> {{ 'list_change' | translate }}</a>
-                </span>
+        <span class="name">{{campaign.name}}</span>
+        <span class="date">{{timeconvert(campaign.start)}}-{{timeconvert(campaign.finish)}}</span>
+
+        <span class="pull-right">
+            <a class="campaigns_link" data-toggle="modal" data-target=".stat" style="margin-right: 15px;"
+               ng-click="show_statistics(campaign)"><i class="glyphicon glyphicon-signal"></i> {{ 'list_statistics' | translate }}</a>
+            <a class="campaigns_link" href="/#/campaign/edit/{{campaign.id}}" style="margin-right: 15px;"><i class="glyphicon glyphicon-pencil"></i> {{ 'list_change' | translate }}</a>
+            <a class="campaigns_link" href="#"><i class="glyphicon glyphicon-remove"></i> Удалить</a>
+        </span>
     </div>
-
 </div>
-
 
 <!-- Modal statistics -->
 <div class="modal fade stat"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">

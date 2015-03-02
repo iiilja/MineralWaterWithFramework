@@ -1,16 +1,14 @@
 <div id="myDiv" style="margin-top:20px;"></div>
 <div id="myDiv2"></div>
 
-<div class="row edit-campaign">
-    <div class="col-md-9 center-block">
+<div class="edit-campaign">
+    <div class="center-block">
         <form role="form" name="campaign_form" ng-submit="edit_company(this)">
-            <div class="row">
-                <div class="form-group">
-                    <h4 class="main-title">{{ 'campaign_edit_editcompany' | translate }}</h4>
-                </div>
-                <div class="form-group name-company">
-                    <input type="text" class="form-control" style="width: 30%;" placeholder="{{ 'campaign_edit_companyname' | translate }}" ng-model="campaign_form.campaign_name" required>
-                </div>
+            <div class="form-group">
+                <h4 class="main-title">{{ 'campaign_edit_editcompany' | translate }}</h4>
+            </div>
+            <div class="form-group name-company">
+                <input type="text" class="form-control" style="width: 30%;" placeholder="{{ 'campaign_edit_companyname' | translate }}" ng-model="campaign_form.campaign_name" required>
             </div>
 
             <div class="load-files">

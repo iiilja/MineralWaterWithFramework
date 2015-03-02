@@ -43,6 +43,16 @@ public class UserServiceImpl implements UserService {
 
         return list;
     }
+    
+    @Override
+    public List<Users> findUsersByClientId(int clientId) {
+    	Session session = sessionFactory.getCurrentSession();
+
+        Query q = session.createQuery("from Users where clientId = :clientId");
+        q.setParameter("clientId", clientId);
+
+        return q.list();
+    }
 
     public Users findUserByEmailAndPassword(String email, String password) {
         Session session = sessionFactory.getCurrentSession();
@@ -60,6 +70,16 @@ public class UserServiceImpl implements UserService {
 
         Query q = session.createQuery("from Users where email = :email");
         q.setParameter("email", email);
+
+        return (Users) q.uniqueResult();
+    }
+    
+    @Override
+    public Users findUserById(int id) {
+    	Session session = sessionFactory.getCurrentSession();
+
+        Query q = session.createQuery("from Users where id = :id");
+        q.setParameter("id", id);
 
         return (Users) q.uniqueResult();
     }
@@ -456,8 +476,15 @@ public class UserServiceImpl implements UserService {
     @Override
    	public void addUser(Users user) {
    		Session session = sessionFactory.getCurrentSession();
-           session.save(user);
-           session.flush();
+   		session.save(user);
+   		session.flush();
+   	}
+    
+    @Override
+   	public void updateUser(Users user) {
+    	Session session = sessionFactory.getCurrentSession();
+    	session.update(user);
+    	session.flush();
    	}
 
 }

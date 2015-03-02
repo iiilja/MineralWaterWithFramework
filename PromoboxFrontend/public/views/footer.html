@@ -1,0 +1,19 @@
+<a class="copy-land" href="#">© 2015 Promobox</a>
+
+<ul class="footer-nav">
+    <li><a href="#">О нас</a></li>
+    <li class="line"></li>
+    <li><a href="#">Политика конфиденциальности</a></li>
+    <li class="line"></li>
+    <li><a href="#">Услования использования</a></li>
+    <li class="line"></li>
+    <li><a href="#">Контакт</a></li>
+</ul>
+
+
+<div class="lang">
+    <select ng-model="currentLang" 
+            ng-change="change_language(currentLang)">
+            <option ng-repeat="lang in langs" value="{{lang.value}}" class="{{lang.value}}">{{lang.label}}</option>
+    </select>
+</div><!-- .sec -->

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html ng-app="promobox">
     <head>
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
@@ -148,10 +148,16 @@
 
     </head>
     <body class="{{$root.bodyClass}}">
-        <div class="container-fluid">
-             <toaster-container toaster-options="{'time-out': 3000}"></toaster-container>
-             <div ui-view="topView"></div>
-             <div ui-view="contentView"></div>
+        <div id="main-wrap">
+            <div ui-view="leftMenuView" class="menu-nav"></div>
+
+            <div class="container-fluid main-content">
+                <toaster-container toaster-options="{'time-out': 3000}"></toaster-container>
+                <div ui-view="topView" class="header-nav"></div>
+                <div ui-view="contentView"></div>
+            </div>
         </div>
+
+        <footer ui-view="footerView" id="footer"></footer>
     </body>
 </html>

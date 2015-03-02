@@ -79,6 +79,12 @@ public abstract class FragmentWithSeekBar extends Fragment implements PlayerButt
 
     }
 
+    @Override
+    public void onDestroy() {
+        setVisibility(View.VISIBLE);
+        super.onDestroy();
+    }
+
     protected void setSeekBarMax( long duration ){
         seekBar.setMax((int) duration);
         TextView playerFullTime = (TextView) playerControlsLayout.findViewById(R.id.player_time_full);

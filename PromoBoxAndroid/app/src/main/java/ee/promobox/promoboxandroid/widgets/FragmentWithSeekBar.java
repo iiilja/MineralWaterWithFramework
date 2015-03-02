@@ -1,8 +1,14 @@
 package ee.promobox.promoboxandroid.widgets;
 
 import android.app.Fragment;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.drawable.AnimationDrawable;
+import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -23,6 +29,7 @@ import ee.promobox.promoboxandroid.util.SeekBarProgressChangerRunnable;
 public abstract class FragmentWithSeekBar extends Fragment implements PlayerButtonsClickListener ,
         SeekBar.OnSeekBarChangeListener{
     private static final String TAG = "FragmentWithSeekBar";
+    public static final String PLAYER_UI_VISIBILITY = "playerUIVisibility";
 
     private static final long VISIBILITY_DELAY_MS = 20*1000;
 
@@ -30,7 +37,7 @@ public abstract class FragmentWithSeekBar extends Fragment implements PlayerButt
     private Runnable visibilityRunnable;
     private SeekBarProgressChangerRunnable seekBarProgressChanger;
 
-    public boolean paused = false;
+    private boolean paused = false;
 
     private SeekBar seekBar;
     private View playerControlsLayout;
@@ -44,6 +51,10 @@ public abstract class FragmentWithSeekBar extends Fragment implements PlayerButt
         seekBarProgressChanger = new SeekBarProgressChangerRunnable(seekBar);
         visibilityRunnable = new PlayerUIVisibilityRunnable(playerControlsLayout);
         playerUIVisibilityHandler.postDelayed(visibilityRunnable, VISIBILITY_DELAY_MS);
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        setVisibility( preferences.getInt(PLAYER_UI_VISIBILITY,View.VISIBLE) );
+
 
         Button pauseButton = (Button) playerControlsLayout.findViewById(R.id.player_pause);
         Button previousButton = (Button) playerControlsLayout.findViewById(R.id.player_back);
@@ -64,6 +75,12 @@ public abstract class FragmentWithSeekBar extends Fragment implements PlayerButt
             seekBar.setMax(100);
         }
 
+    }
+
+    @Override
+    public void onDestroy() {
+        setVisibility(View.VISIBLE);
+        super.onDestroy();
     }
 
     protected void setSeekBarMax( long duration ){
@@ -118,8 +135,17 @@ public abstract class FragmentWithSeekBar extends Fragment implements PlayerButt
                 return;
         }
 
+        changeVisibility();
+    }
+
+    private void changeVisibility(){
         int newVisibility = playerControlsLayout.getVisibility() == View.VISIBLE ? View.INVISIBLE : View.VISIBLE;
-        playerControlsLayout.setVisibility(newVisibility);
+        setVisibility(newVisibility);
+    }
+    private void setVisibility(int visibility){
+        playerControlsLayout.setVisibility(visibility);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        preferences.edit().putInt(PLAYER_UI_VISIBILITY,visibility).apply();
     }
 
 

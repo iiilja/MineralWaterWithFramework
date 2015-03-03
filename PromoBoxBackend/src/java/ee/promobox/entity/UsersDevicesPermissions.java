@@ -29,16 +29,16 @@ public class UsersDevicesPermissions implements Serializable {
     @Column(name = "id")
     private Integer id;
     
-    @Column(name = "user_id")
+    @Column(name = "user_id", nullable=false)
     private Integer userId;
     
-    @Column(name = "client_id")
+    @Column(name = "client_id", nullable=false)
     private Integer clientId;
     
-    @Column(name = "device_id")
+    @Column(name = "device_id", nullable = false)
     private Integer deviceId;
     
-    @Column(name = "permission")
+    @Column(name = "permission", nullable=false)
     private int permission;
     
     @Column(name = "created_dt")

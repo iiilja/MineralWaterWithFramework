@@ -76,8 +76,12 @@ public class UserController {
     	} else if (userService.findUserByEmail(email) != null) {
     		resp.put("reason", "emailExist");
     	} else {
+    		Date createdDt = new Date();
+    		
     		Clients client = new Clients();
     		client.setCompanyName(objectGiven.getString("companyName"));
+    		client.setCreatedDt(createdDt);
+    		client.setUpdatedDt(createdDt);
     		userService.addClient(client);
     		
     		Users user = new Users();
@@ -86,7 +90,7 @@ public class UserController {
     		user.setEmail(email);
     		user.setPassword(genereateRandomPass());
     		user.setClientId(client.getId());
-    		user.setCreatedDt(new Date());
+    		user.setCreatedDt(createdDt);
     		user.setActive(false);
     		user.setAdmin(true);
     		userService.addUser(user);
@@ -195,7 +199,7 @@ public class UserController {
             		
             	} else if (userService.findUserByEmail(email) != null) {
             		resp.put("reason", "emailExist");
-            	} else {
+            	} else if (session.isAdmin() || userId == session.getUserId()) {
 	        		int clientId = session.getClientId();
 	        		
 	        		Users user = userService.findUserById(userId);
@@ -204,7 +208,6 @@ public class UserController {
 	        		user.setEmail(email);
 	        		
 	        		user.setClientId(clientId);
-	        		//user.setUsername(username);
 	        		user.setActive(true);
 	        		user.setAdmin(false);
 	        		
@@ -213,6 +216,13 @@ public class UserController {
 	        			if (StringUtils.trimToNull(password) != null) {
 	        				user.setPassword(password);
 	        			}
+	        		}
+	        		
+	        		if (session.isAdmin()) {
+	        			Clients client = userService.findClientById(clientId);
+	        			client.setCompanyName(objectGiven.getString("companyName"));
+	        			client.setUpdatedDt(new Date());
+	        			userService.updateClient(client);
 	        		}
 	        		
 	        		userService.updateUser(user);

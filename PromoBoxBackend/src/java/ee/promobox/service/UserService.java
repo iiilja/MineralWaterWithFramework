@@ -110,6 +110,7 @@ public interface UserService {
     public void addErrorLog(ErrorLog errorLog);
     
     public void addClient(Clients client);
+    public void updateClient(Clients client);
     public void addUser(Users user);
     public void updateUser(Users user);
     

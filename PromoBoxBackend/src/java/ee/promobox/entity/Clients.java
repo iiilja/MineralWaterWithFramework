@@ -7,6 +7,8 @@
 package ee.promobox.entity;
 
 import java.io.Serializable;
+import java.util.Date;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,6 +18,8 @@ import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -38,6 +42,14 @@ public class Clients implements Serializable {
     private Integer id;
     @Column(name = "company_name")
     private String companyName;
+    
+    @Column(name = "created_dt")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdDt;
+    
+    @Column(name = "updated_dt")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date updatedDt;
 
     public Clients() {
     }
@@ -62,7 +74,23 @@ public class Clients implements Serializable {
         this.companyName = companyName;
     }
 
-    @Override
+    public Date getCreatedDt() {
+		return createdDt;
+	}
+
+	public void setCreatedDt(Date createdDt) {
+		this.createdDt = createdDt;
+	}
+
+	public Date getUpdatedDt() {
+		return updatedDt;
+	}
+
+	public void setUpdatedDt(Date updatedDt) {
+		this.updatedDt = updatedDt;
+	}
+
+	@Override
     public int hashCode() {
         int hash = 0;
         hash += (id != null ? id.hashCode() : 0);

@@ -476,6 +476,13 @@ public class UserServiceImpl implements UserService {
 	}
     
     @Override
+	public void updateClient(Clients client) {
+		Session session = sessionFactory.getCurrentSession();
+        session.update(client);
+        session.flush();
+	}
+    
+    @Override
    	public void addUser(Users user) {
    		Session session = sessionFactory.getCurrentSession();
    		session.save(user);

@@ -505,6 +505,20 @@ public class UserServiceImpl implements UserService {
    		session.flush();
 		
 	}
+	
+	
+	@Override
+	public void deleteUsersDevicesPermissions(int userId,
+			int deviceId) {
+		Session session = sessionFactory.getCurrentSession();
+
+    	Query q = session.createQuery("DELETE FROM UsersDevicesPermissions WHERE deviceId = :deviceId AND userId = :userId");
+
+    	q.setParameter("userId", userId);
+        q.setParameter("deviceId", deviceId);
+    	
+		q.executeUpdate();
+	}
 
 	@Override
 	public UsersDevicesPermissions findUsersDevicesPermissions(int userId,
@@ -533,8 +547,20 @@ public class UserServiceImpl implements UserService {
 			UsersCampaignsPermissions permissions) {
 		Session session = sessionFactory.getCurrentSession();
    		session.update(permissions);
-   		session.flush();
+   		session.flush();	
+	}
+	
+	@Override
+	public void deleteUsersCampaignsPermissions(
+			int userId, int campaignId) {
+		Session session = sessionFactory.getCurrentSession();
 		
+		Query q = session.createQuery("DELETE FROM UsersCampaignsPermissions WHERE campaignId = :campaignId AND userId = :userId");
+
+    	q.setParameter("userId", userId);
+        q.setParameter("campaignId", campaignId);
+    	
+		q.executeUpdate();
 	}
 
 	@Override

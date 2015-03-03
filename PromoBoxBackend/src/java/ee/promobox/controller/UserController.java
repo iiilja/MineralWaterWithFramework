@@ -334,6 +334,60 @@ public class UserController {
         return resp.toString();
     }
     
+    @RequestMapping(value = "token/{token}/users/{id}/permissions/device/{deviceId}", method = RequestMethod.DELETE)
+    public @ResponseBody String deleteUserDevicesPermissions(
+    		@PathVariable("id") int userId,
+    		@PathVariable("deviceId") int deviceId,
+            @PathVariable("token") String token,
+            HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+    	
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+        JSONObject resp = RequestUtils.getErrorResponse();
+        Session session = sessionService.findSession(token);
+
+        if (session != null) {
+        	if (session.isAdmin()) {
+        		userService.deleteUsersDevicesPermissions(userId, deviceId);
+        		
+        		response.setStatus(HttpServletResponse.SC_OK);
+        		resp.put("response", RequestUtils.OK);
+        	}
+        } else {
+            RequestUtils.sendUnauthorized(response);
+        }
+        
+        return resp.toString();
+    }
+    
+    @RequestMapping(value = "token/{token}/users/{id}/permissions/campaign/{campaignId}", method = RequestMethod.DELETE)
+    public @ResponseBody String deleteUserCampaignPermissions(
+    		@PathVariable("id") int userId,
+    		@PathVariable("campaignId") int campaignId,
+            @PathVariable("token") String token,
+            HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+    	
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+        JSONObject resp = RequestUtils.getErrorResponse();
+        Session session = sessionService.findSession(token);
+
+        if (session != null) {
+        	if (session.isAdmin()) {
+        		userService.deleteUsersCampaignsPermissions(userId, campaignId);
+        		
+        		response.setStatus(HttpServletResponse.SC_OK);
+        		resp.put("response", RequestUtils.OK); 
+        	}
+        } else {
+            RequestUtils.sendUnauthorized(response);
+        }
+        
+        return resp.toString();
+    }
+    
     @RequestMapping("/user/login")
     public ModelAndView userLoginHandler(
             @RequestParam String email,

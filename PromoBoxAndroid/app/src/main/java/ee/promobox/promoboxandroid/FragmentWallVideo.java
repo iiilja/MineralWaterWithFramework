@@ -1,6 +1,7 @@
 package ee.promobox.promoboxandroid;
 
 import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.SurfaceTexture;
 import android.os.Bundle;
@@ -29,24 +30,24 @@ public class FragmentWallVideo extends FragmentVideoWall implements TextureView.
     public void onCreate(Bundle b) {
         super.onCreate(b);
 
-        setContentView(R.layout.activity_video);
-
-        bManager = LocalBroadcastManager.getInstance(this);
-
-        IntentFilter intentFilter = new IntentFilter();
-
-        intentFilter.addAction(MainActivity.ACTIVITY_FINISH);
-
-        bManager.registerReceiver(bReceiver, intentFilter);
-
-        Bundle extras = getIntent().getExtras();
-
-        files = extras.getParcelableArrayList("files");
+//        setContentView(R.layout.activity_video);
+//
+//        bManager = LocalBroadcastManager.getInstance(this);
+//
+//        IntentFilter intentFilter = new IntentFilter();
+//
+//        intentFilter.addAction(MainActivity.ACTIVITY_FINISH);
+//
+//        bManager.registerReceiver(bReceiver, intentFilter);
+//
+//        Bundle extras = getIntent().getExtras();
+//
+//        files = extras.getParcelableArrayList("files");
 
     }
 
 
-    public void playVideo() {
+    public void playVideo() {/*
         if (files.size() > 0) {
             try {
 
@@ -97,10 +98,10 @@ public class FragmentWallVideo extends FragmentVideoWall implements TextureView.
 
                 VideoActivity.this.finish();
             }
-        }
+        }*/
     }
 
-    private void hideSystemUI() {
+    private void hideSystemUI() {/*
 
         this.getWindow().getDecorView().setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE
@@ -121,12 +122,12 @@ public class FragmentWallVideo extends FragmentVideoWall implements TextureView.
 
                 return true;
             }
-        });
+        });*/
     }
 
 
     @Override
-    protected void onResume() {
+    public void onResume() {/*
         super.onResume();
 
         hideSystemUI();
@@ -143,21 +144,21 @@ public class FragmentWallVideo extends FragmentVideoWall implements TextureView.
 
         videoView = (TextureView) findViewById(R.id.videoview);
 
-        videoView.setSurfaceTextureListener(this);
+        videoView.setSurfaceTextureListener(this);*/
 
     }
 
     @Override
-    protected void onPause() {
+    public void onPause() {
         super.onPause();
         cleanUp();
 
     }
 
-    private void sendPlayCampaignFile() {
+    private void sendPlayCampaignFile() {/*
         Intent playFile = new Intent(MainActivity.CURRENT_FILE_ID);
         playFile.putExtra("fileId", files.get(position).getId());
-        LocalBroadcastManager.getInstance(VideoActivity.this).sendBroadcast(playFile);
+        LocalBroadcastManager.getInstance(VideoActivity.this).sendBroadcast(playFile);*/
     }
 
     private void cleanUp() {
@@ -165,7 +166,7 @@ public class FragmentWallVideo extends FragmentVideoWall implements TextureView.
     }
 
     @Override
-    protected void onDestroy() {
+    public void onDestroy() {
         cleanUp();
 
         bManager.unregisterReceiver(bReceiver);
@@ -176,7 +177,7 @@ public class FragmentWallVideo extends FragmentVideoWall implements TextureView.
 
     private BroadcastReceiver bReceiver = new BroadcastReceiver() {
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(Context context, Intent intent) {/*
             if (intent.getAction().equals(MainActivity.ACTIVITY_FINISH)) {
                 Intent returnIntent = new Intent();
 
@@ -185,7 +186,7 @@ public class FragmentWallVideo extends FragmentVideoWall implements TextureView.
                 VideoActivity.this.setResult(RESULT_OK, returnIntent);
 
                 VideoActivity.this.finish();
-            }
+            }*/
         }
     };
 

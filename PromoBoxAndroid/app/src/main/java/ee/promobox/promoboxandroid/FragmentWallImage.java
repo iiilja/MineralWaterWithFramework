@@ -109,7 +109,7 @@ public class FragmentWallImage extends FragmentVideoWall {
 
         slide.setInitialValues(1920,3240,monitorPoints);
 
-        slide.setRotation((float) Math.abs(TriangleEquilateral.getAngleAlpha(monitorPoints[3], monitorPoints[0])));
+        slide.setRotation((float) - TriangleEquilateral.getAngleAlpha(monitorPoints[3], monitorPoints[0]));
 
         if ( amMaster ){
             if (preparedBitmap == null){

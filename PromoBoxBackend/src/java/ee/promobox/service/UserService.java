@@ -14,6 +14,8 @@ import ee.promobox.entity.DevicesDisplays;
 import ee.promobox.entity.ErrorLog;
 import ee.promobox.entity.Files;
 import ee.promobox.entity.Users;
+import ee.promobox.entity.UsersCampaignsPermissions;
+import ee.promobox.entity.UsersDevicesPermissions;
 
 import java.util.List;
 
@@ -110,4 +112,12 @@ public interface UserService {
     public void addClient(Clients client);
     public void addUser(Users user);
     public void updateUser(Users user);
+    
+    public void addUsersDevicesPermissions(UsersDevicesPermissions permissions);
+    public void updateUsersDevicesPermissions(UsersDevicesPermissions permissions);
+    public UsersDevicesPermissions findUsersDevicesPermissions(int userId, int deviceId);
+    
+    public void addUsersCampaignsPermissions(UsersCampaignsPermissions permissions);
+    public void updateUsersCampaignsPermissions(UsersCampaignsPermissions permissions);
+    public UsersCampaignsPermissions findUsersCampaignsPermissions(int userId, int campaignId);
 }

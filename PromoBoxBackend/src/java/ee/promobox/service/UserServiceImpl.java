@@ -14,6 +14,8 @@ import ee.promobox.entity.DevicesDisplays;
 import ee.promobox.entity.ErrorLog;
 import ee.promobox.entity.Files;
 import ee.promobox.entity.Users;
+import ee.promobox.entity.UsersCampaignsPermissions;
+import ee.promobox.entity.UsersDevicesPermissions;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -487,4 +489,67 @@ public class UserServiceImpl implements UserService {
     	session.flush();
    	}
 
+	@Override
+	public void addUsersDevicesPermissions(UsersDevicesPermissions permissions) {
+		Session session = sessionFactory.getCurrentSession();
+   		session.save(permissions);
+   		session.flush();
+		
+	}
+
+	@Override
+	public void updateUsersDevicesPermissions(
+			UsersDevicesPermissions permissions) {
+		Session session = sessionFactory.getCurrentSession();
+   		session.update(permissions);
+   		session.flush();
+		
+	}
+
+	@Override
+	public UsersDevicesPermissions findUsersDevicesPermissions(int userId,
+			int deviceId) {
+		Session session = sessionFactory.getCurrentSession();
+
+    	Query q = session.createQuery("FROM UsersDevicesPermissions WHERE deviceId = :deviceId AND userId = :userId");
+
+    	q.setParameter("userId", userId);
+        q.setParameter("deviceId", deviceId);
+    	
+		return (UsersDevicesPermissions) q.uniqueResult();
+	}
+
+	@Override
+	public void addUsersCampaignsPermissions(
+			UsersCampaignsPermissions permissions) {
+		Session session = sessionFactory.getCurrentSession();
+   		session.save(permissions);
+   		session.flush();
+		
+	}
+
+	@Override
+	public void updateUsersCampaignsPermissions(
+			UsersCampaignsPermissions permissions) {
+		Session session = sessionFactory.getCurrentSession();
+   		session.update(permissions);
+   		session.flush();
+		
+	}
+
+	@Override
+	public UsersCampaignsPermissions findUsersCampaignsPermissions(int userId,
+			int campaignId) {
+		Session session = sessionFactory.getCurrentSession();
+
+    	Query q = session.createQuery("FROM UsersCampaignsPermissions WHERE campaignId = :campaignId AND userId = :userId");
+
+    	q.setParameter("userId", userId);
+        q.setParameter("campaignId", campaignId);
+    	
+		return (UsersCampaignsPermissions) q.uniqueResult();
+	}
+
+    
+    
 }

@@ -8,6 +8,8 @@ import ee.promobox.entity.AdCampaigns;
 import ee.promobox.entity.Clients;
 import ee.promobox.entity.Devices;
 import ee.promobox.entity.Users;
+import ee.promobox.entity.UsersCampaignsPermissions;
+import ee.promobox.entity.UsersDevicesPermissions;
 import ee.promobox.service.Session;
 import ee.promobox.service.SessionService;
 import ee.promobox.service.UserService;
@@ -59,7 +61,7 @@ public class UserController {
     public ModelAndView userRegisterHandler(
     		@RequestBody String json,
     		HttpServletRequest request,
-    		HttpServletResponse responce) throws Exception {
+    		HttpServletResponse response) throws Exception {
     	
     	json = URLDecoder.decode(json, "UTF-8");
     	
@@ -89,10 +91,11 @@ public class UserController {
     		user.setAdmin(true);
     		userService.addUser(user);
     		
+    		response.setStatus(HttpServletResponse.SC_OK);
     		resp.put("response", RequestUtils.OK);
     	}
 
-    	return RequestUtils.printResult(resp.toString(), responce);
+    	return RequestUtils.printResult(resp.toString(), response);
     }
     
     @RequestMapping(value = "token/{token}/users", method = RequestMethod.GET)
@@ -121,6 +124,7 @@ public class UserController {
         		}
         		
         		resp.put("users", usersArray);
+        		response.setStatus(HttpServletResponse.SC_OK);
         		resp.put("response", RequestUtils.OK);
         	}
         }
@@ -129,7 +133,7 @@ public class UserController {
     }
     
     @RequestMapping(value = "token/{token}/users", method = RequestMethod.POST)
-    public void createUser(
+    public @ResponseBody String createUser(
             @PathVariable("token") String token,
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
@@ -154,16 +158,19 @@ public class UserController {
         		user.setAdmin(true);
         		userService.addUser(user);
         		
+        		response.setStatus(HttpServletResponse.SC_OK);
         		resp.put("response", RequestUtils.OK);
         	}
         	
         } else {
             RequestUtils.sendUnauthorized(response);
         }
+        
+        return resp.toString();
     }
     
     @RequestMapping(value = "token/{token}/users/{id}", method = RequestMethod.PUT)
-    public void updateUser(
+    public @ResponseBody String updateUser(
     		@PathVariable("id") int userId,
             @PathVariable("token") String token,
             @RequestBody String json,
@@ -210,6 +217,7 @@ public class UserController {
 	        		
 	        		userService.updateUser(user);
 	        		
+	        		response.setStatus(HttpServletResponse.SC_OK);
 	        		resp.put("response", RequestUtils.OK);
             	}
         	}
@@ -217,6 +225,113 @@ public class UserController {
         } else {
             RequestUtils.sendUnauthorized(response);
         }
+        
+        return resp.toString();
+    }
+    
+    
+    @RequestMapping(value = "token/{token}/users/{id}/permissions/device/{deviceId}", method = RequestMethod.PUT)
+    public @ResponseBody String updateUserDevicesPermissions(
+    		@PathVariable("id") int userId,
+    		@PathVariable("deviceId") int deviceId,
+            @PathVariable("token") String token,
+            @RequestBody String json,
+            HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+    	
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+        JSONObject resp = RequestUtils.getErrorResponse();
+        Session session = sessionService.findSession(token);
+
+        if (session != null) {
+        	if (session.isAdmin()) {
+        		int clientId = session.getClientId();
+        		JSONObject objectGiven = new JSONObject(json);
+        		
+        		int permissionInt = objectGiven.getInt("permission");
+        		
+        		if (permissionInt == UsersDevicesPermissions.PERMISSION_READ || permissionInt == UsersDevicesPermissions.PERMISSION_WRITE) {
+        			UsersDevicesPermissions permissions = userService.findUsersDevicesPermissions(userId, deviceId);
+        			if (permissions != null) {
+        				permissions.setUpdatedDt(new Date());
+        				permissions.setPermission(permissionInt);
+        				
+        				userService.updateUsersDevicesPermissions(permissions);
+        			} else {
+        				Date createdDt = new Date();
+        				permissions = new UsersDevicesPermissions();
+        				permissions.setClientId(clientId);
+        				permissions.setUserId(userId);
+        				permissions.setDeviceId(deviceId);
+        				permissions.setPermission(permissionInt);
+        				permissions.setCreatedDt(createdDt);
+        				permissions.setUpdatedDt(createdDt);
+        				
+        				userService.addUsersDevicesPermissions(permissions);
+        			}
+        			
+        			response.setStatus(HttpServletResponse.SC_OK);
+            		resp.put("response", RequestUtils.OK);
+        		}
+        	}
+        } else {
+            RequestUtils.sendUnauthorized(response);
+        }
+        
+        return resp.toString();
+    }
+    
+    @RequestMapping(value = "token/{token}/users/{id}/permissions/campaign/{campaignId}", method = RequestMethod.PUT)
+    public @ResponseBody String updateUserCampaignPermissions(
+    		@PathVariable("id") int userId,
+    		@PathVariable("campaignId") int campaignId,
+            @PathVariable("token") String token,
+            @RequestBody String json,
+            HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+    	
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+        JSONObject resp = RequestUtils.getErrorResponse();
+        Session session = sessionService.findSession(token);
+
+        if (session != null) {
+        	if (session.isAdmin()) {
+        		int clientId = session.getClientId();
+        		JSONObject objectGiven = new JSONObject(json);
+        		
+        		int permissionInt = objectGiven.getInt("permission");
+        		
+        		if (permissionInt == UsersDevicesPermissions.PERMISSION_READ || permissionInt == UsersDevicesPermissions.PERMISSION_WRITE) {
+        			UsersCampaignsPermissions permissions = userService.findUsersCampaignsPermissions(userId, campaignId);
+        			if (permissions != null) {
+        				permissions.setUpdatedDt(new Date());
+        				permissions.setPermission(permissionInt);
+        				
+        				userService.updateUsersCampaignsPermissions(permissions);
+        			} else {
+        				Date createdDt = new Date();
+        				permissions = new UsersCampaignsPermissions();
+        				permissions.setClientId(clientId);
+        				permissions.setUserId(userId);
+        				permissions.setCampaignId(campaignId);
+        				permissions.setPermission(permissionInt);
+        				permissions.setCreatedDt(createdDt);
+        				permissions.setUpdatedDt(createdDt);
+        				
+        				userService.addUsersCampaignsPermissions(permissions);
+        			}
+        			
+        			response.setStatus(HttpServletResponse.SC_OK);
+            		resp.put("response", RequestUtils.OK);
+        		}
+        	}
+        } else {
+            RequestUtils.sendUnauthorized(response);
+        }
+        
+        return resp.toString();
     }
     
     @RequestMapping("/user/login")

@@ -1916,3 +1916,43 @@ input[readonly] {
 .setting-item h4 .delete:hover {color: #A20B0B;}
 
 .label {font-size: 10pt;}
+
+/* button top styles*/
+
+.btn-menu {
+    display: inline-block;
+    vertical-align: top;
+    color: #c2c2c2;
+    margin-right: 15px;
+    margin-left: 15px;
+    text-transform: uppercase;
+    font-size: 9pt;
+    padding: 0;
+    background: none;
+    border: 0;
+    outline: 0;
+}
+
+.btn-menu:hover {color: #fff;}
+
+.btn-menu i {
+    display: inline-block;
+    vertical-align: top;
+    margin: 21px 7px 0 0;
+}
+
+.btn-menu.firma i {
+    width: 16px;
+    height: 15px;
+    background: url(../img/firma.png);
+}
+
+.btn-menu.firma:hover i {background: url(../img/firma-hover.png);}
+
+.btn-menu.exit i {
+    background: url(../img/exit.png);
+    width: 16px;
+    height: 16px;
+}
+
+.btn-menu.exit:hover i {background: url(../img/exit-hover.png);}

@@ -28,6 +28,11 @@
     "top_menu_devices": "Seaded",
     "top_menu_company": "Firma",
     "top_menu_exit": "Logi välja",
+    "settings_menu_account": "Аккаунт",
+    "settings_menu_users": "Пользователи",
+    "settings_menu_devises": "Устройства",
+    "settings_menu_campaigns": "Кампании",
+    "settings_menu_payment": "Оплата",
     "list_newcampaign": "Uus kampaania",
     "list_works": "OK",
     "list_waiting": "Ootab",
@@ -134,6 +139,10 @@
     "system_error": "Viga",
     "system_thenameorpassworddonotmatch": "Nimi või salasõna on vale",
     "system_playnextfile": "Fail mängib järgmisena",
-    "system_rotatefile": "Fail keerab"
+    "system_rotatefile": "Fail keerab",
+    "lang_en": "Английский",
+    "lang_et": "Эстонский",
+    "lang_ru": "Русский",
+    "lang_lv": "Латвийский"
 }
 

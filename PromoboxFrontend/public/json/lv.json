@@ -21,6 +21,11 @@
     "top_menu_devices": "Ierīces",
     "top_menu_company": "Uzņēmums",
     "top_menu_exit": "Iziet",
+    "settings_menu_account": "Аккаунт",
+    "settings_menu_users": "Пользователи",
+    "settings_menu_devises": "Устройства",
+    "settings_menu_campaigns": "Кампании",
+    "settings_menu_payment": "Оплата",
     "list_newcampaign": "Jauna kampaņa",
     "list_works": "Strādā",
     "list_waiting": "Gaida",
@@ -126,5 +131,9 @@
     "system_device_cachecleared": "Cache will be cleared",
     "system_device_ontop": "Приложение запустится на устройстве",
     "system_playnextfile": "Файл будет воспроизведен следующим",
-    "system_rotatefile": "Файл будет повернут"
+    "system_rotatefile": "Файл будет повернут",
+    "lang_en": "Английский",
+    "lang_et": "Эстонский",
+    "lang_ru": "Русский",
+    "lang_lv": "Латвийский"
 }

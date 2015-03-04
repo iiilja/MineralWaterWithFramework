@@ -28,6 +28,11 @@
     "top_menu_devices": "Устройства",
     "top_menu_company": "Фирма",
     "top_menu_exit": "Выход",
+    "settings_menu_account": "Аккаунт",
+    "settings_menu_users": "Пользователи",
+    "settings_menu_devises": "Устройства",
+    "settings_menu_campaigns": "Кампании",
+    "settings_menu_payment": "Оплата",
     "list_newcampaign": "Новая рекламная кампания",
     "list_works": "Работает",
     "list_waiting": "Ожидание",
@@ -135,5 +140,8 @@
     "system_error": "Ошибка",
     "system_thenameorpassworddonotmatch": "Имя или пароль не совпадают",
     "system_playnextfile": "Файл будет воспроизведен следующим",
-    "system_rotatefile": "Файл будет повернут"
-}
+    "system_rotatefile": "Файл будет повернут",
+    "lang_en": "Английский",
+    "lang_et": "Эстонский",
+    "lang_ru": "Русский",
+    "lang_lv": "Латвийский"

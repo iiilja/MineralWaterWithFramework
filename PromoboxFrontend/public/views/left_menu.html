@@ -25,31 +25,31 @@
         <li>
             <a ui-sref="setting_account" ng-class="$root.left_menu_active == 'setting_account' ? 'active' : ''">
                 <span class="ico-block acc-ico"></span>
-                Аккаунт
+                {{ 'settings_menu_account' | translate }}
             </a>
         </li>
         <li>
             <a ui-sref="setting_user" ng-class="$root.left_menu_active == 'setting_user' ? 'active' : ''">
                 <span class="ico-block user-ico"></span>
-                Пользователи
+                {{ 'settings_menu_users' | translate }}
             </a>
         </li>
         <li>
             <a ui-sref="setting_device" ng-class="$root.left_menu_active == 'setting_device' ? 'active' : ''">
                 <span class="ico-block device-settings-ico"></span>
-                Устройства
+                {{ 'settings_menu_devises' | translate }}
             </a>
         </li>
         <li>
             <a ui-sref="setting_campaign" ng-class="$root.left_menu_active == 'setting_campaign' ? 'active' : ''">
                 <span class="ico-block comp-settings-ico"></span>
-                Кампании
+                {{ 'settings_menu_campaigns' | translate }}
             </a>
         </li>
         <li>
             <a ui-sref="setting_payment" ng-class="$root.left_menu_active == 'setting_payment' ? 'active' : ''">
                 <span class="ico-block payment-ico"></span>
-                Оплата
+                {{ 'settings_menu_payment' | translate }}
             </a>
         </li>
     </ul>

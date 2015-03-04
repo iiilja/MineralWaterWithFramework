@@ -32,6 +32,11 @@
     "top_menu_devices": "Devices",
     "top_menu_company": "Company",
     "top_menu_exit": "Exit",
+    "settings_menu_account": "Аккаунт",
+    "settings_menu_users": "Пользователи",
+    "settings_menu_devises": "Устройства",
+    "settings_menu_campaigns": "Кампании",
+    "settings_menu_payment": "Оплата",
     "list_newcampaign": "New campaign",
     "list_works": "Works",
     "list_waiting": "waiting",
@@ -138,6 +143,10 @@
     "system_error": "Error",
     "system_thenameorpassworddonotmatch": "The name or password do not match",
     "system_playnextfile": "Fail will be played next",
-    "system_rotatefile": "File will be rotated"
+    "system_rotatefile": "File will be rotated",
+    "lang_en": "Английский",
+    "lang_et": "Эстонский",
+    "lang_ru": "Русский",
+    "lang_lv": "Латвийский"
 
 }

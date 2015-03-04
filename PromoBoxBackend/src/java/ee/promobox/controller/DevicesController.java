@@ -530,19 +530,20 @@ public class DevicesController {
                         }
 
                         if (!timeIntersection) {
-                            devicesCampaigns = new DevicesCampaigns();
-
-                            devicesCampaigns.setDeviceId(device.getId());
-                            devicesCampaigns.setAdCampaignsId(campaignId);
-                            devicesCampaigns.setUpdatedDt(new Date());
-
-                            userService.addDeviceAdCampaign(devicesCampaigns);
-
-                            userService.updateDevice(device);
-                        } else {
-                            resp.put("ERROR", "time_intersection");
+                        	resp.put("WARN", "time_intersection");
                             resp.put("name", intersectionName);
                         }
+                        
+                        devicesCampaigns = new DevicesCampaigns();
+
+                        devicesCampaigns.setDeviceId(device.getId());
+                        devicesCampaigns.setAdCampaignsId(campaignId);
+                        devicesCampaigns.setUpdatedDt(new Date());
+
+                        userService.addDeviceAdCampaign(devicesCampaigns);
+
+                        userService.updateDevice(device);
+
                     } else {
                         devicesCampaigns.setAdCampaignsId(campaignId);
                         devicesCampaigns.setUpdatedDt(new Date());

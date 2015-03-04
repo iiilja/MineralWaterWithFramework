@@ -359,14 +359,13 @@ public class CampaignsController {
                 	}
                 }
 
-                if (!timeIntersection) {
-	                campaign.setUpdateDate(new Date());
-	
-	                userService.updateCampaign(campaign);
-                } else {
-                	resp.put("ERROR", "time_intersection");
+                if (timeIntersection) {
+                	resp.put("WARN", "time_intersection");
                 	resp.put("name", intersectionName);
                 }
+                
+                campaign.setUpdateDate(new Date());
+                userService.updateCampaign(campaign);
 
                 response.setStatus(HttpServletResponse.SC_OK);
                 RequestUtils.printResult(resp.toString(), response);

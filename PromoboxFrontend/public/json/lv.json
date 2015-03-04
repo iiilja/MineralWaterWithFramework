@@ -126,5 +126,6 @@
     "system_device_cachecleared": "Cache will be cleared",
     "system_device_ontop": "Приложение запустится на устройстве",
     "system_playnextfile": "Файл будет воспроизведен следующим",
-    "system_rotatefile": "Файл будет повернут"
+    "system_rotatefile": "Файл будет повернут",
+    "system_warning": "Предупреждение"
 }

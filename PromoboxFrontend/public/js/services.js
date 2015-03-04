@@ -138,6 +138,9 @@ services.factory("sysMessage", ['toaster','$filter', function (toaster, $filter)
         registration_success: function(message) {
             toaster.pop('success', $filter('translate')('login_form_register'), message);
         },
+        warning: function (message) {
+            toaster.pop('warning', $filter('translate')('system_warning'), message);
+        },
         error: function (message) {
             toaster.pop('error', $filter('translate')('system_error'), message);
         },

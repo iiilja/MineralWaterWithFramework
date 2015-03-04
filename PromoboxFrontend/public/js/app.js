@@ -154,43 +154,14 @@ app.controller('LeftMenuController', ['$scope', '$location', '$http', 'token', '
     }]);
 
 
-app.controller('SettingAccountController', ['$scope', '$location', '$http', 'token', 'Clients', '$rootScope', '$translate',
-    function ($scope, $location, $http, token, Clients, $rootScope, $translate) {
-        $rootScope.left_menu_active = 'setting_account';
-    }]);
-
-app.controller('SettingCampaignController', ['$scope', '$location', '$http', 'token', 'Clients', '$rootScope', '$translate',
-    function ($scope, $location, $http, token, Clients, $rootScope, $translate) {
-        $rootScope.left_menu_active = 'setting_campaign';
-    }]);
-
-app.controller('SettingDeviceController', ['$scope', '$location', '$http', 'token', 'Clients', '$rootScope', '$translate',
-    function ($scope, $location, $http, token, Clients, $rootScope, $translate) {
-        $rootScope.left_menu_active = 'setting_device';
-    }]);
-
-app.controller('SettingPaymentController', ['$scope', '$location', '$http', 'token', 'Clients', '$rootScope', '$translate',
-    function ($scope, $location, $http, token, Clients, $rootScope, $translate) {
-        $rootScope.left_menu_active = 'setting_payment';
-    }]);
-
-app.controller('SettingUserController', ['$scope', '$location', '$http', 'token', 'Clients', '$rootScope', '$translate',
-    function ($scope, $location, $http, token, Clients, $rootScope, $translate) {
-        $rootScope.left_menu_active = 'setting_user';
-    }]);
-
 app.controller('TopMenuController', ['$scope', '$location', '$http', 'token', 'Clients', '$rootScope', '$translate',
     function ($scope, $location, $http, token, Clients, $rootScope, $translate) {
         $rootScope.bodyClass = 'content_bg';
         $rootScope.left_menu_active = '';
         
         Clients.getClient({token: token.get()}, function(response) {
-            console.log(response);
             $scope.compName = response.compName;
         });
-
-        
-
     }]);
 
 app.controller('FooterController', ['$scope', '$location', '$http', 'token', '$rootScope', '$translate', '$filter',

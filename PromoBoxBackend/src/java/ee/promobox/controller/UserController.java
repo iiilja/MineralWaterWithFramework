@@ -451,6 +451,14 @@ public class UserController {
                 resp.put("compName", client.getCompanyName());
             }
             
+            Users user = userService.findUserById(session.getUserId());
+            if (user != null) {
+            	resp.put("firstName", user.getFirstname());
+            	resp.put("surname", user.getSurname());
+            	resp.put("email", user.getEmail());
+            	resp.put("admin", user.getAdmin());
+            }
+            
             List<AdCampaigns> campaigns = userService.findUserAdCompaigns(session.getClientId());
             List<Devices> devices = userService.findUserDevieces(session.getClientId());
             

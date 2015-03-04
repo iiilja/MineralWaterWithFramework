@@ -564,9 +564,9 @@ public class DevicesController {
     }
 
     public static boolean checkTimeIntersection(AdCampaigns campaign1, AdCampaigns campaign2) {
-        try {
-        	if (campaign1.getStart().before(campaign2.getFinish()) ||
-        			campaign2.getStart().before(campaign1.getFinish())) { 
+        /*try {
+        	if (campaign1.getStart().after(campaign2.getFinish()) ||
+        			campaign2.getStart().after(campaign1.getFinish())) { 
 	            JSONObject workTime1 = new JSONObject(campaign1.getWorkTimeData());
 	            JSONObject workTime2 = new JSONObject(campaign2.getWorkTimeData());
 	
@@ -599,7 +599,7 @@ public class DevicesController {
         	}
         } catch (Exception ex) {
             log.error(ex.getMessage(), ex);
-        }
+        }*/
 
         return false;
     }

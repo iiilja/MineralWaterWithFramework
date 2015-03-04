@@ -172,6 +172,11 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
         Log.d(DOWNLOAD_FILE_TASK,"playThisFile() file id = " + nextFile);
         CampaignList campaignList = service.getCampaigns();
         CampaignFile campaignFile = campaignList.getCampaignFileByFileId(nextFile);
+        if ( campaignFile == null ) {
+            service.addError(new ErrorMessage("setver error mby", "nextFile = "
+                    + nextFile + "while no such file in campaignList", null), false);
+            return;
+        }
         Intent intent = new Intent(MainActivity.PLAY_SPECIFIC_FILE);
         intent.putExtra("campaignFile",campaignFile);
         bManager.sendBroadcast(intent);

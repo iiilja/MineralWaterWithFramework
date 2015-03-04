@@ -81,35 +81,70 @@ public class FragmentWallImage extends FragmentVideoWall {
         Log.d(TAG, "onResume");
         super.onResume();
         slide.removeCallbacks(runnable);
+//      || || ||
+//        Point[][] pointsAll = {
+//            {
+//                monitorPoints[0] = new Point(1070, 1920),        // 1
+//                monitorPoints[1] = new Point(1070, 0),
+//                monitorPoints[2] = new Point(0, 0),
+//                monitorPoints[3] = new Point(0, 1920)
+//            },
+//            {
+//                monitorPoints[0] = new Point(2150, 1920),      // 2
+//                monitorPoints[1] = new Point(2150, 0),
+//                monitorPoints[2] = new Point(1090, 0),
+//                monitorPoints[3] = new Point(1090, 1920)
+//            },
+//            {
+//                monitorPoints[0] = new Point(3230, 1920),      // 3
+//                monitorPoints[1] = new Point(3230, 0),
+//                monitorPoints[2] = new Point(2170, 0),
+//                monitorPoints[3] = new Point(2170, 1920)
+//            }};
 
-        monitorPoints[0] = new Point(1080,1920);        // 1
-        monitorPoints[1] = new Point(1080,0);
-        monitorPoints[2] = new Point(0,0);
-        monitorPoints[3] = new Point(0,1920);
-//
-//        monitorPoints[0] = new Point(2160,1920);      // 2
-//        monitorPoints[1] = new Point(2160,0);
-//        monitorPoints[2] = new Point(1080,0);
-//        monitorPoints[3] = new Point(1080,1920);
+//        -- ||
+//        Point[][] pointsAll = {
+//                {
+//        monitorPoints[0] = new Point(0,1500),        // 1
+//        monitorPoints[1] = new Point(1920,1500),
+//        monitorPoints[2] = new Point(1920,420),
+//        monitorPoints[3] = new Point(0,420)
+//                },
+//                {
+//        monitorPoints[0] = new Point(3000,1920),        // 2
+//        monitorPoints[1] = new Point(3000,0),
+//        monitorPoints[2] = new Point(1920,0),
+//        monitorPoints[3] = new Point(1920,1920)
+//                }};
+        Point[][] pointsAll = {
+                {
+        monitorPoints[0] = new Point(0,1500),        // 1
+        monitorPoints[1] = new Point(1920,1500),
+        monitorPoints[2] = new Point(1920,420),
+        monitorPoints[3] = new Point(0,420)
+                },
+                {
+        monitorPoints[0] = new Point(3000,1920),        // 2
+        monitorPoints[1] = new Point(3000,0),
+        monitorPoints[2] = new Point(1920,0),
+        monitorPoints[3] = new Point(1920,1920)
+                },
+                {
+        monitorPoints[0] = new Point(3000,1500),        // 1
+        monitorPoints[1] = new Point(4920,1500),
+        monitorPoints[2] = new Point(4920,420),
+        monitorPoints[3] = new Point(3000,420)
+                }
+        };
 
-//        monitorPoints[0] = new Point(3240,1920);      // 3
-//        monitorPoints[1] = new Point(3240,0);
-//        monitorPoints[2] = new Point(2160,0);
-//        monitorPoints[3] = new Point(2160,1920);
-//
-//        monitorPoints[0] = new Point(0,1500);        // 1
-//        monitorPoints[1] = new Point(1920,1500);
-//        monitorPoints[2] = new Point(1920,420);
-//        monitorPoints[3] = new Point(0,420);
 
-//        monitorPoints[0] = new Point(3000,1920);        // 2
-//        monitorPoints[1] = new Point(3000,0);
-//        monitorPoints[2] = new Point(1920,0);
-//        monitorPoints[3] = new Point(1920,1920);
-
-        slide.setInitialValues(1920,3240,monitorPoints);
-
-        slide.setRotation((float) - TriangleEquilateral.getAngleAlpha(monitorPoints[3], monitorPoints[0]));
+        Point[] points = pointsAll[2];
+//        slide.setInitialValues(1920, 3240, points[0]);
+//        slide.setInitialValues(1920, 3000, points);
+        slide.setInitialValues(1920, 4920, points);
+        float rotation = (float) - TriangleEquilateral.getAngleAlpha(points[3], points[0]);
+        Log.d(TAG, "rotation = " + rotation );
+        slide.setRotation(rotation);
 
         if ( amMaster ){
             if (preparedBitmap == null){

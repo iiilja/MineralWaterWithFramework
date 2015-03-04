@@ -13,6 +13,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.media.AudioManager;
 import android.net.ConnectivityManager;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -33,6 +34,7 @@ import ee.promobox.promoboxandroid.interfaces.FragmentPlaybackListener;
 import ee.promobox.promoboxandroid.util.InternetConnectionUtil;
 import ee.promobox.promoboxandroid.util.StatusEnum;
 import ee.promobox.promoboxandroid.interfaces.VideoWallMasterListener;
+import ee.promobox.promoboxandroid.util.udp_multicasting.JGroupsMessenger;
 import ee.promobox.promoboxandroid.util.udp_multicasting.MessageReceivedListener;
 import ee.promobox.promoboxandroid.util.udp_multicasting.UDPMessenger;
 import ee.promobox.promoboxandroid.util.udp_multicasting.messages.MultiCastMessage;
@@ -87,9 +89,10 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
     Fragment imageFragment = new FragmentImage();
     Fragment currentFragment;
 
-    private UDPMessenger udpMessenger;
+//    private UDPMessenger udpMessenger;
+    private JGroupsMessenger jGroupsMessenger;
     private boolean videoWall = false;
-    private boolean master = true;
+    private boolean master = false;
 
 
     private void hideSystemUI() {
@@ -154,8 +157,10 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
             }
         };
 
-        udpMessenger = new UDPMessenger(getBaseContext(), messageHandler, "Lala", 47654) ;
-        udpMessenger.startMessageReceiver();
+//        udpMessenger = new UDPMessenger(getBaseContext(), messageHandler, "Lala", 47654) ;
+//        udpMessenger.startMessageReceiver();
+        jGroupsMessenger = new JGroupsMessenger(messageHandler);
+        jGroupsMessenger.start(getBaseContext());
     }
 
     private void startNextFile() {
@@ -191,7 +196,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d(TAG," onActivityResult() ,requestCode = " + requestCode);
+        Log.d(TAG, " onActivityResult() ,requestCode = " + requestCode);
         if (requestCode == RESULT_FINISH_FIRST_START) {
             try {
                 wrongUuid = false;
@@ -523,7 +528,9 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
             onPrepareMessageReceived(new PrepareMessage("1111",message.getCampaignId(),message.getFileId()));
         }
         if (mainService == null || mainService.getCampaigns() == null) return;
-        CampaignFile campaignFile = mainService.getCampaigns().getCampaignWithId(message.getCampaignId()).getFileById(message.getFileId());
+        Campaign campaign = mainService.getCampaigns().getCampaignWithId(message.getCampaignId());
+        if (campaign == null) return;
+        CampaignFile campaignFile = campaign.getFileById(message.getFileId());
         FragmentVideoWall fragmentByType = (FragmentVideoWall) getFragmentByFileType(campaignFile.getType());
         if ( !fragmentByType.equals(currentFragment) ) {
             startNextFile();
@@ -540,7 +547,9 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
             videoWall = true;
         }
         if (mainService == null || mainService.getCampaigns() == null) return;
-        CampaignFile campaignFile = mainService.getCampaigns().getCampaignWithId(message.getCampaignId()).getFileById(message.getFileId());
+        Campaign campaign = mainService.getCampaigns().getCampaignWithId(message.getCampaignId());
+        CampaignFile campaignFile = campaign != null ? campaign.getFileById(message.getFileId()) : null;
+        if (campaignFile == null) return;
         FragmentVideoWall fragment = (FragmentVideoWall) getFragmentByFileType(campaignFile.getType());
         fragment.prepareFile(campaignFile);
     }
@@ -548,11 +557,13 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
 
     @Override
     public void onFileNotPrepared() {
-        udpMessenger.sendMessage(new PrepareMessage("1111",campaign.getCampaignId(),getNextFile(null).getId()));
+//        udpMessenger.sendMessage(new PrepareMessage("1111",campaign.getCampaignId(),getNextFile(null).getId()));
+        jGroupsMessenger.sendMessage(new PrepareMessage("1111", campaign.getCampaignId(), getNextFile(null).getId()));
     }
 
     @Override
     public void onFileStartedPlaying(int fileId, long frameId) {
-        udpMessenger.sendMessage(new PlayMessage("1111",campaign.getCampaignId(),fileId,frameId));
+//        udpMessenger.sendMessage(new PlayMessage("1111",campaign.getCampaignId(),fileId,frameId));
+        jGroupsMessenger.sendMessage(new PlayMessage("1111",campaign.getCampaignId(),fileId,frameId));
     }
 }

@@ -530,19 +530,20 @@ public class DevicesController {
                         }
 
                         if (!timeIntersection) {
-                            devicesCampaigns = new DevicesCampaigns();
-
-                            devicesCampaigns.setDeviceId(device.getId());
-                            devicesCampaigns.setAdCampaignsId(campaignId);
-                            devicesCampaigns.setUpdatedDt(new Date());
-
-                            userService.addDeviceAdCampaign(devicesCampaigns);
-
-                            userService.updateDevice(device);
-                        } else {
-                            resp.put("ERROR", "time_intersection");
+                        	resp.put("WARN", "time_intersection");
                             resp.put("name", intersectionName);
                         }
+                        
+                        devicesCampaigns = new DevicesCampaigns();
+
+                        devicesCampaigns.setDeviceId(device.getId());
+                        devicesCampaigns.setAdCampaignsId(campaignId);
+                        devicesCampaigns.setUpdatedDt(new Date());
+
+                        userService.addDeviceAdCampaign(devicesCampaigns);
+
+                        userService.updateDevice(device);
+
                     } else {
                         devicesCampaigns.setAdCampaignsId(campaignId);
                         devicesCampaigns.setUpdatedDt(new Date());
@@ -565,35 +566,40 @@ public class DevicesController {
 
     public static boolean checkTimeIntersection(AdCampaigns campaign1, AdCampaigns campaign2) {
         try {
-            JSONObject workTime1 = new JSONObject(campaign1.getWorkTimeData());
-            JSONObject workTime2 = new JSONObject(campaign2.getWorkTimeData());
-
-            boolean daysMatch = false;
-            List<String> workDays1 = new ArrayList<>();
-            for (int i = 0; i < workTime1.getJSONArray("days").length(); i++) {
-                workDays1.add(workTime1.getJSONArray("days").getString(i));
-            }
-
-            for (int i = 0; i < workTime2.getJSONArray("days").length(); i++) {
-                if (workDays1.contains(workTime2.getJSONArray("days").getString(i))) {
-                    daysMatch = true;
-
-                    break;
-                }
-            }
-
-            if (daysMatch) {
-                List<String> workHours1 = new ArrayList<>();
-                for (int i = 0; i < workTime1.getJSONArray("hours").length(); i++) {
-                    workHours1.add(workTime1.getJSONArray("hours").getString(i));
-                }
-
-                for (int i = 0; i < workTime2.getJSONArray("hours").length(); i++) {
-                    if (workHours1.contains(workTime2.getJSONArray("hours").getString(i))) {
-                        return true;
-                    }
-                }
-            }
+        	boolean startCheck = campaign1.getStart().after(campaign2.getStart()) && campaign1.getStart().before(campaign2.getFinish());
+        	boolean finishCheck = campaign1.getFinish().after(campaign2.getStart()) && campaign1.getFinish().before(campaign2.getFinish());
+        	
+        	if (startCheck || finishCheck) { 
+	            JSONObject workTime1 = new JSONObject(campaign1.getWorkTimeData());
+	            JSONObject workTime2 = new JSONObject(campaign2.getWorkTimeData());
+	
+	            boolean daysMatch = false;
+	            List<String> workDays1 = new ArrayList<>();
+	            for (int i = 0; i < workTime1.getJSONArray("days").length(); i++) {
+	                workDays1.add(workTime1.getJSONArray("days").getString(i));
+	            }
+	
+	            for (int i = 0; i < workTime2.getJSONArray("days").length(); i++) {
+	                if (workDays1.contains(workTime2.getJSONArray("days").getString(i))) {
+	                    daysMatch = true;
+	
+	                    break;
+	                }
+	            }
+	
+	            if (daysMatch) {
+	                List<String> workHours1 = new ArrayList<>();
+	                for (int i = 0; i < workTime1.getJSONArray("hours").length(); i++) {
+	                    workHours1.add(workTime1.getJSONArray("hours").getString(i));
+	                }
+	
+	                for (int i = 0; i < workTime2.getJSONArray("hours").length(); i++) {
+	                    if (workHours1.contains(workTime2.getJSONArray("hours").getString(i))) {
+	                        return true;
+	                    }
+	                }
+	            }
+        	}
         } catch (Exception ex) {
             log.error(ex.getMessage(), ex);
         }

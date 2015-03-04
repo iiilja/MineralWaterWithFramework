@@ -440,11 +440,12 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
                 days: $scope.checkedDays, 
                 hours: $scope.checkedHours}, function(response) {
                     console.log(response)
-                    if (response.ERROR) {
-                        sysMessage.error($filter('translate')('system_device') + ' ' + $filter('translate')('device_time_intersection'));
-                    } else {
-                        sysMessage.update_s($filter('translate')('campaign_updated'));
+                    if (response.WARN) {
+                        sysMessage.warning($filter('translate')('system_device') + ' ' + $filter('translate')('device_time_intersection'));
                     }
+                    
+                    sysMessage.update_s($filter('translate')('campaign_updated'));
+                    
             });
         };
         
@@ -766,12 +767,12 @@ app.controller('DevicesController', ['$scope', 'token', 'Device', 'sysMessage', 
                 }
                 
                 Device.update(deviceUpdate, function (response) {
-                    if (response.ERROR) {
-                        sysMessage.error($filter('translate')('system_device') + ' ' + $filter('translate')('device_time_intersection') + ' ' +
+                    if (response.WARN) {
+                        sysMessage.warning($filter('translate')('system_device') + ' ' + $filter('translate')('device_time_intersection') + ' ' +
                             response.name);
-                    } else {
-                        sysMessage.update_s($filter('translate')('system_device') + ' ' + $filter('translate')('system_updated'));
                     }
+                    
+                    sysMessage.update_s($filter('translate')('system_device') + ' ' + $filter('translate')('system_updated'));
                 });
             };
             

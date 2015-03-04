@@ -141,6 +141,7 @@
     "system_device_cachecleared": "Cache will be cleared",
     "system_device_ontop": "Приложение запустится на устройстве",
     "system_error": "Error",
+    "system_warning": "Warning"
     "system_thenameorpassworddonotmatch": "The name or password do not match",
     "system_playnextfile": "Fail will be played next",
     "system_rotatefile": "File will be rotated",

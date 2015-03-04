@@ -137,6 +137,7 @@
     "system_device_cachecleared": "Cache saab kustutatud",
     "system_device_ontop": "Rakendus tuleb esile",
     "system_error": "Viga",
+    "system_warning": "Предупреждение",
     "system_thenameorpassworddonotmatch": "Nimi või salasõna on vale",
     "system_playnextfile": "Fail mängib järgmisena",
     "system_rotatefile": "Fail keerab",

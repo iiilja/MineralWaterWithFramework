@@ -2,6 +2,14 @@ var apiEndpoint = "http://46.182.31.101:8080/service/";
 
 var app = angular.module('promobox', ['ngRoute', 'ui.bootstrap', 'pascalprecht.translate', 'promobox.services', 'angularFileUpload', 'toaster', 'ui.router', 'ui.sortable', 'angularMoment', 'ui.bootstrap.datetimepicker', 'checklist-model']);
 
+var adminView = function(contentController, contentTemplate) {
+    return {
+        "topView": { controller: 'TopMenuController', templateUrl: '/views/top_menu.html' },
+        "leftMenuView": {controller: 'LeftMenuController', templateUrl: '/views/left_menu.html' },
+        "contentView": { controller: contentController, templateUrl: contentTemplate },
+        "footerView": {controller: 'FooterController', templateUrl: '/views/footer.html'},
+    }
+}
 
 app.config(['$routeProvider','$stateProvider','$urlRouterProvider', function ($routeProvider, $stateProvider, $urlRouterProvider) {
     $urlRouterProvider.otherwise('/');
@@ -24,76 +32,35 @@ app.config(['$routeProvider','$stateProvider','$urlRouterProvider', function ($r
         })
         .state('list', {
             url: "/list",
-            views: {
-                "topView": { controller: 'TopMenuController',templateUrl: '/views/top_menu.html' },
-                "leftMenuView": {controller: 'LeftMenuController',templateUrl: '/views/left_menu.html' },
-                "contentView": { controller: 'CampaignsController',templateUrl: '/views/list.html' },
-                "footerView": {controller: 'FooterController', templateUrl: '/views/footer.html'},
-
-            }
+            views: adminView('CampaignsController', '/views/list.html') 
         })
         .state('campaign_edit', {
             url: "/campaign/edit/:cId",
-            views: {
-                "topView": { controller: 'TopMenuController',templateUrl: '/views/top_menu.html' },
-                "leftMenuView": {controller: 'LeftMenuController',templateUrl: '/views/left_menu.html' },
-                "contentView": { controller: "CampaignEditController", templateUrl: '/views/campaign_edit.html' },
-                "footerView": {controller: 'FooterController', templateUrl: '/views/footer.html'}
-            }
+            views: adminView('CampaignEditController', '/views/campaign_edit.html')
         })
         .state('device', {
             url: "/device",
-            views: {
-                "topView": { controller: 'TopMenuController',templateUrl: '/views/top_menu.html' },
-                "leftMenuView": {controller: 'LeftMenuController',templateUrl: '/views/left_menu.html' },
-                "contentView": { controller: 'DevicesController',templateUrl: '/views/device.html' },
-                "footerView": {controller: 'FooterController', templateUrl: '/views/footer.html'}
-            }
+            views: adminView('DevicesController', '/views/device.html')
         })
         .state('setting_account', {
             url: "/setting/account",
-            views: {
-                "topView": { controller: 'TopMenuController',templateUrl: '/views/top_menu.html' },
-                "leftMenuView": {controller: 'LeftMenuController',templateUrl: '/views/left_menu.html' },
-                "contentView": { controller: 'SettingAccountController',templateUrl: '/views/settings/account.html' },
-                "footerView": {controller: 'FooterController', templateUrl: '/views/footer.html'}
-            }
+            views: adminView('SettingAccountController', '/views/settings/account.html')
         })
         .state('setting_campaign', {
             url: "/setting/campaign",
-            views: {
-                "topView": { controller: 'TopMenuController',templateUrl: '/views/top_menu.html' },
-                "leftMenuView": {controller: 'LeftMenuController',templateUrl: '/views/left_menu.html' },
-                "contentView": { controller: 'SettingCampaignController',templateUrl: '/views/settings/campaigns.html' },
-                "footerView": {controller: 'FooterController', templateUrl: '/views/footer.html'}
-            }
+            views: adminView('SettingCampaignController', '/views/settings/campaigns.html')
         })
         .state('setting_device', {
             url: "/setting/device",
-            views: {
-                "topView": { controller: 'TopMenuController',templateUrl: '/views/top_menu.html' },
-                "leftMenuView": {controller: 'LeftMenuController',templateUrl: '/views/left_menu.html' },
-                "contentView": { controller: 'SettingDeviceController',templateUrl: '/views/settings/devices.html' },
-                "footerView": {controller: 'FooterController', templateUrl: '/views/footer.html'}
-            }
+            views: adminView('SettingDeviceController', '/views/settings/devices.html')
         })
         .state('setting_payment', {
             url: "/setting/payment",
-            views: {
-                "topView": { controller: 'TopMenuController',templateUrl: '/views/top_menu.html' },
-                "leftMenuView": {controller: 'LeftMenuController',templateUrl: '/views/left_menu.html' },
-                "contentView": { controller: 'SettingPaymentController',templateUrl: '/views/settings/payments.html' },
-                "footerView": {controller: 'FooterController', templateUrl: '/views/footer.html'}
-            }
+            views: adminView('SettingPaymentController', '/views/settings/payments.html')
         })
         .state('setting_user', {
             url: "/setting/user",
-            views: {
-                "topView": { controller: 'TopMenuController',templateUrl: '/views/top_menu.html' },
-                "leftMenuView": {controller: 'LeftMenuController',templateUrl: '/views/left_menu.html' },
-                "contentView": { controller: 'SettingUserController',templateUrl: '/views/settings/users.html' },
-                "footerView": {controller: 'FooterController', templateUrl: '/views/footer.html'}
-            }
+            views: adminView('SettingUserController', '/views/settings/users.html')
         })
         .state('campaign_new', {
             url: "/campaign/new",

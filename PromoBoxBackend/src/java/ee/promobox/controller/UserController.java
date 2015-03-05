@@ -27,6 +27,7 @@ import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,13 +70,8 @@ public class UserController {
     	JSONObject resp = RequestUtils.getErrorResponse();
     	resp.put("response", RequestUtils.ERROR);
     	
-    	String email = objectGiven.getString("email");
-    	if (!EmailValidator.getInstance().isValid(email)) { 
-    		resp.put("reason", "invalidEmail");
-    		
-    	} else if (userService.findUserByEmail(email) != null) {
-    		resp.put("reason", "emailExist");
-    	} else {
+    	Users user = new Users();
+    	if (checkUser(user, objectGiven, resp, "")) {
     		Date createdDt = new Date();
     		
     		Clients client = new Clients();
@@ -84,10 +80,6 @@ public class UserController {
     		client.setUpdatedDt(createdDt);
     		userService.addClient(client);
     		
-    		Users user = new Users();
-    		user.setFirstname(objectGiven.getString("firstname"));
-    		user.setSurname(objectGiven.getString("surname"));
-    		user.setEmail(email);
     		user.setPassword(genereateRandomPass());
     		user.setClientId(client.getId());
     		user.setCreatedDt(createdDt);
@@ -100,6 +92,32 @@ public class UserController {
     	}
 
     	return RequestUtils.printResult(resp.toString(), response);
+    }
+    
+    private boolean checkUser(Users user, JSONObject objectGiven, JSONObject resp, String excludeEmail) throws JSONException {
+    	String email = objectGiven.getString("email");
+    	if (!EmailValidator.getInstance().isValid(email)) { 
+    		resp.put("reason", "invalidEmail");
+    		
+    		return false;
+    	} else if (userService.findUserByEmail(email, excludeEmail) != null) {
+    		resp.put("reason", "emailExist");
+    		
+    		return false;
+    	} else {
+    		user.setFirstname(objectGiven.getString("firstname"));
+    		user.setSurname(objectGiven.getString("surname"));
+    		user.setEmail(email);
+    		
+    		if (objectGiven.has("password")) {
+				String password = objectGiven.getString("password");
+				if (StringUtils.trimToNull(password) != null) {
+					user.setPassword(password);
+				}
+    		}
+    		
+    		return true;
+    	}
     }
     
     @RequestMapping(value = "token/{token}/users", method = RequestMethod.GET)
@@ -181,8 +199,6 @@ public class UserController {
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
     	
-        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-
         JSONObject resp = RequestUtils.getErrorResponse();
         Session session = sessionService.findSession(token);
 
@@ -193,34 +209,13 @@ public class UserController {
             	
             	resp.put("response", RequestUtils.ERROR);
             	
-            	String email = objectGiven.getString("email");
-            	if (!EmailValidator.getInstance().isValid(email)) { 
-            		resp.put("reason", "invalidEmail");
-            		
-            	} else if (userService.findUserByEmail(email) != null) {
-            		resp.put("reason", "emailExist");
-            	} else if (session.isAdmin() || userId == session.getUserId()) {
+            	Users user = userService.findUserById(userId);
+            	if (checkUser(user, objectGiven, resp, user.getEmail())) {
 	        		int clientId = session.getClientId();
-	        		
-	        		Users user = userService.findUserById(userId);
-	        		user.setFirstname(objectGiven.getString("firstname"));
-	        		user.setSurname(objectGiven.getString("surname"));
-	        		user.setEmail(email);
-	        		
-	        		user.setClientId(clientId);
-	        		user.setActive(true);
-	        		user.setAdmin(false);
-	        		
-	        		if (objectGiven.has("password")) {
-	        			String password = objectGiven.getString("password");
-	        			if (StringUtils.trimToNull(password) != null) {
-	        				user.setPassword(password);
-	        			}
-	        		}
 	        		
 	        		if (session.isAdmin()) {
 	        			Clients client = userService.findClientById(clientId);
-	        			client.setCompanyName(objectGiven.getString("companyName"));
+	        			client.setCompanyName(StringUtils.trimToEmpty(objectGiven.getString("companyName")));
 	        			client.setUpdatedDt(new Date());
 	        			userService.updateClient(client);
 	        		}
@@ -233,6 +228,37 @@ public class UserController {
         	}
         	
         } else {
+            RequestUtils.sendUnauthorized(response);
+        }
+        
+        return resp.toString();
+    }
+    
+    @RequestMapping(value = "token/{token}/users/{id}", method = RequestMethod.DELETE)
+    public @ResponseBody String deleteUser(
+    		@PathVariable("id") int userId,
+            @PathVariable("token") String token,
+            @RequestBody String json,
+            HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+    	
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+        JSONObject resp = RequestUtils.getErrorResponse();
+        Session session = sessionService.findSession(token);
+
+        if (session != null) {
+        	if (session.isAdmin()) {
+        		Users user = userService.findUserById(userId);
+        		
+        		user.setActive(false);
+        		
+        		userService.updateUser(user);
+        		
+        		response.setStatus(HttpServletResponse.SC_OK);
+        		resp.put("response", RequestUtils.OK);
+        	}
+        }  else {
             RequestUtils.sendUnauthorized(response);
         }
         
@@ -409,7 +435,6 @@ public class UserController {
         
         Users user = userService.findUserByEmailAndPassword(email, password);
         
-        
         if (user!=null) {
             resp.put("response", RequestUtils.OK);
             
@@ -453,7 +478,8 @@ public class UserController {
             
             Users user = userService.findUserById(session.getUserId());
             if (user != null) {
-            	resp.put("firstName", user.getFirstname());
+            	resp.put("userId", user.getId());
+            	resp.put("firstname", user.getFirstname());
             	resp.put("surname", user.getSurname());
             	resp.put("email", user.getEmail());
             	resp.put("admin", user.getAdmin());

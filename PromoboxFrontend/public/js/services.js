@@ -76,9 +76,39 @@ services.factory("Clients", ['$resource',
         return $resource('',{},{
             getClient: {
                 method: 'GET',
-                url: apiEndpoint + "user/data/:token",
+                url: apiEndpoint + 'user/data/:token',
                 params: {
                     token: '@token'
+                }
+            },
+            list: {
+                method: 'GET',
+                url: apiEndpoint + 'token/:token/users',
+                params: {
+                    token: '@token'
+                }
+            },
+            add: {
+                method: 'POST',
+                url: apiEndpoint + 'token/:token/users',
+                params: {
+                    token: '@token'
+                }
+            },
+            update: {
+                method: 'PUT', 
+                url: apiEndpoint + 'token/:token/users/:id',
+                params: {
+                    token: '@token',
+                    id: '@id'
+                }
+            },
+            remove: {
+                method: 'DELETE', 
+                url: apiEndpoint + 'token/:token/users/:id',
+                params: {
+                    token: '@token',
+                    id: '@id'
                 }
             },
             register: {

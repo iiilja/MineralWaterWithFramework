@@ -67,11 +67,12 @@ public class UserServiceImpl implements UserService {
     }
     
     @Override
-    public Users findUserByEmail(String email) {
+    public Users findUserByEmail(String email, String exclude) {
     	Session session = sessionFactory.getCurrentSession();
 
-        Query q = session.createQuery("from Users where email = :email");
+        Query q = session.createQuery("from Users where email = :email AND email <> :excludeEmail");
         q.setParameter("email", email);
+        q.setParameter("excludeEmail", exclude);
 
         return (Users) q.uniqueResult();
     }

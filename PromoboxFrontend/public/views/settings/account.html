@@ -4,49 +4,49 @@
 	<form class="form-horizontal form-styler">
 
 		<div class="form-group">
-			<label for="input-name" class="col-sm-3 control-label">Имя</label>
+			<label for="input-name" class="col-sm-3 control-label">{{ 'settings_account_name' | translate }}</label>
 			<div class="col-sm-9">
-				<input type="text" class="form-control" id="input-name" placeholder="Введите Имя">
+				<input type="text" class="form-control" id="input-name" placeholder="Введите Имя" ng-model="firstname">
 			</div>
 		</div>
 
 		<div class="form-group">
 			<label for="input-name" class="col-sm-3 control-label">Фамилия</label>
 			<div class="col-sm-9">
-				<input type="text" class="form-control" id="input-surname" placeholder="Введите фамилию">
+				<input type="text" class="form-control" id="input-surname" placeholder="Введите фамилию" ng-model="surname">
 			</div>
 		</div>
 
-		<div class="form-group">
+		<div class="form-group" ng-show="admin">
 			<label for="input-company" class="col-sm-3 control-label">Фирма</label>
 			<div class="col-sm-9">
-				<input type="text" class="form-control" id="input-company" placeholder="Введите название фирмы">
+				<input type="text" class="form-control" id="input-company" placeholder="Введите название фирмы" ng-model="compName">
 			</div>
 		</div>
 
 		<div class="form-group">
 			<label for="inputEmail" class="col-sm-3 control-label">Email</label>
 			<div class="col-sm-9">
-				<input type="email" class="form-control" id="inputEmail" placeholder="Введите Email">
+				<input type="email" class="form-control" id="inputEmail" placeholder="Введите Email" ng-model="email">
 			</div>
 		</div>
 
 		<div class="form-group">
 			<label for="inputPassword" class="col-sm-3 control-label">Новый пароль</label>
 			<div class="col-sm-9">
-				<input type="password" class="form-control" id="inputPassword" placeholder="Введите пароль">
+				<input type="password" class="form-control" id="inputPassword" placeholder="Введите пароль" ng-model="password">
 			</div>
 		</div>
 
 		<div class="form-group">
 			<label for="inputPassword" class="col-sm-3 control-label">Пароль еще раз</label>
 			<div class="col-sm-9">
-				<input type="password" class="form-control" id="inputPassword" placeholder="Введи пароль еще раз">
+				<input type="password" class="form-control" id="inputPassword" placeholder="Введи пароль еще раз" ng-model="passwordRepeat">
 			</div>
 		</div>
 
 	  <div class="form-group">
-		  <button type="submit" class="btn btn-primary">Сохранить</button>
+		  <button type="submit" class="btn btn-primary" ng-click="save()">Сохранить</button>
 	  </div>
 	</form>
 </section>

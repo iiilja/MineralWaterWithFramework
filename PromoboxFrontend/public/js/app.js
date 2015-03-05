@@ -150,7 +150,9 @@ app.controller('Exit', ['token',
 
 app.controller('LeftMenuController', ['$scope', '$location', '$http', 'token', 'Clients', '$rootScope', '$translate',
     function ($scope, $location, $http, token, Clients, $rootScope, $translate) {
-
+        Clients.getClient({token: token.get()}, function(response) {
+            $scope.admin =response.admin;
+        });
     }]);
 
 
@@ -221,10 +223,10 @@ app.controller('RegistrationController', ['$scope', '$http', 'token', 'sysLocati
                 email: $scope.register_form.email,
             }, function(response) {
                 if(response.response == "ERROR") {
-                    if (response.reason == "invalidEmail") {
-                        sysMessage.error($filter('translate')('login_form_register') + ' ' + $filter('translate')('registration_form_email_exists'));
-                    } else if (response.reason == "emailExist") {
+                    if (response.reason == "invalidEmail") {  
                         sysMessage.error($filter('translate')('login_form_register') + ' ' + $filter('translate')('registration_form_invalid_email'));
+                    } else if (response.reason == "emailExist") {
+                        sysMessage.error($filter('translate')('login_form_register') + ' ' + $filter('translate')('registration_form_email_exists'));
                     }
                     
                 } else {
@@ -276,9 +278,6 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
                 $scope.campaign.files = [];
             }
             
-            //$scope.$watchCollection('campaign.files', function () {
-            //    $scope.campaign.files = orderByFilter($scope.campaign.files, ['orderId','name']);
-            //});
         });
 
         $scope.isWebmVideo = function() {

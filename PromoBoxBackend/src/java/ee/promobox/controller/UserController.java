@@ -285,8 +285,8 @@ public class UserController {
         		Map<Integer, JSONArray> devicePermissions = new HashMap<>();
         		for (Devices d: devices) {
         			JSONObject deviceJson = new JSONObject();
-        			deviceJson.put("deviceId", d.getId());
-        			deviceJson.put("uuid", d.getUuid());
+        			deviceJson.put("entityId", d.getId());
+        			deviceJson.put("name", d.getUuid());
         			for (UsersDevicesPermissions p : permissions) {
         				if (p.getDeviceId() == d.getId()) {
         					JSONArray array = devicePermissions.get(d.getId());
@@ -298,7 +298,7 @@ public class UserController {
         					JSONObject permJson = new JSONObject();
         					permJson.put("permissionRead", p.isPermissionRead());
         					permJson.put("permissionWrite", p.isPermissionWrite());
-        					permJson.put("deviceId", p.getDeviceId());
+        					permJson.put("entityId", p.getDeviceId());
         					permJson.put("userId", p.getUserId());
         					
         					Users u = findUserInList(p.getUserId(), users);
@@ -318,7 +318,7 @@ public class UserController {
             		devicesArray.put(deviceJson);
         		}
         		
-        		resp.put("devices", devicesArray);
+        		resp.put("entities", devicesArray);
         		
         		response.setStatus(HttpServletResponse.SC_OK);
         		resp.put("response", RequestUtils.OK);
@@ -350,7 +350,7 @@ public class UserController {
         		Map<Integer, JSONArray> campaignPermissions = new HashMap<>();
         		for (AdCampaigns c: campaigns) {
         			JSONObject campaignJson = new JSONObject();
-        			campaignJson.put("campaignId", c.getId());
+        			campaignJson.put("entityId", c.getId());
         			campaignJson.put("name", c.getName());
         			for (UsersCampaignsPermissions p : permissions) {
         				if (p.getCampaignId() == c.getId()) {
@@ -363,7 +363,7 @@ public class UserController {
         					JSONObject permJson = new JSONObject();
         					permJson.put("permissionRead", p.isPermissionRead());
         					permJson.put("permissionWrite", p.isPermissionWrite());
-        					permJson.put("campaignId", p.getCampaignId());
+        					permJson.put("entityId", p.getCampaignId());
         					permJson.put("userId", p.getUserId());
         					
         					Users u = findUserInList(p.getUserId(), users);
@@ -383,7 +383,7 @@ public class UserController {
             		campaignsArray.put(campaignJson);
         		}
         		
-        		resp.put("campaigns", campaignsArray);
+        		resp.put("entities", campaignsArray);
         		
         		response.setStatus(HttpServletResponse.SC_OK);
         		resp.put("response", RequestUtils.OK);

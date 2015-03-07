@@ -35,8 +35,11 @@ public class UsersCampaignsPermissions implements Serializable {
     @Column(name = "campaign_id")
     private Integer campaignId;
     
-    @Column(name = "permission")
-    private int permission;
+    @Column(name = "permission_read", nullable=false)
+    private boolean permissionRead;
+    
+    @Column(name = "permission_write", nullable=false)
+    private boolean permissionWrite;
     
     @Column(name = "created_dt")
     @Temporal(TemporalType.TIMESTAMP)
@@ -78,12 +81,20 @@ public class UsersCampaignsPermissions implements Serializable {
 		this.campaignId = campaignId;
 	}
 
-	public int getPermission() {
-		return permission;
+	public boolean isPermissionRead() {
+		return permissionRead;
 	}
 
-	public void setPermission(int permission) {
-		this.permission = permission;
+	public void setPermissionRead(boolean permissionRead) {
+		this.permissionRead = permissionRead;
+	}
+
+	public boolean isPermissionWrite() {
+		return permissionWrite;
+	}
+
+	public void setPermissionWrite(boolean permissionWrite) {
+		this.permissionWrite = permissionWrite;
 	}
 
 	public Date getCreatedDt() {

@@ -19,8 +19,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class UsersDevicesPermissions implements Serializable {
 	
-	public static final int PERMISSION_READ = 1;
-	public static final int PERMISSION_WRITE = 2;
 
 	private static final long serialVersionUID = 1L;
     @Id
@@ -38,8 +36,11 @@ public class UsersDevicesPermissions implements Serializable {
     @Column(name = "device_id", nullable = false)
     private Integer deviceId;
     
-    @Column(name = "permission", nullable=false)
-    private int permission;
+    @Column(name = "permission_read", nullable=false)
+    private boolean permissionRead;
+    
+    @Column(name = "permission_write", nullable=false)
+    private boolean permissionWrite;
     
     @Column(name = "created_dt")
     @Temporal(TemporalType.TIMESTAMP)
@@ -81,12 +82,20 @@ public class UsersDevicesPermissions implements Serializable {
 		this.deviceId = deviceId;
 	}
 
-	public int getPermission() {
-		return permission;
+	public boolean isPermissionRead() {
+		return permissionRead;
 	}
 
-	public void setPermission(int permission) {
-		this.permission = permission;
+	public void setPermissionRead(boolean permissionRead) {
+		this.permissionRead = permissionRead;
+	}
+
+	public boolean isPermissionWrite() {
+		return permissionWrite;
+	}
+
+	public void setPermissionWrite(boolean permissionWrite) {
+		this.permissionWrite = permissionWrite;
 	}
 
 	public Date getCreatedDt() {

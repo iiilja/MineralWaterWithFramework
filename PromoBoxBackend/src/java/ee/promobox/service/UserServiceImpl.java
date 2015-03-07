@@ -540,6 +540,17 @@ public class UserServiceImpl implements UserService {
     	
 		return (UsersDevicesPermissions) q.uniqueResult();
 	}
+	
+	@Override
+	public List<UsersDevicesPermissions> findUsersDevicesPermissionsByClientId(int clientId) {
+		Session session = sessionFactory.getCurrentSession();
+
+    	Query q = session.createQuery("FROM UsersDevicesPermissions WHERE clientId = :clientId");
+
+    	q.setParameter("clientId", clientId);
+    	
+		return q.list();
+	}
 
 	@Override
 	public void addUsersCampaignsPermissions(
@@ -582,6 +593,17 @@ public class UserServiceImpl implements UserService {
         q.setParameter("campaignId", campaignId);
     	
 		return (UsersCampaignsPermissions) q.uniqueResult();
+	}
+	
+	@Override
+	public List<UsersCampaignsPermissions> findUsersCampaignsPermissionsByClientId(int clientId) {
+		Session session = sessionFactory.getCurrentSession();
+
+    	Query q = session.createQuery("FROM UsersCampaignsPermissions WHERE clientId = :clientId");
+
+    	q.setParameter("clientId", clientId);
+    	
+		return q.list();
 	}
 
     

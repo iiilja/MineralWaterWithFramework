@@ -118,9 +118,11 @@ public interface UserService {
     public void updateUsersDevicesPermissions(UsersDevicesPermissions permissions);
     public void deleteUsersDevicesPermissions(int userId, int deviceId);
     public UsersDevicesPermissions findUsersDevicesPermissions(int userId, int deviceId);
+    public List<UsersDevicesPermissions> findUsersDevicesPermissionsByClientId(int clientId);
     
     public void addUsersCampaignsPermissions(UsersCampaignsPermissions permissions);
     public void updateUsersCampaignsPermissions(UsersCampaignsPermissions permissions);
     public void deleteUsersCampaignsPermissions(int userId, int campaignId);
     public UsersCampaignsPermissions findUsersCampaignsPermissions(int userId, int campaignId);
+    public List<UsersCampaignsPermissions> findUsersCampaignsPermissionsByClientId(int clientId);
 }

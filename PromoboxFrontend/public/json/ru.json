@@ -142,7 +142,4 @@
     "system_thenameorpassworddonotmatch": "Имя или пароль не совпадают",
     "system_playnextfile": "Файл будет воспроизведен следующим",
     "system_rotatefile": "Файл будет повернут",
-    "lang_en": "Английский",
-    "lang_et": "Эстонский",
-    "lang_ru": "Русский",
-    "lang_lv": "Латвийский"
+    "settings_account_name": "Имя"

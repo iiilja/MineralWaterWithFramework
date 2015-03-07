@@ -28,25 +28,25 @@
                 {{ 'settings_menu_account' | translate }}
             </a>
         </li>
-        <li>
+        <li ng-show="admin">
             <a ui-sref="setting_user" ng-class="$root.left_menu_active == 'setting_user' ? 'active' : ''">
                 <span class="ico-block user-ico"></span>
                 {{ 'settings_menu_users' | translate }}
             </a>
         </li>
-        <li>
+        <li ng-show="admin">
             <a ui-sref="setting_device" ng-class="$root.left_menu_active == 'setting_device' ? 'active' : ''">
                 <span class="ico-block device-settings-ico"></span>
                 {{ 'settings_menu_devises' | translate }}
             </a>
         </li>
-        <li>
+        <li ng-show="admin">
             <a ui-sref="setting_campaign" ng-class="$root.left_menu_active == 'setting_campaign' ? 'active' : ''">
                 <span class="ico-block comp-settings-ico"></span>
                 {{ 'settings_menu_campaigns' | translate }}
             </a>
         </li>
-        <li>
+        <li ng-show="admin">
             <a ui-sref="setting_payment" ng-class="$root.left_menu_active == 'setting_payment' ? 'active' : ''">
                 <span class="ico-block payment-ico"></span>
                 {{ 'settings_menu_payment' | translate }}

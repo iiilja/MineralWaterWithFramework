@@ -83,10 +83,11 @@ public class FilesController {
         
         for (CampaignsFiles f: userService.findFilesArchiveCandidates()) {
         	try {
-        		log.info("archive: " + f.getFileId());
+        	    
+                    log.info("archive: " + f.getFileId());
         		
 	            int clientId = f.getClientId();
-	            int fileId = f.getId();
+	            int fileId = f.getFileId();
 	            Integer page = f.getPage();
 	
 	            File rawFile = fileService.getRawFile(clientId, fileId);

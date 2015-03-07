@@ -25,9 +25,12 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+
 import ee.promobox.promoboxandroid.data.Campaign;
 import ee.promobox.promoboxandroid.data.CampaignFile;
 import ee.promobox.promoboxandroid.data.CampaignFileType;
+import ee.promobox.promoboxandroid.data.Display;
 import ee.promobox.promoboxandroid.data.ErrorMessage;
 import ee.promobox.promoboxandroid.util.ExceptionHandler;
 import ee.promobox.promoboxandroid.interfaces.FragmentPlaybackListener;
@@ -55,6 +58,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
     public static final String ADD_ERROR_MSG    = "ee.promobox.promoboxandroid.ADD_ERROR_MSG";
     public static final String WRONG_UUID    = "ee.promobox.promoboxandroid.WRONG_UUID";
     public static final String PLAY_SPECIFIC_FILE       = "ee.promobox.promoboxandroid.PLAY_SPECIFIC_FILE";
+    public static final String WALL_UPDATE       = "ee.promobox.promoboxandroid.WALL_UPDATE";
 
     public static final String ERROR_MESSAGE       = "Error %d , ( %s )";
 
@@ -95,6 +99,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
     private boolean master = false;
 
 
+
     private void hideSystemUI() {
 
         this.getWindow().getDecorView().setSystemUiVisibility(
@@ -131,6 +136,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
         intentFilter.addAction(SET_STATUS);
         intentFilter.addAction(ADD_ERROR_MSG);
         intentFilter.addAction(WRONG_UUID);
+        intentFilter.addAction(WALL_UPDATE);
 
         bManager.registerReceiver(bReceiver, intentFilter);
 
@@ -188,9 +194,14 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
             fragment.onPause();
             fragment.onResume();
         } else {
-            transaction.replace(R.id.main_view, fragment);
-            transaction.addToBackStack(fragment.toString());
-            transaction.commit();
+            try {
+                transaction.replace(R.id.main_view, fragment);
+                transaction.addToBackStack(fragment.toString());
+                transaction.commit();
+            } catch (IllegalStateException e){
+                Log.e(TAG, e.getMessage());
+                addError(new ErrorMessage(e),false);
+            }
         }
         currentFragment = fragment;
     }
@@ -312,7 +323,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
 
             if (campaign == null || !campaign.equals(mainService.getCurrentCampaign())){
                 campaign = mainService.getCurrentCampaign();
-                if (! videoWall ){
+                if ( mainService.isVideoWall() ){
                     imageFragment = new FragmentWallImage();
                     videoWall = true;
                 }
@@ -390,6 +401,14 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
     @Override
     public boolean onLongClick(View view) {
         Intent i = new Intent(MainActivity.this, SettingsActivity.class);
+
+        if ( mainService.getDisplays() != null ){
+            i.putParcelableArrayListExtra("displays", mainService.getDisplays());
+        } else {
+            Log.w(TAG, "mainService.getDisplays() == nul");
+        }
+
+        startActivityForResult(i, RESULT_FINISH_PLAY);
         startActivity(i);
         return true;
     }
@@ -445,8 +464,28 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
         return master;
     }
 
-    public boolean isVideoWall() {
-        return videoWall;
+
+    public Display getDisplay() {
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        int displayId = Integer.parseInt(sharedPref.getString("monitor_id","-1"));
+        Log.d(TAG, "getDisplay() = " + displayId + " string = " + sharedPref.getString("monitor_id","-1"));
+        if (displayId != -1 && mainService != null && mainService.getDisplays() != null) {
+            return mainService.getDisplays().getDisplayWithId(displayId);
+        } else if ( mainService != null && mainService.getDisplays() != null ){
+            Log.w(TAG, "Display not chosen, setting first of "+ mainService.getDisplays().size() + " displays");
+            return mainService.getDisplays().get(0);
+        } else {
+            Log.e(TAG, "mainService is "+( mainService == null ? "NULL" : "NOT null"));
+            Log.e(TAG, "mainService.getDisplays() is "+( mainService.getDisplays() == null ? "NULL" : "NOT null"));
+            return null;
+        }
+    }
+
+    public int getWallHeight(){
+        return mainService.getWallHeight();
+    }
+    public int getWallWidth(){
+        return mainService.getWallWidth();
     }
 
     public void setPreviousFilePosition(){
@@ -517,6 +556,16 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
                         startActivityForResult(new Intent(MainActivity.this, FirstActivity.class), RESULT_FINISH_FIRST_START);
                     }
                     break;
+                case WALL_UPDATE:
+                    Log.d(RECEIVER_STRING, WALL_UPDATE);
+                    if (videoWall) {
+                        currentFragment.onPause();
+                        currentFragment.onResume();
+                    } else if (mainService.isVideoWall()){
+                        imageFragment = new FragmentWallImage();
+                        videoWall = true;
+                        startNextFile();
+                    }
             }
         }
     };
@@ -525,7 +574,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
     public void onPlayMessageReceived(PlayMessage message) {
         Log.d(TAG, "onPlayMessageReceived");
         if (!videoWall){
-            onPrepareMessageReceived(new PrepareMessage("1111",message.getCampaignId(),message.getFileId()));
+            return;
         }
         if (mainService == null || mainService.getCampaigns() == null) return;
         Campaign campaign = mainService.getCampaigns().getCampaignWithId(message.getCampaignId());
@@ -543,8 +592,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
     public void onPrepareMessageReceived(PrepareMessage message) {
         Log.d(TAG, "onPrepareMessageReceived");
         if (!videoWall){
-            imageFragment = new FragmentWallImage();
-            videoWall = true;
+            return;
         }
         if (mainService == null || mainService.getCampaigns() == null) return;
         Campaign campaign = mainService.getCampaigns().getCampaignWithId(message.getCampaignId());

@@ -21,6 +21,13 @@
         android:negativeButtonText="@null"
         android:positiveButtonText="@null" />
 
+    <ListPreference
+        android:key="monitor_id"
+        android:title="@string/pref_monitor_id"
+        android:defaultValue="-1"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null" />
+
 
     <Preference
         android:key="version"

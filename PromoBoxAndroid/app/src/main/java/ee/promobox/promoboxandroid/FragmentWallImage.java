@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 
 import ee.promobox.promoboxandroid.data.CampaignFile;
 import ee.promobox.promoboxandroid.data.CampaignFileType;
+import ee.promobox.promoboxandroid.data.Display;
 import ee.promobox.promoboxandroid.data.ErrorMessage;
 import ee.promobox.promoboxandroid.interfaces.FragmentPlaybackListener;
 import ee.promobox.promoboxandroid.interfaces.VideoWallMasterListener;
@@ -25,6 +26,15 @@ import ee.promobox.promoboxandroid.widgets.WallImageView;
  */
 public class FragmentWallImage extends FragmentVideoWall {
 
+    private static final int DEFAULT_WIDTH = 1920;
+    private static final int DEFAULT_HEIGHT = 1080;
+    private static final Point[] DEFAULT_POINTS = {
+            new Point(0,1080),
+            new Point(1920,1080),
+            new Point(1920,0),
+            new Point(0,0)
+    };
+
     private static final String TAG = "FragmentWallImage ";
 
     private WallImageView slide;
@@ -35,7 +45,7 @@ public class FragmentWallImage extends FragmentVideoWall {
     private VideoWallMasterListener masterListener;
 
     private MainActivity mainActivity;
-    Point[] monitorPoints = new Point[4];
+    private Point[] monitorPoints = new Point[4];
 
     private Bitmap preparedBitmap;
     private CampaignFile preparedCampaignFile;
@@ -81,35 +91,19 @@ public class FragmentWallImage extends FragmentVideoWall {
         Log.d(TAG, "onResume");
         super.onResume();
         slide.removeCallbacks(runnable);
-
-        monitorPoints[0] = new Point(1080,1920);        // 1
-        monitorPoints[1] = new Point(1080,0);
-        monitorPoints[2] = new Point(0,0);
-        monitorPoints[3] = new Point(0,1920);
-//
-//        monitorPoints[0] = new Point(2160,1920);      // 2
-//        monitorPoints[1] = new Point(2160,0);
-//        monitorPoints[2] = new Point(1080,0);
-//        monitorPoints[3] = new Point(1080,1920);
-
-//        monitorPoints[0] = new Point(3240,1920);      // 3
-//        monitorPoints[1] = new Point(3240,0);
-//        monitorPoints[2] = new Point(2160,0);
-//        monitorPoints[3] = new Point(2160,1920);
-//
-//        monitorPoints[0] = new Point(0,1500);        // 1
-//        monitorPoints[1] = new Point(1920,1500);
-//        monitorPoints[2] = new Point(1920,420);
-//        monitorPoints[3] = new Point(0,420);
-
-//        monitorPoints[0] = new Point(3000,1920);        // 2
-//        monitorPoints[1] = new Point(3000,0);
-//        monitorPoints[2] = new Point(1920,0);
-//        monitorPoints[3] = new Point(1920,1920);
-
-        slide.setInitialValues(1920,3240,monitorPoints);
-
-        slide.setRotation((float) Math.abs(TriangleEquilateral.getAngleAlpha(monitorPoints[3], monitorPoints[0])));
+        Display display = mainActivity.getDisplay();
+        if (display != null) {
+            Point[] points = display.getPoints();
+            slide.setInitialValues(mainActivity.getWallHeight(), mainActivity.getWallWidth(), points);
+            float rotation = (float) - TriangleEquilateral.getAngleAlpha(points[3], points[0]);
+            Log.d(TAG, "rotation = " + rotation );
+            slide.setRotation(rotation);
+        } else {
+            Log.e(TAG, "NO DISPLAY CHOSEN");
+            Point[] points = DEFAULT_POINTS;
+            slide.setInitialValues(DEFAULT_HEIGHT, DEFAULT_WIDTH, points);
+            slide.setRotation(0f);
+        }
 
         if ( amMaster ){
             if (preparedBitmap == null){

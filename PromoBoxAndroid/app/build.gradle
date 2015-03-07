@@ -28,4 +28,5 @@ dependencies {
     compile 'com.android.support:support-v4:21.0.3'
     compile 'com.android.support:appcompat-v7:21.0.3'
     compile files('lib/library.jar')
+    compile files('lib/jgroups-3.4.8.Final.jar')
 }

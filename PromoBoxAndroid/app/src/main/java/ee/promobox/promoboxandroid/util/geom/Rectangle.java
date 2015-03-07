@@ -19,6 +19,13 @@ public class Rectangle {
         this.bottomLeft = bottomLeft;
     }
 
+    public Rectangle(Point[] points){
+        this.topLeft = points[0];
+        this.topRight = points[1];
+        this.bottomRight = points[2];
+        this.bottomLeft = points[3];
+    }
+
     public Rect getOuterRect(){
         int leftX = topLeft.x, rightX = topLeft.x, topY = topLeft.y, bottomY = topLeft.y;
 

@@ -141,6 +141,7 @@ public class UserController {
         			userJson.put("firstname", u.getFirstname());
         			userJson.put("surname", u.getSurname());
         			userJson.put("email", u.getEmail());
+        			userJson.put("active", u.getActive());
         			
         			usersArray.put(userJson);
         		}
@@ -176,9 +177,17 @@ public class UserController {
         		user.setPassword(genereateRandomPass());
         		user.setClientId(clientId);
         		user.setCreatedDt(new Date());
-        		user.setActive(true);
+        		user.setActive(false);
         		user.setAdmin(true);
         		userService.addUser(user);
+        		
+        		JSONObject userJson = new JSONObject();
+    			userJson.put("id", user.getId());
+    			userJson.put("firstname", user.getFirstname());
+    			userJson.put("surname", user.getSurname());
+    			userJson.put("email", user.getEmail());
+    			userJson.put("active", user.getActive());
+    			resp.put("user", userJson);
         		
         		response.setStatus(HttpServletResponse.SC_OK);
         		resp.put("response", RequestUtils.OK);
@@ -213,13 +222,14 @@ public class UserController {
             	if (checkUser(user, objectGiven, resp, user.getEmail())) {
 	        		int clientId = session.getClientId();
 	        		
-	        		if (session.isAdmin()) {
+	        		if (session.isAdmin() && objectGiven.has("companyName")) {
 	        			Clients client = userService.findClientById(clientId);
 	        			client.setCompanyName(StringUtils.trimToEmpty(objectGiven.getString("companyName")));
 	        			client.setUpdatedDt(new Date());
 	        			userService.updateClient(client);
 	        		}
 	        		
+	        		user.setActive(true);
 	        		userService.updateUser(user);
 	        		
 	        		response.setStatus(HttpServletResponse.SC_OK);
@@ -238,7 +248,6 @@ public class UserController {
     public @ResponseBody String deleteUser(
     		@PathVariable("id") int userId,
             @PathVariable("token") String token,
-            @RequestBody String json,
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
     	

@@ -50,7 +50,7 @@ public class UserServiceImpl implements UserService {
     public List<Users> findUsersByClientId(int clientId) {
     	Session session = sessionFactory.getCurrentSession();
 
-        Query q = session.createQuery("from Users where clientId = :clientId");
+        Query q = session.createQuery("from Users where clientId = :clientId AND active IS TRUE");
         q.setParameter("clientId", clientId);
 
         return q.list();
@@ -59,7 +59,7 @@ public class UserServiceImpl implements UserService {
     public Users findUserByEmailAndPassword(String email, String password) {
         Session session = sessionFactory.getCurrentSession();
 
-        Query q = session.createQuery("from Users where email = :email and password = :password");
+        Query q = session.createQuery("from Users where lower(email) = lower(:email) and password = :password AND active IS TRUE");
         q.setParameter("email", email);
         q.setParameter("password", password);
 
@@ -70,7 +70,7 @@ public class UserServiceImpl implements UserService {
     public Users findUserByEmail(String email, String exclude) {
     	Session session = sessionFactory.getCurrentSession();
 
-        Query q = session.createQuery("from Users where email = :email AND email <> :excludeEmail");
+        Query q = session.createQuery("from Users where lower(email) = lower(:email) AND email <> :excludeEmail AND active IS TRUE");
         q.setParameter("email", email);
         q.setParameter("excludeEmail", exclude);
 

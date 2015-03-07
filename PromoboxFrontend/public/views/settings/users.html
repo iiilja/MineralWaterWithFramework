@@ -4,7 +4,7 @@
 	<div class="users-list">
 	    <div class="add-company-list mCustomScrollbar">
 	        <ul class="btn-group">
-	            <li ng-repeat="user in users" ng-click="selectUser(user)">
+	            <li ng-repeat="user in users  | filter: { active: true }" ng-click="selectUser(user)">
 	                <label class="btn btn-primary"
 	                	ng-class="selectedUser.id == user.id ? 'active' : ''">
 	                    {{user.firstname}} {{user.surname}}
@@ -16,50 +16,12 @@
 
 	    <div class="bottom-block clearfix">
 	    	<div class="pull-left">
-	    		<button type="button" class="btn btn-default" data-toggle="modal" data-target=".add-user"
-	    			ng-click="openEditUser()">Изменить</button>
-	    		<button type="button" class="btn btn-default">Удалить</button>
+	    		<button type="button" class="btn btn-default" ng-click="openEditUser()">Изменить</button>
+	    		<button type="button" class="btn btn-default" ng-click="deleteUser()">Удалить</button>
 	    	</div>
 	    	<div class="pull-right">
-	    		<button type="button" class="btn btn-success"  data-toggle="modal" data-target=".add-user"
-	    			ng-click="openAddUser()">Добавить</button>
+	    		<button type="button" class="btn btn-success" ng-click="openAddUser()">Добавить</button>
 	    	</div>
 	    </div>
 	</div>
 </section>
-
-<div class="modal fade add-user" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				<h4 class="modal-title" id="myModalLabel">Добавить пользователя</h4>
-			</div>
-
-			<div class="modal-body">
-				<form>
-					<div class="form-group">
-						<input type="text" class="form-control" placeholder="Имя" ng-model="firstname">
-					</div>
-
-					<div class="form-group">
-						<input type="text" class="form-control" placeholder="Фамилия" ng-model="surname">
-					</div>
-
-					<div class="form-group">
-						<input type="email" class="form-control" placeholder="E-mail" ng-model="email">
-					</div>
-
-					<div class="form-group">
-						<input type="password" class="form-control" placeholder="Пароль" ng-model="password">
-					</div>
-				</form>		
-			</div>
-
-			<div class="modal-footer">
-				<button type="button" class="btn btn-success">Добавить</button>
-				<button type="button" class="btn btn-default" data-dismiss="modal">Отмена</button>
-			</div>
-		</div>
-	</div>
-</div>

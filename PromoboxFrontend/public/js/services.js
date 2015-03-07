@@ -216,5 +216,30 @@ services.factory('browser', ['$window', function($window) {
            return 'unknown';
        }
     }
-
 }]);
+
+services.factory('facade', function(token, sysMessage, Clients, $location, $filter, $modal) {
+
+     return {
+
+        getToken: function() {
+            return token;
+        },
+        getSysMessage: function() {
+           return sysMessage;
+        }, 
+        getClients: function() {
+            return Clients;
+        },
+        getLocation: function() {
+            return $location;
+        },
+        getFilter: function() {
+            return $filter;
+        },
+        getModal: function() {
+            return $modal;
+        }
+
+    }
+});

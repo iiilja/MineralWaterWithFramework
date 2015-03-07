@@ -1,8 +1,10 @@
-angular.module('promobox.services').controller('SettingAccountController', ['$scope', '$location', '$http', 'token', 'Clients', '$rootScope', '$translate', 'sysMessage', '$filter',
-    function ($scope, $location, $http, token, Clients, $rootScope, $translate, sysMessage, $filter) {
+angular.module('promobox.services').controller('SettingAccountController', function($scope, $rootScope, facade) {
         $rootScope.left_menu_active = 'setting_account';
+        $rootScope.showSettings = true;
 
-        Clients.getClient({token: token.get()}, function(response) {
+        var $filter = facade.getFilter();
+
+        facade.getClients().getClient({token: facade.getToken().get()}, function(response) {
 
             $scope.userId = response.userId;
             $scope.firstname = response.firstname;
@@ -29,9 +31,9 @@ angular.module('promobox.services').controller('SettingAccountController', ['$sc
 
                 // Show short password error message
             } else {
-                Clients.update({
+                facade.getClients().update({
                     id: $scope.userId,
-                    token: token.get(),
+                    token: facade.getToken().get(),
                     firstname: $scope.firstname,
                     surname: $scope.surname,
                     companyName: $scope.compName,
@@ -40,9 +42,9 @@ angular.module('promobox.services').controller('SettingAccountController', ['$sc
                 }, function(response) {
                     if(response.response == "ERROR") {
                         if (response.reason == "invalidEmail") {
-                            sysMessage.error($filter('translate')('login_form_register') + ' ' + $filter('translate')('registration_form_invalid_email'));
+                            facade.getSysMessage().error($filter('translate')('login_form_register') + ' ' + $filter('translate')('registration_form_invalid_email'));
                         } else if (response.reason == "emailExist") {
-                            sysMessage.error($filter('translate')('login_form_register') + ' ' + $filter('translate')('registration_form_email_exists'));
+                            facade.getSysMessage().error($filter('translate')('login_form_register') + ' ' + $filter('translate')('registration_form_email_exists'));
                         }
                     } else {
                         // show success message
@@ -50,30 +52,30 @@ angular.module('promobox.services').controller('SettingAccountController', ['$sc
                 });
             }
         }
-    }]);
+    });
 
-angular.module('promobox.services').controller('SettingCampaignController', ['$scope', '$location', '$http', 'token', 'Clients', '$rootScope', '$translate', 'sysMessage', '$filter',
-    function ($scope, $location, $http, token, Clients, $rootScope, $translate, sysMessage, $filter) {
+angular.module('promobox.services').controller('SettingCampaignController', function($scope, $rootScope, facade) {
         $rootScope.left_menu_active = 'setting_campaign';
-    }]);
+        $rootScope.showSettings = true;
+    });
 
-angular.module('promobox.services').controller('SettingDeviceController', ['$scope', '$location', '$http', 'token', 'Clients', '$rootScope', '$translate', 'sysMessage', '$filter',
-    function ($scope, $location, $http, token, Clients, $rootScope, $translate, sysMessage, $filter) {
+angular.module('promobox.services').controller('SettingDeviceController', function($scope, $rootScope, facade) {
         $rootScope.left_menu_active = 'setting_device';
-    }]);
+        $rootScope.showSettings = true;
+    });
 
-angular.module('promobox.services').controller('SettingPaymentController', ['$scope', '$location', '$http', 'token', 'Clients', '$rootScope', '$translate', 'sysMessage', '$filter',
-    function ($scope, $location, $http, token, Clients, $rootScope, $translate, sysMessage, $filter) {
+angular.module('promobox.services').controller('SettingPaymentController', function($scope, $rootScope, facade) {
         $rootScope.left_menu_active = 'setting_payment';
-    }]);
+        $rootScope.showSettings = true;
+    });
 
-angular.module('promobox.services').controller('SettingUserController', ['$scope', '$location', '$http', 'token', 'Clients', '$rootScope', '$translate', 'sysMessage', '$filter',
-    function ($scope, $location, $http, token, Clients, $rootScope, $translate, sysMessage, $filter) {
+angular.module('promobox.services').controller('SettingUserController', function($scope, $rootScope, facade) {
         $rootScope.left_menu_active = 'setting_user';
+        $rootScope.showSettings = true;
 
-        Clients.list({token: token.get()}, function(response) {
-            console.log(response);
+         var $filter = facade.getFilter();
 
+        facade.getClients().list({token: facade.getToken().get()}, function(response) {
             $scope.users = response.users;
         });
 
@@ -81,31 +83,114 @@ angular.module('promobox.services').controller('SettingUserController', ['$scope
             $scope.selectedUser = user;
         }
 
+        var openEditDialog = function(editMode) {
+            var modalInstanse = facade.getModal().open({
+                templateUrl: '/views/modal/editUser.html',
+                controller: 'ModalUserController',
+                resolve: {
+                    facade: function() {
+                        return facade;
+                    },
+                    model: function() {
+                        return { 
+                            selectedUser: $scope.selectedUser,
+                            editMode: editMode
+                        }
+                    }
+                }
+            });
+
+            modalInstanse.result.then(function(model) {
+                console.log(model);
+                if (!model.editUser) {
+                    $scope.users.push(model.selectedUser);
+                }
+            });
+        }
         $scope.openEditUser = function() {
-            $scope.firstname = $scope.selectedUser.firstname;
-            $scope.surname = $scope.selectedUser.surname;
-            $scope.email = $scope.selectedUser.email;
-            $scope.password = "";
+            if ($scope.selectedUser) {
+                openEditDialog(true);
+            }
         }
 
         $scope.openAddUser = function() {
-            $scope.firstname = "";
-            $scope.surname = "";
-            $scope.email = "";
-            $scope.password = "";
+            openEditDialog(false);
         }
 
-
         $scope.deleteUser = function() {
-            Clients.remove({
-                token: token.get(),
+            facade.getClients().remove({
+                token: facade.getToken().get(),
                 id: $scope.selectedUser.id
             }, function(response) {
                 if(response.response == "ERROR") {
                     // show error message
                 } else {
                     // show success message
+                    $scope.selectedUser.active = false;
+                    $scope.selectedUser = null;
                 }
             });
         }
-    }]);
+    });
+
+angular.module('promobox.services').controller('ModalUserController', function ($scope, $modalInstance, facade, model) {
+        var $filter = facade.getFilter();
+
+        $scope.data = {};
+        if (model.editMode) {
+            $scope.data.firstname = model.selectedUser.firstname;
+            $scope.data.surname = model.selectedUser.surname;
+            $scope.data.email = model.selectedUser.email;
+            $scope.data.password = "";
+        } else {
+            $scope.data.firstname = "";
+            $scope.data.surname = "";
+            $scope.data.email = "";
+            $scope.data.password = "";
+        }
+        $scope.editMode = model.editMode;
+
+        $scope.cancel = function () {
+            $modalInstance.dismiss('cancel');
+        };
+
+        $scope.editUser = function() {
+            facade.getClients().update({
+                id: model.selectedUser.id,
+                token: facade.getToken().get(),
+                firstname: $scope.data.firstname,
+                surname: $scope.data.surname,
+                password: $scope.data.password,
+                email: $scope.data.email
+            }, function(response) {
+                if(response.response == "ERROR") {
+                    if (response.reason == "invalidEmail") {
+                        facade.getSysMessage().error($filter('translate')('login_form_register') + ' ' + $filter('translate')('registration_form_invalid_email'));
+                    } else if (response.reason == "emailExist") {
+                        facade.getSysMessage().error($filter('translate')('login_form_register') + ' ' + $filter('translate')('registration_form_email_exists'));
+                    }
+                } else {
+                    // show success messagee
+                    model.selectedUser.firstname = $scope.data.firstname;
+                    model.selectedUser.surname = $scope.data.surname;
+                    model.selectedUser.email = $scope.data.email;
+                    model.selectedUser.active = true;
+
+                    $modalInstance.close({
+                        editMode: model.editMode,
+                        selectedUser: model.selectedUser
+                    });
+                }
+            });
+        }
+
+        $scope.addUser = function() {
+            facade.getClients().add({
+                token: facade.getToken().get()
+            }, function(response) {
+                model.selectedUser = response.user;
+                $scope.editUser();
+            });
+        }
+
+    });

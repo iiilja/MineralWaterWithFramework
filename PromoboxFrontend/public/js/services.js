@@ -37,16 +37,39 @@ services.factory('Campaign', ['$resource',
                         angle: '@angle'
                     }
                 },
-                delete_campaigns: {method: 'DELETE', url: apiEndpoint + 'token/:token/campaigns/:id/', params: {token: '@token', id: '@id'}
-                    /*,
-                    interceptor: {
-                        response: function(response) {
-                            console.log(response);
-                            console.debug('Tags: ', response.data.tags);
-                            response.data = response.data.tags;
-                            return response;
-                        }}*/
+                delete_campaigns: {
+                    method: 'DELETE', 
+                    url: apiEndpoint + 'token/:token/campaigns/:id/', 
+                    params: {
+                        token: '@token',
+                         id: '@id'
                     }
+                },
+                listPermissions: {
+                    method: 'GET',
+                    url: apiEndpoint + 'token/:token/campaign/permissions',
+                    params: {
+                        token: '@token'
+                    }
+                },
+                updatePermissions: {
+                    method: 'GET',
+                    url: apiEndpoint + 'token/:token/users/:userId/permissions/campaign/:entityId',
+                    params: {
+                        token: '@token',
+                        userId: '@userId',
+                        entityId: '@entityId'
+                    }
+                },
+                deletePermissions: {
+                    method: 'DELETE',
+                    url: apiEndpoint + 'token/:token/users/:userId/permissions/campaign/:entityId',
+                    params: {
+                        token: '@token',
+                        userId: '@userId',
+                        entityId: '@entityId'
+                    }
+                }
                 
             });}]);
 
@@ -59,7 +82,32 @@ services.factory('Device', ['$resource',
                 add: {method: 'POST', url:apiEndpoint + 'token/:token/devices/', params: {token: '@token'}},
                 clearCache: {method: 'PUT', url:apiEndpoint + 'token/:token/devices/:id/clearcache', params: {token: '@token', id: '@id'}},
                 openApp: {method: 'PUT', url:apiEndpoint + 'token/:token/devices/:id/openapp', params: {token: '@token', id: '@id'}},
-                delete_device_campaign: {method: 'DELETE', url:apiEndpoint + 'token/:token/devices/:id/campaign/:campaignId', params: {token: '@token', id: '@id', campaignId: '@campaignId'}}
+                delete_device_campaign: {method: 'DELETE', url:apiEndpoint + 'token/:token/devices/:id/campaign/:campaignId', params: {token: '@token', id: '@id', campaignId: '@campaignId'}},
+                listPermissions: {
+                    method: 'GET',
+                    url: apiEndpoint + 'token/:token/device/permissions',
+                    params: {
+                        token: '@token'
+                    }
+                },
+                updatePermissions: {
+                    method: 'GET',
+                    url: apiEndpoint + 'token/:token/users/:userId/permissions/device/:entityId',
+                    params: {
+                        token: '@token',
+                        userId: '@userId',
+                        entityId: '@entityId'
+                    }
+                },
+                deletePermissions: {
+                    method: 'DELETE',
+                    url: apiEndpoint + 'token/:token/users/:userId/permissions/device/:entityId',
+                    params: {
+                        token: '@token',
+                        userId: '@userId',
+                        entityId: '@entityId'
+                    }
+                }
             });}]);
 
 services.factory('Files', ['$resource',
@@ -218,7 +266,7 @@ services.factory('browser', ['$window', function($window) {
     }
 }]);
 
-services.factory('facade', function(token, sysMessage, Clients, $location, $filter, $modal) {
+services.factory('facade', function(token, sysMessage, Clients, Device, Campaign, $location, $filter, $modal) {
 
      return {
 
@@ -230,6 +278,12 @@ services.factory('facade', function(token, sysMessage, Clients, $location, $filt
         }, 
         getClients: function() {
             return Clients;
+        },
+        getDevices: function() {
+            return Device;
+        },
+        getCampaigns: function() {
+            return Campaign;
         },
         getLocation: function() {
             return $location;

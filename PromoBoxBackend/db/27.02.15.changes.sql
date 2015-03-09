@@ -11,7 +11,8 @@ CREATE TABLE users_devices_permissions
     user_id INTEGER NOT NULL,
     client_id INTEGER NOT NULL,
     device_id INTEGER NOT NULL,
-    permission INTEGER NOT NULL,
+    permission_read BOOLEAN NOT NULL DEFAULT FALSE,
+    permission_write BOOLEAN NOT NULL DEFAULT FALSE,
     created_dt TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     updated_dt TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     CONSTRAINT pk_users_devices_permissions_id PRIMARY KEY (id)
@@ -23,7 +24,8 @@ CREATE TABLE users_campaigns_permissions
     user_id INTEGER NOT NULL,
     client_id INTEGER NOT NULL,
     campaign_id INTEGER NOT NULL,
-    permission INTEGER NOT NULL,
+    permission_read BOOLEAN NOT NULL DEFAULT FALSE,
+    permission_write BOOLEAN NOT NULL DEFAULT FALSE,
     created_dt TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     updated_dt TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     CONSTRAINT pk_users_campaigns_permissions_id PRIMARY KEY (id)

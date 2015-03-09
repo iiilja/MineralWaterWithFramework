@@ -7,6 +7,7 @@ package ee.promobox.controller;
 import ee.promobox.entity.AdCampaigns;
 import ee.promobox.entity.Clients;
 import ee.promobox.entity.Devices;
+import ee.promobox.entity.Permissions;
 import ee.promobox.entity.Users;
 import ee.promobox.entity.UsersCampaignsPermissions;
 import ee.promobox.entity.UsersDevicesPermissions;
@@ -16,6 +17,7 @@ import ee.promobox.service.UserService;
 import ee.promobox.util.RequestUtils;
 
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -282,43 +284,35 @@ public class UserController {
         		
         		JSONArray devicesArray = new JSONArray();
         		
-        		Map<Integer, JSONArray> devicePermissions = new HashMap<>();
         		for (Devices d: devices) {
         			JSONObject deviceJson = new JSONObject();
-        			deviceJson.put("deviceId", d.getId());
-        			deviceJson.put("uuid", d.getUuid());
+        			deviceJson.put("entityId", d.getId());
+        			deviceJson.put("name", d.getUuid());
+        			
+        			List<Permissions> devicePermissionsList = new ArrayList<>();
         			for (UsersDevicesPermissions p : permissions) {
         				if (p.getDeviceId() == d.getId()) {
-        					JSONArray array = devicePermissions.get(d.getId());
-        					if (array == null) {
-        						array = new JSONArray();
-        						devicePermissions.put(d.getId(), array);
-        					}
-        					
-        					JSONObject permJson = new JSONObject();
-        					permJson.put("permissionRead", p.isPermissionRead());
-        					permJson.put("permissionWrite", p.isPermissionWrite());
-        					permJson.put("deviceId", p.getDeviceId());
-        					permJson.put("userId", p.getUserId());
-        					
-        					Users u = findUserInList(p.getUserId(), users);
-        					if (u != null) {
-        						permJson.put("user", userToJson(u));
-        					}
-        					
-        					array.put(permJson);
+        					devicePermissionsList.add(p);
         				}
         			}
         			
-        			JSONArray permArray = devicePermissions.get(d.getId());
-            		if (permArray != null) {
-            			deviceJson.put("permissions", permArray);
+            		JSONArray userArray = new JSONArray();
+            		for (Users u: users) {
+            			JSONObject userJson = userToJson(u);
+            			
+            			Permissions p = findPermissionsInList(u.getId(), devicePermissionsList);
+            			userJson.put("permissionRead", p != null ? p.isPermissionRead() : false);
+            			userJson.put("permissionWrite", p != null ? p.isPermissionWrite() : false);
+            			userJson.put("entityId", d.getId());
+            			
+            			userArray.put(userJson);
             		}
+            		deviceJson.put("userPermissions", userArray);
             		
             		devicesArray.put(deviceJson);
         		}
         		
-        		resp.put("devices", devicesArray);
+        		resp.put("entities", devicesArray);
         		
         		response.setStatus(HttpServletResponse.SC_OK);
         		resp.put("response", RequestUtils.OK);
@@ -347,43 +341,35 @@ public class UserController {
         		
         		JSONArray campaignsArray = new JSONArray();
         		
-        		Map<Integer, JSONArray> campaignPermissions = new HashMap<>();
         		for (AdCampaigns c: campaigns) {
         			JSONObject campaignJson = new JSONObject();
-        			campaignJson.put("campaignId", c.getId());
+        			campaignJson.put("entityId", c.getId());
         			campaignJson.put("name", c.getName());
+        			
+        			List<Permissions> campaignPermissionsList = new ArrayList<>();
         			for (UsersCampaignsPermissions p : permissions) {
         				if (p.getCampaignId() == c.getId()) {
-        					JSONArray array = campaignPermissions.get(c.getId());
-        					if (array == null) {
-        						array = new JSONArray();
-        						campaignPermissions.put(c.getId(), array);
-        					}
-        					
-        					JSONObject permJson = new JSONObject();
-        					permJson.put("permissionRead", p.isPermissionRead());
-        					permJson.put("permissionWrite", p.isPermissionWrite());
-        					permJson.put("campaignId", p.getCampaignId());
-        					permJson.put("userId", p.getUserId());
-        					
-        					Users u = findUserInList(p.getUserId(), users);
-        					if (u != null) {
-        						permJson.put("user", userToJson(u));
-        					}
-        					
-        					array.put(permJson);
+        					campaignPermissionsList.add(p);
         				}
         			}
-        			
-        			JSONArray permArray = campaignPermissions.get(c.getId());
-            		if (permArray != null) {
-            			campaignJson.put("permissions", permArray);
+            		
+            		JSONArray userArray = new JSONArray();
+            		for (Users u: users) {
+            			JSONObject userJson = userToJson(u);
+            			
+            			Permissions p = findPermissionsInList(u.getId(), campaignPermissionsList);
+            			userJson.put("permissionRead", p != null ? p.isPermissionRead() : false);
+            			userJson.put("permissionWrite", p != null ? p.isPermissionWrite() : false);
+            			userJson.put("entityId", c.getId());
+            			
+            			userArray.put(userJson);
             		}
+            		campaignJson.put("userPermissions", userArray);
             		
             		campaignsArray.put(campaignJson);
         		}
         		
-        		resp.put("campaigns", campaignsArray);
+        		resp.put("entities", campaignsArray);
         		
         		response.setStatus(HttpServletResponse.SC_OK);
         		resp.put("response", RequestUtils.OK);
@@ -397,6 +383,16 @@ public class UserController {
     	for (Users u: users) {
     		if (u.getId() == userId) {
     			return u;
+    		}
+    	}
+    	
+    	return null;
+    }
+    
+    private Permissions findPermissionsInList(int userId, List<Permissions> permissions) {
+    	for (Permissions p: permissions) {
+    		if (p.getUserId() == userId) {
+    			return p;
     		}
     	}
     	

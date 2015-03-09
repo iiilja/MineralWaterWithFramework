@@ -62,6 +62,57 @@ angular.module('promobox.services').controller('SettingCampaignController', func
 angular.module('promobox.services').controller('SettingDeviceController', function($scope, $rootScope, facade) {
         $rootScope.left_menu_active = 'setting_device';
         $rootScope.showSettings = true;
+
+        var $filter = facade.getFilter();
+
+        var entity = null;
+        $scope.deviceSettings = true;
+        if ($scope.deviceSettings) {
+            entity = facade.getDevices();
+        } else {
+            entity = facade.getCampaigns();
+        }
+
+        entity.listPermissions({
+            token: facade.getToken().get()
+            }, function(response) {
+                $scope.entities = response.entities;
+            });
+
+        var openPermissionsDialog = function(userPermissions, editMode) {
+            var modalInstanse = facade.getModal().open({
+                templateUrl: '/views/modal/permissions.html',
+                controller: 'ModalPermissionsController',
+                resolve: {
+                    facade: function() {
+                        return facade;
+                    },
+                    model: function() {
+                        return { 
+                            userPermissions: userPermissions,
+                            entity: entity,
+                            editMode: editMode
+                        }
+                    }
+                }
+            });
+        }
+
+        $scope.openAddPermission = function(userPermissions) {
+            openPermissionsDialog(userPermissions, false);
+        }
+
+        $scope.deletePermission = function(permission) {
+            entity.deletePermissions({
+                token: facade.getToken().get(),
+                userId: permission.id,
+                entityId: permission.entityId
+            }, function(response) {
+                permission.permissionWrite = false;
+                permission.permissionRead = false;
+            });
+        }
+
     });
 
 angular.module('promobox.services').controller('SettingPaymentController', function($scope, $rootScope, facade) {
@@ -133,6 +184,34 @@ angular.module('promobox.services').controller('SettingUserController', function
         }
     });
 
+
+angular.module('promobox.services').controller('ModalPermissionsController', function ($scope, $modalInstance, facade, model) {
+    var $filter = facade.getFilter();
+
+    $scope.userPermissions = model.userPermissions;
+    $scope.editMode = model.editMode;
+
+    $scope.selectPermission = function(permission) {
+        $scope.selectedPermission = permission;
+    }
+    $scope.savePermission = function() {
+        entity.updatePermissions({
+            token: facade.getToken().get(),
+            userId: $scope.selectedPermission.id,
+            entityId: $scope.selectedPermission.entityId,
+            permissionRead: $scope.selectedPermission.permissionRead,
+            permissionWrite: $scope.selectedPermission.permissionWrite 
+        }, function(response){
+
+        });
+    }
+
+
+    $scope.cancel = function() {
+        $modalInstance.dismiss('cancel');
+    };
+});
+
 angular.module('promobox.services').controller('ModalUserController', function ($scope, $modalInstance, facade, model) {
         var $filter = facade.getFilter();
 
@@ -150,7 +229,7 @@ angular.module('promobox.services').controller('ModalUserController', function (
         }
         $scope.editMode = model.editMode;
 
-        $scope.cancel = function () {
+        $scope.cancel = function() {
             $modalInstance.dismiss('cancel');
         };
 

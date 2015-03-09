@@ -76,7 +76,6 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
     private LocalBroadcastManager bManager;
 
     private MainService mainService;
-    private int position;
     private Campaign campaign;
 
     private CampaignFile nextSpecificFile = null;
@@ -166,7 +165,6 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
 //        udpMessenger = new UDPMessenger(getBaseContext(), messageHandler, "Lala", 47654) ;
 //        udpMessenger.startMessageReceiver();
         jGroupsMessenger = new JGroupsMessenger(messageHandler);
-        jGroupsMessenger.start(getBaseContext());
     }
 
     private void startNextFile() {
@@ -182,10 +180,10 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
 
         int delay = campaign != null ? campaign.getDelay() : 0;
         if (data != null){
-            data.putInt("delay",delay*100);
+            data.putInt("delay",delay* 1000);
         } else if (!fragment.equals(currentFragment) ){
             data = new Bundle();
-            data.putInt("delay",delay * 100);
+            data.putInt("delay",delay * 1000);
             fragment.setArguments(data);
         }
 
@@ -326,6 +324,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
                 if ( mainService.isVideoWall() ){
                     imageFragment = new FragmentWallImage();
                     videoWall = true;
+                    jGroupsMessenger.start(getBaseContext());
                 }
                 campaignWasUpdated(TAG + " mConnection");
             }
@@ -387,7 +386,6 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
         Log.d(tag, "CAMPAIGN_UPDATE to " + (campaign != null ? campaign.getCampaignName() : "NONE"));
         StatusEnum statusEnum = campaign != null ? StatusEnum.NO_ACTIVE_CAMPAIGN : null;
         mainFragment.updateStatus(statusEnum, campaign != null ? campaign.getCampaignName() : NO_ACTIVE_CAMPAIGN);
-        position = 0;
         startNextFile();
     }
 
@@ -420,16 +418,13 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
         if (campaign != null && nextSpecificFile == null &&
                 campaign.getFiles() != null && campaign.getFiles().size() > 0) {
 
-            if (position == campaign.getFiles().size()) {
-                position = 0;
-                Log.i(TAG, "Starting from position 0");
-            }
 
             if (campaign.getFiles().size() == 1) {
                 campaign.setDelay(60 * 60 * 12);
             }
 
-            campaignFile = campaign.getFiles().get(position);
+            campaignFile = campaign.getNextFile();
+            Log.d(TAG, "getNextFile() filename = " + campaignFile.getName());
 
         } else if (nextSpecificFile != null) {
             campaignFile = nextSpecificFile;
@@ -451,7 +446,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
         boolean fileTypeOK = fileTypeNeeded != null && fileTypeNeeded.equals(fileType);
         if (fileTypeOK && !playingSpecificFile){
             setCurrentFileId(campaignFile.getId());
-            position ++;
+            campaign.setNextFilePosition();
         } else if ( fileTypeNeeded != null && !fileTypeNeeded.equals(fileType)){
             Log.d(TAG, " file type not as needed");
             campaignFile = null;
@@ -489,13 +484,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
     }
 
     public void setPreviousFilePosition(){
-        position = position - 2;
-        if (position < 0 && campaign != null && campaign.getFiles() != null) {
-            position = campaign.getFiles().size() + position;
-            if (position < 0) {
-                position = 0;
-            }
-        }
+        if (campaign != null) campaign.setPreviousFilePosition();
     }
 
     private void setCurrentFileId(int currentFileId) {

@@ -21,6 +21,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -28,6 +29,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import ee.promobox.promoboxandroid.data.Campaign;
 import ee.promobox.promoboxandroid.data.CampaignList;
+import ee.promobox.promoboxandroid.data.CampaignMultiple;
 import ee.promobox.promoboxandroid.data.DisplayArrayList;
 import ee.promobox.promoboxandroid.data.ErrorMessage;
 import ee.promobox.promoboxandroid.data.ErrorMessageArray;
@@ -154,23 +156,22 @@ public class MainService extends Service {
                     return;
                 }
             }
-
-            Campaign campaignToSetCurrent = null;
-            int counter = 0;
+            ArrayList<Campaign> campaignsToSetCurrent = new ArrayList<>();
             for(Campaign camp: getCampaigns()) {
                 // Current date between start and end dates of currentCampaign.
                 if(camp.hasToBePlayed(getCurrentDate())) {
                     Log.d(TAG, "Date bounds for currentCampaign: " + camp.getCampaignName());
-                    campaignToSetCurrent  = camp;
-                    counter ++;
+                    campaignsToSetCurrent.add(camp);
                 }
             }
-            if( counter == 1){
-                setCurrentCampaign(campaignToSetCurrent);
+            if( campaignsToSetCurrent.size() == 1){
+                setCurrentCampaign(campaignsToSetCurrent.get(0));
                 return;
-            } else if (counter > 1){
-                Log.e(TAG, " More than one current campaign");
+            } else if ( campaignsToSetCurrent.size() > 1){
+                Log.w(TAG, " More than one current campaign");
+                setCurrentCampaign(new CampaignMultiple(campaignsToSetCurrent));
                 bManager.sendBroadcast(new ToastIntent(" Two campaigns in time"));
+                return;
             }
             setCurrentCampaign(null);
         }

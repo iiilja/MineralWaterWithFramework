@@ -17,7 +17,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Entity
 @Table(name = "users_devices_permissions")
 @XmlRootElement
-public class UsersCampaignsPermissions implements Serializable {
+public class UsersCampaignsPermissions implements Serializable, Permissions {
 	
 	private static final long serialVersionUID = 1L;
     @Id

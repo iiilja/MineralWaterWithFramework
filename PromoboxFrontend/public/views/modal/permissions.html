@@ -7,9 +7,10 @@
 <div class="modal-body">
     <div class="add-company-list mCustomScrollbar">
         <ul class="btn-group">
-            <li ng-repeat="user in users  | filter: { active: true }" ng-click="selectUser(user)">
-                <label  class="btn btn-primary active">
-                    {{user.firstname}} {{user.surname}}
+            <li ng-repeat="permission in userPermissions" ng-click="selectPermission(permission)">
+                <label  class="btn btn-primary"
+                	ng-class="selectedPermission.id == permission.id ? 'active' : ''">
+                    {{permission.firstname}} {{permission.surname}}
                     <span class="glyphicon glyphicon-ok"></span>
                 </label>
             </li>
@@ -19,20 +20,20 @@
 
 		<div class="checkbox">
 			<label>
-				<input type="checkbox"> Чтение
+				<input type="checkbox" ng-model="selectedPermission.permissionRead" ng-click="savePermission()"> Чтение
 			</label>
 		</div>
 
 		<div class="checkbox">
 			<label>
-				<input type="checkbox"> Запись
+				<input type="checkbox" ng-model="selectedPermission.permissionWrite" ng-click="savePermission()"> Запись
 			</label>
 		</div>
     </div>
 </div>
 
 <div class="modal-footer">
-	<button type="button" class="btn btn-success" ng-hide="editMode">Добавить</button>
-	<button type="button" class="btn btn-success" ng-ырщц="editMode">Изменить</button>
-	<button type="button" class="btn btn-default" data-dismiss="modal">Отмена</button>
+	<button type="button" class="btn btn-success" ng-hide="editMode" ng-click="cancel()">Добавить</button>
+	<button type="button" class="btn btn-success" ng-show="editMode" ng-click="cancel()">Изменить</button>
+	<button type="button" class="btn btn-default" ng-click="cancel()">Отмена</button>
 </div>

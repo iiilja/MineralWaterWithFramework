@@ -20,13 +20,13 @@
 
 		<div class="checkbox">
 			<label>
-				<input type="checkbox" ng-model="selectedPermission.permissionRead" ng-click="savePermission()"> {{ 'modal_read' | translate }}
+				<input type="checkbox" ng-model="selectedPermission.permissionRead" ng-change="savePermission()"> {{ 'modal_read' | translate }}
 			</label>
 		</div>
 
 		<div class="checkbox">
 			<label>
-				<input type="checkbox" ng-model="selectedPermission.permissionWrite" ng-click="savePermission()"> {{ 'modal_record' | translate }}
+				<input type="checkbox" ng-model="selectedPermission.permissionWrite" ng-change="savePermission()"> {{ 'modal_record' | translate }}
 			</label>
 		</div>
     </div>

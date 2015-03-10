@@ -1,13 +1,13 @@
 <section class="content-wrap">
-	<h2 class="section-title" ng-show="deviceSettings">{{ 'devices_title' | translate }}</h2>
-	<h2 class="section-title" ng-hide="deviceSettings">{{ 'campaigns_title' | translate }}</h2>
+	<h2 class="section-title" ng-show="deviceSettings">Настройки доступа к устройствам</h2>
+	<h2 class="section-title" ng-hide="deviceSettings">Настройки доступа к кампаниям</h2>
 
 	<div class="setting-row" ng-repeat="entity in entities">
 		<div class="setting-header clearfix">
 			<h3 class="pull-left" ng-show="deviceSettings">Устройство {{entity.name}}</h3>
 			<h3 class="pull-left" ng-hide="deviceSettings">Кампания {{entity.name}}</h3>
 			<button type="button" class="btn btn-success pull-right"
-				ng-click="openAddPermission(entity.userPermissions)">{{ 'device_add' | translate }}</button>
+				ng-click="openAddPermission(entity.userPermissions)">Добавить</button>
 		</div>
 
 		<div class="setting-body row">
@@ -16,8 +16,8 @@
 				ng-show="permission.permissionRead || permission.permissionWrite">
 				<h4> 
 					{{permission.firstname}} {{permission.surname}} 
-					<a class="edit" href="#"><i class="glyphicon glyphicon-pencil"></i></a>
-					<a class="delete" href="#"><i class="glyphicon glyphicon-remove" ng-click="deletePermission(permission)"></i></a>
+					<a class="edit" ng-click="openEditPermission(entity.userPermissions, permission)"><i class="glyphicon glyphicon-pencil"></i></a>
+					<a class="delete" ng-click="deletePermission(permission)"><i class="glyphicon glyphicon-remove"></i></a>
 				</h4>
 			</div>
 		</div>

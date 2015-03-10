@@ -553,8 +553,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public UsersDevicesPermissions findUsersDevicesPermissions(int userId,
-			int deviceId) {
+	public UsersDevicesPermissions findUsersDevicesPermissions(int userId, int deviceId) {
 		Session session = sessionFactory.getCurrentSession();
 
     	Query q = session.createQuery("FROM UsersDevicesPermissions WHERE deviceId = :deviceId AND userId = :userId");

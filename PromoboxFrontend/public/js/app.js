@@ -48,7 +48,7 @@ app.config(['$routeProvider','$stateProvider','$urlRouterProvider', function ($r
         })
         .state('setting_campaign', {
             url: "/setting/campaign",
-            views: adminView('SettingCampaignController', '/views/settings/campaigns.html')
+            views: adminView('SettingDeviceController', '/views/settings/devices.html')
         })
         .state('setting_device', {
             url: "/setting/device",

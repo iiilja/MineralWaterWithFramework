@@ -35,8 +35,10 @@ public interface UserService {
     public Clients findClientById(int clientId);
 
     public List<AdCampaigns> findUserAdCompaigns(int clientId);
+    public List<AdCampaigns> findUserAdCompaigns(int clientId, int userId);
 
     public List<Devices> findUserDevieces(int clientId);
+    public List<Devices> findUserDevieces(int clientId, int userId);
     
     public List<Devices> findDevicesByCampaing(int campaignId);
 

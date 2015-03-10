@@ -87,6 +87,12 @@ public class CampaignsController {
                 resp.put("countVideos", campaign.getCountVideos());
                 resp.put("audioLength", campaign.getAudioLength());
                 resp.put("videoLength", campaign.getVideoLength());
+                
+                if (session.isAdmin()) {
+                	resp.put("permissionWrite", true);
+                } else {
+                	resp.put("permissionWrite", checkWritePermission(session, campaign.getId()));
+                }
 
                 try {
                     JSONObject workTimeData = new JSONObject(campaign.getWorkTimeData());

@@ -111,10 +111,11 @@ public class UserServiceImpl implements UserService {
     public List<AdCampaigns> findUserAdCompaigns(int clientId, int userId) {
         Session session = sessionFactory.getCurrentSession();
 
-        Query q = session.createQuery("from AdCampaigns c where c.clientId = :clientId AND c.status > 0 AND c.status < 4 "
-        		+ " EXISTS (SELECT 1 FROM UsersCampaignsPermissions p WHERE p.campaignId = c.id AND p.userId = :userId) "
+        Query q = session.createQuery("from AdCampaigns c where c.clientId = :clientId AND c.status > 0 AND c.status < 4 AND "
+        		+ " EXISTS (SELECT 1 FROM UsersCampaignsPermissions p WHERE p.campaignId = c.id AND p.userId = :userId AND p.permissionRead IS TRUE) "
         		+ " ORDER BY c.createdDate DESC, c.id DESC");
         q.setParameter("clientId", clientId);
+        q.setParameter("userId", userId);
 
         return q.list();
     }
@@ -132,8 +133,8 @@ public class UserServiceImpl implements UserService {
     public List<Devices> findUserDevieces(int clientId, int userId) {
         Session session = sessionFactory.getCurrentSession();
 
-        Query q = session.createQuery("from Devices d where d.clientId = :clientId AND d.status < 4 "
-        		+ " EXISTS (SELECT 1 FROM UsersDevicesPermissions p WHERE p.deviceId = d.id AND p.userId = :userId) "
+        Query q = session.createQuery("from Devices d where d.clientId = :clientId AND d.status < 4 AND "
+        		+ " d.id IN (SELECT p.deviceId FROM UsersDevicesPermissions p WHERE p.userId = :userId AND p.permissionRead IS TRUE) "
         		+ " ORDER BY d.createdDt DESC, d.id DESC");
         q.setParameter("clientId", clientId);
         q.setParameter("userId", userId);

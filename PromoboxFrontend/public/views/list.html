@@ -3,7 +3,8 @@
         <strong>{{ 'list_empty' | translate }}!</strong> {{ 'list_createnewcampaign' | translate }}.
     </div>
 
-    <button ui-sref="campaign_new" type="button" class="new-company-btn btn btn-primary">{{ 'list_newcampaign' | translate }}</button>
+    <button ui-sref="campaign_new" 
+        ng-show="$root.admin"type="button" class="new-company-btn btn btn-primary">{{ 'list_newcampaign' | translate }}</button>
 </div>
 
 
@@ -18,7 +19,7 @@
             <a class="campaigns_link" data-toggle="modal" data-target=".stat" style="margin-right: 15px;"
                ng-click="show_statistics(campaign)"><i class="glyphicon glyphicon-signal"></i> {{ 'list_statistics' | translate }}</a>
             <a class="campaigns_link" href="/#/campaign/edit/{{campaign.id}}" style="margin-right: 15px;"><i class="glyphicon glyphicon-pencil"></i> {{ 'list_change' | translate }}</a>
-            <a class="campaigns_link" href="#"><i class="glyphicon glyphicon-remove"></i> Удалить</a>
+            <!--<a class="campaigns_link" href="#"><i class="glyphicon glyphicon-remove"></i> Удалить</a>-->
         </span>
     </div>
 </div>

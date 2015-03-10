@@ -151,7 +151,9 @@ app.controller('Exit', ['token',
 app.controller('LeftMenuController', ['$scope', '$location', '$http', 'token', 'Clients', '$rootScope', '$translate',
     function ($scope, $location, $http, token, Clients, $rootScope, $translate) {
         Clients.getClient({token: token.get()}, function(response) {
-            $scope.admin =response.admin;
+            console.log("admin: " + response.admin);
+            $scope.admin = response.admin;
+            $rootScope.admin = response.admin;
         });
     }]);
 

@@ -19,9 +19,7 @@ import ee.promobox.util.RequestUtils;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
@@ -175,7 +173,7 @@ public class UserController {
         		user.setClientId(clientId);
         		user.setCreatedDt(new Date());
         		user.setActive(false);
-        		user.setAdmin(true);
+        		user.setAdmin(false);
         		userService.addUser(user);
         		
     			resp.put("user", userToJson(user));

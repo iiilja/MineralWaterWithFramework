@@ -292,6 +292,8 @@ public class DevicesController {
             	devices = userService.findUserDevieces(clientId);
             } else {
             	devices = userService.findUserDevieces(clientId, session.getUserId());
+            	
+            	log.info("Devices size: " + devices.size());
             }
 
             if (!devices.isEmpty()) {
@@ -320,6 +322,12 @@ public class DevicesController {
                     jsonD.put("audioOut", d.getAudioOut());
                     jsonD.put("lastRequestDt", d.getLastDeviceRequestDt().getTime());
                     jsonD.put("onTop", d.isOnTop());
+                    
+                    if (session.isAdmin()) {
+                    	jsonD.put("permissionWrite", true);
+                    } else {
+                    	jsonD.put("permissionWrite", checkWritePermission(session, d.getId()));
+                    }
 
                     if (d.getCurrentCampaignId() != null) {
                         AdCampaigns campaign = userService.findCampaignByIdAndClientId(d.getCurrentCampaignId(), session.getClientId());

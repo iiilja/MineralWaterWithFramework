@@ -1,13 +1,13 @@
 <section class="content-wrap">
-	<h2 class="section-title" ng-show="deviceSettings">Настройки доступа к устройствам</h2>
-	<h2 class="section-title" ng-hide="deviceSettings">Настройки доступа к кампаниям</h2>
+	<h2 class="section-title" ng-show="deviceSettings">{{ 'devices_title' | translate }}</h2>
+	<h2 class="section-title" ng-hide="deviceSettings">{{ 'campaigns_title' | translate }}</h2>
 
 	<div class="setting-row" ng-repeat="entity in entities">
 		<div class="setting-header clearfix">
 			<h3 class="pull-left" ng-show="deviceSettings">Устройство {{entity.name}}</h3>
 			<h3 class="pull-left" ng-hide="deviceSettings">Кампания {{entity.name}}</h3>
 			<button type="button" class="btn btn-success pull-right"
-				ng-click="openAddPermission(entity.userPermissions)">Добавить</button>
+				ng-click="openAddPermission(entity.userPermissions)">{{ 'device_add' | translate }}</button>
 		</div>
 
 		<div class="setting-body row">

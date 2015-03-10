@@ -1,7 +1,7 @@
 <div class="modal-header">
 	<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-	<h4 class="modal-title" id="myModalLabel" ng-hide="editMode">Добавить пользователя</h4>
-	<h4 class="modal-title" id="myModalLabel" ng-show="editMode">Изменить пользователя</h4>
+	<h4 class="modal-title" id="myModalLabel" ng-hide="editMode">{{ 'modal_user_add_user' | translate }}</h4>
+	<h4 class="modal-title" id="myModalLabel" ng-show="editMode">{{ 'modal_user_change_user' | translate }}</h4>
 </div>
 
 <div class="modal-body">
@@ -20,20 +20,20 @@
 
 		<div class="checkbox">
 			<label>
-				<input type="checkbox" ng-model="selectedPermission.permissionRead" ng-click="savePermission()"> Чтение
+				<input type="checkbox" ng-model="selectedPermission.permissionRead" ng-click="savePermission()"> {{ 'modal_read' | translate }}
 			</label>
 		</div>
 
 		<div class="checkbox">
 			<label>
-				<input type="checkbox" ng-model="selectedPermission.permissionWrite" ng-click="savePermission()"> Запись
+				<input type="checkbox" ng-model="selectedPermission.permissionWrite" ng-click="savePermission()"> {{ 'modal_record' | translate }}
 			</label>
 		</div>
     </div>
 </div>
 
 <div class="modal-footer">
-	<button type="button" class="btn btn-success" ng-hide="editMode" ng-click="cancel()">Добавить</button>
-	<button type="button" class="btn btn-success" ng-show="editMode" ng-click="cancel()">Изменить</button>
-	<button type="button" class="btn btn-default" ng-click="cancel()">Отмена</button>
+	<button type="button" class="btn btn-success" ng-hide="editMode" ng-click="cancel()">{{ 'modal_add' | translate }}</button>
+	<button type="button" class="btn btn-success" ng-show="editMode" ng-click="cancel()">{{ 'modal_change' | translate }}</button>
+	<button type="button" class="btn btn-default" ng-click="cancel()">{{ 'modal_cancel' | translate }}</button>
 </div>

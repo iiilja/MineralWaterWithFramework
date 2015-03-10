@@ -1,52 +1,52 @@
 <section class="content-wrap">
-	<h2 class="section-title">Редактировать аккаунт</h2>
+	<h2 class="section-title">{{ 'account_title' | translate }}</h2>
 
 	<form class="form-horizontal form-styler">
 
 		<div class="form-group">
-			<label for="input-name" class="col-sm-3 control-label">{{ 'settings_account_name' | translate }}</label>
+			<label for="input-name" class="col-sm-3 control-label">{{ 'form_name' | translate }}</label>
 			<div class="col-sm-9">
-				<input type="text" class="form-control" id="input-name" placeholder="Введите Имя" ng-model="firstname">
+				<input type="text" class="form-control" id="input-name" placeholder="{{ 'form_name_placeholder' | translate }}" ng-model="firstname">
 			</div>
 		</div>
 
 		<div class="form-group">
-			<label for="input-name" class="col-sm-3 control-label">Фамилия</label>
+			<label for="input-name" class="col-sm-3 control-label">{{ 'form_last_name' | translate }}</label>
 			<div class="col-sm-9">
-				<input type="text" class="form-control" id="input-surname" placeholder="Введите фамилию" ng-model="surname">
+				<input type="text" class="form-control" id="input-surname" placeholder="{{ 'form_last_name_placeholder' | translate }}" ng-model="surname">
 			</div>
 		</div>
 
 		<div class="form-group" ng-show="admin">
-			<label for="input-company" class="col-sm-3 control-label">Фирма</label>
+			<label for="input-company" class="col-sm-3 control-label">{{ 'form_firm' | translate }</label>
 			<div class="col-sm-9">
-				<input type="text" class="form-control" id="input-company" placeholder="Введите название фирмы" ng-model="compName">
+				<input type="text" class="form-control" id="input-company" placeholder="{{ 'form_firm_placeholder' | translate }" ng-model="compName">
 			</div>
 		</div>
 
 		<div class="form-group">
-			<label for="inputEmail" class="col-sm-3 control-label">Email</label>
+			<label for="inputEmail" class="col-sm-3 control-label">{{ 'form_email' | translate }</label>
 			<div class="col-sm-9">
-				<input type="email" class="form-control" id="inputEmail" placeholder="Введите Email" ng-model="email">
+				<input type="email" class="form-control" id="inputEmail" placeholder="{{ 'form_email_placeholder' | translate }" ng-model="email">
 			</div>
 		</div>
 
 		<div class="form-group">
-			<label for="inputPassword" class="col-sm-3 control-label">Новый пароль</label>
+			<label for="inputPassword" class="col-sm-3 control-label">{{ 'form_new_password' | translate }</label>
 			<div class="col-sm-9">
-				<input type="password" class="form-control" id="inputPassword" placeholder="Введите пароль" ng-model="password">
+				<input type="password" class="form-control" id="inputPassword" placeholder="{{ 'form_new_password_placeholder' | translate }" ng-model="password">
 			</div>
 		</div>
 
 		<div class="form-group">
-			<label for="inputPassword" class="col-sm-3 control-label">Пароль еще раз</label>
+			<label for="inputPassword" class="col-sm-3 control-label">{{ 'form_repeat_password' | translate }</label>
 			<div class="col-sm-9">
-				<input type="password" class="form-control" id="inputPassword" placeholder="Введи пароль еще раз" ng-model="passwordRepeat">
+				<input type="password" class="form-control" id="inputPassword" placeholder="{{ 'form_repeat_password_placeholder' | translate }" ng-model="passwordRepeat">
 			</div>
 		</div>
 
 	  <div class="form-group">
-		  <button type="submit" class="btn btn-primary" ng-click="save()">Сохранить</button>
+		  <button type="submit" class="btn btn-primary" ng-click="save()">{{ 'form_save' | translate }</button>
 	  </div>
 	</form>
 </section>

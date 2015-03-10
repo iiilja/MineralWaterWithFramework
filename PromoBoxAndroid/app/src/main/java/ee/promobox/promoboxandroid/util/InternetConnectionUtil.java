@@ -35,7 +35,7 @@ public class InternetConnectionUtil {
         try {
             InetAddress ipAddress = InetAddress.getByName("www.google.com");
 
-            if (ipAddress != null && ipAddress.toString().equals("")) {
+            if (ipAddress == null || ipAddress.toString().equals("")) {
                 result = false;
             }
 

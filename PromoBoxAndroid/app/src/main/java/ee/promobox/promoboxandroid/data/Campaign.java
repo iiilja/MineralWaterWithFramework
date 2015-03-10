@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by MaximDorofeev on 12.07.2014.
@@ -23,23 +24,24 @@ public class Campaign {
 
     private int clientId;
     private int campaignId;
-    private int updateId;
     private String campaignName;
     private long updateDate;
 
     private Date startDate;
     private Date endDate;
-    private int delay;
-    private int sequence;
+    protected int delay;
+    protected int order;
+
+    protected int position;
 
     private String ROOT = "";
 
-    private ArrayList<Integer> days = new ArrayList<Integer>();
-    private ArrayList<Integer> hours = new ArrayList<Integer>();
+    private ArrayList<Integer> days = new ArrayList<>();
+    private ArrayList<Integer> hours = new ArrayList<>();
 
     private final String[] serverDaysOfWeek = {"su","mo","tu","we","th","fr","sa"};
 
-    private List<CampaignFile> files = new ArrayList<CampaignFile>();
+    protected List<CampaignFile> files = new ArrayList<>();
 
     public Campaign() {
 
@@ -49,14 +51,14 @@ public class Campaign {
         try {
             this.ROOT  = ROOT;
 
-            setClientId(json.getInt("clientId"));
-            setCampaignId(json.getInt("campaignId"));
-            setCampaignName(json.getString("campaignName"));
-            setUpdateDate(json.getLong("updateDate"));
-            setDelay(json.getInt("duration"));
-            setSequence(json.getInt("sequence"));
-            setStartDate(new Date(json.getLong("startDate")));
-            setEndDate(new Date(json.getLong("endDate")));
+            clientId = json.getInt("clientId");
+            campaignId = json.getInt("campaignId");
+            campaignName = json.getString("campaignName");
+            updateDate = json.getLong("updateDate");
+            delay = json.getInt("duration");
+            order = json.getInt("sequence");
+            startDate = new Date(json.getLong("startDate"));
+            endDate = new Date(json.getLong("endDate"));
             setDays(json.getJSONArray("days"));
             setHours(json.getJSONArray("hours"));
 
@@ -81,7 +83,7 @@ public class Campaign {
 
             Collections.shuffle(files);
 
-            if (getSequence() == ORDER_ASC) {
+            if (order == ORDER_ASC) {
                 Collections.sort(files);
             }
 
@@ -96,60 +98,16 @@ public class Campaign {
         return new File(ROOT + "/" + campaignId + "/");
     }
 
-    public int getClientId() {
-        return clientId;
-    }
-
-    public void setClientId(int clientId) {
-        this.clientId = clientId;
-    }
-
     public int getCampaignId() {
         return campaignId;
-    }
-
-    public void setCampaignId(int campaignId) {
-        this.campaignId = campaignId;
-    }
-
-    public int getUpdateId() {
-        return updateId;
-    }
-
-    public void setUpdateId(int updateId) {
-        this.updateId = updateId;
     }
 
     public String getCampaignName() {
         return campaignName;
     }
 
-    public void setCampaignName(String campaignName) {
-        this.campaignName = campaignName;
-    }
-
     public List<CampaignFile> getFiles() {
         return files;
-    }
-
-    public void setFiles(List<CampaignFile> files) {
-        this.files = files;
-    }
-
-    public Date getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
-    }
-
-    public Date getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
     }
 
     public int getDelay() {
@@ -164,25 +122,13 @@ public class Campaign {
         return updateDate;
     }
 
-    public void setUpdateDate(long updateDate) {
-        this.updateDate = updateDate;
-    }
-
-    public int getSequence() {
-        return sequence;
-    }
-
-    public void setSequence(int sequence) {
-        this.sequence = sequence;
-    }
-
-    public void setHours(JSONArray hoursJSON) throws JSONException {
+    private void setHours(JSONArray hoursJSON) throws JSONException {
         for (int i = 0; i < hoursJSON.length(); i++){
             hours.add(hoursJSON.getInt(i));
         }
     }
 
-    public void setDays(JSONArray daysJSON) throws Exception {
+    private void setDays(JSONArray daysJSON) throws Exception {
         for (int i = 0; i < daysJSON.length(); i++){
             days.add(getCalendarDayOfWeek(daysJSON.getString(i)));
         }
@@ -191,7 +137,7 @@ public class Campaign {
     public boolean hasToBePlayed(Date currentDate){
         Calendar cal = Calendar.getInstance();
         cal.setTime(currentDate);
-        if(currentDate.after(getStartDate()) && currentDate.before(getEndDate())) {
+        if(currentDate.after(startDate) && currentDate.before(endDate)) {
             Integer dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
             Integer hourOfDay = cal.get(Calendar.HOUR_OF_DAY);
 //            Log.d("Campaign","Between dates");
@@ -249,4 +195,38 @@ public class Campaign {
         }
         return 0;
     }
+
+    public CampaignFile getNextFile(){
+        if (files == null || files.size() == 0 ) return null;
+        return files.get(position);
+    }
+
+    public void setNextFilePosition(){
+        if (files.size() == 0){
+            position = 0;
+            return;
+        }
+        position ++;
+        if (position >= files.size() ) {
+            position = 0;
+            if (order == ORDER_RANDOM){
+                Collections.shuffle(files);
+            }
+        }
+    }
+
+    public void setPreviousFilePosition(){
+        if (files == null ){
+            position = 0;
+            return;
+        }
+        position = position - 2;
+        if (position < 0 ) {
+            position = files.size() + position;
+            if (position < 0) {
+                position = 0;
+            }
+        }
+    }
+
 }

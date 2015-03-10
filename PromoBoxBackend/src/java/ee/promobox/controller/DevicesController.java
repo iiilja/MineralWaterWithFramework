@@ -292,14 +292,10 @@ public class DevicesController {
             	devices = userService.findUserDevieces(clientId);
             } else {
             	devices = userService.findUserDevieces(clientId, session.getUserId());
-            	
-            	log.info("Devices size: " + devices.size());
             }
 
+            JSONArray devicesArray = new JSONArray();
             if (!devices.isEmpty()) {
-
-                JSONArray devicesArray = new JSONArray();
-
                 for (Devices d : devices) {
                     JSONObject jsonD = new JSONObject();
 
@@ -407,13 +403,13 @@ public class DevicesController {
 
                     devicesArray.put(jsonD);
                 }
-
-                resp.put("devices", devicesArray);
-
-                response.setStatus(HttpServletResponse.SC_OK);
-
-                RequestUtils.printResult(resp.toString(), response);
             }
+            
+            resp.put("devices", devicesArray);
+
+            response.setStatus(HttpServletResponse.SC_OK);
+
+            RequestUtils.printResult(resp.toString(), response);
         } else {
             RequestUtils.sendUnauthorized(response);
         }

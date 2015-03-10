@@ -138,9 +138,10 @@ public class CampaignsController {
             	campaigns = userService.findUserAdCompaigns(clientId, session.getUserId());
             }
 
+            JSONArray campaignsArray = new JSONArray();
             if (!campaigns.isEmpty()) {
                 // array for holding campaigns
-                JSONArray campaignsArray = new JSONArray();
+                
                 // iterate trough the list of campaigns that belong to the client
                 SimpleDateFormat hourFowmat = new SimpleDateFormat("H");
                 SimpleDateFormat dayOfWeekFormat = new SimpleDateFormat("EE");
@@ -181,13 +182,12 @@ public class CampaignsController {
 
                     campaignsArray.put(jsonCampaign);
                 }
-
-                // put array of campaigns into response
-                resp.put("campaigns", campaignsArray);
-
-                response.setStatus(HttpServletResponse.SC_OK);
-                RequestUtils.printResult(resp.toString(), response);
             }
+            
+            resp.put("campaigns", campaignsArray);
+            
+            response.setStatus(HttpServletResponse.SC_OK);
+            RequestUtils.printResult(resp.toString(), response);
         } else {
             RequestUtils.sendUnauthorized(response);
         }

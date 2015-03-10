@@ -1,10 +1,11 @@
 <div class="center-block campaigns-top-wrap">
     <div class="alert alert-info" role="alert" ng-show="campaigns.length == 0">
-        <strong>{{ 'list_empty' | translate }}!</strong> {{ 'list_createnewcampaign' | translate }}.
+        <strong>{{ 'list_empty' | translate }}!</strong> 
+        <span ng-show="$root.admin" >{{ 'list_createnewcampaign' | translate }}.</span>
     </div>
 
     <button ui-sref="campaign_new" 
-        ng-show="$root.admin"type="button" class="new-company-btn btn btn-primary">{{ 'list_newcampaign' | translate }}</button>
+        ng-show="$root.admin" type="button" class="new-company-btn btn btn-primary">{{ 'list_newcampaign' | translate }}</button>
 </div>
 
 

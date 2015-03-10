@@ -134,7 +134,7 @@ public class UserServiceImpl implements UserService {
         Session session = sessionFactory.getCurrentSession();
 
         Query q = session.createQuery("from Devices d where d.clientId = :clientId AND d.status < 4 AND "
-        		+ " d.id IN (SELECT p.deviceId FROM UsersDevicesPermissions p WHERE p.userId = :userId AND p.permissionRead IS TRUE) "
+        		+ " EXISTS (SELECT 1 FROM UsersDevicesPermissions p WHERE p.userId = :userId AND p.deviceId = d.id AND p.permissionRead IS TRUE) "
         		+ " ORDER BY d.createdDt DESC, d.id DESC");
         q.setParameter("clientId", clientId);
         q.setParameter("userId", userId);

@@ -48,11 +48,11 @@ app.config(['$routeProvider','$stateProvider','$urlRouterProvider', function ($r
         })
         .state('setting_campaign', {
             url: "/setting/campaign",
-            views: adminView('SettingDeviceController', '/views/settings/devices.html')
+            views: adminView('SettingCampaignController', '/views/settings/usersPermissions.html')
         })
         .state('setting_device', {
             url: "/setting/device",
-            views: adminView('SettingDeviceController', '/views/settings/devices.html')
+            views: adminView('SettingDeviceController', '/views/settings/usersPermissions.html')
         })
         .state('setting_payment', {
             url: "/setting/payment",

@@ -8,6 +8,8 @@ package ee.promobox.controller;
 import ee.promobox.entity.AdCampaigns;
 import ee.promobox.entity.CampaignsFiles;
 import ee.promobox.entity.Devices;
+import ee.promobox.entity.UsersCampaignsPermissions;
+import ee.promobox.entity.UsersDevicesPermissions;
 import ee.promobox.service.Session;
 import ee.promobox.service.SessionService;
 import ee.promobox.service.UserService;
@@ -64,7 +66,7 @@ public class CampaignsController {
         Session session = sessionService.findSession(token);
 
         // if session is not empty
-        if (session != null) {
+        if (session != null && checkReadPermission(session, campaignId)) {
             int clientId = session.getClientId();
             AdCampaigns campaign = userService.findCampaignByIdAndClientId(campaignId, clientId);
 
@@ -123,7 +125,12 @@ public class CampaignsController {
 
         if (session != null) {
             int clientId = session.getClientId();
-            List<AdCampaigns> campaigns = userService.findUserAdCompaigns(clientId);
+            List<AdCampaigns> campaigns = null;
+            if (session.isAdmin()) {
+            	campaigns = userService.findUserAdCompaigns(clientId);
+            } else {
+            	campaigns = userService.findUserAdCompaigns(clientId, session.getUserId());
+            }
 
             if (!campaigns.isEmpty()) {
                 // array for holding campaigns
@@ -192,7 +199,7 @@ public class CampaignsController {
 
         Session session = sessionService.findSession(token);
 
-        if (session != null) {
+        if (session != null && session.isAdmin()) {
 
             AdCampaigns campaign = new AdCampaigns();
             
@@ -267,7 +274,7 @@ public class CampaignsController {
 
         Session session = sessionService.findSession(token);
 
-        if (session != null) {
+        if (session != null && checkWritePermission(session, id)) {
         	List<Devices> devices =  userService.findDevicesByCampaing(id);
         	if (devices.isEmpty()) {
 
@@ -313,7 +320,7 @@ public class CampaignsController {
         Session session = sessionService.findSession(token);
 
         // if session exists
-        if (session != null) {
+        if (session != null && checkWritePermission(session, id)) {
 
             int clientId = session.getClientId();
             AdCampaigns campaign = userService.findCampaignByIdAndClientId(id, clientId);
@@ -377,7 +384,7 @@ public class CampaignsController {
     }
     
     @RequestMapping(value = "token/{token}/campaigns/{id}/nextFile/{file}", method = RequestMethod.PUT)
-    public void clearDeviceCache(
+    public void nextFile(
             @PathVariable("token") String token,
             @PathVariable("id") int id,
             @PathVariable("file") int fileId,
@@ -389,7 +396,7 @@ public class CampaignsController {
 
         Session session = sessionService.findSession(token);
 
-        if (session != null) {
+        if (session != null && checkWritePermission(session, id)) {
             int clientId = session.getClientId();
             
 
@@ -411,7 +418,26 @@ public class CampaignsController {
             RequestUtils.sendUnauthorized(response);
         }
     }
+    
+    private boolean checkReadPermission(Session session, int campaignId) {
+    	if (session.isAdmin()) {
+    		return true;
+    	}
+    	
+    	UsersCampaignsPermissions permission = userService.findUsersCampaignsPermissions(session.getUserId(), campaignId);
+    	
+    	return permission == null ? false : permission.isPermissionRead();
+    }
 
+    private boolean checkWritePermission(Session session, int campaignId) {
+    	if (session.isAdmin()) {
+    		return true;
+    	}
+    	
+    	UsersCampaignsPermissions permission = userService.findUsersCampaignsPermissions(session.getUserId(), campaignId);
+    	
+    	return permission == null ? false : permission.isPermissionWrite();
+    }
 
     @ExceptionHandler(Exception.class)
     public void handleAllException(Exception ex) {

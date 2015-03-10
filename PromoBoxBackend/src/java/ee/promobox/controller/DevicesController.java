@@ -12,20 +12,19 @@ import ee.promobox.entity.Devices;
 import ee.promobox.entity.DevicesCampaigns;
 import ee.promobox.entity.DevicesDisplays;
 import ee.promobox.entity.ErrorLog;
+import ee.promobox.entity.UsersDevicesPermissions;
 import ee.promobox.jms.MailDto;
 import ee.promobox.service.Session;
 import ee.promobox.service.SessionService;
 import ee.promobox.service.UserService;
 import ee.promobox.util.RequestUtils;
 
-import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.UUID;
 
 import javax.jms.Destination;
 import javax.servlet.http.HttpServletRequest;
@@ -288,7 +287,12 @@ public class DevicesController {
         if (session != null) {
             int clientId = session.getClientId();
 
-            List<Devices> devices = userService.findUserDevieces(clientId);
+            List<Devices> devices = null; 
+            if (session.isAdmin()) {
+            	devices = userService.findUserDevieces(clientId);
+            } else {
+            	devices = userService.findUserDevieces(clientId, session.getUserId());
+            }
 
             if (!devices.isEmpty()) {
 
@@ -420,7 +424,7 @@ public class DevicesController {
 
         Session session = sessionService.findSession(token);
 
-        if (session != null) {
+        if (session != null && checkWritePermission(session, id)) {
 
             Devices device = userService.findDeviceByIdAndClientId(id, session.getClientId());
 
@@ -451,7 +455,7 @@ public class DevicesController {
 
         Session session = sessionService.findSession(token);
 
-        if (session != null) {
+        if (session != null && checkWritePermission(session, id)) {
 
             Devices device = userService.findDeviceByIdAndClientId(id, session.getClientId());
 
@@ -484,7 +488,7 @@ public class DevicesController {
 
         Session session = sessionService.findSession(token);
 
-        if (session != null) {
+        if (session != null && checkWritePermission(session, id)) {
             int clientId = session.getClientId();
 
             Devices device = userService.findDeviceByIdAndClientId(id, clientId);
@@ -619,7 +623,7 @@ public class DevicesController {
 
         Session session = sessionService.findSession(token);
 
-        if (session != null) {
+        if (session != null  && checkWritePermission(session, id)) {
             int clientId = session.getClientId();
 
             Devices device = userService.findDeviceByIdAndClientId(id, clientId);
@@ -704,7 +708,7 @@ public class DevicesController {
 
         Session session = sessionService.findSession(token);
 
-        if (session != null) {
+        if (session != null && session.isAdmin()) {
 
             Devices device = new Devices();
 
@@ -763,6 +767,16 @@ public class DevicesController {
             RequestUtils.sendUnauthorized(response);
         }
 
+    }
+    
+    private boolean checkWritePermission(Session session, int deviceId) {
+    	if (session.isAdmin()) {
+    		return true;
+    	}
+    	
+    	UsersDevicesPermissions permission = userService.findUsersDevicesPermissions(session.getUserId(), deviceId);
+    	
+    	return permission == null ? false : permission.isPermissionWrite();
     }
 
     @ExceptionHandler(Exception.class)

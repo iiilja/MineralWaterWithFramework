@@ -107,12 +107,36 @@ public class UserServiceImpl implements UserService {
 
         return q.list();
     }
+    
+    public List<AdCampaigns> findUserAdCompaigns(int clientId, int userId) {
+        Session session = sessionFactory.getCurrentSession();
+
+        Query q = session.createQuery("from AdCampaigns c where c.clientId = :clientId AND c.status > 0 AND c.status < 4 "
+        		+ " EXISTS (SELECT 1 FROM UsersCampaignsPermissions p WHERE p.campaignId = c.id AND p.userId = :userId) "
+        		+ " ORDER BY c.createdDate DESC, c.id DESC");
+        q.setParameter("clientId", clientId);
+
+        return q.list();
+    }
 
     public List<Devices> findUserDevieces(int clientId) {
         Session session = sessionFactory.getCurrentSession();
 
-        Query q = session.createQuery("from Devices where clientId = :clientId AND status < 4 ORDER BY createdDt DESC, id DESC");
+        Query q = session.createQuery("from Devices where clientId = :clientId AND status < 4 "
+        		+ " ORDER BY createdDt DESC, id DESC");
         q.setParameter("clientId", clientId);
+
+        return q.list();
+    }
+    
+    public List<Devices> findUserDevieces(int clientId, int userId) {
+        Session session = sessionFactory.getCurrentSession();
+
+        Query q = session.createQuery("from Devices d where d.clientId = :clientId AND d.status < 4 "
+        		+ " EXISTS (SELECT 1 FROM UsersDevicesPermissions p WHERE p.deviceId = d.id AND p.userId = :userId) "
+        		+ " ORDER BY d.createdDt DESC, d.id DESC");
+        q.setParameter("clientId", clientId);
+        q.setParameter("userId", userId);
 
         return q.list();
     }

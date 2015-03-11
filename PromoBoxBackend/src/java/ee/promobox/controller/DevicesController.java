@@ -13,6 +13,7 @@ import ee.promobox.entity.DevicesCampaigns;
 import ee.promobox.entity.DevicesDisplays;
 import ee.promobox.entity.ErrorLog;
 import ee.promobox.entity.UsersDevicesPermissions;
+import ee.promobox.entity.Versions;
 import ee.promobox.jms.MailDto;
 import ee.promobox.service.Session;
 import ee.promobox.service.SessionService;
@@ -92,6 +93,11 @@ public class DevicesController {
 
         JSONObject resp = new JSONObject();
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        
+        Versions version = userService.findCurrentVersion();
+        if (version != null) {
+        	resp.put("version", version.getVersion());
+        }
 
         Devices d = userService.findDeviceByUuid(uuid);
 
@@ -99,8 +105,6 @@ public class DevicesController {
         	resp.put("currentDt", new Date().getTime());
         	
             JSONObject objectGiven = new JSONObject(json);
-            
-            
 
             d.setFreeSpace(objectGiven.has("freeSpace") ? objectGiven.getLong("freeSpace") : 0);
             d.setCache(objectGiven.has("cache") ? objectGiven.getLong("cache") : 0);

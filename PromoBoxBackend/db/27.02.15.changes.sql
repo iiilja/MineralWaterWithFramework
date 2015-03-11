@@ -31,4 +31,16 @@ CREATE TABLE users_campaigns_permissions
     CONSTRAINT pk_users_campaigns_permissions_id PRIMARY KEY (id)
 );
 
+CREATE TABLE versions
+(
+  id serial NOT NULL,
+  version character varying(50) NOT NULL,
+  version_dt TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT now(),
+  is_current BOOLEAN NOT NULL DEFAULT FALSE,
+  CONSTRAINT pk_versions_id PRIMARY KEY (id)
+)
+WITH (
+  OIDS=FALSE
+);
+
 COMMIT;

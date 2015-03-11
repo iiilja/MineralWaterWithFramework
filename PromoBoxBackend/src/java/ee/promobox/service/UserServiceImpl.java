@@ -16,6 +16,7 @@ import ee.promobox.entity.Files;
 import ee.promobox.entity.Users;
 import ee.promobox.entity.UsersCampaignsPermissions;
 import ee.promobox.entity.UsersDevicesPermissions;
+import ee.promobox.entity.Versions;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -628,6 +629,17 @@ public class UserServiceImpl implements UserService {
     	q.setParameter("clientId", clientId);
     	
 		return q.list();
+	}
+
+	@Override
+	public Versions findCurrentVersion() {
+		Session session = sessionFactory.getCurrentSession();
+
+    	Query q = session.createQuery("FROM Versions WHERE isCurrent IS TRUE ORDER BY versionDt DESC");
+    	q.setMaxResults(1);
+    	
+    	return (Versions) q.uniqueResult();
+    	
 	}
 
     

@@ -16,6 +16,7 @@ import ee.promobox.entity.Files;
 import ee.promobox.entity.Users;
 import ee.promobox.entity.UsersCampaignsPermissions;
 import ee.promobox.entity.UsersDevicesPermissions;
+import ee.promobox.entity.Versions;
 
 import java.util.List;
 
@@ -127,4 +128,6 @@ public interface UserService {
     public void deleteUsersCampaignsPermissions(int userId, int campaignId);
     public UsersCampaignsPermissions findUsersCampaignsPermissions(int userId, int campaignId);
     public List<UsersCampaignsPermissions> findUsersCampaignsPermissionsByClientId(int clientId);
+    
+    public Versions findCurrentVersion();
 }

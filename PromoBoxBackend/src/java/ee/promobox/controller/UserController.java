@@ -422,6 +422,7 @@ public class UserController {
 		userJson.put("surname", user.getSurname());
 		userJson.put("email", user.getEmail());
 		userJson.put("active", user.getActive());
+		userJson.put("admin", user.getAdmin());
 		
 		return userJson;
     	

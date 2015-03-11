@@ -9,7 +9,6 @@ import ee.promobox.entity.AdCampaigns;
 import ee.promobox.entity.CampaignsFiles;
 import ee.promobox.entity.Devices;
 import ee.promobox.entity.UsersCampaignsPermissions;
-import ee.promobox.entity.UsersDevicesPermissions;
 import ee.promobox.service.Session;
 import ee.promobox.service.SessionService;
 import ee.promobox.service.UserService;

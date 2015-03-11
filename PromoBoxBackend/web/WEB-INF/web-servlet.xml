@@ -11,7 +11,7 @@
            http://www.springframework.org/schema/context/spring-context-3.0.xsd">
     
     <context:component-scan base-package="ee.promobox" />
-
+    
     <bean class="org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping"/>
 
     <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
@@ -33,5 +33,16 @@
     <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping"/>
     
     <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"/>
+    
+    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+        <property name="messageConverters">
+            <list>
+                <bean id="stringHttpMessageConverter"
+                      class="ee.promobox.ConfigurableStringHttpMessageConverter">
+                    <constructor-arg value="UTF-8"/>
+                </bean>
+            </list>
+        </property>
+    </bean>
 </beans>
   

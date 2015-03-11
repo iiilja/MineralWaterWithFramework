@@ -28,14 +28,14 @@
                            ng-click="showDeviceSettings(0)"
                            ng-show="visibleDeviceSettings == device.id"><span class="glyphicon glyphicon-cog"></span>{{'campaign_edit_hidesettings' | translate}}</a>
                         <p class="pull-right">
-                            {{ 'device_updatedate' | translate }}:<br/> {{timeconvert(device.lastRequestDate)}}
+                            {{ 'device_updatedate' | translate }}:<br/> {{device.lastRequestDt | dateConvert}}
                         </p>
                     </div>
                 </div>
                 <div class="company-info success" ng-class="device.status == 2 ? 'success' : (device.status == 1 ? 'warning' : 'danger')">
                     <div ng-if="device.status == 3">
                         <h4>{{ 'device_offtime' | translate }}</h4>
-                        <p>{{device.lastRequestDt | deviceTime}}</p>
+                        <p>{{device.lastRequestDt | timeConvert}}</p>
                     </div>
                     <div ng-if="device.currentCamp && device.status != 3">
                         <h4>{{ 'device_currentcompany' | translate }}</h4>

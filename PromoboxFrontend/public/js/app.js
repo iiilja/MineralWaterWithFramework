@@ -134,13 +134,20 @@ app.filter('humanLength', function() {
     }
  });
 
-app.filter('deviceTime', function() {
-    return function(val) {
-        var date = new Date(val);
-        return date.getDay() + "." + (1 + date.getMonth()) + "." + date.getFullYear() + " " + 
-                date.getHours() + ":" + date.getMinutes();
+app.filter('timeConvert', function() {
+    return function(time) {
+        var timeConvert = moment(time).unix();
+        timeConvert = moment(timeConvert, 'X').format('DD.MM.YYYY h:mm');
+        return timeConvert;
     }
+});
 
+app.filter('dateConvert', function() {
+    return function(time) {
+        var timeConvert = moment(time).unix();
+        timeConvert = moment(timeConvert, 'X').format('DD.MM.YYYY');
+        return timeConvert;
+    }
 });
 
 app.controller('Exit', ['token',
@@ -652,12 +659,6 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
 app.controller('CampaignsController', ['$scope', 'token', 'Campaign', 'sysMessage', '$rootScope', '$filter',
     function ($scope, token, Campaign, sysMessage, $rootScope, $filter) {
         if (token.check()) {
-            $scope.timeconvert = function(time) {
-                var timeConvert = moment(time).unix();
-                timeConvert = moment(timeConvert, 'X').format('DD.MM.YYYY');
-                return timeConvert;
-            };
-
             $rootScope.left_menu_active = 'campaign';
             $scope.currentCampaign = {};
             Campaign.get_all_campaigns({token: token.get()}, function (response) {
@@ -687,12 +688,6 @@ app.controller('CampaignsController', ['$scope', 'token', 'Campaign', 'sysMessag
 app.controller('DevicesController', ['$scope', 'token', 'Device', 'sysMessage', '$rootScope', '$filter',
     function ($scope, token, Device, sysMessage, $rootScope, $filter) {
         if (token.check()) {
-            $scope.timeconvert = function(time) {
-                var timeConvert = moment(time).unix();
-                timeConvert = moment(timeConvert, 'X').format('DD.MM.YYYY');
-                return timeConvert;
-            };
-
             $rootScope.left_menu_active = 'device';
             Device.get_data({token: token.get()}, function (response) {
                 console.log(response);

@@ -366,7 +366,6 @@ public class DevicesController {
                     jsonD.put("su", d.isSun());
 
                     jsonD.put("description", d.getDescription());
-                    jsonD.put("lastRequestDate", d.getLastDeviceRequestDt().getTime());
 
                     List<AdCampaigns> acs = userService.findCampaignByDeviceId(d.getId());
 

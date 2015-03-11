@@ -14,7 +14,7 @@
         <span ng-if="campaign.status == 2" class="label label-success">{{ 'list_works' | translate }}</span>
         <span ng-if="campaign.status == 3" class="label label-warning">{{ 'list_waiting' | translate }}</span>
         <span class="name">{{campaign.name}}</span>
-        <span class="date">{{timeconvert(campaign.start)}}-{{timeconvert(campaign.finish)}}</span>
+        <span class="date">{{campaign.start | dateConvert}}-{{campaign.finish | dateConvert}}</span>
 
         <span class="pull-right">
             <a class="campaigns_link" data-toggle="modal" data-target=".stat" style="margin-right: 15px;"

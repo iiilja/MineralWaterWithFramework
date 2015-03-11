@@ -41,7 +41,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.ModelAndView;
 
 /**
  *
@@ -61,7 +60,7 @@ public class UserController {
     
 
     @RequestMapping(value="/user/register", method=RequestMethod.POST)
-    public ModelAndView userRegisterHandler(
+    public @ResponseBody String userRegisterHandler(
     		@RequestBody String json,
     		HttpServletRequest request,
     		HttpServletResponse response) throws Exception {
@@ -93,7 +92,7 @@ public class UserController {
     		resp.put("response", RequestUtils.OK);
     	}
 
-    	return RequestUtils.printResult(resp.toString(), response);
+    	return resp.toString();
     }
     
     private boolean checkUser(Users user, JSONObject objectGiven, JSONObject resp, String excludeEmail) throws JSONException {
@@ -574,7 +573,7 @@ public class UserController {
     }
     
     @RequestMapping("/user/login")
-    public ModelAndView userLoginHandler(
+    public @ResponseBody String userLoginHandler(
             @RequestParam String email,
             @RequestParam String password,
             HttpServletRequest request,
@@ -601,13 +600,13 @@ public class UserController {
             resp.put("token", session.getUuid());
         }
 
-        return RequestUtils.printResult(resp.toString(), response);
+        return resp.toString();
 
     }
     
     
     @RequestMapping("/user/data/{token}")
-    public void userDataHandler(
+    public @ResponseBody String userDataHandler(
             @PathVariable("token") String token,
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
@@ -665,13 +664,14 @@ public class UserController {
             resp.put("devices", devs);
             
             response.setStatus(HttpServletResponse.SC_OK);
-            RequestUtils.printResult(resp.toString(), response);
+            
+            return resp.toString();
 
         } else {
             RequestUtils.sendUnauthorized(response);
         }
 
-        
+        return null;
     }
     
     private static String genereateRandomPass() {

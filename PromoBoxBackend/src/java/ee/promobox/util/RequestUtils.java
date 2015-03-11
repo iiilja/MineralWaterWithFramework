@@ -36,25 +36,6 @@ public class RequestUtils {
 
         return obj;
     }
-
-    public static ModelAndView printResult(String text, HttpServletResponse response) {
-
-        response.setContentType("text/html; charset=UTF-8");
-        response.setCharacterEncoding("UTF-8");
-        
-        try {
-
-            Writer writer = response.getWriter();
-            writer.write(text);
-            writer.flush();
-            
-        } catch (Exception ex) {
-            log.error(ex.getMessage(), ex);
-        }
-
-        return null;
-    }
-    
     
     public static void sendUnauthorized(HttpServletResponse response) {
         try {

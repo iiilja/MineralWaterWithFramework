@@ -84,7 +84,7 @@ public class DevicesController {
     }
 
     @RequestMapping("/device/{uuid}/pull")
-    public void showCampaign(
+    public @ResponseBody String showCampaign(
             @PathVariable("uuid") String uuid,
             @RequestParam String json,
             HttpServletRequest request,
@@ -237,7 +237,7 @@ public class DevicesController {
 
                 response.setStatus(HttpServletResponse.SC_OK);
 
-                RequestUtils.printResult(resp.toString(), response);
+                return resp.toString();
 
             } else {
             	resp.put("status", "error");
@@ -245,7 +245,7 @@ public class DevicesController {
 
                 response.setStatus(HttpServletResponse.SC_OK);
 
-                RequestUtils.printResult(resp.toString(), response);
+                return resp.toString();
             }
 
         } else {
@@ -254,7 +254,7 @@ public class DevicesController {
 
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 
-            RequestUtils.printResult(resp.toString(), response);
+            return resp.toString();
         }
     }
     
@@ -274,7 +274,7 @@ public class DevicesController {
     }
 
     @RequestMapping(value = "token/{token}/devices", method = RequestMethod.GET)
-    public void showAllDevices(
+    public @ResponseBody String showAllDevices(
             @PathVariable("token") String token,
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
@@ -409,15 +409,16 @@ public class DevicesController {
 
             response.setStatus(HttpServletResponse.SC_OK);
 
-            RequestUtils.printResult(resp.toString(), response);
+            return resp.toString();
         } else {
             RequestUtils.sendUnauthorized(response);
         }
 
+        return null;
     }
 
     @RequestMapping(value = "token/{token}/devices/{id}", method = RequestMethod.DELETE)
-    public void deleteDevice(
+    public @ResponseBody String deleteDevice(
             @PathVariable("token") String token,
             @PathVariable("id") int id,
             HttpServletRequest request,
@@ -438,16 +439,17 @@ public class DevicesController {
 
             response.setStatus(HttpServletResponse.SC_OK);
 
-            RequestUtils.printResult(resp.toString(), response);
+            return resp.toString();
 
         } else {
             RequestUtils.sendUnauthorized(response);
         }
 
+        return null;
     }
 
     @RequestMapping(value = "token/{token}/devices/{id}/campaign/{campaignId}", method = RequestMethod.DELETE)
-    public void deleteDeviceCampaign(
+    public @ResponseBody String deleteDeviceCampaign(
             @PathVariable("token") String token,
             @PathVariable("id") int id,
             @PathVariable("campaignId") int campaignId,
@@ -468,18 +470,18 @@ public class DevicesController {
 
                 response.setStatus(HttpServletResponse.SC_OK);
 
-                RequestUtils.printResult(resp.toString(), response);
-
-                return;
+                return resp.toString();
             }
 
         }
 
         RequestUtils.sendUnauthorized(response);
+        
+        return null;
     }
 
     @RequestMapping(value = "token/{token}/devices/{id}", method = RequestMethod.PUT)
-    public void updateDevice(
+    public @ResponseBody String updateDevice(
             @PathVariable("token") String token,
             @PathVariable("id") int id,
             @RequestBody String json,
@@ -564,12 +566,14 @@ public class DevicesController {
 
                 response.setStatus(HttpServletResponse.SC_OK);
 
-                RequestUtils.printResult(resp.toString(), response);
+                return resp.toString();
 
             } else {
                 RequestUtils.sendUnauthorized(response);
             }
         }
+        
+        return null;
     }
 
     public static boolean checkTimeIntersection(AdCampaigns campaign1, AdCampaigns campaign2) {
@@ -616,7 +620,7 @@ public class DevicesController {
     }
 
     @RequestMapping(value = "token/{token}/devices/{id}/clearcache", method = RequestMethod.PUT)
-    public void clearDeviceCache(
+    public @ResponseBody String clearDeviceCache(
             @PathVariable("token") String token,
             @PathVariable("id") int id,
             HttpServletRequest request,
@@ -640,16 +644,18 @@ public class DevicesController {
 
                 response.setStatus(HttpServletResponse.SC_OK);
 
-                RequestUtils.printResult(resp.toString(), response);
+               return resp.toString();
 
             } else {
                 RequestUtils.sendUnauthorized(response);
             }
         }
+        
+        return null;
     }
     
     @RequestMapping(value = "token/{token}/devices/{id}/openapp", method = RequestMethod.PUT)
-    public void openApp(
+    public @ResponseBody String openApp(
             @PathVariable("token") String token,
             @PathVariable("id") int id,
             HttpServletRequest request,
@@ -673,12 +679,14 @@ public class DevicesController {
 
                 response.setStatus(HttpServletResponse.SC_OK);
 
-                RequestUtils.printResult(resp.toString(), response);
+                return resp.toString();
 
             } else {
                 RequestUtils.sendUnauthorized(response);
             }
         }
+        
+        return null;
     }
     
     private Date parseTimeString(String timeString) {
@@ -702,7 +710,7 @@ public class DevicesController {
     }
 
     @RequestMapping(value = "token/{token}/devices", method = RequestMethod.POST)
-    public void createDevice(
+    public @ResponseBody String createDevice(
             @PathVariable("token") String token,
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
@@ -765,12 +773,13 @@ public class DevicesController {
 
             response.setStatus(HttpServletResponse.SC_OK);
 
-            RequestUtils.printResult(resp.toString(), response);
+            return resp.toString();
 
         } else {
             RequestUtils.sendUnauthorized(response);
         }
 
+        return null;
     }
     
     private boolean checkWritePermission(Session session, int deviceId) {

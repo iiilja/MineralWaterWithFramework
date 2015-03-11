@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  *
@@ -52,7 +53,7 @@ public class CampaignsController {
     private UserService userService;
 
     @RequestMapping(value = "token/{token}/campaigns/{campaignId}", method = RequestMethod.GET)
-    public void showCampaign(
+    public @ResponseBody String showCampaign(
             @PathVariable("token") String token,
             @PathVariable("campaignId") int campaignId,
             HttpServletRequest request,
@@ -108,17 +109,18 @@ public class CampaignsController {
                 resp.put("files", FilesController.getFilesInformation(campaignFiles));
 
                 response.setStatus(HttpServletResponse.SC_OK);
-                RequestUtils.printResult(resp.toString(), response);
+                return resp.toString();
             }
 
         } else {
             RequestUtils.sendUnauthorized(response);
         }
 
+        return null;
     }
 
     @RequestMapping(value = "token/{token}/campaigns", method = RequestMethod.GET)
-    public void showAllCampaigns(
+    public @ResponseBody String showAllCampaigns(
             @PathVariable("token") String token,
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
@@ -186,15 +188,17 @@ public class CampaignsController {
             resp.put("campaigns", campaignsArray);
             
             response.setStatus(HttpServletResponse.SC_OK);
-            RequestUtils.printResult(resp.toString(), response);
+            return resp.toString();
         } else {
             RequestUtils.sendUnauthorized(response);
+            
+            return null;
         }
 
     }
 
     @RequestMapping(value = "token/{token}/campaigns", method = RequestMethod.POST)
-    public void createCampaign(
+    public @ResponseBody String createCampaign(
             @PathVariable("token") String token,
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
@@ -259,16 +263,18 @@ public class CampaignsController {
             response.setStatus(HttpServletResponse.SC_OK);
             resp.put("id", campaign.getId());
 
-            RequestUtils.printResult(resp.toString(), response);
+            return resp.toString();
 
         } else {
             RequestUtils.sendUnauthorized(response);
+            
+            return null;
         }
 
     }
 
     @RequestMapping(value = "token/{token}/campaigns/{id}", method = RequestMethod.DELETE)
-    public void deleteCampaign(
+    public @ResponseBody String deleteCampaign(
             @PathVariable("token") String token,
             @PathVariable("id") int id,
             HttpServletRequest request,
@@ -303,16 +309,18 @@ public class CampaignsController {
         	}
 
             response.setStatus(HttpServletResponse.SC_OK);
-            RequestUtils.printResult(resp.toString(), response);
+            return resp.toString();
 
         } else {
             RequestUtils.sendUnauthorized(response);
+            
+            return null;
         }
 
     }
 
     @RequestMapping(value = "token/{token}/campaigns/{id}", method = RequestMethod.PUT)
-    public void updateCampaign(
+    public @ResponseBody String updateCampaign(
             @PathVariable("token") String token,
             @PathVariable("id") int id,
             @RequestBody String json,
@@ -380,16 +388,17 @@ public class CampaignsController {
                 userService.updateCampaign(campaign);
 
                 response.setStatus(HttpServletResponse.SC_OK);
-                RequestUtils.printResult(resp.toString(), response);
+                return resp.toString();
             }
         } else {
             RequestUtils.sendUnauthorized(response);
         }
 
+        return null;
     }
     
     @RequestMapping(value = "token/{token}/campaigns/{id}/nextFile/{file}", method = RequestMethod.PUT)
-    public void nextFile(
+    public @ResponseBody String nextFile(
             @PathVariable("token") String token,
             @PathVariable("id") int id,
             @PathVariable("file") int fileId,
@@ -418,10 +427,12 @@ public class CampaignsController {
             }
             
             response.setStatus(HttpServletResponse.SC_OK);
-            RequestUtils.printResult(resp.toString(), response);
+            return resp.toString();
         } else {
             RequestUtils.sendUnauthorized(response);
         }
+        
+        return null;
     }
     
     private boolean checkReadPermission(Session session, int campaignId) {

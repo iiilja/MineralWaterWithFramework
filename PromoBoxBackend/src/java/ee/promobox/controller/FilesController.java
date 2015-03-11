@@ -47,6 +47,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 @Controller
@@ -196,7 +197,7 @@ public class FilesController {
     }
     
     @RequestMapping(value = "token/{token}/campaigns/{id}/files/order", method = RequestMethod.PUT)
-    public void saveFilesOrder(
+    public @ResponseBody String saveFilesOrder(
             @PathVariable("token") String token,
             @PathVariable("id") int campaignId,
             @RequestBody String json,
@@ -224,16 +225,18 @@ public class FilesController {
                 }
                 
                 response.setStatus(HttpServletResponse.SC_OK);
-                RequestUtils.printResult(resp.toString(), response);
+                return resp.toString();
             }
         } else {
             RequestUtils.sendUnauthorized(response);
         }
+        
+        return null;
     }
     
 
     @RequestMapping(value = "token/{token}/campaigns/{id}/files", method = RequestMethod.GET)
-    public void showCampaignFiles(
+    public @ResponseBody String showCampaignFiles(
             @PathVariable("token") String token,
             @PathVariable("id") int campaignId,
             HttpServletRequest request,
@@ -267,15 +270,18 @@ public class FilesController {
                 resp.put("campaignfiles", jsonCampaignFiles);
 
                 response.setStatus(HttpServletResponse.SC_OK);
-                RequestUtils.printResult(resp.toString(), response);
+                
+                return resp.toString();
             }
         } else {
             RequestUtils.sendUnauthorized(response);
         }
+        
+        return null;
     }
 
     @RequestMapping(value = "token/{token}/campaigns/{id}/files", method = RequestMethod.POST)
-    public void uploadFile(
+    public @ResponseBody String uploadFile(
             @PathVariable("token") String token,
             @PathVariable("id") int campaignId,
             @ModelAttribute FileUploadCommand command,
@@ -393,7 +399,7 @@ public class FilesController {
 
                             response.setStatus(HttpServletResponse.SC_OK);
                             
-                            RequestUtils.printResult(resp.toString(), response);
+                            return resp.toString();
                         }
 
                     } else {
@@ -405,10 +411,11 @@ public class FilesController {
             RequestUtils.sendUnauthorized(response);
         }
 
+        return null;
     }
     
     @RequestMapping(value = "token/{token}/campaigns/{id}/files/{file}/rotate/{angle}", method = RequestMethod.PUT)
-    public void rotateFile(
+    public @ResponseBody String rotateFile(
             @PathVariable("token") String token,
             @PathVariable("id") int campaignId,
             @PathVariable("file") int fileId,
@@ -457,16 +464,17 @@ public class FilesController {
 
                 response.setStatus(HttpServletResponse.SC_OK);
 
-                RequestUtils.printResult(resp.toString(), response);
+                return resp.toString();
             }
         } else {
             RequestUtils.sendUnauthorized(response);
         }
 
+        return null;
     }
     
     @RequestMapping(value = "token/{token}/files/status", method = RequestMethod.GET)
-    public void getFilesStatus(
+    public @ResponseBody String getFilesStatus(
             @PathVariable("token") String token,
             @RequestParam List<Integer> files,
             HttpServletRequest request,
@@ -489,14 +497,16 @@ public class FilesController {
             resp.put("files", filesArray);
             
             response.setStatus(HttpServletResponse.SC_OK);
-            RequestUtils.printResult(resp.toString(), response);
+            return resp.toString();
         } else {
             RequestUtils.sendUnauthorized(response);
         }
+        
+        return null;
     }
 
     @RequestMapping(value = "token/{token}/files/archive/{id}", method = RequestMethod.PUT)
-    public void archiveCampaignFiles(
+    public @ResponseBody String archiveCampaignFiles(
             @PathVariable("token") String token,
             @PathVariable("id") int fileId,
             HttpServletRequest request,
@@ -535,13 +545,15 @@ public class FilesController {
                 userService.updateCampaign(campaign);
 
                 response.setStatus(HttpServletResponse.SC_OK);
-                RequestUtils.printResult(resp.toString(), response);
+                return resp.toString();
             } else {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);
             }
         } else {
             RequestUtils.sendUnauthorized(response);
         }
+        
+        return null;
     }
 
     @RequestMapping("files/{id}")

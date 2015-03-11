@@ -1555,13 +1555,18 @@ input[readonly] {
 .content_bg .main-content {
     width: auto;
     margin-left: 250px;
-    padding: 0 0 20px 0;
+    padding: 70px 0 20px 0;
+    position: relative;
 }
 
 .content_bg .header-nav {
-    height: 58px;
-    line-height: 58px;
-    background: #272727;
+  height: 58px;
+  width: 100%;
+  line-height: 58px;
+  background: #272727;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
 .content_bg #main-wrap {

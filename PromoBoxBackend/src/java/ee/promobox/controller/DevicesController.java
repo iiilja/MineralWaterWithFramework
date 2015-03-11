@@ -93,11 +93,6 @@ public class DevicesController {
 
         JSONObject resp = new JSONObject();
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        
-        Versions version = userService.findCurrentVersion();
-        if (version != null) {
-        	resp.put("version", version.getVersion());
-        }
 
         Devices d = userService.findDeviceByUuid(uuid);
 

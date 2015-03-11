@@ -11,6 +11,7 @@ import ee.promobox.entity.Permissions;
 import ee.promobox.entity.Users;
 import ee.promobox.entity.UsersCampaignsPermissions;
 import ee.promobox.entity.UsersDevicesPermissions;
+import ee.promobox.entity.Versions;
 import ee.promobox.service.Session;
 import ee.promobox.service.SessionService;
 import ee.promobox.service.UserService;
@@ -57,6 +58,23 @@ public class UserController {
     
     @Autowired
     private SessionService sessionService;
+    
+    @RequestMapping("/version")
+    public @ResponseBody String applicationVersion(
+            HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+
+        JSONObject resp = new JSONObject();
+        resp.put("response", RequestUtils.ERROR);
+        
+        Versions version = userService.findCurrentVersion();
+        if (version != null) {
+        	resp.put("version", version.getVersion());
+        	resp.put("response", RequestUtils.OK);
+        }
+        
+        return resp.toString();
+    }
     
 
     @RequestMapping(value="/user/register", method=RequestMethod.POST)

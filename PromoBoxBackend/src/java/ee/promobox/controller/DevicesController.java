@@ -13,7 +13,6 @@ import ee.promobox.entity.DevicesCampaigns;
 import ee.promobox.entity.DevicesDisplays;
 import ee.promobox.entity.ErrorLog;
 import ee.promobox.entity.UsersDevicesPermissions;
-import ee.promobox.entity.Versions;
 import ee.promobox.jms.MailDto;
 import ee.promobox.service.Session;
 import ee.promobox.service.SessionService;
@@ -741,7 +740,7 @@ public class DevicesController {
             device.setCreatedDt(new Date());
 
             device.setWorkStartAt(parseTimeString("0:00"));
-            device.setWorkEndAt(parseTimeString("23:00"));
+            device.setWorkEndAt(parseTimeString("0:00"));
 
             device.setMon(true);
             device.setTue(true);

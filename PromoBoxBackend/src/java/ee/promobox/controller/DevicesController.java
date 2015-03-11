@@ -31,6 +31,7 @@ import javax.jms.Destination;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -121,10 +122,14 @@ public class DevicesController {
             	for (int i = 0; i < errors.length(); i++) {
             		JSONObject jsonError = errors.getJSONObject(i);
             		
+            		String name = StringUtils.abbreviate(jsonError.getString("name"), 255);
+            		String message = StringUtils.abbreviate(jsonError.getString("message"), 255);
+            		String stackTrace = StringUtils.abbreviate(jsonError.getString("stackTrace"), 255);
+            		
             		ErrorLog errorLog = new ErrorLog();
-            		errorLog.setName(jsonError.getString("name"));
-            		errorLog.setMessage(jsonError.getString("message"));
-            		errorLog.setStackTrace(jsonError.getString("stackTrace"));
+            		errorLog.setName(name);
+            		errorLog.setMessage(message);
+            		errorLog.setStackTrace(stackTrace);
             		errorLog.setCreatedDt(new Date(jsonError.getInt("date")));
             		
             		userService.addErrorLog(errorLog);

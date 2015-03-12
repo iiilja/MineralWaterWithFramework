@@ -39,5 +39,6 @@
     <string name="signal_strength_normal">Хороший</string>
     <string name="signal_strength_strong">Сильный</string>
     <string name="pref_monitor_id">Monitor ID</string>
+    <string name="skip">Пропустить</string>
 
 </resources>

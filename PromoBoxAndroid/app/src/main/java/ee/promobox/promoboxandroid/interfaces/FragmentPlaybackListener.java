@@ -6,4 +6,5 @@ package ee.promobox.promoboxandroid.interfaces;
 public interface FragmentPlaybackListener {
 
     public void onPlaybackStop();
+    public void onPlayBackRunnableError();
 }

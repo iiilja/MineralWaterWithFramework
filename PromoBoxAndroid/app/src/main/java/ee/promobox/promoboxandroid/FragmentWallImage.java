@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SeekBar;
 
 import ee.promobox.promoboxandroid.data.CampaignFile;
 import ee.promobox.promoboxandroid.data.CampaignFileType;
@@ -66,6 +67,7 @@ public class FragmentWallImage extends FragmentVideoWall {
         imageFragment.setOnLongClickListener(mainActivity);
 
         slide = (WallImageView) imageFragment.findViewById(R.id.slide_1);
+        super.setView(imageFragment);
 
         return imageFragment;
     }
@@ -105,6 +107,18 @@ public class FragmentWallImage extends FragmentVideoWall {
             slide.setRotation(0f);
         }
 
+        tryNextFile();
+
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (amMaster) {
+            super.onClick(v);
+        }
+    }
+
+    private void tryNextFile() {
         if ( amMaster ){
             if (preparedBitmap == null){
                 masterListener.onFileNotPrepared();
@@ -115,10 +129,9 @@ public class FragmentWallImage extends FragmentVideoWall {
                     }
                 },50);
             } else {
-                playImage();
+                masterListener.onFileStartedPlaying(preparedCampaignFile.getId(),0);
             }
         }
-
     }
 
     @Override
@@ -164,8 +177,10 @@ public class FragmentWallImage extends FragmentVideoWall {
         }
     }
 
-    private void cleanUp() {
+    @Override
+    public void cleanUp() {
         recycleBitmap();
+        super.cleanUp();
     }
 
     private void prepareBitmap(CampaignFile campaignFile){
@@ -195,6 +210,9 @@ public class FragmentWallImage extends FragmentVideoWall {
             }
             if (amMaster) {
                 int delay = getArguments().getInt("delay");
+                super.setSeekBarMax(delay);
+                super.changeSeekBarState(true, 0);
+                setStatus(preparedCampaignFile.getName());
                 slide.postDelayed(runnable, delay);
                 slide.postDelayed(new Runnable() {
                     @Override
@@ -243,6 +261,7 @@ public class FragmentWallImage extends FragmentVideoWall {
         } else {
             Log.d(TAG," playFile - prepareBitmap(campaignFile);");
             prepareBitmap(campaignFile);
+            playImage();
         }
     }
 
@@ -251,4 +270,33 @@ public class FragmentWallImage extends FragmentVideoWall {
         prepareNextFile(campaignFile);
     }
 
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+        slide.removeCallbacks(runnable);
+        slide.postDelayed(runnable, seekBar.getMax() - seekBar.getProgress());
+    }
+
+    @Override
+    public void onPlayerPause() {
+        slide.removeCallbacks(runnable);
+    }
+
+    @Override
+    public void onPlayerPlay() {
+        slide.removeCallbacks(runnable);
+        slide.postDelayed(runnable, getRemainingTime());
+    }
+
+    @Override
+    public void onPlayerPrevious() {
+        slide.removeCallbacks(runnable);
+        mainActivity.setPreviousFilePosition();
+        tryNextFile();
+    }
+
+    @Override
+    public void onPlayerNext() {
+        slide.removeCallbacks(runnable);
+        tryNextFile();
+    }
 }

@@ -170,7 +170,6 @@ public class MainService extends Service {
             } else if ( campaignsToSetCurrent.size() > 1){
                 Log.w(TAG, " More than one current campaign");
                 setCurrentCampaign(new CampaignMultiple(campaignsToSetCurrent));
-                bManager.sendBroadcast(new ToastIntent(" Two campaigns in time"));
                 return;
             }
             setCurrentCampaign(null);

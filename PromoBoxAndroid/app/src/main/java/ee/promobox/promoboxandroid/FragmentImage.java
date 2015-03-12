@@ -176,6 +176,7 @@ public class FragmentImage extends FragmentWithSeekBar {
             recycleBitmap();
 //            imageView.setImageDrawable(file.getPath(),1920,3240,p);
             slide.setImageBitmap(bitmap);
+            setStatus(campaignFile.getName());
             int delay = getArguments().getInt("delay");
             super.setSeekBarMax(delay);
             super.changeSeekBarState(true, 0);

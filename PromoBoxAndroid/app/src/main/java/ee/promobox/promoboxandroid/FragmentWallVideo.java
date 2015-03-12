@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.TextureView;
 import android.view.View;
+import android.widget.SeekBar;
 
 import java.util.ArrayList;
 
@@ -161,7 +162,7 @@ public class FragmentWallVideo extends FragmentVideoWall implements TextureView.
         LocalBroadcastManager.getInstance(VideoActivity.this).sendBroadcast(playFile);*/
     }
 
-    private void cleanUp() {
+    public void cleanUp() {
         player.requestStop();
     }
 
@@ -219,6 +220,31 @@ public class FragmentWallVideo extends FragmentVideoWall implements TextureView.
 
     @Override
     public void prepareFile(CampaignFile campaignFile) {
+
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+
+    }
+
+    @Override
+    public void onPlayerPause() {
+
+    }
+
+    @Override
+    public void onPlayerPlay() {
+
+    }
+
+    @Override
+    public void onPlayerPrevious() {
+
+    }
+
+    @Override
+    public void onPlayerNext() {
 
     }
 }

@@ -26,6 +26,7 @@ public class PlayerLengthWatcher  implements Runnable {
         FragmentPlaybackListener playbackListener = playbackListenerReference.get();
         if (fragment != null && playbackListener != null){
             fragment.cleanUp();
+            playbackListener.onPlayBackRunnableError();
             playbackListener.onPlaybackStop();
         }
     }

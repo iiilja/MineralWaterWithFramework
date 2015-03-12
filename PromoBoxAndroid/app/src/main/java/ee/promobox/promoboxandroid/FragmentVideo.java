@@ -9,6 +9,7 @@ import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Surface;
@@ -26,6 +27,7 @@ import com.google.android.exoplayer.MediaCodecAudioTrackRenderer;
 import com.google.android.exoplayer.MediaCodecTrackRenderer;
 import com.google.android.exoplayer.MediaCodecVideoTrackRenderer;
 import com.google.android.exoplayer.SampleSource;
+import com.google.android.exoplayer.audio.AudioTrack;
 
 
 import org.apache.commons.io.FilenameUtils;
@@ -58,6 +60,8 @@ public class FragmentVideo extends FragmentWithSeekBar implements TextureView.Su
 
     private Handler videoLengthHandler = new Handler();
     private Runnable videoLengthStopper;
+
+    private boolean textureAvailable;
 
 
     @Override
@@ -113,6 +117,7 @@ public class FragmentVideo extends FragmentWithSeekBar implements TextureView.Su
             Log.d(TAG,pathToFile);
             Uri uri = Uri.parse(pathToFile);
             SampleSource source = new FrameworkSampleSource(getActivity(), uri, null, 2);
+            setStatus(campaignFile.getName());
             audioRenderer = new MediaCodecAudioTrackRenderer(
                     source, null, true);
             videoRenderer = new MediaCodecVideoTrackRenderer(source,
@@ -147,6 +152,9 @@ public class FragmentVideo extends FragmentWithSeekBar implements TextureView.Su
         }
 
         videoView.setSurfaceTextureListener(this);
+        if (textureAvailable){
+            tryNextFile();
+        }
 
     }
 
@@ -154,7 +162,6 @@ public class FragmentVideo extends FragmentWithSeekBar implements TextureView.Su
     public void onPause() {
         super.onPause();
         cleanUp();
-
     }
 
     public void cleanUp() {
@@ -176,8 +183,10 @@ public class FragmentVideo extends FragmentWithSeekBar implements TextureView.Su
 
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture, int width, int height) {
+        Log.d(TAG, "onSurfaceTextureAvailable");
         viewOriginalHeight =  videoView.getMeasuredHeight();
         viewOriginalWidth =  videoView.getMeasuredWidth();
+        textureAvailable = true;
         tryNextFile();
     }
 
@@ -188,7 +197,9 @@ public class FragmentVideo extends FragmentWithSeekBar implements TextureView.Su
 
     @Override
     public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
-        return false;
+        Log.d(TAG, "onSurfaceTextureDestroyed");
+        textureAvailable = false;
+        return true;
     }
 
     @Override

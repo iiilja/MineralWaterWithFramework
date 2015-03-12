@@ -319,13 +319,15 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
                 mainService.addError(new ErrorMessage("UncaughtException", exceptionHandlerError, null), true);
             }
 
+            if ( mainService.isVideoWall() ){
+                imageFragment = new FragmentWallImage();
+                videoWall = true;
+                jGroupsMessenger.start(getBaseContext());
+                Log.d(TAG, "Starting jGroups");
+            }
+
             if (campaign == null || !campaign.equals(mainService.getCurrentCampaign())){
                 campaign = mainService.getCurrentCampaign();
-                if ( mainService.isVideoWall() ){
-                    imageFragment = new FragmentWallImage();
-                    videoWall = true;
-                    jGroupsMessenger.start(getBaseContext());
-                }
                 campaignWasUpdated(TAG + " mConnection");
             }
 
@@ -395,6 +397,13 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
         startNextFile();
     }
 
+    @Override
+    public void onPlayBackRunnableError() {
+        String error = "File with id " + mainService.getCurrentFileId()
+                + " in campaign with id " + campaign.getCampaignId()
+                + " is not playing normally, have to check it";
+        addError(new ErrorMessage("FileError", error, null), false);
+    }
 
     @Override
     public boolean onLongClick(View view) {
@@ -424,7 +433,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
             }
 
             campaignFile = campaign.getNextFile();
-            Log.d(TAG, "getNextFile() filename = " + campaignFile.getName());
+//            Log.d(TAG, "getNextFile() filename = " + campaignFile.getName());
 
         } else if (nextSpecificFile != null) {
             campaignFile = nextSpecificFile;
@@ -502,8 +511,12 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
                 case CAMPAIGN_UPDATE:
 
                     if (mainService == null ||
-                            (campaign != null && campaign.equals(mainService.getCurrentCampaign())))
+                            (campaign != null && campaign.equals(mainService.getCurrentCampaign()))){
+                        if (mainService != null){
+                            mainService.setActivityReceivedUpdate(true);
+                        }
                         return;
+                    }
 
                     campaign = mainService.getCurrentCampaign();
                     mainService.setActivityReceivedUpdate(true);
@@ -551,6 +564,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
                         currentFragment.onPause();
                         currentFragment.onResume();
                     } else if (mainService.isVideoWall()){
+                        jGroupsMessenger.start(getBaseContext());
                         imageFragment = new FragmentWallImage();
                         videoWall = true;
                         startNextFile();

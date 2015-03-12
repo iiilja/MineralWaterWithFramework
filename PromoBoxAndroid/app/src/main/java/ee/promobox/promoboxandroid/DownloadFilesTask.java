@@ -34,6 +34,7 @@ import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -262,7 +263,10 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
 
                 Log.d(TAG, "CampaignFIle "+f.getId()+" f.getSize() = " + f.getSize()
                         + " real FILE length = " +  file.length()+" getTotalSpace = " +  file.getTotalSpace() + " and directory :" + file.getAbsolutePath() );
-                downloadFile(String.format(MainService.DEFAULT_SERVER + "/service/files/%s", f.getId()), f.getId() + "", camp);
+                boolean downloaded = downloadFile(String.format(MainService.DEFAULT_SERVER + "/service/files/%s", f.getId()), f.getId() + "", camp);
+                if (!downloaded){
+                    campaignFiles.remove(i);
+                }
             }
         }
         bManager.sendBroadcast(new SetStatusIntent(StatusEnum.DOWNLOADED,""));
@@ -271,7 +275,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
         service.getIsDownloading().set(false);
     }
 
-    private File downloadFile(String fileURL, String fileName, Campaign camp) {
+    private boolean downloadFile(String fileURL, String fileName, Campaign camp) {
         try {
 
             Log.i(TAG, fileURL);
@@ -300,18 +304,16 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
 
                 Log.i(TAG, "Size " + file.getAbsolutePath() + " = " + file.length());
 
-                return file;
+                return true;
             }
 
 
         } catch (Exception ex) {
-            Log.d(TAG, ex.getMessage(), ex);
+            Log.e(TAG, ex.getMessage(), ex);
             bManager.sendBroadcast(new ToastIntent(String.format(MainActivity.ERROR_MESSAGE, 52 , ex.getClass().getSimpleName())));
             service.addError(new ErrorMessage(ex.toString(), ex.getMessage(), ex.getStackTrace()), false);
         }
-
-        return null;
-
+        return false;
     }
 
     private JSONObject loadData(String url) throws Exception {
@@ -394,8 +396,8 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
             }
         } else if ( !service.getIsDownloading().get() ){
             String error = " Status code:" + response.getStatusLine().getStatusCode();
-            String content = IOUtils.toString(response.getEntity().getContent());
-            error += ". Content:" + content + ". JSON:" + json.toString();
+            String content = IOUtils.toString(response.getEntity().getContent(), "UTF-8");
+            error += ". Content:" + content ;
             Log.e(TAG, error);
             json = null;
             try {

@@ -19,34 +19,6 @@
             android:src="@drawable/logo"/>
 
         <LinearLayout
-            android:id="@+id/network_ethernet_layout"
-            android:layout_margin="2sp"
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="36sp"
-            android:background="#2b2e31"
-            >
-
-            <RadioButton
-                android:id="@+id/network_radio_button_lan"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="15sp"
-                android:enabled="false"
-                android:text="@string/network_ethernet"
-                />
-
-            <ListView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/listView2"
-                android:layout_marginLeft="40sp"
-                android:layout_marginRight="40sp" />
-
-        </LinearLayout>
-
-        <LinearLayout
             android:id="@+id/network_wifi_layout"
             android:layout_margin="2sp"
             android:orientation="vertical"
@@ -72,5 +44,9 @@
                 android:layout_marginLeft="40sp"
                 android:layout_marginRight="40sp" />
         </LinearLayout>
+        <Button
+            android:id="@+id/network_skip_btn"
+            android:text="@string/skip"
+            style="@style/myButtonStyle" />
     </LinearLayout>
 </RelativeLayout>

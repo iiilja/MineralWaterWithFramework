@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RadioButton;
@@ -32,12 +33,11 @@ import ee.promobox.promoboxandroid.util.InternetConnectionUtil.WifiData;
 import ee.promobox.promoboxandroid.widgets.WifiPasswordDialog;
 
 
-public class WifiActivity extends ActionBarActivity {
+public class WifiActivity extends ActionBarActivity implements View.OnClickListener, AdapterView.OnItemClickListener{
 
     private static final String TAG = "WifiActivity";
 
     private ListView wifiListView;
-    private RadioButton lanRadioButton;
     private RadioButton wifiRadioButton;
 
     private List<WifiData> wifiDataList;
@@ -51,12 +51,14 @@ public class WifiActivity extends ActionBarActivity {
 
         wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
         wifiListView = (ListView) findViewById(R.id.network_wifi_list);
-        lanRadioButton = (RadioButton) findViewById(R.id.network_radio_button_lan);
         wifiRadioButton = (RadioButton) findViewById(R.id.network_radio_button_wifi);
+
+        Button skipButton = (Button) findViewById(R.id.network_skip_btn);
+        skipButton.setOnClickListener(this);
 
         updateWifiList(wifiManager);
         wifiListView.setAdapter(new WifiListAdapter(getBaseContext(), wifiDataList));
-        wifiListView.setOnItemClickListener(wifiClickListener);
+        wifiListView.setOnItemClickListener(this);
     }
 
     private void updateWifiList(WifiManager wifiManager){
@@ -82,26 +84,33 @@ public class WifiActivity extends ActionBarActivity {
         }
     }
 
-    private AdapterView.OnItemClickListener wifiClickListener = new AdapterView.OnItemClickListener(){
-
-        @Override
-        public void onItemClick(AdapterView<?> parent, final View view, int position, long id) {
-
-            WifiData wifiData = wifiDataList.get(position);
-
-            TextView wifiStatus = (TextView) view.findViewById(R.id.network_wifi_status);
-            TextView wifiName = (TextView) view.findViewById(R.id.network_wifi_name);
-            Log.w(TAG, "Setting Connecting... to " + wifiName.getText());
-            wifiStatus.setText(getString(R.string.network_connecting));
-
-            if (wifiData.getSecurityMode().equals(WifiData.SECURITY_MODE_NONE)){
-                connectToWifi(wifiData,"",position);
-            } else {
-                showDialog(wifiData, position);
-            }
-
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.network_skip_btn:
+                WifiActivity.this.finish();
+                return;
+            default:
+                break;
         }
-    };
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, final View view, int position, long id) {
+
+        WifiData wifiData = wifiDataList.get(position);
+
+        TextView wifiStatus = (TextView) view.findViewById(R.id.network_wifi_status);
+        TextView wifiName = (TextView) view.findViewById(R.id.network_wifi_name);
+        Log.w(TAG, "Setting Connecting... to " + wifiName.getText());
+        wifiStatus.setText(getString(R.string.network_connecting));
+
+        if (wifiData.getSecurityMode().equals(WifiData.SECURITY_MODE_NONE)) {
+            connectToWifi(wifiData, "", position);
+        } else {
+            showDialog(wifiData, position);
+        }
+    }
 
     public void connectToWifi(WifiData wifiData, String password, int listViewElementPosition) {
         Log.d(TAG, "Connecting to wifi with password :" + password + " to element " + listViewElementPosition + " " + wifiData.getName());

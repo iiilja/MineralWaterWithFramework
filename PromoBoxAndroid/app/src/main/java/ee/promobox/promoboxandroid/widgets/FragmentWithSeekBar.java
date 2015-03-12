@@ -43,11 +43,11 @@ public abstract class FragmentWithSeekBar extends Fragment implements PlayerButt
     private View playerControlsLayout;
 
     protected void setView(View view) {
-        seekBar = (SeekBar) view.findViewById(R.id.audio_seekBar);
+        playerControlsLayout = view.findViewById(R.id.player_controls);
+        seekBar = (SeekBar) playerControlsLayout.findViewById(R.id.audio_seekBar);
         seekBar.setOnSeekBarChangeListener(this);
         seekBar.setProgressDrawable( getResources().getDrawable(R.drawable.seek_bar_progress));
         seekBar.setThumb(getResources().getDrawable(R.drawable.seek_bar_thumb_scrubber_control_selector_holo_dark));
-        playerControlsLayout = view.findViewById(R.id.player_controls);
         seekBarProgressChanger = new SeekBarProgressChangerRunnable(seekBar);
         visibilityRunnable = new PlayerUIVisibilityRunnable(playerControlsLayout);
         playerUIVisibilityHandler.postDelayed(visibilityRunnable, VISIBILITY_DELAY_MS);
@@ -108,10 +108,8 @@ public abstract class FragmentWithSeekBar extends Fragment implements PlayerButt
     @Override
     public void onClick(View v) {
 
-        playerUIVisibilityHandler.removeCallbacks(visibilityRunnable);
-        if (playerControlsLayout.getVisibility() == View.VISIBLE) {
-            playerUIVisibilityHandler.postDelayed(visibilityRunnable, VISIBILITY_DELAY_MS);
-        }
+
+
 
         switch (v.getId()){
             case R.id.player_settings:
@@ -120,7 +118,7 @@ public abstract class FragmentWithSeekBar extends Fragment implements PlayerButt
                 return;
             case R.id.player_back:
                 onPlayerPrevious();
-                return;
+                break;
             case R.id.player_pause:
                 paused = !paused;
                 handleSeekBarRunnable(paused);
@@ -129,13 +127,18 @@ public abstract class FragmentWithSeekBar extends Fragment implements PlayerButt
                 } else {
                     onPlayerPlay();
                 }
-                return;
+                break;
             case R.id.player_next:
                 onPlayerNext();
-                return;
+                break;
+            default:
+                changeVisibility();
+                break;
         }
-
-        changeVisibility();
+        playerUIVisibilityHandler.removeCallbacks(visibilityRunnable);
+        if (playerControlsLayout.getVisibility() == View.VISIBLE) {
+            playerUIVisibilityHandler.postDelayed(visibilityRunnable, VISIBILITY_DELAY_MS);
+        }
     }
 
     private void changeVisibility(){
@@ -143,9 +146,16 @@ public abstract class FragmentWithSeekBar extends Fragment implements PlayerButt
         setVisibility(newVisibility);
     }
     private void setVisibility(int visibility){
-        playerControlsLayout.setVisibility(visibility);
+        if (playerControlsLayout != null){
+            playerControlsLayout.setVisibility(visibility);
+        }
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         preferences.edit().putInt(PLAYER_UI_VISIBILITY,visibility).apply();
+    }
+
+    protected void setStatus(String status){
+        TextView textView = (TextView) playerControlsLayout.findViewById(R.id.main_activity_status);
+        textView.setText(status);
     }
 
 

@@ -208,11 +208,6 @@ public class FragmentAudio extends FragmentWithSeekBar implements ExoPlayer.List
         }
     }
 
-    private void setStatus(String status){
-        TextView textView = (TextView) audioView.findViewById(R.id.main_activity_status);
-        textView.setText(status);
-    }
-
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
         long progress = seekBar.getProgress();

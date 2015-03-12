@@ -25,6 +25,6 @@
             android:layout_centerVertical="true"
             android:baselineAlignBottom="false" />
 
-    <!--<include layout="@layout/player_controls_layout"/>-->
+    <include layout="@layout/player_controls_layout"/>
 </ee.promobox.promoboxandroid.widgets.TurningRelativeLayout>
  

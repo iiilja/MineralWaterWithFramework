@@ -84,9 +84,9 @@
 
         num_initial_members="3"/>
 
-    <MERGE3 max_interval="3000"
+    <MERGE3 max_interval="30000"
 
-        min_interval="1000"/>
+        min_interval="10000"/>
 
     <FD_SOCK/>
 

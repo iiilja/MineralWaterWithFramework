@@ -15,7 +15,7 @@ import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @Entity
-@Table(name = "users_devices_permissions")
+@Table(name = "users_campaigns_permissions")
 @XmlRootElement
 public class UsersCampaignsPermissions implements Serializable, Permissions {
 	

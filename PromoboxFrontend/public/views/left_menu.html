@@ -19,7 +19,7 @@
 <div class="setting-block" ng-class="{active: $root.showSettings}">
 
     <p class='btn-setting' href="#" 
-        ng-click="$root.showSettings = !$root.showSettings">Настройки <span></span></p>
+        ng-click="$root.showSettings = !$root.showSettings">{{ 'menu_settings_btn' | translate }} <span></span></p>
 
     <ul ng-show="$root.showSettings">
         <li>
@@ -37,7 +37,7 @@
         <li ng-show="admin">
             <a ui-sref="setting_device" ng-class="$root.left_menu_active == 'setting_device' ? 'active' : ''">
                 <span class="ico-block device-settings-ico"></span>
-                {{ 'settings_menu_devises' | translate }}
+                {{ 'settings_menu_devices' | translate }}
             </a>
         </li>
         <li ng-show="admin">

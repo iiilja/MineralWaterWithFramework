@@ -55,65 +55,77 @@ angular.module('promobox.services').controller('SettingAccountController', funct
     });
 
 angular.module('promobox.services').controller('SettingCampaignController', function($scope, $rootScope, facade) {
-        $rootScope.left_menu_active = 'setting_campaign';
         $rootScope.showSettings = true;
+
+        userPermissionsController($scope, $rootScope, facade, false);
     });
 
 angular.module('promobox.services').controller('SettingDeviceController', function($scope, $rootScope, facade) {
-        $rootScope.left_menu_active = 'setting_device';
         $rootScope.showSettings = true;
 
-        var $filter = facade.getFilter();
-
-        var entity = null;
-        $scope.deviceSettings = true;
-        if ($scope.deviceSettings) {
-            entity = facade.getDevices();
-        } else {
-            entity = facade.getCampaigns();
-        }
-
-        entity.listPermissions({
-            token: facade.getToken().get()
-            }, function(response) {
-                $scope.entities = response.entities;
-            });
-
-        var openPermissionsDialog = function(userPermissions, editMode) {
-            var modalInstanse = facade.getModal().open({
-                templateUrl: '/views/modal/permissions.html',
-                controller: 'ModalPermissionsController',
-                resolve: {
-                    facade: function() {
-                        return facade;
-                    },
-                    model: function() {
-                        return { 
-                            userPermissions: userPermissions,
-                            entity: entity,
-                            editMode: editMode
-                        }
-                    }
-                }
-            });
-        }
-
-        $scope.openAddPermission = function(userPermissions) {
-            openPermissionsDialog(userPermissions, false);
-        }
-
-        $scope.deletePermission = function(permission) {
-            entity.deletePermissions({
-                token: facade.getToken().get(),
-                userId: permission.id,
-                entityId: permission.entityId
-            }, function(response) {
-                permission.permissionWrite = false;
-                permission.permissionRead = false;
-            });
-        }
+        userPermissionsController($scope, $rootScope, facade, true);
 
     });
+
+var userPermissionsController = function($scope, $rootScope, facade, deviceSettings) {
+
+    var $filter = facade.getFilter();
+
+    var entity = null;
+    $scope.deviceSettings = deviceSettings
+    if ($scope.deviceSettings) {
+        entity = facade.getDevices();
+        $rootScope.left_menu_active = 'setting_device';
+    } else {
+        entity = facade.getCampaigns();
+        $rootScope.left_menu_active = 'setting_campaign';
+    }
+
+    entity.listPermissions({
+        token: facade.getToken().get()
+        }, function(response) {
+            $scope.entities = response.entities;
+        });
+
+    var openPermissionsDialog = function(userPermissions, selectedPermission, editMode) {
+        var modalInstanse = facade.getModal().open({
+            templateUrl: '/views/modal/permissions.html',
+            controller: 'ModalPermissionsController',
+            resolve: {
+                facade: function() {
+                    return facade;
+                },
+                model: function() {
+                    return { 
+                        userPermissions: userPermissions,
+                        selectedPermission: selectedPermission,
+                        entity: entity,
+                        editMode: editMode
+                    }
+                }
+            }
+        });
+    }
+
+    $scope.openAddPermission = function(userPermissions) {
+        openPermissionsDialog(userPermissions, null, false);
+    }
+
+    $scope.openEditPermission = function(userPermissions, selectedPermission) {
+        openPermissionsDialog(userPermissions, selectedPermission, true);
+    }
+
+    $scope.deletePermission = function(permission) {
+        entity.deletePermissions({
+            token: facade.getToken().get(),
+            userId: permission.id,
+            entityId: permission.entityId
+        }, function(response) {
+            permission.permissionWrite = false;
+            permission.permissionRead = false;
+        });
+    }
+}
 
 angular.module('promobox.services').controller('SettingPaymentController', function($scope, $rootScope, facade) {
         $rootScope.left_menu_active = 'setting_payment';
@@ -187,26 +199,28 @@ angular.module('promobox.services').controller('SettingUserController', function
 
 angular.module('promobox.services').controller('ModalPermissionsController', function ($scope, $modalInstance, facade, model) {
     var $filter = facade.getFilter();
+    var entity = model.entity;
 
     $scope.userPermissions = model.userPermissions;
+    $scope.selectedPermission = model.selectedPermission;
     $scope.editMode = model.editMode;
 
     $scope.selectPermission = function(permission) {
         $scope.selectedPermission = permission;
     }
     $scope.savePermission = function() {
-        entity.updatePermissions({
-            token: facade.getToken().get(),
-            userId: $scope.selectedPermission.id,
-            entityId: $scope.selectedPermission.entityId,
-            permissionRead: $scope.selectedPermission.permissionRead,
-            permissionWrite: $scope.selectedPermission.permissionWrite 
-        }, function(response){
+        if ($scope.selectedPermission) {
+            entity.updatePermissions({
+                token: facade.getToken().get(),
+                userId: $scope.selectedPermission.id,
+                entityId: $scope.selectedPermission.entityId,
+                permissionRead: $scope.selectedPermission.permissionRead,
+                permissionWrite: $scope.selectedPermission.permissionWrite 
+            }, function(response) {
 
-        });
+            });
+        }
     }
-
-
     $scope.cancel = function() {
         $modalInstance.dismiss('cancel');
     };

@@ -53,7 +53,7 @@ services.factory('Campaign', ['$resource',
                     }
                 },
                 updatePermissions: {
-                    method: 'GET',
+                    method: 'PUT',
                     url: apiEndpoint + 'token/:token/users/:userId/permissions/campaign/:entityId',
                     params: {
                         token: '@token',
@@ -91,7 +91,7 @@ services.factory('Device', ['$resource',
                     }
                 },
                 updatePermissions: {
-                    method: 'GET',
+                    method: 'PUT',
                     url: apiEndpoint + 'token/:token/users/:userId/permissions/device/:entityId',
                     params: {
                         token: '@token',

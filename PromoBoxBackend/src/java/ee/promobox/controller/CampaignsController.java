@@ -8,6 +8,7 @@ package ee.promobox.controller;
 import ee.promobox.entity.AdCampaigns;
 import ee.promobox.entity.CampaignsFiles;
 import ee.promobox.entity.Devices;
+import ee.promobox.entity.UsersCampaignsPermissions;
 import ee.promobox.service.Session;
 import ee.promobox.service.SessionService;
 import ee.promobox.service.UserService;
@@ -33,6 +34,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  *
@@ -51,7 +53,7 @@ public class CampaignsController {
     private UserService userService;
 
     @RequestMapping(value = "token/{token}/campaigns/{campaignId}", method = RequestMethod.GET)
-    public void showCampaign(
+    public @ResponseBody String showCampaign(
             @PathVariable("token") String token,
             @PathVariable("campaignId") int campaignId,
             HttpServletRequest request,
@@ -64,7 +66,7 @@ public class CampaignsController {
         Session session = sessionService.findSession(token);
 
         // if session is not empty
-        if (session != null) {
+        if (session != null && checkReadPermission(session, campaignId)) {
             int clientId = session.getClientId();
             AdCampaigns campaign = userService.findCampaignByIdAndClientId(campaignId, clientId);
 
@@ -85,6 +87,12 @@ public class CampaignsController {
                 resp.put("countVideos", campaign.getCountVideos());
                 resp.put("audioLength", campaign.getAudioLength());
                 resp.put("videoLength", campaign.getVideoLength());
+                
+                if (session.isAdmin()) {
+                	resp.put("permissionWrite", true);
+                } else {
+                	resp.put("permissionWrite", checkWritePermission(session, campaign.getId()));
+                }
 
                 try {
                     JSONObject workTimeData = new JSONObject(campaign.getWorkTimeData());
@@ -101,17 +109,18 @@ public class CampaignsController {
                 resp.put("files", FilesController.getFilesInformation(campaignFiles));
 
                 response.setStatus(HttpServletResponse.SC_OK);
-                RequestUtils.printResult(resp.toString(), response);
+                return resp.toString();
             }
 
         } else {
             RequestUtils.sendUnauthorized(response);
         }
 
+        return null;
     }
 
     @RequestMapping(value = "token/{token}/campaigns", method = RequestMethod.GET)
-    public void showAllCampaigns(
+    public @ResponseBody String showAllCampaigns(
             @PathVariable("token") String token,
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
@@ -123,11 +132,17 @@ public class CampaignsController {
 
         if (session != null) {
             int clientId = session.getClientId();
-            List<AdCampaigns> campaigns = userService.findUserAdCompaigns(clientId);
+            List<AdCampaigns> campaigns = null;
+            if (session.isAdmin()) {
+            	campaigns = userService.findUserAdCompaigns(clientId);
+            } else {
+            	campaigns = userService.findUserAdCompaigns(clientId, session.getUserId());
+            }
 
+            JSONArray campaignsArray = new JSONArray();
             if (!campaigns.isEmpty()) {
                 // array for holding campaigns
-                JSONArray campaignsArray = new JSONArray();
+                
                 // iterate trough the list of campaigns that belong to the client
                 SimpleDateFormat hourFowmat = new SimpleDateFormat("H");
                 SimpleDateFormat dayOfWeekFormat = new SimpleDateFormat("EE");
@@ -168,21 +183,22 @@ public class CampaignsController {
 
                     campaignsArray.put(jsonCampaign);
                 }
-
-                // put array of campaigns into response
-                resp.put("campaigns", campaignsArray);
-
-                response.setStatus(HttpServletResponse.SC_OK);
-                RequestUtils.printResult(resp.toString(), response);
             }
+            
+            resp.put("campaigns", campaignsArray);
+            
+            response.setStatus(HttpServletResponse.SC_OK);
+            return resp.toString();
         } else {
             RequestUtils.sendUnauthorized(response);
+            
+            return null;
         }
 
     }
 
     @RequestMapping(value = "token/{token}/campaigns", method = RequestMethod.POST)
-    public void createCampaign(
+    public @ResponseBody String createCampaign(
             @PathVariable("token") String token,
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
@@ -192,7 +208,7 @@ public class CampaignsController {
 
         Session session = sessionService.findSession(token);
 
-        if (session != null) {
+        if (session != null && session.isAdmin()) {
 
             AdCampaigns campaign = new AdCampaigns();
             
@@ -247,16 +263,18 @@ public class CampaignsController {
             response.setStatus(HttpServletResponse.SC_OK);
             resp.put("id", campaign.getId());
 
-            RequestUtils.printResult(resp.toString(), response);
+            return resp.toString();
 
         } else {
             RequestUtils.sendUnauthorized(response);
+            
+            return null;
         }
 
     }
 
     @RequestMapping(value = "token/{token}/campaigns/{id}", method = RequestMethod.DELETE)
-    public void deleteCampaign(
+    public @ResponseBody String deleteCampaign(
             @PathVariable("token") String token,
             @PathVariable("id") int id,
             HttpServletRequest request,
@@ -267,7 +285,7 @@ public class CampaignsController {
 
         Session session = sessionService.findSession(token);
 
-        if (session != null) {
+        if (session != null && checkWritePermission(session, id)) {
         	List<Devices> devices =  userService.findDevicesByCampaing(id);
         	if (devices.isEmpty()) {
 
@@ -291,16 +309,18 @@ public class CampaignsController {
         	}
 
             response.setStatus(HttpServletResponse.SC_OK);
-            RequestUtils.printResult(resp.toString(), response);
+            return resp.toString();
 
         } else {
             RequestUtils.sendUnauthorized(response);
+            
+            return null;
         }
 
     }
 
     @RequestMapping(value = "token/{token}/campaigns/{id}", method = RequestMethod.PUT)
-    public void updateCampaign(
+    public @ResponseBody String updateCampaign(
             @PathVariable("token") String token,
             @PathVariable("id") int id,
             @RequestBody String json,
@@ -313,7 +333,7 @@ public class CampaignsController {
         Session session = sessionService.findSession(token);
 
         // if session exists
-        if (session != null) {
+        if (session != null && checkWritePermission(session, id)) {
 
             int clientId = session.getClientId();
             AdCampaigns campaign = userService.findCampaignByIdAndClientId(id, clientId);
@@ -368,16 +388,17 @@ public class CampaignsController {
                 userService.updateCampaign(campaign);
 
                 response.setStatus(HttpServletResponse.SC_OK);
-                RequestUtils.printResult(resp.toString(), response);
+                return resp.toString();
             }
         } else {
             RequestUtils.sendUnauthorized(response);
         }
 
+        return null;
     }
     
     @RequestMapping(value = "token/{token}/campaigns/{id}/nextFile/{file}", method = RequestMethod.PUT)
-    public void clearDeviceCache(
+    public @ResponseBody String nextFile(
             @PathVariable("token") String token,
             @PathVariable("id") int id,
             @PathVariable("file") int fileId,
@@ -389,7 +410,7 @@ public class CampaignsController {
 
         Session session = sessionService.findSession(token);
 
-        if (session != null) {
+        if (session != null && checkWritePermission(session, id)) {
             int clientId = session.getClientId();
             
 
@@ -406,12 +427,33 @@ public class CampaignsController {
             }
             
             response.setStatus(HttpServletResponse.SC_OK);
-            RequestUtils.printResult(resp.toString(), response);
+            return resp.toString();
         } else {
             RequestUtils.sendUnauthorized(response);
         }
+        
+        return null;
+    }
+    
+    private boolean checkReadPermission(Session session, int campaignId) {
+    	if (session.isAdmin()) {
+    		return true;
+    	}
+    	
+    	UsersCampaignsPermissions permission = userService.findUsersCampaignsPermissions(session.getUserId(), campaignId);
+    	
+    	return permission == null ? false : permission.isPermissionRead();
     }
 
+    private boolean checkWritePermission(Session session, int campaignId) {
+    	if (session.isAdmin()) {
+    		return true;
+    	}
+    	
+    	UsersCampaignsPermissions permission = userService.findUsersCampaignsPermissions(session.getUserId(), campaignId);
+    	
+    	return permission == null ? false : permission.isPermissionWrite();
+    }
 
     @ExceptionHandler(Exception.class)
     public void handleAllException(Exception ex) {

@@ -1,4 +1,10 @@
-<button ng-click="add_device()" type="button" class="btn btn-primary" style="margin: 15px 0 15px 15px;">{{ 'device_newdevice' | translate }}</button>
+<div class="alert alert-info" role="alert" ng-show="devices.length == 0">
+    <strong>Нет ни одного устроайства!</strong> 
+</div>
+
+<button ng-click="add_device()"
+    ng-show="$root.admin"
+ type="button" class="btn btn-primary" style="margin: 15px 0 15px 15px;">{{ 'device_newdevice' | translate }}</button>
 
 <div ng-repeat="device in devices">
     <div class="center-block campaigns_block">
@@ -22,14 +28,14 @@
                            ng-click="showDeviceSettings(0)"
                            ng-show="visibleDeviceSettings == device.id"><span class="glyphicon glyphicon-cog"></span>{{'campaign_edit_hidesettings' | translate}}</a>
                         <p class="pull-right">
-                            {{ 'device_updatedate' | translate }}:<br/> {{timeconvert(device.lastRequestDate)}}
+                            {{ 'device_updatedate' | translate }}:<br/> {{device.lastRequestDt | dateConvert}}
                         </p>
                     </div>
                 </div>
                 <div class="company-info success" ng-class="device.status == 2 ? 'success' : (device.status == 1 ? 'warning' : 'danger')">
                     <div ng-if="device.status == 3">
                         <h4>{{ 'device_offtime' | translate }}</h4>
-                        <p>{{device.lastRequestDt | deviceTime}}</p>
+                        <p>{{device.lastRequestDt | timeConvert}}</p>
                     </div>
                     <div ng-if="device.currentCamp && device.status != 3">
                         <h4>{{ 'device_currentcompany' | translate }}</h4>
@@ -64,7 +70,8 @@
                         <div class="col-md-7 col-xs-9 col-sm-8">
                             <p class="pull-left">{{ device.cache |  bytes }}</p>
                             <button type="button" class="btn btn-warning pull-right"
-                                    ng-click="clearCache(device.id)">{{ 'device_clearcache' | translate }}</button>
+                                    ng-click="clearCache(device.id)"
+                                    ng-show="device.permissionWrite">{{ 'device_clearcache' | translate }}</button>
                         </div>
                     </div>
 
@@ -98,11 +105,14 @@
                                     <label class="btn btn-primary active">
                                         <input type="checkbox" autocomplete="off" checked><span class="glyphicon glyphicon-play"></span> {{campaign.name}}
                                     </label>
-                                    <a class="close" ng-click="delete_device_campaign(device, campaign.id)"><span class="glyphicon glyphicon-remove"></span></a>
+                                    <a class="close" 
+                                        ng-click="delete_device_campaign(device, campaign.id)"
+                                        ng-show="device.permissionWrite"><span class="glyphicon glyphicon-remove"></span></a>
                                 </li>     
                             </ul>
                             <button type="button" class="btn btn-info"
                                     data-toggle="modal" data-target="#add-company"
+                                    ng-show="device.permissionWrite"
                                     ng-click="open_add_campaign(device)">{{ 'device_addcampaign' | translate }}</button>
                         </div>
                     </div>
@@ -140,7 +150,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="button-wrap">
+                <div class="button-wrap" ng-show="device.permissionWrite">
                     <div class="form-group">
                         <button type="submit" ng-click="change_device(device)" class="btn btn-primary ng-binding">{{ 'device_save' | translate }}</button>
                         <button type="button" ng-click="showDeviceSettings(0)" class="btn btn-default ng-binding" style="margin-left: 15px;">{{ 'device_cancel' | translate }}</button>

@@ -16,6 +16,7 @@ import ee.promobox.entity.Files;
 import ee.promobox.entity.Users;
 import ee.promobox.entity.UsersCampaignsPermissions;
 import ee.promobox.entity.UsersDevicesPermissions;
+import ee.promobox.entity.Versions;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -107,12 +108,37 @@ public class UserServiceImpl implements UserService {
 
         return q.list();
     }
+    
+    public List<AdCampaigns> findUserAdCompaigns(int clientId, int userId) {
+        Session session = sessionFactory.getCurrentSession();
+
+        Query q = session.createQuery("from AdCampaigns c where c.clientId = :clientId AND c.status > 0 AND c.status < 4 AND "
+        		+ " EXISTS (SELECT 1 FROM UsersCampaignsPermissions p WHERE p.campaignId = c.id AND p.userId = :userId AND p.permissionRead IS TRUE) "
+        		+ " ORDER BY c.createdDate DESC, c.id DESC");
+        q.setParameter("clientId", clientId);
+        q.setParameter("userId", userId);
+
+        return q.list();
+    }
 
     public List<Devices> findUserDevieces(int clientId) {
         Session session = sessionFactory.getCurrentSession();
 
-        Query q = session.createQuery("from Devices where clientId = :clientId AND status < 4 ORDER BY createdDt DESC, id DESC");
+        Query q = session.createQuery("from Devices where clientId = :clientId AND status < 4 "
+        		+ " ORDER BY createdDt DESC, id DESC");
         q.setParameter("clientId", clientId);
+
+        return q.list();
+    }
+    
+    public List<Devices> findUserDevieces(int clientId, int userId) {
+        Session session = sessionFactory.getCurrentSession();
+
+        Query q = session.createQuery("from Devices d where d.clientId = :clientId AND d.status < 4 AND "
+        		+ " EXISTS (SELECT 1 FROM UsersDevicesPermissions p WHERE p.userId = :userId AND p.deviceId = d.id AND p.permissionRead IS TRUE) "
+        		+ " ORDER BY d.createdDt DESC, d.id DESC");
+        q.setParameter("clientId", clientId);
+        q.setParameter("userId", userId);
 
         return q.list();
     }
@@ -529,8 +555,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public UsersDevicesPermissions findUsersDevicesPermissions(int userId,
-			int deviceId) {
+	public UsersDevicesPermissions findUsersDevicesPermissions(int userId, int deviceId) {
 		Session session = sessionFactory.getCurrentSession();
 
     	Query q = session.createQuery("FROM UsersDevicesPermissions WHERE deviceId = :deviceId AND userId = :userId");
@@ -604,6 +629,17 @@ public class UserServiceImpl implements UserService {
     	q.setParameter("clientId", clientId);
     	
 		return q.list();
+	}
+
+	@Override
+	public Versions findCurrentVersion() {
+		Session session = sessionFactory.getCurrentSession();
+
+    	Query q = session.createQuery("FROM Versions WHERE isCurrent IS TRUE ORDER BY versionDt DESC");
+    	q.setMaxResults(1);
+    	
+    	return (Versions) q.uniqueResult();
+    	
 	}
 
     

@@ -11,6 +11,7 @@ import ee.promobox.entity.Permissions;
 import ee.promobox.entity.Users;
 import ee.promobox.entity.UsersCampaignsPermissions;
 import ee.promobox.entity.UsersDevicesPermissions;
+import ee.promobox.entity.Versions;
 import ee.promobox.service.Session;
 import ee.promobox.service.SessionService;
 import ee.promobox.service.UserService;
@@ -19,9 +20,7 @@ import ee.promobox.util.RequestUtils;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
@@ -43,7 +42,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.ModelAndView;
 
 /**
  *
@@ -61,9 +59,26 @@ public class UserController {
     @Autowired
     private SessionService sessionService;
     
+    @RequestMapping("/version")
+    public @ResponseBody String applicationVersion(
+            HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+
+        JSONObject resp = new JSONObject();
+        resp.put("response", RequestUtils.ERROR);
+        
+        Versions version = userService.findCurrentVersion();
+        if (version != null) {
+        	resp.put("version", version.getVersion());
+        	resp.put("response", RequestUtils.OK);
+        }
+        
+        return resp.toString();
+    }
+    
 
     @RequestMapping(value="/user/register", method=RequestMethod.POST)
-    public ModelAndView userRegisterHandler(
+    public @ResponseBody String userRegisterHandler(
     		@RequestBody String json,
     		HttpServletRequest request,
     		HttpServletResponse response) throws Exception {
@@ -95,7 +110,7 @@ public class UserController {
     		resp.put("response", RequestUtils.OK);
     	}
 
-    	return RequestUtils.printResult(resp.toString(), response);
+    	return resp.toString();
     }
     
     private boolean checkUser(Users user, JSONObject objectGiven, JSONObject resp, String excludeEmail) throws JSONException {
@@ -175,7 +190,7 @@ public class UserController {
         		user.setClientId(clientId);
         		user.setCreatedDt(new Date());
         		user.setActive(false);
-        		user.setAdmin(true);
+        		user.setAdmin(false);
         		userService.addUser(user);
         		
     			resp.put("user", userToJson(user));
@@ -407,6 +422,7 @@ public class UserController {
 		userJson.put("surname", user.getSurname());
 		userJson.put("email", user.getEmail());
 		userJson.put("active", user.getActive());
+		userJson.put("admin", user.getAdmin());
 		
 		return userJson;
     	
@@ -576,7 +592,7 @@ public class UserController {
     }
     
     @RequestMapping("/user/login")
-    public ModelAndView userLoginHandler(
+    public @ResponseBody String userLoginHandler(
             @RequestParam String email,
             @RequestParam String password,
             HttpServletRequest request,
@@ -603,13 +619,13 @@ public class UserController {
             resp.put("token", session.getUuid());
         }
 
-        return RequestUtils.printResult(resp.toString(), response);
+        return resp.toString();
 
     }
     
     
     @RequestMapping("/user/data/{token}")
-    public void userDataHandler(
+    public @ResponseBody String userDataHandler(
             @PathVariable("token") String token,
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
@@ -667,13 +683,14 @@ public class UserController {
             resp.put("devices", devs);
             
             response.setStatus(HttpServletResponse.SC_OK);
-            RequestUtils.printResult(resp.toString(), response);
+            
+            return resp.toString();
 
         } else {
             RequestUtils.sendUnauthorized(response);
         }
 
-        
+        return null;
     }
     
     private static String genereateRandomPass() {

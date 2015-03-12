@@ -31,6 +31,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.Period;
+import org.joda.time.format.PeriodFormatter;
+import org.joda.time.format.PeriodFormatterBuilder;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -48,6 +51,9 @@ import org.springframework.web.bind.annotation.*;
  */
 @Controller
 public class DevicesController {
+	
+	public static final int CHECK_PERIOD = 15 * 60 * 1000;
+	public static final int CHECK_COUNT_BEFORE_EMAIL = 3;
 
     private final static Logger log = LoggerFactory.getLogger(
             DevicesController.class);
@@ -69,19 +75,42 @@ public class DevicesController {
     @Autowired
     private JmsTemplate jmsTemplate;
     
-    @Scheduled(fixedDelay = 15 * 60 * 1000)
-    public void emailDeviceStatus() {
+    @Scheduled(fixedDelay = CHECK_PERIOD)
+    public void checkDeviceStatus() {
         for (Devices d: userService.findAllDevices()) {
-            if (System.currentTimeMillis() - d.getLastDeviceRequestDt().getTime() >= 15 * 60 * 1000) {
+            if (System.currentTimeMillis() - d.getLastDeviceRequestDt().getTime() >= CHECK_PERIOD) {
                 if (d.getStatus() != Devices.STATUS_AHRCHIVED && 
                         d.getStatus() != Devices.STATUS_OFFLINE) {
-                    sendDeviceEmail(d, "Device OFFLINE!");
+                	if (d.getStatus() == Devices.STATUS_ONLINE || d.getStatus() == Devices.STATUS_USED) {
+                		d.setStatePeriod(d.getStatePeriod() + d.getCheckCounter() * CHECK_PERIOD);
+                		d.setCheckCounter(0);
+                	}
+                   
                     
                     d.setStatus(Devices.STATUS_OFFLINE);
                     userService.updateDevice(d);
                 }
+                
+                if (d.getStatus() == Devices.STATUS_OFFLINE) {
+                	d.setCheckCounter(d.getCheckCounter() + 1);
+                	
+                	if (d.getCheckCounter() == CHECK_COUNT_BEFORE_EMAIL) {
+                		 sendDeviceEmail(d, "OFFLINE!");
+                	}
+                	
+                	userService.updateDevice(d);
+                }
+              
+            } else if (d.getStatus() == Devices.STATUS_ONLINE) {
+            	d.setCheckCounter(d.getCheckCounter() + 1);
+            	
+            	if (d.getCheckCounter() == CHECK_COUNT_BEFORE_EMAIL) {
+	           		 sendDeviceEmail(d, "ONLINE!");
+	           	}
+            	
+            	userService.updateDevice(d);
             }
-        }
+        } 
     }
 
     @RequestMapping("/device/{uuid}/pull")
@@ -230,7 +259,8 @@ public class DevicesController {
                 }
                 
                 if (d.getStatus() == Devices.STATUS_OFFLINE) {
-                    sendDeviceEmail(d, "Device ONLINE!");
+                	d.setStatePeriod(d.getStatePeriod() + d.getCheckCounter() * CHECK_PERIOD);
+                    d.setCheckCounter(0);
                 }
 
                 d.setLastDeviceRequestDt(new Date());
@@ -261,15 +291,36 @@ public class DevicesController {
         }
     }
     
-    private void sendDeviceEmail(Devices d, String topic) {
+    private void sendDeviceEmail(Devices d, String status) {
+    	SimpleDateFormat dt = new SimpleDateFormat("dd.mm.yyyy hh:mm");
+    	String now = dt.format(new Date());
+    	
         MailDto mailDto = new MailDto();
         mailDto.setFrom("no-reply@promobox.ee");
-        mailDto.setSubject(topic);
+        mailDto.setSubject("Device " + d.getUuid() + status + "(" + now + ")");
         mailDto.setTo(config.getDeviceAdmin());
 
         StringBuilder text = new StringBuilder();
         text.append("Device: " + d.getUuid() + "\n");
         text.append("Description: " + d.getDescription() + "\n");
+        text.append("Status: " + status + "\n");
+        text.append("Date: " + now + "\n");
+        
+		PeriodFormatter formatter = new PeriodFormatterBuilder()
+			.printZeroNever()
+		    .appendDays()
+		    .appendSuffix(" day ", " days ")
+		    .printZeroAlways()
+		    .appendHours()
+		    .appendSeparator(":")
+		    .minimumPrintedDigits(2)
+		    .appendMinutes()
+		    .toFormatter();
+		
+		Period period = new Period(d.getStatePeriod());
+		
+		text.append("Time between states: " + formatter.print(period.normalizedStandard()) + "\n");
+		d.setStatePeriod(0);
 
         mailDto.setText(text.toString());
 

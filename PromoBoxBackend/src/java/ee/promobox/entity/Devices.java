@@ -45,7 +45,6 @@ public class Devices implements Serializable {
     public static final int RESOLUTION_1280X800 = 4;
     public static final int RESOLUTION_1024X768 = 5;
     
-    
     public static final int STATUS_CREATED = 0;
     public static final int STATUS_USED = 1;
     public static final int STATUS_ONLINE = 2;
@@ -153,8 +152,13 @@ public class Devices implements Serializable {
     
     @Column(name = "resolution_horizontal")
     private Integer resolutionHorizontal;
-
     
+    @Column(name = "check_counter", nullable = false)
+    private int checkCounter;
+    
+    @Column(name = "state_period" , nullable = false)
+    private long statePeriod;
+
     @Column(name = "created_dt")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDt;
@@ -460,6 +464,22 @@ public class Devices implements Serializable {
 
 	public void setResolutionHorizontal(Integer resolutionHorizontal) {
 		this.resolutionHorizontal = resolutionHorizontal;
+	}
+
+	public int getCheckCounter() {
+		return checkCounter;
+	}
+
+	public void setCheckCounter(int checkCounter) {
+		this.checkCounter = checkCounter;
+	}
+
+	public long getStatePeriod() {
+		return statePeriod;
+	}
+
+	public void setStatePeriod(long statePeriod) {
+		this.statePeriod = statePeriod;
 	}
 	
 }

@@ -292,7 +292,7 @@ public class DevicesController {
     }
     
     private void sendDeviceEmail(Devices d, String status) {
-    	SimpleDateFormat dt = new SimpleDateFormat("dd.mm.yyyy hh:mm");
+    	SimpleDateFormat dt = new SimpleDateFormat("dd.MM.yyyy hh:mm");
     	String now = dt.format(new Date());
     	
         MailDto mailDto = new MailDto();

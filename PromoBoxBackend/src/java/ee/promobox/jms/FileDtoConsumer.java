@@ -30,6 +30,8 @@ import ee.promobox.util.UnoconvOP;
 import ee.promobox.util.VideoOP;
 
 public class FileDtoConsumer implements Runnable {
+	
+	private static final int CRF_MAX = 50;
 
 	private static final Log log = LogFactory.getLog(FileDtoConsumer.class);
 
@@ -463,6 +465,7 @@ public class FileDtoConsumer implements Runnable {
 		videoConvert.thumbnail();
 		videoConvert.scale("500:-1");
 		videoConvert.format("image2");
+		//videoConvert.crfMax(CRF_MAX);
 
 		videoConvert.processToFile(thumbFile);
 
@@ -495,16 +498,29 @@ public class FileDtoConsumer implements Runnable {
 		VideoOP videoConvert = new VideoOP(config.getAvconv());
 
 		if (angle == 0) {
-			videoConvert.input(raw).codecVideo(codec).scale("-1:720")
-					.bitrateVideo("2M").maxrate("2M").format(format)
-					.strict("experimental").overwrite();
+			videoConvert.input(raw)
+					.codecVideo(codec)
+					//.crfMax(CRF_MAX)
+					.scale("-1:720")
+					.bitrateVideo("3M")
+					.maxrate("3M")
+					.format(format)
+					.strict("experimental")
+					.overwrite();
 
 			return videoConvert.processToFile(output);
 
 		} else {
 			videoConvert = new VideoOP(config.getAvconv());
-			videoConvert.input(raw).codecVideo(codec).bitrateVideo("2M")
-					.maxrate("2M").format(format).strict("experimental").overwrite();
+			videoConvert.input(raw)
+				.codecVideo(codec)
+				//.crfMax(CRF_MAX)
+				.bitrateVideo("3M")
+				.maxrate("3M")
+				.format(format)
+				.strict("experimental")
+				//.crfMax(CRF_MAX)
+				.overwrite();
 
 			if (angle == 90) {
 				videoConvert.vf("scale=-1:720", "transpose=1");

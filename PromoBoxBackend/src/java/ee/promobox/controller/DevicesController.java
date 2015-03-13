@@ -297,8 +297,9 @@ public class DevicesController {
     	
         MailDto mailDto = new MailDto();
         mailDto.setFrom("no-reply@promobox.ee");
-        mailDto.setSubject("Device " + d.getUuid() + status + "(" + now + ")");
+        mailDto.setSubject("Device " + d.getUuid() + " " + status + " (" + now + ")");
         mailDto.setTo(config.getDeviceAdmin());
+        mailDto.setHtml(false);
 
         StringBuilder text = new StringBuilder();
         text.append("Device: " + d.getUuid() + "\n");

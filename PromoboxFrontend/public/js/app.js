@@ -158,7 +158,6 @@ app.controller('Exit', ['token',
 app.controller('LeftMenuController', ['$scope', '$location', '$http', 'token', 'Clients', '$rootScope', '$translate',
     function ($scope, $location, $http, token, Clients, $rootScope, $translate) {
         Clients.getClient({token: token.get()}, function(response) {
-            console.log("admin: " + response.admin);
             $scope.admin = response.admin;
             $rootScope.admin = response.admin;
         });
@@ -188,7 +187,7 @@ app.controller('FooterController', ['$scope', '$location', '$http', 'token', '$r
             $translate.use(lang);
             $scope.currentLang = lang;
         }
-        setTimeout(function(){jQuery('input[type="checkbox"], input[type="radio"],select').styler();}, 50);
+        //setTimeout(function(){jQuery('input[type="checkbox"], input[type="radio"],select').styler();}, 50);
 
     }]);
 
@@ -261,7 +260,7 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         $scope.apiEndpoint = apiEndpoint;
         
         Campaign.get_campaigns({token: token.get(), id: $stateParams.cId}, function (response) {
-            console.log(response);
+            
             $scope.campaign = response;
             $scope.checkedDays = $scope.campaign.days;
             $scope.checkedHours = $scope.campaign.hours;
@@ -283,6 +282,8 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
                                     campaign_video_length: $scope.campaign.videoLength
                                     };
             
+            console.log($scope.campaign_form);
+
             if (!$scope.campaign.files) {
                 $scope.campaign.files = [];
             }
@@ -419,10 +420,8 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
             var date = new Date(time);
             
             var h = date.getHours();
-            var m = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
-            var result =  h + ":" + m;
-            
-            console.log(result);
+            //var m = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
+            var result =  h + ":00";
             
             return result;
         };
@@ -432,8 +431,6 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
             return data.getTime() + (timePart[0] * 60 * 60 + timePart[1] * 60) * 1000;
         };
         $scope.edit_company = function () {
-            console.log($scope.checkedHours);
-            console.log($scope.checkedDays);
             console.log($scope.campaign_form);
 
             Campaign.edit_campaigns({
@@ -447,7 +444,6 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
                 duration: $scope.campaign_form.campaign_time, 
                 days: $scope.checkedDays, 
                 hours: $scope.checkedHours}, function(response) {
-                    console.log(response)
                     if (response.WARN) {
                         sysMessage.warning($filter('translate')('system_device') + ' ' + $filter('translate')('device_time_intersection'));
                     }
@@ -581,7 +577,6 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         
         var refreshFilesModel = function () {
             Campaign.get_campaigns({token: token.get(), id: $stateParams.cId}, function (response) {
-                console.log(response);
                 $scope.campaign.files = response.files;
                 $scope.campaign_form.filesArray = $scope.campaign.files;
                 
@@ -597,7 +592,6 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         };
 
         var file_upload_url = apiEndpoint + 'token/' + token.get() + '/campaigns/' + $stateParams.cId + '/files/';
-        console.log(file_upload_url);
 
         var uploader = $scope.uploader = new FileUploader({
             url: file_upload_url
@@ -653,7 +647,7 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
 
         console.info('uploader', uploader);
         
-        setTimeout(function(){jQuery('.styler').styler();}, 800);
+        //setTimeout(function(){jQuery('.styler').styler();}, 800);
     }]);
 
 app.controller('CampaignsController', ['$scope', 'token', 'Campaign', 'sysMessage', '$rootScope', '$filter',
@@ -662,8 +656,6 @@ app.controller('CampaignsController', ['$scope', 'token', 'Campaign', 'sysMessag
             $rootScope.left_menu_active = 'campaign';
             $scope.currentCampaign = {};
             Campaign.get_all_campaigns({token: token.get()}, function (response) {
-                console.log(response);
-                
                 $scope.campaigns = response.campaigns;
                 
                 if ($scope.campaigns.length > 0) {
@@ -700,8 +692,7 @@ app.controller('DevicesController', ['$scope', 'token', 'Device', 'sysMessage', 
                 if ($scope.devices.length > 0) {
                     $scope.currentDevice = $scope.devices[0];
                 }
-                setTimeout(function(){jQuery('.styler').styler();}, 800); 
-                console.log("styler")
+                //setTimeout(function(){jQuery('.styler').styler();}, 800); 
             });
             
             $scope.open_add_campaign = function(device) {

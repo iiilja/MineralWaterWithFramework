@@ -17,7 +17,9 @@
 	    <div class="bottom-block clearfix">
 	    	<div class="pull-left">
 	    		<button type="button" class="btn btn-default" ng-click="openEditUser()">{{ 'modal_change' | translate }}</button>
-	    		<button type="button" class="btn btn-default" ng-click="deleteUser()">{{ 'list_remove' | translate }}</button>
+	    		<button type="button" class="btn btn-default" 
+	    			ng-click="deleteUser()"
+	    			ng-hide="selectedUser.admin">{{ 'list_remove' | translate }}</button>
 	    	</div>
 	    	<div class="pull-right">
 	    		<button type="button" class="btn btn-success" ng-click="openAddUser()">{{ 'device_add' | translate }}</button>

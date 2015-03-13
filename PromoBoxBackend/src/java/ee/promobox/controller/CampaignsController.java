@@ -224,8 +224,8 @@ public class CampaignsController {
             Calendar finish = GregorianCalendar.getInstance();
             finish.setTime(today);
             finish.set(Calendar.YEAR, 2099);
-            finish.set(Calendar.HOUR_OF_DAY, 23);
-            finish.set(Calendar.MINUTE, 30);
+            finish.set(Calendar.HOUR_OF_DAY, 0);
+            finish.set(Calendar.MINUTE, 0);
             finish.set(Calendar.SECOND, 0);
             finish.set(Calendar.MILLISECOND, 0);
             

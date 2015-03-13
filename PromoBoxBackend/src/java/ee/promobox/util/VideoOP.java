@@ -63,6 +63,13 @@ public class VideoOP {
 
         return this;
     }
+    
+    public VideoOP crfMax(int crfMax) {
+        args.add("-crf_max");
+        args.add("" + crfMax);
+
+        return this;
+    }
 
     public VideoOP bitrateAudio(String bitrateAudio) {
         args.add("-b:a");

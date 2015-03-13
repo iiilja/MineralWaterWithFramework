@@ -65,6 +65,8 @@ public class FileTypeUtils {
                 return FILE_TYPE_VIDEO;
             case "WMV":
                 return FILE_TYPE_VIDEO;
+            case "TS":
+            	return FILE_TYPE_VIDEO;
             default:
                 return 0;
         }

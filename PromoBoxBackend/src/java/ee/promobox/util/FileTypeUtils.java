@@ -68,7 +68,7 @@ public class FileTypeUtils {
             case "TS":
             	return FILE_TYPE_VIDEO;
             default:
-                return 0;
+                return INVALID_FILE_TYPE;
         }
     }
 

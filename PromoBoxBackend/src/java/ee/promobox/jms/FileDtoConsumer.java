@@ -242,6 +242,9 @@ public class FileDtoConsumer implements Runnable {
 		case "M2TS":
 			result = convertVideo(f);
 			break;
+		case "TS":
+			result = convertVideo(f);
+			break;
 		case "AAC":
 			result = convertAudio(f);
 			break;

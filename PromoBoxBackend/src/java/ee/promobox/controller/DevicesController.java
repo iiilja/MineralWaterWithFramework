@@ -434,7 +434,12 @@ public class DevicesController {
                         jsonD.put("campaignIds", -1);
                     }
 
-                    List<AdCampaigns> adCampaignses = userService.findUserAdCompaigns(session.getClientId());
+                    List<AdCampaigns> adCampaignses = null;
+                    if (session.isAdmin()) {
+                    	adCampaignses = userService.findUserAdCompaigns(session.getClientId());
+                    } else {
+                    	adCampaignses = userService.findUserAdCompaigns(session.getClientId(), session.getUserId());
+                    }
 
                     JSONArray array = new JSONArray();
 

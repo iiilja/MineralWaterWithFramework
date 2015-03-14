@@ -1,32 +1,33 @@
+<div class="add-user">
+	<div class="modal-header">
+		<button type="button" class="close" ng-click="cancel()"><span aria-hidden="true">&times;</span></button>
+		<h4 class="modal-title" id="myModalLabel" ng-hide="editMode">{{ 'modal_user_add_user' | translate }}</h4>
+		<h4 class="modal-title" id="myModalLabel" ng-show="editMode">{{ 'modal_user_change_user' | translate }}</h4>
+	</div>
 
-<div class="modal-header">
-	<button type="button" class="close" ng-click="cancel()"><span aria-hidden="true">&times;</span></button>
-	<h4 class="modal-title" id="myModalLabel" ng-hide="editMode">{{ 'modal_user_add_user' | translate }}</h4>
-	<h4 class="modal-title" id="myModalLabel" ng-show="editMode">{{ 'modal_user_change_user' | translate }}</h4>
-</div>
+	<div class="modal-body">
+		<form>
+			<div class="form-group">
+				<input type="text" class="form-control" placeholder="Имя" ng-model="data.firstname">
+			</div>
 
-<div class="modal-body">
-	<form>
-		<div class="form-group">
-			<input type="text" class="form-control" placeholder="Имя" ng-model="data.firstname">
-		</div>
+			<div class="form-group">
+				<input type="text" class="form-control" placeholder="Фамилия" ng-model="data.surname">
+			</div>
 
-		<div class="form-group">
-			<input type="text" class="form-control" placeholder="Фамилия" ng-model="data.surname">
-		</div>
+			<div class="form-group">
+				<input type="email" class="form-control" placeholder="E-mail" ng-model="data.email">
+			</div>
 
-		<div class="form-group">
-			<input type="email" class="form-control" placeholder="E-mail" ng-model="data.email">
-		</div>
+			<div class="form-group">
+				<input type="password" class="form-control" placeholder="Пароль" ng-model="data.password">
+			</div>
+		</form>		
+	</div>
 
-		<div class="form-group">
-			<input type="password" class="form-control" placeholder="Пароль" ng-model="data.password">
-		</div>
-	</form>		
-</div>
-
-<div class="modal-footer">
-	<button type="button" class="btn btn-success" ng-click="addUser()" ng-hide="editMode">{{ 'modal_add' | translate }}</button>
-	<button type="button" class="btn btn-success" ng-click="editUser()" ng-show="editMode">{{ 'modal_change' | translate }}</button>
-	<button type="button" class="btn btn-default" ng-click="cancel()">{{ 'modal_cancel' | translate }}</button>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-success" ng-click="addUser()" ng-hide="editMode">{{ 'modal_add' | translate }}</button>
+		<button type="button" class="btn btn-success" ng-click="editUser()" ng-show="editMode">{{ 'modal_change' | translate }}</button>
+		<button type="button" class="btn btn-default" ng-click="cancel()">{{ 'modal_cancel' | translate }}</button>
+	</div>
 </div>

@@ -172,6 +172,10 @@ app.controller('TopMenuController', ['$scope', '$location', '$http', 'token', 'C
         Clients.getClient({token: token.get()}, function(response) {
             $scope.compName = response.compName;
         });
+
+        $scope.openAccount = function() {
+            $location.path('/setting/account');
+        }
     }]);
 
 app.controller('FooterController', ['$scope', '$location', '$http', 'token', '$rootScope', '$translate', '$filter',

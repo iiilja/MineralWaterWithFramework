@@ -315,7 +315,8 @@ public class WallImageView extends ImageView{
     private static Rect measureWholeWallImageSize(int wallWidth, int wallHeight, int imageWidth, int imageHeight) {
         if (wallWidth == 0 || wallHeight == 0 ) {
             Log.w("AspectRatioImageView", "(width == 0 || parentHeight == 0");
-            return null;
+            Log.w("AspectRatioImageView", "Returning empty rect");
+            return new Rect();
         }
 
         int originalWallWidth = wallWidth;

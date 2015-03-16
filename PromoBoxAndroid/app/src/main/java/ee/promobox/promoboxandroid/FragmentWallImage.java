@@ -137,9 +137,11 @@ public class FragmentWallImage extends FragmentVideoWall {
     @Override
     public void onPause() {
         Log.d(TAG, "onPause");
-        slide.removeCallbacks(runnable);
-        cleanUp();
-        slide.setImageDrawable(null);
+        if (slide != null) {
+            slide.removeCallbacks(runnable);
+            cleanUp();
+            slide.setImageDrawable(null);
+        }
         super.onPause();
     }
 

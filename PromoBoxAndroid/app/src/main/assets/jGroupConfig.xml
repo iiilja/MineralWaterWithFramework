@@ -129,4 +129,6 @@
 
     <pbcast.STATE_TRANSFER />
 
+    <CENTRAL_LOCK/>
+
 </config>

@@ -563,7 +563,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
                     if (videoWall) {
                         currentFragment.onPause();
                         currentFragment.onResume();
-                    } else if (mainService.isVideoWall()){
+                    } else if (mainService != null && mainService.isVideoWall()){
                         jGroupsMessenger.start(getBaseContext());
                         imageFragment = new FragmentWallImage();
                         videoWall = true;

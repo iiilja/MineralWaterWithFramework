@@ -843,7 +843,9 @@ input[readonly] {
     font-size: 12px;
 }
 
-.campaigns-top-wrap {padding: 15px;}
+.campaigns-top-wrap .alert {
+    margin:15px;
+}
 
 .device .device-info {
     width: 50%;
@@ -1413,6 +1415,10 @@ input[readonly] {
     color: #fff;
     padding-left: 0;
 }
+
+.enter-form .checkbox {
+    padding-left: 20px;
+}
 .enter-form .form-control {
     height: 39px;
     line-height: 39px;
@@ -1555,7 +1561,7 @@ input[readonly] {
 .content_bg .main-content {
     width: auto;
     margin-left: 250px;
-    padding: 70px 0 20px 0;
+    padding: 58px 0 20px 0;
     position: relative;
 }
 
@@ -1839,6 +1845,10 @@ input[readonly] {
     vertical-align: top;
 }
 
+.user-grid .right-block .checkbox {
+    padding-left: 20px;
+}
+
 .user-grid .right-block label {padding-left: 10px;}
 
 .user-grid .modal-footer ,
@@ -1861,7 +1871,6 @@ input[readonly] {
     -moz-border-radius: 4px;
     border-radius: 4px;
     background: #fff;
-    margin-left: 6px;
     margin-right: 6px;
     max-width: 838px;
     margin-bottom: 7px;

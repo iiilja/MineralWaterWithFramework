@@ -292,7 +292,7 @@ public class DevicesController {
     }
     
     private void sendDeviceEmail(Devices d, String status) {
-    	SimpleDateFormat dt = new SimpleDateFormat("dd.mm.yyyy hh:mm");
+    	SimpleDateFormat dt = new SimpleDateFormat("dd.MM.yyyy hh:mm");
     	String now = dt.format(new Date());
     	
         MailDto mailDto = new MailDto();
@@ -434,7 +434,12 @@ public class DevicesController {
                         jsonD.put("campaignIds", -1);
                     }
 
-                    List<AdCampaigns> adCampaignses = userService.findUserAdCompaigns(session.getClientId());
+                    List<AdCampaigns> adCampaignses = null;
+                    if (session.isAdmin()) {
+                    	adCampaignses = userService.findUserAdCompaigns(session.getClientId());
+                    } else {
+                    	adCampaignses = userService.findUserAdCompaigns(session.getClientId(), session.getUserId());
+                    }
 
                     JSONArray array = new JSONArray();
 

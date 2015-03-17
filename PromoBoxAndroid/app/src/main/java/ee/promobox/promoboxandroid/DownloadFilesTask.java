@@ -359,6 +359,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
         json.put("currentFileId", service.getCurrentFileId());
         json.put("currentCampaignId", service.getCurrentCampaign() != null ? service.getCurrentCampaign().getCampaignId() : 0);
         json.put("errors", service.getErrors());
+        json.put("version", BuildConfig.VERSION_CODE);
 
         service.setErrors(new ErrorMessageArray());
 

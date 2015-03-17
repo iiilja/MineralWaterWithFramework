@@ -29,7 +29,6 @@ public class Campaign {
 
     private Date startDate;
     private Date endDate;
-    protected int delay;
     protected int order;
 
     protected int position;
@@ -55,7 +54,6 @@ public class Campaign {
             campaignId = json.getInt("campaignId");
             campaignName = json.getString("campaignName");
             updateDate = json.getLong("updateDate");
-            delay = json.getInt("duration");
             order = json.getInt("sequence");
             startDate = new Date(json.getLong("startDate"));
             endDate = new Date(json.getLong("endDate"));
@@ -76,6 +74,7 @@ public class Campaign {
                 f.setSize(obj.getInt("size"));
                 f.setUpdatedDt(obj.has("updatedDt")? obj.getLong("updatedDt"):0);
                 f.setName(obj.has("name") ? obj.getString("name") : "not named file");
+                f.setDelay(json.getInt("duration"));
 
                 files.add(f);
 
@@ -108,14 +107,6 @@ public class Campaign {
 
     public List<CampaignFile> getFiles() {
         return files;
-    }
-
-    public int getDelay() {
-        return delay;
-    }
-
-    public void setDelay(int delay) {
-        this.delay = delay;
     }
 
     public long getUpdateDate() {

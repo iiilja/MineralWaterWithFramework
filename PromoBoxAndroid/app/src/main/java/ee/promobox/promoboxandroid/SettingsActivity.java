@@ -124,10 +124,8 @@ public class SettingsActivity extends PreferenceActivity {
                     String uuid = (String) o;
                     Log.d(TAG,o.toString());
                     Log.d(TAG, uuid);
-                    if ( uuid == null || uuid.equals("")) {
-                        return false;
-                    }
-                    return true;
+
+                    return !uuid.equals("");
                 }
             });
 

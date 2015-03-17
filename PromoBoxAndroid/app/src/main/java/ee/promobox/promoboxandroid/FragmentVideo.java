@@ -43,7 +43,8 @@ import ee.promobox.promoboxandroid.widgets.FragmentWithSeekBar;
 
 
 public class FragmentVideo extends FragmentWithSeekBar implements TextureView.SurfaceTextureListener,
-        MediaCodecVideoTrackRenderer.EventListener , ExoPlayer.Listener{
+        MediaCodecVideoTrackRenderer.EventListener , ExoPlayer.Listener
+        , MediaCodecAudioTrackRenderer.EventListener{
     private static final String TAG = "VideoActivity ";
 
     private View fragmentVideoLayout;
@@ -119,7 +120,7 @@ public class FragmentVideo extends FragmentWithSeekBar implements TextureView.Su
             SampleSource source = new FrameworkSampleSource(getActivity(), uri, null, 2);
             setStatus(campaignFile.getName());
             audioRenderer = new MediaCodecAudioTrackRenderer(
-                    source, null, true);
+                    source,3.0f, null, this);
             videoRenderer = new MediaCodecVideoTrackRenderer(source,
                     MediaCodec.VIDEO_SCALING_MODE_SCALE_TO_FIT, 0, new Handler(getActivity().getMainLooper()),
                     this, 50);
@@ -267,6 +268,7 @@ public class FragmentVideo extends FragmentWithSeekBar implements TextureView.Su
     public void onPlayerError(ExoPlaybackException ex) {
         makeToast("Player ERROR ");
         mainActivity.addError(new ErrorMessage(ex), false);
+        playbackListener.onPlaybackStop();
         Log.e(TAG, "onPlayerError");
     }
 
@@ -357,4 +359,10 @@ public class FragmentVideo extends FragmentWithSeekBar implements TextureView.Su
     }
 
 
+    @Override
+    public void onAudioTrackInitializationError(AudioTrack.InitializationException e) {
+        Log.e(TAG, e.getMessage());
+        mainActivity.addError(new ErrorMessage(e),false);
+        playbackListener.onPlaybackStop();
+    }
 }

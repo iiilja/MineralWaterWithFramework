@@ -14,6 +14,7 @@ public class CampaignFile implements Comparable<CampaignFile>, Parcelable{
     private int size;
     private String path;
     private long updatedDt;
+    private int delay;
 
     public CampaignFile() {
 
@@ -122,5 +123,11 @@ public class CampaignFile implements Comparable<CampaignFile>, Parcelable{
         this.path = path;
     }
 
+    public int getDelay() {
+        return delay;
+    }
 
+    public void setDelay(int delay) {
+        this.delay = delay;
+    }
 }

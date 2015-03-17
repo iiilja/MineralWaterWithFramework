@@ -177,7 +177,7 @@ public class FragmentImage extends FragmentWithSeekBar {
 //            imageView.setImageDrawable(file.getPath(),1920,3240,p);
             slide.setImageBitmap(bitmap);
             setStatus(campaignFile.getName());
-            int delay = getArguments().getInt("delay");
+            int delay = campaignFile.getDelay() * 1000;
             super.setSeekBarMax(delay);
             super.changeSeekBarState(true, 0);
             slide.postDelayed(runnable, delay);

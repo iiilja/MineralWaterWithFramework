@@ -176,22 +176,6 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
 
         fragment = getFragmentByFileType(fileType);
 
-        Bundle data = fragment.getArguments();
-
-        int delay = campaign != null ? campaign.getDelay() : 0;
-        if (data != null){
-            data.putInt("delay",delay* 1000);
-        } else if (!fragment.equals(currentFragment) && !fragment.equals(mainFragment) ){
-            data = new Bundle();
-            data.putInt("delay",delay * 1000);
-            try{
-                fragment.setArguments(data);
-            } catch (IllegalStateException e){
-                addError(new ErrorMessage("Ilja Error",
-                        e.getMessage() + " fragment class is " + fragment.toString(),e.getStackTrace()),false );
-            }
-        }
-
         if (fragment.equals(currentFragment) ){
             Log.w(TAG, "Current fragment stays (onPause, onResume)");
             fragment.onPause();
@@ -432,13 +416,13 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
         if (campaign != null && nextSpecificFile == null &&
                 campaign.getFiles() != null && campaign.getFiles().size() > 0) {
 
-
-            if (campaign.getFiles().size() == 1) {
-                campaign.setDelay(60 * 60 * 12);
-            }
-
             campaignFile = campaign.getNextFile();
 //            Log.d(TAG, "getNextFile() filename = " + campaignFile.getName());
+
+            if (campaign.getFiles().size() == 1 && campaignFile != null) {
+                campaignFile.setDelay(60 * 60 * 12);
+            }
+
 
         } else if (nextSpecificFile != null) {
             campaignFile = nextSpecificFile;

@@ -211,7 +211,7 @@ public class FragmentWallImage extends FragmentVideoWall {
                 Log.e(TAG, "preparedBitmap == null");
             }
             if (amMaster) {
-                int delay = getArguments().getInt("delay");
+                int delay = preparedCampaignFile.getDelay() * 1000;
                 super.setSeekBarMax(delay);
                 super.changeSeekBarState(true, 0);
                 setStatus(preparedCampaignFile.getName());

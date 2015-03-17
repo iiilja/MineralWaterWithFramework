@@ -20,9 +20,7 @@ public class CampaignMultiple extends Campaign {
         this.campaigns = campaigns;
         order  = ORDER_ASC;
         files = new ArrayList<>();
-        delay = 5;
         for (Campaign campaign : campaigns){
-            delay = delay > campaign.getDelay() ? delay : campaign.getDelay();
             if (campaign.getFiles() != null){
                 files.addAll(campaign.getFiles());
             }
@@ -37,12 +35,6 @@ public class CampaignMultiple extends Campaign {
     @Override
     public String getCampaignName() {
         return campaigns.get(campaignPosition).getCampaignName();
-    }
-
-
-    @Override
-    public int getDelay() {
-        return campaigns.get(campaignPosition).getDelay();
     }
 
 

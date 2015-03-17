@@ -181,10 +181,15 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
         int delay = campaign != null ? campaign.getDelay() : 0;
         if (data != null){
             data.putInt("delay",delay* 1000);
-        } else if (!fragment.equals(currentFragment) ){
+        } else if (!fragment.equals(currentFragment) && !fragment.equals(mainFragment) ){
             data = new Bundle();
             data.putInt("delay",delay * 1000);
-            fragment.setArguments(data);
+            try{
+                fragment.setArguments(data);
+            } catch (IllegalStateException e){
+                addError(new ErrorMessage("Ilja Error",
+                        e.getMessage() + " fragment class is " + fragment.toString(),e.getStackTrace()),false );
+            }
         }
 
         if (fragment.equals(currentFragment) ){

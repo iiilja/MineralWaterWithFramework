@@ -172,23 +172,24 @@
                     <div class="row label-row">
                         <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'campaign_edit_changetime' | translate }}</label></div>
                         <div class="col-md-7 col-xs-9 col-sm-8">
-                            <select class="_styler" ng-model="campaign_form.campaign_time">
-                                <option value="5">5 {{ 'campaign_edit_sec' | translate }}</option>
-                                <option value="15">15 {{ 'campaign_edit_sec' | translate }}</option>
-                                <option value="30">30 {{ 'campaign_edit_sec' | translate }}</option>
-                                <option value="60">1 {{ 'campaign_edit_min' | translate }}</option>
-                                <option value="300">5 {{ 'campaign_edit_min' | translate }}</option>
-                                <option value="600">10 {{ 'campaign_edit_min' | translate }}</option>
-                            </select>
+                            
+                            <ui-select ng-model="campaign_form.campaign_time" theme="select2">
+                                <ui-select-match placeholder="Pick one...">{{formatCampaignTime(campaign_form.campaign_time)}}</ui-select-match>
+                                <ui-select-choices repeat="time in campaignTimes">
+                                    <span>{{formatCampaignTime(time)}}</span>
+                                </ui-select-choices>
+                            </ui-select>
                         </div>
                     </div>
                     <div class="row label-row order">
                         <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'campaign_edit_theorder' | translate }}</label></div>
                         <div class="col-md-7 col-xs-9 col-sm-8">
-                            <select class="styler" ng-model="campaign_form.campaign_order">
-                                <option value="1">{{ 'campaign_edit_streak' | translate }}</option>
-                                <option value="2">{{ 'campaign_edit_accident' | translate }}</option>
-                            </select>
+                            <ui-select ng-model="campaign_form.campaign_order" theme="select2">
+                                <ui-select-match placeholder="Pick one...">{{orderName(campaign_form.campaign_order)}}</ui-select-match>
+                                <ui-select-choices repeat="order in campaignOrders">
+                                    <span>{{orderName(order)}}</span>
+                                </ui-select-choices>
+                            </ui-select>
                             <button type="button" 
                                 ng-show="campaign.permissionWrite"
                                 class="btn btn-info pull-right" data-toggle="modal" data-target="#sorting">{{ 'campaign_edit_setup' | translate }}</button>
@@ -216,9 +217,12 @@
                             </div>
 
                             <div class="day-wrap">
-                                <select class="styler" ng-model="campaign_form.campaign_start_time">
-                                    <option ng-repeat="hour in workhours" value="{{formatWorkingHours(hour)}}">{{formatWorkingHours(hour)}}</option>
-                                </select>
+                                <ui-select ng-model="campaign_form.campaign_start_time" theme="select2">
+                                    <ui-select-match placeholder="Pick one...">{{formatWorkingHours(campaign_form.campaign_start_time)}}</ui-select-match>
+                                    <ui-select-choices repeat="hour in workhours">
+                                        <span>{{formatWorkingHours(hour)}}</span>
+                                    </ui-select-choices>
+                                </ui-select>
                             </div>
                         </div>
                     </div>
@@ -244,9 +248,12 @@
                             </div>
 
                             <div class="day-wrap">
-                                <select class="styler" ng-model="campaign_form.campaign_finish_time">
-                                    <option ng-repeat="hour in workhours" value="{{formatWorkingHours(hour)}}">{{formatWorkingHours(hour)}}</option>
-                                </select>
+                                <ui-select ng-model="campaign_form.campaign_finish_time" theme="select2">
+                                    <ui-select-match placeholder="Pick one...">{{formatWorkingHours(campaign_form.campaign_finish_time)}}</ui-select-match>
+                                    <ui-select-choices repeat="hour in workhours">
+                                        <span>{{formatWorkingHours(hour)}}</span>
+                                    </ui-select-choices>
+                                </ui-select>
                             </div>
                         </div>
                     </div>
@@ -273,7 +280,7 @@
                                        class="btn"
                                        ng-class="removeWorkhours.indexOf(hour) != - 1 ? 'active': ''"
                                        ng-click="toggleWorkHours(removeWorkhours, hour)">
-                                    {{formatWorkingHours(hour)}}
+                                    {{hour.hour}}
                                 </label>
                             </div>
 
@@ -291,7 +298,7 @@
                                        class="btn"
                                        ng-class="addWorkhours.indexOf(hour) != - 1 ? 'active': ''"
                                        ng-click="toggleWorkHours(addWorkhours, hour)">
-                                    {{formatWorkingHours(hour)}}
+                                    {{hour.hour}}
                                 </label>
                             </div>
                         </div>

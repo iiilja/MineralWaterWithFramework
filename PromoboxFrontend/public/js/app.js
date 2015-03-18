@@ -1,6 +1,6 @@
 var apiEndpoint = "http://46.182.31.101:8080/service/";
 
-var app = angular.module('promobox', ['ngRoute', 'ui.bootstrap', 'pascalprecht.translate', 'promobox.services', 'angularFileUpload', 'toaster', 'ui.router', 'ui.sortable', 'angularMoment', 'ui.bootstrap.datetimepicker', 'checklist-model']);
+var app = angular.module('promobox', ['ngRoute', 'ui.bootstrap', 'pascalprecht.translate', 'promobox.services', 'angularFileUpload', 'toaster', 'ui.router', 'ui.sortable', 'ui.select', 'angularMoment', 'ui.bootstrap.datetimepicker', 'checklist-model']);
 
 var adminView = function(contentController, contentTemplate) {
     return {
@@ -381,7 +381,24 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         
         $scope.addWorkhours = [];
         $scope.removeWorkhours = [];
+
+        $scope.campaignTimes = [5, 15, 30, 60, 300, 600];
+        $scope.formatCampaignTime = function(time) {
+            if (time <= 30) {
+                return time + ' ' + $filter('translate')('campaign_edit_sec'); 
+            } else {
+                return time/60 + ' ' + $filter('translate')('campaign_edit_min'); 
+            }
+        }
         
+        $scope.campaignOrders = [1, 2];
+        $scope.orderName = function(order) {
+            if (order == 1) {
+                return $filter('translate')('campaign_edit_streak');
+            } else {
+                return $filter('translate')('campaign_edit_accident');
+            }
+        }
         
         
         $scope.toggleWorkHours = function (ar, hour) {
@@ -407,6 +424,10 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         }
         
         $scope.formatWorkingHours = function (hour) {
+            if (!hour) {
+                return null;
+            }
+
             if (hour.indexOf(":") == -1) {
                 return hour + ":00";
             }
@@ -431,7 +452,7 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         };
  
         var dataToTime = function(data, time) {
-            var timePart = time.split(":");
+            var timePart = $scope.formatWorkingHours(time.split(":"));
             return data.getTime() + (timePart[0] * 60 * 60 + timePart[1] * 60) * 1000;
         };
         $scope.edit_company = function () {
@@ -814,6 +835,8 @@ app.controller('DevicesController', ['$scope', 'token', 'Device', 'sysMessage', 
                  $scope.workhours.push(i + ":00");
                  $scope.workhours.push(i + ":30");
             }
+
+            
             
             $scope.visibleDeviceSettings = 0;
             $scope.showDeviceSettings = function(id) {

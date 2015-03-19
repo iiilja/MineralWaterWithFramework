@@ -175,5 +175,7 @@
     "form_repeat_password_placeholder":"Введи пароль еще раз",
     "campaigns_title":"Настройки доступа к кампаниям",
     "devices_title":"Настройки доступа к устройствам",
-    "users_title":""
+    "users_title":"",
+    "payment_title":"Оплата",
+    "account_title":"Акаунт"
 }

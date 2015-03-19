@@ -7,6 +7,7 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
@@ -30,6 +31,8 @@ public class SettingsActivity extends PreferenceActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         displays = getIntent().getParcelableArrayListExtra("displays");
+//        PreferenceManager.getDefaultSharedPreferences(this).edit()
+//                .putString("version" , BuildConfig.VERSION_CODE + "").apply();
     }
 
 
@@ -82,8 +85,10 @@ public class SettingsActivity extends PreferenceActivity {
 
             addPreferencesFromResource(R.xml.pref_general);
 
+            findPreference("version").setSummary( BuildConfig.VERSION_CODE + "");
+
+            ListPreference list = (ListPreference) findPreference("monitor_id");
             if (getArguments() != null && getArguments().getParcelableArrayList("displays") != null) {
-                ListPreference list = (ListPreference) findPreference("monitor_id");
                 ArrayList<Display> displays = getArguments().getParcelableArrayList("displays");
                 CharSequence[] entries = new CharSequence[displays.size()];
                 CharSequence[] entryValues = new CharSequence[displays.size()];
@@ -97,9 +102,9 @@ public class SettingsActivity extends PreferenceActivity {
                 }
                 list.setEntries(entries);
                 list.setEntryValues(entryValues);
+            } else {
+                list.setEnabled(false);
             }
-
-
 
 
 

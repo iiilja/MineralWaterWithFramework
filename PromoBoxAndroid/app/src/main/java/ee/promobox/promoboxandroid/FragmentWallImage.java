@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -51,8 +52,6 @@ public class FragmentWallImage extends FragmentVideoWall {
     private Bitmap preparedBitmap;
     private CampaignFile preparedCampaignFile;
 
-    private boolean amMaster;
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -85,7 +84,6 @@ public class FragmentWallImage extends FragmentVideoWall {
         playbackListener = (FragmentPlaybackListener) activity;
         masterListener = (VideoWallMasterListener) activity;
         mainActivity = (MainActivity) activity;
-        amMaster = mainActivity.isMaster();
     }
 
     @Override
@@ -113,19 +111,24 @@ public class FragmentWallImage extends FragmentVideoWall {
 
     @Override
     public void onClick(View v) {
-        if (amMaster) {
+        if (mainActivity.isMaster()) {
             super.onClick(v);
         }
     }
 
     private void tryNextFile() {
-        if ( amMaster ){
+        if ( mainActivity.isMaster() ){
             if (preparedBitmap == null){
                 masterListener.onFileNotPrepared();
                 slide.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        playImage();
+                        if (preparedBitmap != null && preparedCampaignFile != null){
+                            playImage();
+                        } else {
+                            Log.e(TAG,"Strill not prepared");
+                            slide.postDelayed(this,50);
+                        }
                     }
                 },50);
             } else {
@@ -168,7 +171,7 @@ public class FragmentWallImage extends FragmentVideoWall {
     private void prepareNextFile(CampaignFile campaignFile){
         Log.d(TAG,"prepareNextFile");
         if (campaignFile != null) {
-            if (amMaster){
+            if (mainActivity.isMaster()){
                 mainActivity.getNextFile(CampaignFileType.IMAGE);
             }
             prepareBitmap(campaignFile);
@@ -193,7 +196,7 @@ public class FragmentWallImage extends FragmentVideoWall {
         } else {
             preparedBitmap = null;
             preparedCampaignFile = null;
-            if (amMaster){
+            if (mainActivity.isMaster()){
                 playbackListener.onPlaybackStop();
             }
         }
@@ -210,7 +213,7 @@ public class FragmentWallImage extends FragmentVideoWall {
             if (preparedBitmap == null) {
                 Log.e(TAG, "preparedBitmap == null");
             }
-            if (amMaster) {
+            if (mainActivity.isMaster()) {
                 int delay = preparedCampaignFile.getDelay() * 1000;
                 super.setSeekBarMax(delay);
                 super.changeSeekBarState(true, 0);
@@ -232,8 +235,13 @@ public class FragmentWallImage extends FragmentVideoWall {
                     MainActivity.ERROR_MESSAGE, 22, ex.getClass().getSimpleName()));
             mainActivity.addError(new ErrorMessage(ex), false);
 
-            if (amMaster) {
-                playbackListener.onPlaybackStop();
+            if (mainActivity.isMaster()) {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        playbackListener.onPlaybackStop();
+                    }
+                },1000);
             }
         }
 

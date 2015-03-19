@@ -5,7 +5,6 @@ import android.net.wifi.WifiManager;
 import android.os.Handler;
 import android.util.Log;
 
-import org.apache.commons.io.IOUtils;
 import org.jgroups.JChannel;
 import org.jgroups.Message;
 import org.jgroups.ReceiverAdapter;
@@ -14,27 +13,20 @@ import org.jgroups.blocks.locking.LockNotification;
 import org.jgroups.blocks.locking.LockService;
 import org.jgroups.util.Owner;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
-import java.util.logging.FileHandler;
 
 import ee.promobox.promoboxandroid.util.udp_multicasting.messages.MultiCastMessage;
 
 /**
  * Created by ilja on 3.03.2015.
  */
-public class JGroupsMessenger extends ReceiverAdapter implements LockNotification{
+public class JGroupsMessenger extends ReceiverAdapter{
 
     private final String TAG = "JGroupsMessenger";
     private final String CLUSTER_NAME = "PromoboxCluster";
 
     private Thread statusPrinter;
-    private LockService lockService;
-    private Lock masterLock;
     private AtomicBoolean isMaster = new AtomicBoolean(false);
     private JChannel channel;
     private final Handler incomingMessageHandler;
@@ -53,8 +45,6 @@ public class JGroupsMessenger extends ReceiverAdapter implements LockNotificatio
             channel=new JChannel(context.getAssets().open("jGroupConfig.xml"));
             channel.setReceiver(this);
             channel.connect(CLUSTER_NAME);
-            lockService = new LockService(channel);
-            lockService.addLockListener( this );
             startStatusPrintingThread();
         } catch (Exception e){
             e.printStackTrace();
@@ -76,11 +66,29 @@ public class JGroupsMessenger extends ReceiverAdapter implements LockNotificatio
         }
     }
 
+    public String getAddress4Char(){
+        String address = channel.getAddressAsString();
+        return address.substring(address.length() - 4);
+    }
+
     @Override
     public void viewAccepted(View view) {
+        boolean wasMaster = isMaster.get();
         Log.d(TAG, "** view: " + view);
-        if (masterLock != null){
-//            startAcquiringThread();
+        Log.d(TAG, "** My address: " + channel.getAddress());
+        Log.d(TAG, "** First address: " + view.getMembers().get(0));
+        if (channel.getAddress().equals(view.getMembers().get(0))){
+            isMaster.set(true);
+            Log.d(TAG,"I HAVE become the master!");
+        } else {
+            isMaster.set(false);
+            Log.d(TAG,"I could NOT become the master!");
+        }
+        if (wasMaster != isMaster.get()){
+            Log.d(TAG, "Sending master message : isMaster = " + isMaster.get());
+            android.os.Message message = new android.os.Message();
+            message.obj = isMaster.get();
+            incomingMessageHandler.sendMessage(message);
         }
     }
 
@@ -95,17 +103,6 @@ public class JGroupsMessenger extends ReceiverAdapter implements LockNotificatio
         incomingMessageHandler.sendMessage(message);
     }
 
-    private void getLock()
-    {
-        masterLock = lockService.getLock("master");
-
-        isMaster.set(masterLock.tryLock());
-        if (isMaster.get()){
-            Log.d(TAG,"I HAVE become the master!");
-        } else {
-            Log.d(TAG,"I could NOT become the master!");
-        }
-    }
 
     private void startStatusPrintingThread()
     {
@@ -120,11 +117,10 @@ public class JGroupsMessenger extends ReceiverAdapter implements LockNotificatio
                     try
                     {
                         Log.d(TAG, "is master [" + isMaster + "]");
-                        Log.d(TAG,"cluster view [" + channel.getViewAsString() + "]");
-                        sleep(2000L);
-                        if (!isMaster.get()){
-                            getLock();
-                        }
+                        Log.d(TAG, "cluster view [" + channel.getViewAsString() + "]");
+                        Log.d(TAG, channel.getAddressAsString());
+
+                        sleep(10000L);
                     }
                     catch ( InterruptedException e )
                     {
@@ -136,35 +132,5 @@ public class JGroupsMessenger extends ReceiverAdapter implements LockNotificatio
 
         statusPrinter.setDaemon(true);
         statusPrinter.start();
-    }
-
-    @Override
-    public void lockCreated(String s) {
-
-    }
-
-    @Override
-    public void lockDeleted(String s) {
-
-    }
-
-    @Override
-    public void locked(String s, Owner owner) {
-
-    }
-
-    @Override
-    public void unlocked(String s, Owner owner) {
-
-    }
-
-    @Override
-    public void awaiting(String s, Owner owner) {
-
-    }
-
-    @Override
-    public void awaited(String s, Owner owner) {
-
     }
 }

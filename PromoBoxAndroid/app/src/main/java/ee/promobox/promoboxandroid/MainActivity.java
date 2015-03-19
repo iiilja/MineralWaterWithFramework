@@ -13,7 +13,6 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.media.AudioManager;
 import android.net.ConnectivityManager;
-import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -24,8 +23,6 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
-
-import java.util.ArrayList;
 
 import ee.promobox.promoboxandroid.data.Campaign;
 import ee.promobox.promoboxandroid.data.CampaignFile;
@@ -39,7 +36,6 @@ import ee.promobox.promoboxandroid.util.StatusEnum;
 import ee.promobox.promoboxandroid.interfaces.VideoWallMasterListener;
 import ee.promobox.promoboxandroid.util.udp_multicasting.JGroupsMessenger;
 import ee.promobox.promoboxandroid.util.udp_multicasting.MessageReceivedListener;
-import ee.promobox.promoboxandroid.util.udp_multicasting.UDPMessenger;
 import ee.promobox.promoboxandroid.util.udp_multicasting.messages.MultiCastMessage;
 import ee.promobox.promoboxandroid.util.udp_multicasting.messages.PlayMessage;
 import ee.promobox.promoboxandroid.util.udp_multicasting.messages.PrepareMessage;
@@ -150,15 +146,24 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
         Handler messageHandler = new Handler(Looper.getMainLooper()) {
             @Override
             public void handleMessage(Message msg) {
-                MultiCastMessage message = (MultiCastMessage) msg.obj;
-                switch (message.getType()) {
-                    case MultiCastMessage.PLAY:
-                        onPlayMessageReceived((PlayMessage) message);
-                        break;
-                    case MultiCastMessage.PREPARE:
-                        onPrepareMessageReceived((PrepareMessage) message);
-                        break;
+                if (MultiCastMessage.class.isInstance(msg.obj)){
+                    MultiCastMessage message = (MultiCastMessage) msg.obj;
+                    switch (message.getType()) {
+                        case MultiCastMessage.PLAY:
+                            onPlayMessageReceived((PlayMessage) message);
+                            break;
+                        case MultiCastMessage.PREPARE:
+                            onPrepareMessageReceived((PrepareMessage) message);
+                            break;
+                    }
+                } else if (msg.obj.getClass() == Boolean.class){
+                    master  = (boolean) msg.obj;
+                    Log.d(TAG, "AM MASTER IS " + msg.obj);
+                    if (master){
+                        onPlaybackStop();
+                    }
                 }
+
             }
         };
 
@@ -178,8 +183,10 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
 
         if (fragment.equals(currentFragment) ){
             Log.w(TAG, "Current fragment stays (onPause, onResume)");
-            fragment.onPause();
-            fragment.onResume();
+            if (fragment.isResumed()) {
+                fragment.onPause();
+                fragment.onResume();
+            }
         } else {
             try {
                 transaction.replace(R.id.main_view, fragment);
@@ -481,6 +488,10 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
         return mainService.getWallWidth();
     }
 
+    public String getAddress() {
+        return jGroupsMessenger.getAddress4Char();
+    }
+
     public void setPreviousFilePosition(){
         if (campaign != null) campaign.setPreviousFilePosition();
     }
@@ -565,7 +576,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
     @Override
     public void onPlayMessageReceived(PlayMessage message) {
         Log.d(TAG, "onPlayMessageReceived");
-        if (!videoWall){
+        if (!videoWall || master && !message.getDeviceId().equals(getAddress())){
             return;
         }
         if (mainService == null || mainService.getCampaigns() == null) return;
@@ -583,7 +594,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
     @Override
     public void onPrepareMessageReceived(PrepareMessage message) {
         Log.d(TAG, "onPrepareMessageReceived");
-        if (!videoWall){
+        if (!videoWall || master && !message.getDeviceId().equals(getAddress())){
             return;
         }
         if (mainService == null || mainService.getCampaigns() == null) return;
@@ -597,13 +608,15 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
 
     @Override
     public void onFileNotPrepared() {
+        Log.d(TAG + "MasterListener", "onFileNotPrepared");
 //        udpMessenger.sendMessage(new PrepareMessage("1111",campaign.getCampaignId(),getNextFile(null).getId()));
-        jGroupsMessenger.sendMessage(new PrepareMessage("1111", campaign.getCampaignId(), getNextFile(null).getId()));
+        jGroupsMessenger.sendMessage(new PrepareMessage(getAddress(), campaign.getCampaignId(), getNextFile(null).getId()));
     }
 
     @Override
     public void onFileStartedPlaying(int fileId, long frameId) {
+        Log.d(TAG + "MasterListener", "onFileStartedPlaying");
 //        udpMessenger.sendMessage(new PlayMessage("1111",campaign.getCampaignId(),fileId,frameId));
-        jGroupsMessenger.sendMessage(new PlayMessage("1111",campaign.getCampaignId(),fileId,frameId));
+        jGroupsMessenger.sendMessage(new PlayMessage(getAddress(),campaign.getCampaignId(),fileId,frameId));
     }
 }

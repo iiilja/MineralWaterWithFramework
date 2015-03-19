@@ -2004,3 +2004,8 @@ input[readonly] {
     border-bottom: 0;
     border-radius:4px 4px 0 0;
 }
+
+.select2-container .select2-choice {
+  height: 37px;
+  line-height: 26px;
+}

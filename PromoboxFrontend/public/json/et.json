@@ -174,6 +174,8 @@
     "form_repeat_password_placeholder":"Korda salasõna",
     "campaigns_title":"Juurdepääs kampaaniate seadetele",
     "devices_title":"Juurdepääs seadmete seadetele",
-    "users_title":"Kasutajad"
+    "users_title":"Kasutajad",
+    "account_title":"Акаунт",
+    "payment_title":"Оплата"
 }
 

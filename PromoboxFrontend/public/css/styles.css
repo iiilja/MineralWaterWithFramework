@@ -1976,3 +1976,31 @@ input[readonly] {
 }
 
 .btn-menu.exit:hover i {background: url(../img/exit-hover.png);}
+.lang .select2-container .select2-choice > .select2-chosen {
+    display: block!important;
+    color: #000;
+    width: 110px;
+}
+.lang .select2-drop {
+    top: auto;
+    bottom: 100%;
+}
+.lang .select2-search {
+    display: none!important;
+}
+.lang .select2-results li {
+    line-height: 1.7;
+    text-align: left;
+}
+.lang .select2-results {
+    padding: 0;
+    margin: 0 0 2px 0;
+}
+
+.lang .select2-results li span {padding-left: 30px;}
+
+.select2-drop-active {
+    border: 1px solid #5897fb;
+    border-bottom: 0;
+    border-radius:4px 4px 0 0;
+}

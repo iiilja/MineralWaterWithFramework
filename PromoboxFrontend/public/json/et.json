@@ -162,23 +162,6 @@
     "form_last_name":"Perekonnanimi",
     "form_firm":"Firma",
     "form_email":"Email",
-<<<<<<< HEAD
-    "form_new_password":"Новый пароль",
-    "form_name":"Имя",
-    "form_repeat_password":"Пароль еще раз",
-    "form_save":"Сохранить",
-    "form_name_placeholder":"Введите Имя",
-    "form_last_name_placeholder":"Введите фамилию",
-    "form_firm_placeholder":"Введите название фирмы",
-    "form_email_placeholder":"Введите Email",
-    "form_new_password_placeholder":"Введите пароль",
-    "form_repeat_password_placeholder":"Введи пароль еще раз",
-    "campaigns_title":"Настройки доступа к кампаниям",
-    "devices_title":"Настройки доступа к устройствам",
-    "users_title":"Пользователи",
-    "payment_title":"Оплата",
-    "account_title":"Акаунт"
-=======
     "form_new_password":"Uus salasõna",
     "form_name":"Nimi",
     "form_repeat_password":"Korda salasõna",
@@ -191,7 +174,7 @@
     "form_repeat_password_placeholder":"Korda salasõna",
     "campaigns_title":"Juurdepääs kampaaniate seadetele",
     "devices_title":"Juurdepääs seadmete seadetele",
-    "users_title":"Kasutajad"
->>>>>>> 5432d60099dd9d59bed8e931a7caed07e85c6b46
+    "users_title":"Kasutajad",
+    "account_title":"Акаунт"
 }
 

@@ -37,9 +37,10 @@ CREATE TABLE users_campaigns_permissions
 CREATE TABLE versions
 (
   id serial NOT NULL,
-  version character varying(50) NOT NULL,
+  version INTEGER NOT NULL,
   version_dt TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT now(),
   is_current BOOLEAN NOT NULL DEFAULT FALSE,
+  description CHARACTER VARYING(255),
   CONSTRAINT pk_versions_id PRIMARY KEY (id)
 )
 WITH (

@@ -24,7 +24,7 @@ public class Versions {
     private Integer id;
 	
 	@Column(name="version", nullable = false)
-	private String version;
+	private Integer version;
 	
 	@Column(name = "version_dt", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
@@ -41,11 +41,11 @@ public class Versions {
 		this.id = id;
 	}
 
-	public String getVersion() {
+	public Integer getVersion() {
 		return version;
 	}
 
-	public void setVersion(String version) {
+	public void setVersion(Integer version) {
 		this.version = version;
 	}
 

@@ -1,6 +1,6 @@
 var apiEndpoint = "http://46.182.31.101:8080/service/";
 
-var app = angular.module('promobox', ['ngRoute', 'ui.bootstrap', 'pascalprecht.translate', 'promobox.services', 'angularFileUpload', 'toaster', 'ui.router', 'ui.sortable', 'ui.select', 'angularMoment', 'ui.bootstrap.datetimepicker', 'checklist-model']);
+var app = angular.module('promobox', ['ngRoute', 'ngSanitize', 'ui.bootstrap', 'pascalprecht.translate', 'promobox.services', 'angularFileUpload', 'toaster', 'ui.router', 'ui.sortable', 'ui.select', 'angularMoment', 'ui.bootstrap.datetimepicker', 'checklist-model']);
 
 var adminView = function(contentController, contentTemplate) {
     return {
@@ -181,15 +181,12 @@ app.controller('TopMenuController', ['$scope', '$location', '$http', 'token', 'C
 app.controller('FooterController', ['$scope', '$location', '$http', 'token', '$rootScope', '$translate', '$filter',
     function ($scope, $location, $http, token, $rootScope, $translate, $filter) {
 
-        $scope.currentLang = "en";
-        $scope.langs = [{value: "en", label: $filter('translate')('lang_en')},
-                        {value: "et", label: $filter('translate')('lang_et')},
-                        {value: "lv", label: $filter('translate')('lang_lv')},
-                        {value: "ru", label: $filter('translate')('lang_ru')}];
+        $scope.lang = {};
+        $scope.lang.code = "en";
+        $scope.langs = ["en", "et", "lv", "ru"];
 
         $scope.change_language = function(lang) {
             $translate.use(lang);
-            $scope.currentLang = lang;
         }
         //setTimeout(function(){jQuery('input[type="checkbox"], input[type="radio"],select').styler();}, 50);
 
@@ -424,15 +421,18 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         }
         
         $scope.formatWorkingHours = function (hour) {
-            if (!hour) {
-                return null;
+            if (hour) {
+                if (hour.indexOf(":") == -1) {
+                    return hour + ":00";
+                }
+                
+                return hour;
             }
-
-            if (hour.indexOf(":") == -1) {
-                return hour + ":00";
+        }
+        $scope.sanitizeWorkingHours = function(hour) {
+            if (hour) {
+                return hour.replace(":00", "").replace(":0", "").replace(":", "");
             }
-            
-            return hour;
         }
         
 
@@ -836,8 +836,26 @@ app.controller('DevicesController', ['$scope', 'token', 'Device', 'sysMessage', 
                  $scope.workhours.push(i + ":30");
             }
 
-            
-            
+            $scope.deviceOrientations = [1, 2, 3];
+            $scope.orientationName = function(orientation) {
+                if (orientation == 1) {
+                    return $filter('translate')('device_horizontalorientation');
+                } else if (orientation == 2) {
+                    return $filter('translate')('device_verticalorientation');
+                } else {
+                    return $filter('translate')('device_verticalorientation_emu');
+                }
+            }
+
+            $scope.deviceAudioOuts = [1, 2];
+            $scope.audioOutName = function(audioOut) {
+                if (audioOut == 1) {
+                    return 'HDMI';
+                } else if (audioOut == 2) {
+                    return 'Mini jack';
+                }
+            }
+
             $scope.visibleDeviceSettings = 0;
             $scope.showDeviceSettings = function(id) {
                 $scope.visibleDeviceSettings = id;

@@ -12,11 +12,11 @@
 
 
 <div class="lang">
-    <ui-select ng-model="currentLang"
-            ng-change="change_language(currentLang)" theme="select2">
-        <ui-select-match placeholder="Pick one...">{{currentLang.label}}</ui-select-match>
-        <ui-select-choices repeat="lang.value as lang in langs">
-            <span class="{{lang.value}}">{{lang.label}}</span>
+    <ui-select ng-model="lang.code"
+            on-select="change_language(lang.code)" theme="select2" search-enabled="false">
+        <ui-select-match placeholder="Pick one...">{{ 'lang_' + lang.code | translate }}</ui-select-match>
+        <ui-select-choices repeat="l in langs">
+            <span class="{{l}}">{{ 'lang_' + l | translate }}</span>
         </ui-select-choices>
     </ui-select>
 </div><!-- .sec -->

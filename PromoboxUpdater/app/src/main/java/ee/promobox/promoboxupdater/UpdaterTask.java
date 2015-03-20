@@ -24,7 +24,7 @@ import java.io.InputStream;
  */
 public class UpdaterTask extends AsyncTask<Void,Void,Boolean> {
     private static final String TAG = "UpdaterTask";
-    private String fileUrl = "http://www.tud.ttu.ee/web/Ilja.Denissov/promobox/promobox_%s.apk";
+    private String fileUrl = "http://www.tud.ttu.ee/web/Ilja.Denissov/promobox/promobox_%d.apk";
     public static final String APK_FILE_NAME = "promobox.apk";
     private MainService service;
 
@@ -32,7 +32,7 @@ public class UpdaterTask extends AsyncTask<Void,Void,Boolean> {
         this.service = service;
     }
 
-    private String getActualVersion(){
+    private int getActualVersion(){
         HttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(MainService.DEFAULT_SERVER_VERSION);
         HttpResponse response = null;
@@ -43,7 +43,7 @@ public class UpdaterTask extends AsyncTask<Void,Void,Boolean> {
                 String jsonString = IOUtils.toString(response.getEntity().getContent());
                 JSONObject json = new JSONObject(jsonString);
                 if (json.has(MainService.VERSION)){
-                    return json.getString(MainService.VERSION);
+                    return json.getInt(MainService.VERSION);
                 } else {
                     return MainService.VERSION_0;
                 }
@@ -56,14 +56,14 @@ public class UpdaterTask extends AsyncTask<Void,Void,Boolean> {
 
     @Override
     protected Boolean doInBackground(Void... params) {
-        String installedVersion = service.getInstalledAppVersion();
-        String actualVersion = getActualVersion();
-        if (actualVersion.equals(installedVersion)){
+        int installedVersion = service.getInstalledAppVersion();
+        int actualVersion = getActualVersion();
+        if (actualVersion == installedVersion){
             Log.d(TAG, "Versions are equal - " + actualVersion);
         } else {
             Log.d(TAG, "Versions NOT equal actual = " + actualVersion + " installed = " + installedVersion);
             boolean downloaded = downloadFile(String.format(fileUrl,actualVersion), APK_FILE_NAME);
-            return true;
+            return downloaded;
         }
         return false;
     }

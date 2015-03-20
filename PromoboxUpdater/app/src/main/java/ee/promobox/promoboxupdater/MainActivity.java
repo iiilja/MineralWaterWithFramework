@@ -17,7 +17,6 @@ public class MainActivity extends ActionBarActivity {
     public static final String TAG        = "MainActivity";
 
     public static final String APP_START        = "ee.promobox.promoboxupdater.START";
-    public static final String INSTALLED_APP_START        = "ee.promobox.promoboxandroid.START";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,14 +80,5 @@ public class MainActivity extends ActionBarActivity {
             e.printStackTrace();
             return false;
         }
-
-
-
-//        Intent promptInstall = new Intent(Intent.ACTION_VIEW);
-//        Uri uri = Uri.fromFile(apkFile);
-//        promptInstall.setDataAndType(uri,
-//                        "application/vnd.android.package-archive");
-////        promptInstall.setFlags(Intent.FLAG_FROM_BACKGROUND);
-//        startActivity(promptInstall);
     }
 }

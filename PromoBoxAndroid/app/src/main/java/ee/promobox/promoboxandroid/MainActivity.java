@@ -476,7 +476,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
             return mainService.getDisplays().get(0);
         } else {
             Log.e(TAG, "mainService is "+( mainService == null ? "NULL" : "NOT null"));
-            Log.e(TAG, "mainService.getDisplays() is "+( mainService.getDisplays() == null ? "NULL" : "NOT null"));
+            Log.e(TAG, "mainService.getDisplays() is "+( (mainService == null || mainService.getDisplays() == null) ? "NULL" : "NOT null"));
             return null;
         }
     }

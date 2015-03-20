@@ -4,7 +4,7 @@
 	<div class="users-list">
 	    <div class="add-company-list mCustomScrollbar">
 	        <ul class="btn-group">
-	            <li ng-repeat="user in users  | filter: { active: true }" ng-click="selectUser(user)">
+	            <li ng-repeat="user in users  | filter: { active: true, admin: false}" ng-click="selectUser(user)">
 	                <label class="btn btn-primary"
 	                	ng-class="selectedUser.id == user.id ? 'active' : ''">
 	                    {{user.firstname}} {{user.surname}}

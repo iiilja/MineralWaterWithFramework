@@ -140,7 +140,7 @@
                         <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'device_worktime' | translate }}</label></div>
                         <div class="col-md-7 col-xs-9 col-sm-8">
                             <ul>
-                                <li><span></span></li>
+<!--                                 <li><span></span></li> -->
                                 <li>
                                     <ui-select ng-model="device.workStartAt" theme="select2">
                                         <ui-select-match placeholder="Pick one...">{{device.workStartAt}}</ui-select-match>
@@ -150,7 +150,7 @@
                                     </ui-select>
 
                                 </li>
-                                <li><span> - </span></li>
+                                <li class="line"><span> - </span></li>
                                 <li>
                                     <ui-select ng-model="device.workEndAt" theme="select2">
                                         <ui-select-match placeholder="Pick one...">{{device.workEndAt}}</ui-select-match>

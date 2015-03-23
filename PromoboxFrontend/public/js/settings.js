@@ -23,13 +23,12 @@ angular.module('promobox.services').controller('SettingAccountController', funct
             }
 
             if ($scope.password && $scope.password != $scope.passwordRepeat) {
-                console.log("password: " + $scope.password);
-                console.log("password 2: " + $scope.passwordRepeat);
-
                 // Show error message and remove logs
+                facade.getSysMessage().error($filter('translate')('menu_settings_btn') + ' ' + $filter('translate')('settings_account_passwords_dont_match'));
             } else if (passLength > 0 && passLength < 6)  {
 
                 // Show short password error message
+                facade.getSysMessage().error($filter('translate')('menu_settings_btn') + ' ' + $filter('translate')('settings_account_short_password'));
             } else {
                 facade.getClients().update({
                     id: $scope.userId,
@@ -42,12 +41,13 @@ angular.module('promobox.services').controller('SettingAccountController', funct
                 }, function(response) {
                     if(response.response == "ERROR") {
                         if (response.reason == "invalidEmail") {
-                            facade.getSysMessage().error($filter('translate')('login_form_register') + ' ' + $filter('translate')('registration_form_invalid_email'));
+                            facade.getSysMessage().error($filter('translate')('menu_settings_btn') + ' ' + $filter('translate')('registration_form_invalid_email'));
                         } else if (response.reason == "emailExist") {
-                            facade.getSysMessage().error($filter('translate')('login_form_register') + ' ' + $filter('translate')('registration_form_email_exists'));
+                            facade.getSysMessage().error($filter('translate')('menu_settings_btn') + ' ' + $filter('translate')('registration_form_email_exists'));
                         }
                     } else {
                         // show success message
+                        facade.getSysMessage().update_s($filter('translate')('menu_settings_btn') + ' ' + $filter('translate')('settings_account_updated'));
                     }
                 });
             }
@@ -91,6 +91,7 @@ var userPermissionsController = function($scope, $rootScope, facade, deviceSetti
         var modalInstanse = facade.getModal().open({
             templateUrl: '/views/modal/permissions.html',
             controller: 'ModalPermissionsController',
+            windowClass: 'add-user user-grid',
             resolve: {
                 facade: function() {
                     return facade;

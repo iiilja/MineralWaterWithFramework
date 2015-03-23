@@ -1118,17 +1118,18 @@ input[readonly] {
 
 .preferences .operation-time {border-top: 0;}
 
-.operation-time ul {
+.operation-time > div > ul {
     padding: 0;
     list-style: none;
 }
 
-.operation-time ul li {
+.operation-time > div >  ul > li {
     display: inline-block;
     vertical-align: top;
     margin: 0 10px 0 0;
-    line-height: 34px;
 }
+
+.operation-time > div >  ul > li.line  { line-height: 34px;}
 
 .preferences .operation-time .jq-selectbox__select-text {min-width: 58px;}
 

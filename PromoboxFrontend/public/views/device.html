@@ -81,21 +81,24 @@
                     <div class="row">
                         <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'device_orientation' | translate }}</label></div>
                         <div class="col-md-7 col-xs-9 col-sm-8">
-                            <select class="styler" ng-model="device.orientation">
-                                <option value="1">{{ 'device_horizontalorientation' | translate }}</option>
-                                <option value="2">{{ 'device_verticalorientation' | translate }}</option>
-                                <option value="3">{{ 'device_verticalorientation_emu' | translate }}</option>
-                            </select>
+                            <ui-select ng-model="device.orientation" theme="select2" search-enabled="false">
+                                <ui-select-match placeholder="Pick one...">{{orientationName(device.orientation)}}</ui-select-match>
+                                <ui-select-choices repeat="orientation in deviceOrientations">
+                                    <span>{{orientationName(orientation)}}</span>
+                                </ui-select-choices>
+                            </ui-select>
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'device_audioaut' | translate }}</label></div>
                         <div class="col-md-7 col-xs-9 col-sm-8">
-                            <select class="styler" ng-model="device.audioOut">
-                                <option value="1">HDMI</option>
-                                <option value="2">Mini jack</option>
-                            </select>
+                            <ui-select ng-model="device.audioOut" theme="select2" search-enabled="false">
+                                <ui-select-match placeholder="Pick one...">{{audioOutName(device.audioOut)}}</ui-select-match>
+                                <ui-select-choices repeat="audioOut in deviceAudioOuts">
+                                    <span>{{audioOutName(audioOut)}}</span>
+                                </ui-select-choices>
+                            </ui-select>
                         </div>
                     </div>
 
@@ -137,17 +140,24 @@
                         <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'device_worktime' | translate }}</label></div>
                         <div class="col-md-7 col-xs-9 col-sm-8">
                             <ul>
-                                <li><span></span></li>
+<!--                                 <li><span></span></li> -->
                                 <li>
-                                    <select class="styler" ng-model="device.workStartAt">
-                                        <option ng-repeat="hour in workhours">{{hour}}</option>
-                                    </select>
+                                    <ui-select ng-model="device.workStartAt" theme="select2">
+                                        <ui-select-match placeholder="Pick one...">{{device.workStartAt}}</ui-select-match>
+                                        <ui-select-choices repeat="hour in workhours  | filter: $select.search">
+                                            <span ng-bind-html="hour | highlight: $select.search"></span>
+                                        </ui-select-choices>
+                                    </ui-select>
+
                                 </li>
-                                <li><span> - </span></li>
+                                <li class="line"><span> - </span></li>
                                 <li>
-                                    <select class="styler" ng-model="device.workEndAt">
-                                        <option ng-repeat="hour in workhours">{{hour}}</option>
-                                    </select>
+                                    <ui-select ng-model="device.workEndAt" theme="select2">
+                                        <ui-select-match placeholder="Pick one...">{{device.workEndAt}}</ui-select-match>
+                                        <ui-select-choices repeat="hour in workhours  | filter: $select.search">
+                                            <span ng-bind-html="hour | highlight: $select.search"></span>
+                                        </ui-select-choices>
+                                    </ui-select>
                                 </li>
                             </ul>
                         </div>

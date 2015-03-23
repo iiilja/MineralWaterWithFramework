@@ -1978,8 +1978,9 @@ input[readonly] {
 
 .btn-menu.exit:hover i {background: url(../img/exit-hover.png);}
 .lang .select2-container .select2-choice > .select2-chosen {
-    color: #000;
-    width: 110px;
+  color: #000;
+  width: 115px;
+  text-align: left;
 }
 .lang .select2-drop {
     top: auto;
@@ -1992,6 +1993,10 @@ input[readonly] {
 .lang .select2-results {
     padding: 0;
     margin: 0 0 2px 0;
+}
+
+.lang  .select2-chosen span {
+    padding-left: 30px;
 }
 
 .lang .select2-results li span {padding-left: 30px;}

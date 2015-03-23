@@ -1,13 +1,11 @@
 package ee.promobox.promoboxupdater;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,6 +13,8 @@ import java.io.IOException;
 
 public class MainActivity extends ActionBarActivity {
     public static final String TAG        = "MainActivity";
+
+    public static final String PROMOBOX_PACKAGE = "ee.promobox.promoboxandroid";
 
     public static final String APP_START        = "ee.promobox.promoboxupdater.START";
 
@@ -24,37 +24,46 @@ public class MainActivity extends ActionBarActivity {
         Log.d(TAG, "onCreate");
         setContentView(R.layout.activity_main);
 
-        boolean installed = false;
-        if (getIntent().getBooleanExtra("install",false)){
-            Log.d(TAG,"install");
-            installed = installApk();
-        } else {
-            Intent start = new Intent();
-            start.setAction(MainActivity.APP_START);
-            sendBroadcast(start);
-        }
-        finish();
-        if (installed) {
-            Log.d(TAG, "installed");
-            final Handler starter = new Handler();
-            starter.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    Intent i = getPackageManager().getLaunchIntentForPackage("ee.promobox.promoboxandroid");
-                    if ( i != null){
-                        startActivity(i);
-                    } else {
-                        starter.postDelayed(this,10000);
-                    }
-                }
-            }, 10000);
-        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         Log.d(TAG, "onResume");
+
+        if (getIntent().getBooleanExtra("install",false)){
+            Log.d(TAG,"install");
+
+            if (installApk()){
+                tryRunning();
+            } else {
+                Log.w(TAG, "NOT INSTALLED");
+                Toast.makeText(this,"NOT INSTALLED", Toast.LENGTH_LONG).show();
+                finish();
+            }
+        } else {
+            Intent start = new Intent();
+            start.setAction(MainActivity.APP_START);
+            sendBroadcast(start);
+            finish();
+        }
+    }
+
+    private void tryRunning() {
+            Log.d(TAG, "installed");
+            final Handler starter = new Handler();
+            starter.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Intent i = getPackageManager().getLaunchIntentForPackage(PROMOBOX_PACKAGE);
+                    if ( i != null){
+                        startActivity(i);
+                    } else {
+                        Log.w(TAG, "getLaunchIntentForPackage() is NULL");
+                        starter.postDelayed(this,10000);
+                    }
+                }
+            }, 10000);
     }
 
     /**

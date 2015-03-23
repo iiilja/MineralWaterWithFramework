@@ -576,7 +576,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
     @Override
     public void onPlayMessageReceived(PlayMessage message) {
         Log.d(TAG, "onPlayMessageReceived");
-        if (!videoWall || master && !message.getDeviceId().equals(getAddress())){
+        if (!videoWall){
             return;
         }
         if (mainService == null || mainService.getCampaigns() == null) return;
@@ -594,7 +594,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
     @Override
     public void onPrepareMessageReceived(PrepareMessage message) {
         Log.d(TAG, "onPrepareMessageReceived");
-        if (!videoWall || master && !message.getDeviceId().equals(getAddress())){
+        if (!videoWall){
             return;
         }
         if (mainService == null || mainService.getCampaigns() == null) return;

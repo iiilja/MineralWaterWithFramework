@@ -174,7 +174,7 @@
                         <div class="col-md-7 col-xs-9 col-sm-8">
                             
                             <ui-select ng-model="campaign_form.campaign_time" theme="select2" search-enabled="false">
-                                <ui-select-match placeholder="Pick one...">{{formatCampaignTime(campaign_form.campaign_time)}}</ui-select-match>
+                                <ui-select-match placeholder="{{'select_pick' | translate }}">{{formatCampaignTime(campaign_form.campaign_time)}}</ui-select-match>
                                 <ui-select-choices repeat="time in campaignTimes">
                                     <span>{{formatCampaignTime(time)}}</span>
                                 </ui-select-choices>
@@ -185,7 +185,7 @@
                         <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'campaign_edit_theorder' | translate }}</label></div>
                         <div class="col-md-7 col-xs-9 col-sm-8">
                             <ui-select ng-model="campaign_form.campaign_order" theme="select2" search-enabled="false">
-                                <ui-select-match placeholder="Pick one...">{{orderName(campaign_form.campaign_order)}}</ui-select-match>
+                                <ui-select-match placeholder="{{'select_pick' | translate }}">{{orderName(campaign_form.campaign_order)}}</ui-select-match>
                                 <ui-select-choices repeat="order in campaignOrders">
                                     <span>{{orderName(order)}}</span>
                                 </ui-select-choices>
@@ -218,7 +218,7 @@
 
                             <div class="day-wrap">
                                 <ui-select ng-model="campaign_form.campaign_start_time" theme="select2">
-                                    <ui-select-match placeholder="Pick one...">{{formatWorkingHours(campaign_form.campaign_start_time)}}</ui-select-match>
+                                    <ui-select-match placeholder="{{'select_pick' | translate }}">{{formatWorkingHours(campaign_form.campaign_start_time)}}</ui-select-match>
                                     <ui-select-choices repeat="hour in workhours  | filter: $select.search">
                                         <span ng-bind-html="formatWorkingHours(hour) | highlight: $select.search"</span>
                                     </ui-select-choices>
@@ -249,7 +249,7 @@
 
                             <div class="day-wrap">
                                 <ui-select ng-model="campaign_form.campaign_finish_time" theme="select2">
-                                    <ui-select-match placeholder="Pick one...">{{formatWorkingHours(campaign_form.campaign_finish_time)}}</ui-select-match>
+                                    <ui-select-match placeholder="{{'select_pick' | translate }}">{{formatWorkingHours(campaign_form.campaign_finish_time)}}</ui-select-match>
                                     <ui-select-choices repeat="hour in workhours  | filter: sanitizeWorkingHours($select.search)">
                                         <span ng-bind-html="formatWorkingHours(hour) | highlight: $select.search"></span>
                                     </ui-select-choices>

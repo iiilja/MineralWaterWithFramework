@@ -82,7 +82,7 @@
                         <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'device_orientation' | translate }}</label></div>
                         <div class="col-md-7 col-xs-9 col-sm-8">
                             <ui-select ng-model="device.orientation" theme="select2" search-enabled="false">
-                                <ui-select-match placeholder="Pick one...">{{orientationName(device.orientation)}}</ui-select-match>
+                                <ui-select-match placeholder="{{'select_pick' | translate }}">{{orientationName(device.orientation)}}</ui-select-match>
                                 <ui-select-choices repeat="orientation in deviceOrientations">
                                     <span>{{orientationName(orientation)}}</span>
                                 </ui-select-choices>
@@ -94,7 +94,7 @@
                         <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'device_audioaut' | translate }}</label></div>
                         <div class="col-md-7 col-xs-9 col-sm-8">
                             <ui-select ng-model="device.audioOut" theme="select2" search-enabled="false">
-                                <ui-select-match placeholder="Pick one...">{{audioOutName(device.audioOut)}}</ui-select-match>
+                                <ui-select-match placeholder="{{'select_pick' | translate }}">{{audioOutName(device.audioOut)}}</ui-select-match>
                                 <ui-select-choices repeat="audioOut in deviceAudioOuts">
                                     <span>{{audioOutName(audioOut)}}</span>
                                 </ui-select-choices>
@@ -143,7 +143,7 @@
 <!--                                 <li><span></span></li> -->
                                 <li>
                                     <ui-select ng-model="device.workStartAt" theme="select2">
-                                        <ui-select-match placeholder="Pick one...">{{device.workStartAt}}</ui-select-match>
+                                        <ui-select-match placeholder="{{'select_pick' | translate }}">{{device.workStartAt}}</ui-select-match>
                                         <ui-select-choices repeat="hour in workhours  | filter: $select.search">
                                             <span ng-bind-html="hour | highlight: $select.search"></span>
                                         </ui-select-choices>
@@ -153,7 +153,7 @@
                                 <li class="line"><span> - </span></li>
                                 <li>
                                     <ui-select ng-model="device.workEndAt" theme="select2">
-                                        <ui-select-match placeholder="Pick one...">{{device.workEndAt}}</ui-select-match>
+                                        <ui-select-match placeholder="{{'select_pick' | translate }}">{{device.workEndAt}}</ui-select-match>
                                         <ui-select-choices repeat="hour in workhours  | filter: $select.search">
                                             <span ng-bind-html="hour | highlight: $select.search"></span>
                                         </ui-select-choices>

@@ -179,6 +179,7 @@
     "devices_title":"Juurdepääs seadmete seadetele",
     "users_title":"Kasutajad",
     "account_title":"Акаунт",
-    "payment_title":"Оплата"
+    "payment_title":"Оплата",
+    "select_pick": "Pick one..."
 }
 

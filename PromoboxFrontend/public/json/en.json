@@ -179,6 +179,6 @@
     "devices_title":"Setting access to devices",
     "users_title":"Users",
     "account_title":"Акаунт",
-    "payment_title":"Оплата"
-
+    "payment_title":"Оплата",
+    "select_pick": "Pick one..."
 }

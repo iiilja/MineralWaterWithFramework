@@ -1,6 +1,7 @@
 package ee.promobox.promoboxupdater;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -56,7 +57,14 @@ public class UpdaterTask extends AsyncTask<Void,Void,Boolean> {
 
     @Override
     protected Boolean doInBackground(Void... params) {
-        int installedVersion = service.getInstalledAppVersion();
+        int installedVersion = 0;
+        try {
+            installedVersion = service.getInstalledAppVersion();
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.w(TAG, "Exception caught , stopping");
+            e.printStackTrace();
+            return false;
+        }
         int actualVersion = getActualVersion();
         if (actualVersion == installedVersion){
             Log.d(TAG, "Versions are equal - " + actualVersion);

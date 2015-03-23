@@ -26,7 +26,6 @@ public class MainService extends Service {
 
     public static final int VERSION_0 = 0;
     public static final String VERSION = "version";
-    public  int currentVersion = VERSION_0;
 
     public final static String DEFAULT_SERVER = "http://46.182.31.101:8080"; //"http://api.promobox.ee/";
     //    public final static String DEFAULT_SERVER = "http://46.182.30.93:8080"; // production
@@ -81,7 +80,7 @@ public class MainService extends Service {
     }
 
 
-    public int getInstalledAppVersion(){
+    public int getInstalledAppVersion() throws PackageManager.NameNotFoundException {
         int version = 0;
         Context otherAppsContext;
         try {
@@ -91,27 +90,13 @@ public class MainService extends Service {
             return VERSION_0;
         }
         PackageInfo pInfo = null;
-        try {
-            pInfo = getPackageManager().getPackageInfo(otherAppsContext.getPackageName(), 0);
-            Log.d(TAG, "VERSION name = " + pInfo.versionName + " code = " + pInfo.versionCode);
-            version = pInfo.versionCode;
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-        if (version == VERSION_0){
-            Log.e(TAG, "Version is " + VERSION_0);
-            return currentVersion;
-        }
+
+        pInfo = getPackageManager().getPackageInfo(otherAppsContext.getPackageName(), 0);
+        Log.d(TAG, "VERSION name = " + pInfo.versionName + " code = " + pInfo.versionCode);
+        version = pInfo.versionCode;
+
         return version;
 
-    }
-
-    public void setCurrentVersion(int currentVersion) {
-        this.currentVersion = currentVersion;
-    }
-
-    public int getCurrentVersion() {
-        return currentVersion;
     }
 
     public class MainServiceBinder extends Binder {

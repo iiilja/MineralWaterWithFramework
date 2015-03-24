@@ -28,6 +28,7 @@ public class UpdaterTask extends AsyncTask<Void,Void,Boolean> {
     private String fileUrl = "http://www.tud.ttu.ee/web/Ilja.Denissov/promobox/promobox_%d.apk";
     public static final String APK_FILE_NAME = "promobox.apk";
     private MainService service;
+    private int actualVersion = MainService.VERSION_0;
 
     public UpdaterTask(MainService service){
         this.service = service;
@@ -58,14 +59,8 @@ public class UpdaterTask extends AsyncTask<Void,Void,Boolean> {
     @Override
     protected Boolean doInBackground(Void... params) {
         int installedVersion = 0;
-        try {
-            installedVersion = service.getInstalledAppVersion();
-        } catch (PackageManager.NameNotFoundException e) {
-            Log.w(TAG, "Exception caught , stopping");
-            e.printStackTrace();
-            return false;
-        }
-        int actualVersion = getActualVersion();
+        installedVersion = service.getInstalledAppVersion();
+        actualVersion = getActualVersion();
         if (actualVersion == installedVersion){
             Log.d(TAG, "Versions are equal - " + actualVersion);
         } else if(actualVersion != MainService.VERSION_0){
@@ -84,6 +79,7 @@ public class UpdaterTask extends AsyncTask<Void,Void,Boolean> {
             mainActivity.addCategory(Intent.CATEGORY_LAUNCHER);
             mainActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY);
             mainActivity.putExtra("install",true);
+            mainActivity.putExtra("actualVersion",actualVersion);
 
             service.startActivity(mainActivity);
 

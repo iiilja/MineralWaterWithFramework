@@ -80,23 +80,22 @@ public class MainService extends Service {
     }
 
 
-    public int getInstalledAppVersion() throws PackageManager.NameNotFoundException {
+    public int getInstalledAppVersion() {
         int version = 0;
         Context otherAppsContext;
         try {
             otherAppsContext = createPackageContext("ee.promobox.promoboxandroid", 0);
+            PackageInfo pInfo = null;
+
+            pInfo = getPackageManager().getPackageInfo(otherAppsContext.getPackageName(), 0);
+            Log.d(TAG, "VERSION name = " + pInfo.versionName + " code = " + pInfo.versionCode);
+            version = pInfo.versionCode;
+
+            return version;
         } catch (PackageManager.NameNotFoundException e) {
             Log.e(TAG,e.getMessage());
             return VERSION_0;
         }
-        PackageInfo pInfo = null;
-
-        pInfo = getPackageManager().getPackageInfo(otherAppsContext.getPackageName(), 0);
-        Log.d(TAG, "VERSION name = " + pInfo.versionName + " code = " + pInfo.versionCode);
-        version = pInfo.versionCode;
-
-        return version;
-
     }
 
     public class MainServiceBinder extends Binder {

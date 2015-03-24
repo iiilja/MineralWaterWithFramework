@@ -50,7 +50,7 @@ public class UpdaterTask extends AsyncTask<Void,Void,Boolean> {
                 }
             }
         } catch (IOException | JSONException e) {
-            e.printStackTrace();
+            Log.e(TAG, e.getLocalizedMessage());
         }
         return MainService.VERSION_0;
     }
@@ -68,10 +68,9 @@ public class UpdaterTask extends AsyncTask<Void,Void,Boolean> {
         int actualVersion = getActualVersion();
         if (actualVersion == installedVersion){
             Log.d(TAG, "Versions are equal - " + actualVersion);
-        } else {
+        } else if(actualVersion != MainService.VERSION_0){
             Log.d(TAG, "Versions NOT equal actual = " + actualVersion + " installed = " + installedVersion);
-            boolean downloaded = downloadFile(String.format(fileUrl,actualVersion), APK_FILE_NAME);
-            return downloaded;
+            return downloadFile(String.format(fileUrl,actualVersion), APK_FILE_NAME);
         }
         return false;
     }

@@ -182,7 +182,7 @@ app.controller('FooterController', ['$scope', '$location', '$http', 'token', '$r
     function ($scope, $location, $http, token, $rootScope, $translate, $filter) {
 
         $scope.lang = {};
-        $scope.lang.code = "en";
+        $scope.lang.code = "et";
         $scope.langs = ["en", "et", "lv", "ru"];
 
         $scope.change_language = function(lang) {

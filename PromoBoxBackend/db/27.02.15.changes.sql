@@ -47,4 +47,6 @@ WITH (
   OIDS=FALSE
 );
 
+ALTER TABLE error_log ADD COLUMN device_id INTEGER;
+
 COMMIT;

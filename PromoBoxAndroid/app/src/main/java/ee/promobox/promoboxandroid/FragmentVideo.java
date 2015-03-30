@@ -39,13 +39,14 @@ import ee.promobox.promoboxandroid.data.CampaignFileType;
 import ee.promobox.promoboxandroid.data.ErrorMessage;
 import ee.promobox.promoboxandroid.interfaces.FragmentPlaybackListener;
 import ee.promobox.promoboxandroid.util.PlayerLengthWatcher;
+import ee.promobox.promoboxandroid.util.VideoMatrixCalculator;
 import ee.promobox.promoboxandroid.widgets.FragmentWithSeekBar;
 
 
 public class FragmentVideo extends FragmentWithSeekBar implements TextureView.SurfaceTextureListener,
         MediaCodecVideoTrackRenderer.EventListener , ExoPlayer.Listener
         , MediaCodecAudioTrackRenderer.EventListener{
-    private static final String TAG = "VideoActivity ";
+    private static final String TAG = "FragmentVideo ";
 
     private View fragmentVideoLayout;
     private TextureView videoView;
@@ -105,8 +106,8 @@ public class FragmentVideo extends FragmentWithSeekBar implements TextureView.Su
             String pathToFile = campaignFile.getPath();
 
             if (mainActivity.getOrientation() == MainActivity.ORIENTATION_PORTRAIT_EMULATION){
-                Point videoSize = calculateVideoSize(pathToFile);
-                videoSize = calculateNeededVideoSize(videoSize,viewOriginalHeight,viewOriginalWidth);
+                Point videoSize = VideoMatrixCalculator.calculateVideoSize(pathToFile);
+                videoSize = VideoMatrixCalculator.calculateNeededVideoSize(videoSize,viewOriginalHeight,viewOriginalWidth);
                 RelativeLayout.LayoutParams relPar = (RelativeLayout.LayoutParams) videoView.getLayoutParams();
                 relPar.width = videoSize.x;
                 relPar.height = videoSize.y;
@@ -114,7 +115,7 @@ public class FragmentVideo extends FragmentWithSeekBar implements TextureView.Su
 //                fragmentVideoLayout.setRotation(270);
             }
 
-            Log.d(TAG,"playVideo() file = " + FilenameUtils.getBaseName(pathToFile));
+            Log.d(TAG,"prepareVideo() file = " + FilenameUtils.getBaseName(pathToFile));
             Log.d(TAG,pathToFile);
             Uri uri = Uri.parse(pathToFile);
             SampleSource source = new FrameworkSampleSource(getActivity(), uri, null, 2);
@@ -161,6 +162,7 @@ public class FragmentVideo extends FragmentWithSeekBar implements TextureView.Su
 
     @Override
     public void onPause() {
+        Log.d(TAG, "onPause()");
         super.onPause();
         cleanUp();
     }
@@ -270,49 +272,6 @@ public class FragmentVideo extends FragmentWithSeekBar implements TextureView.Su
         mainActivity.addError(new ErrorMessage(ex), false);
         playbackListener.onPlaybackStop();
         Log.e(TAG, "onPlayerError");
-    }
-
-
-
-
-    private Point calculateVideoSize(String pathToFile) {
-        try {
-            File file = new File(pathToFile);
-            MediaMetadataRetriever metaRetriever = new MediaMetadataRetriever();
-            metaRetriever.setDataSource(file.getAbsolutePath());
-            String height = metaRetriever
-                    .extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT);
-            String width = metaRetriever
-                    .extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH);
-            Log.d(TAG, height + "h , w = " + width);
-            Point size = new Point();
-            size.set(Integer.parseInt(width), Integer.parseInt(height));
-            return size;
-
-        } catch (NumberFormatException ex) {
-            makeToast(String.format(
-                    MainActivity.ERROR_MESSAGE, 42, ex.getClass().getSimpleName()));
-            mainActivity.addError(new ErrorMessage(ex), false);
-            Log.e(TAG, ex.getMessage());
-        }
-        return new Point(0,0);
-    }
-
-    private Point calculateNeededVideoSize(Point videoSize, int viewHeight, int viewWidth) {
-        int videoHeight = videoSize.y;
-        int videoWidth = videoSize.x;
-        float imageSideRatio = (float)videoWidth / (float)videoHeight;
-        float viewSideRatio = (float) viewWidth / (float) viewHeight;
-        if (imageSideRatio > viewSideRatio) {
-            // Image is taller than the display (ratio)
-            int height = (int)(viewWidth / imageSideRatio);
-            videoSize.set(viewWidth, height);
-        } else {
-            // Image is wider than the display (ratio)
-            int width = (int)(viewHeight * imageSideRatio);
-            videoSize.set(width, viewHeight);
-        }
-        return videoSize;
     }
 
     private void makeToast(String toast){

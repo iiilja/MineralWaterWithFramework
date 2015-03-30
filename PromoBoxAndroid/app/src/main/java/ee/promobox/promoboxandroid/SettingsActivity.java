@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import java.util.ArrayList;
 
 import ee.promobox.promoboxandroid.data.Display;
+import ee.promobox.promoboxandroid.util.geom.Line;
 import ee.promobox.promoboxandroid.util.geom.Rectangle;
 import ee.promobox.promoboxandroid.util.geom.TriangleEquilateral;
 
@@ -96,8 +97,8 @@ public class SettingsActivity extends PreferenceActivity {
                     Display d = displays.get(i);
                     entryValues[i] = d.getId() + "";
 
-                    int width = (int) TriangleEquilateral.getLineLength(d.getPoints()[0], d.getPoints()[1]);
-                    int height = (int) TriangleEquilateral.getLineLength(d.getPoints()[1], d.getPoints()[2]);
+                    int width = (int) Line.getLineLength(d.getPoints()[0], d.getPoints()[1]);
+                    int height = (int) Line.getLineLength(d.getPoints()[1], d.getPoints()[2]);
                     entries[i] = d.getId() + " - (" + width + " X " + height + ")";
                 }
                 list.setEntries(entries);

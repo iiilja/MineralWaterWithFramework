@@ -28,15 +28,6 @@ import ee.promobox.promoboxandroid.widgets.WallImageView;
  */
 public class FragmentWallImage extends FragmentVideoWall {
 
-    private static final int DEFAULT_WIDTH = 1920;
-    private static final int DEFAULT_HEIGHT = 1080;
-    private static final Point[] DEFAULT_POINTS = {
-            new Point(0,1080),
-            new Point(1920,1080),
-            new Point(1920,0),
-            new Point(0,0)
-    };
-
     private static final String TAG = "FragmentWallImage ";
 
     private WallImageView slide;
@@ -47,7 +38,6 @@ public class FragmentWallImage extends FragmentVideoWall {
     private VideoWallMasterListener masterListener;
 
     private MainActivity mainActivity;
-    private Point[] monitorPoints = new Point[4];
 
     private Bitmap preparedBitmap;
     private CampaignFile preparedCampaignFile;
@@ -69,12 +59,6 @@ public class FragmentWallImage extends FragmentVideoWall {
         super.setView(imageFragment);
 
         return imageFragment;
-    }
-
-    @Override
-    public void onInflate(Activity activity, AttributeSet attrs, Bundle savedInstanceState) {
-        Log.d(TAG, "onInflate");
-        super.onInflate(activity, attrs, savedInstanceState);
     }
 
     @Override
@@ -277,7 +261,11 @@ public class FragmentWallImage extends FragmentVideoWall {
 
     @Override
     public void prepareFile(CampaignFile campaignFile) {
-        prepareNextFile(campaignFile);
+        if (campaignFile.getType() == CampaignFileType.IMAGE){
+            prepareNextFile(campaignFile);
+        } else {
+            playbackListener.onPlaybackStop();
+        }
     }
 
     @Override

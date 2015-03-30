@@ -232,7 +232,7 @@ public class WallImageView extends ImageView{
         } catch (IllegalArgumentException e ){
 //            bManager.sendBroadcast(new ToastIntent("Error cutting image"));
 //            bManager.sendBroadcast(new ErrorMessageIntent(e));
-            Log.e(TAG,e.getMessage());
+            Log.w(TAG,e.getMessage());
         }
         return bitmap;
     }

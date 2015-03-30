@@ -1,18 +1,15 @@
 package ee.promobox.promoboxandroid;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Matrix;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
-import android.media.MediaMetadataRetriever;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Surface;
@@ -26,19 +23,16 @@ import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import ee.promobox.promoboxandroid.data.CampaignFile;
 import ee.promobox.promoboxandroid.data.CampaignFileType;
 import ee.promobox.promoboxandroid.data.Display;
-import ee.promobox.promoboxandroid.data.ErrorMessage;
 import ee.promobox.promoboxandroid.interfaces.FragmentPlaybackListener;
 import ee.promobox.promoboxandroid.interfaces.VideoWallMasterListener;
 import ee.promobox.promoboxandroid.util.VideoMatrixCalculator;
 import ee.promobox.promoboxandroid.util.geom.Rectangle;
 import ee.promobox.promoboxandroid.util.geom.TriangleEquilateral;
 import ee.promobox.promoboxandroid.widgets.FragmentVideoWall;
-import ee.promobox.promoboxandroid.widgets.WallImageView;
 
 /**
  * Created by ilja on 2.03.2015.
@@ -58,6 +52,7 @@ public class FragmentWallVideo extends FragmentVideoWall implements TextureView.
 
     private FragmentPlaybackListener playbackListener;
     private VideoWallMasterListener masterListener;
+    MoviePlayer.PlayTask mPlayTask = null;
 
     private MainActivity mainActivity;
 
@@ -99,7 +94,6 @@ public class FragmentWallVideo extends FragmentVideoWall implements TextureView.
         Display display = mainActivity.getDisplay();
         if (display != null) {
             Point[] points = display.getPoints();
-//            slide.setInitialValues(mainActivity.getWallHeight(), mainActivity.getWallWidth(), points);
             float rotation = (float) - TriangleEquilateral.getAngleAlpha(points[3], points[0]);
             Log.d(TAG, "rotation = " + rotation );
 //            videoView.setRotation(rotation);
@@ -126,24 +120,21 @@ public class FragmentWallVideo extends FragmentVideoWall implements TextureView.
     }
 
     private void tryNextFile() {
-        CampaignFile campaignFile = mainActivity.getNextFile(CampaignFileType.VIDEO);
-
-        if (campaignFile != null) {
-            playVideo(campaignFile);
-        } else {
-            cleanUp();
-            playbackListener.onPlaybackStop();
+        if (mainActivity.isMaster()){
+            masterListener.onFileNotPrepared();
         }
     }
 
 
-    public void playVideo(CampaignFile campaignFile) {
+    public void prepareVideo(final CampaignFile campaignFile) {
         try {
             cleanUp();
+            requestedStop = false;
+
             String pathToFile = campaignFile.getPath();
+            Point videoSize = VideoMatrixCalculator.calculateVideoSize(pathToFile);
 
             if (mainActivity.getOrientation() == MainActivity.ORIENTATION_PORTRAIT_EMULATION){
-                Point videoSize = VideoMatrixCalculator.calculateVideoSize(pathToFile);
                 videoSize = VideoMatrixCalculator.calculateNeededVideoSize(videoSize,viewOriginalHeight,viewOriginalWidth);
                 RelativeLayout.LayoutParams relPar = (RelativeLayout.LayoutParams) videoView.getLayoutParams();
                 relPar.width = videoSize.x;
@@ -171,17 +162,17 @@ public class FragmentWallVideo extends FragmentVideoWall implements TextureView.
             Log.d(TAG, "bottom = " + dst.bottom + " top " + dst.top);
             Log.d(TAG, "left = " + dst.left + " right " + dst.right);
 
-//            boolean isSet =  matrix.setRectToRect(dst, src, Matrix.ScaleToFit.CENTER );
-//            Log.w(TAG, "matrix.setRectToRect is " + isSet);
-//            matrix.setRotate(-45);
-            Log.d(TAG, matrix.toString());
+            int vidHeight = videoSize.y;
+            int vidWidth = videoSize.x;
+            float[] scaleXY = VideoMatrixCalculator.calculateScaleXY(vidWidth, vidHeight,viewOriginalWidth,viewOriginalHeight,src);
+            matrix.setScale(scaleXY[0],scaleXY[1]);
+
+            float[] translationAndXY = VideoMatrixCalculator.calculateTranslationAndXY(points, src, dst, viewOriginalWidth, viewOriginalHeight);
+            matrix.postTranslate(translationAndXY[0], translationAndXY[1]);
+
+            RectF rectF = new RectF(0,0,viewOriginalWidth,viewOriginalHeight);
+            matrix.postRotate(rotation,rectF.centerX(),rectF.centerY());
             videoView.setTransform(matrix);
-//            videoView.setTranslationY(0);
-//            videoView.setTranslationX(1084);
-//            videoView.setRotation(0);
-            Log.d(TAG, "height = " + videoView.getLayoutParams().height + " width = " + videoView.getLayoutParams().width);
-
-
             Surface surface = new Surface(videoView.getSurfaceTexture());
             try {
                 player = new MoviePlayer(
@@ -192,18 +183,24 @@ public class FragmentWallVideo extends FragmentVideoWall implements TextureView.
                 return;
             }
 
-            MoviePlayer.PlayTask mPlayTask = new MoviePlayer.PlayTask(player, new MoviePlayer.PlayerFeedback() {
+            mPlayTask = new MoviePlayer.PlayTask(player, new MoviePlayer.PlayerFeedback() {
                 @Override
                 public void playbackStopped() {
                     Log.d(TAG, "playbackStopped  - requestedStop = " + requestedStop);
-                    if ( !requestedStop){
+                    if ( !requestedStop ){
                         tryNextFile();
                     }
                     requestedStop = false;
                 }
             });
-
-            mPlayTask.execute();
+            if (mainActivity.isMaster()){
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        masterListener.onFileStartedPlaying(campaignFile.getId(),0);
+                    }
+                },1000);
+            }
 
 
         } catch (Exception ex) {
@@ -259,12 +256,21 @@ public class FragmentWallVideo extends FragmentVideoWall implements TextureView.
     }
     @Override
     public void playFile(CampaignFile campaignFile, long frameId) {
-
+        Log.d(TAG, "Received start playing");
+        if (textureAvailable){
+            mainActivity.getNextFile(CampaignFileType.VIDEO);
+            mPlayTask.execute();
+        }
     }
 
     @Override
     public void prepareFile(CampaignFile campaignFile) {
-
+        Log.d(TAG, "Received file preparing");
+        if (campaignFile.getType() == CampaignFileType.VIDEO){
+            prepareVideo(campaignFile);
+        } else {
+            playbackListener.onPlaybackStop();
+        }
     }
 
     @Override

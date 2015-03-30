@@ -195,6 +195,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
             } catch (IllegalStateException e){
                 Log.e(TAG, e.getMessage());
                 addError(new ErrorMessage(e),false);
+                fragment = currentFragment;
             }
         }
         currentFragment = fragment;
@@ -317,6 +318,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
 
             if ( mainService.isVideoWall() ){
                 imageFragment = new FragmentWallImage();
+                videoFragment = new FragmentWallVideo();
                 videoWall = true;
                 jGroupsMessenger.start(getBaseContext());
                 Log.d(TAG, "Starting jGroups");
@@ -566,6 +568,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
                     } else if (mainService != null && mainService.isVideoWall()){
                         jGroupsMessenger.start(getBaseContext());
                         imageFragment = new FragmentWallImage();
+                        videoFragment = new FragmentWallVideo();
                         videoWall = true;
                         startNextFile();
                     }
@@ -583,6 +586,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
         Campaign campaign = mainService.getCampaigns().getCampaignWithId(message.getCampaignId());
         if (campaign == null) return;
         CampaignFile campaignFile = campaign.getFileById(message.getFileId());
+        if (campaignFile == null) return;
         FragmentVideoWall fragmentByType = (FragmentVideoWall) getFragmentByFileType(campaignFile.getType());
         if ( !fragmentByType.equals(currentFragment) ) {
             startNextFile();

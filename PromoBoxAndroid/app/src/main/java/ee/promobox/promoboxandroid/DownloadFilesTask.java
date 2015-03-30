@@ -193,7 +193,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
                     bManager.sendBroadcast(update);
                 }
             } else {
-                Log.e(TAG, "Something missing in displays JSON");
+                Log.e(TAG, "resolutionHorizontal or resolutionVertical or displays missing in JSON");
             }
         } catch (JSONException e) {
             service.addError(new ErrorMessage(e), false);

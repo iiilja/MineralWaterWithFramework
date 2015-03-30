@@ -37,8 +37,8 @@ public class TriangleEquilateral {
     public double getAngleAlpha(){
         Log.d("TRIANGLE" , "quarter = " + quarter);
         Log.d("TRIANGLE" , "a = ("+a.x+";"+a.y+") b = ("+b.x+";"+b.y+") c = ("+c.x+";"+c.y+")");
-        double lineA = getLineLength(b,c);
-        double lineC = getLineLength(a,b);
+        double lineA = Line.getLineLength(b,c);
+        double lineC = Line.getLineLength(a,b);
         Log.d("TRIANGLE" , "lineA length = " + lineA + " lineC length = " + lineC);
         return Math.floor(Math.sin( lineC != 0 ? (lineA / lineC): 0 ) + 90 * quarter);
     }
@@ -67,9 +67,5 @@ public class TriangleEquilateral {
             }
         }
         return c;
-    }
-
-    public static double getLineLength(Point a, Point b){
-        return Math.sqrt(Math.pow(a.x-b.x, 2) + Math.pow(a.y-b.y , 2));
     }
 }

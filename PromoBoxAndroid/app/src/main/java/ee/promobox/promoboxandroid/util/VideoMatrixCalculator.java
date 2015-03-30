@@ -76,7 +76,7 @@ public class VideoMatrixCalculator {
         double scaleX = (double)monitorWidth / videoWidth;
         double ratio = scaleX/scaleY;
         Log.w(TAG, "***1***");
-        Log.d(TAG, "scaleY = "+scaleY+" scaleX = "+ scaleX + " retio = " + ratio);
+        Log.d(TAG, "scaleY = "+scaleY+" scaleX = "+ scaleX + " ratio = " + ratio);
         return ratio;
     }
 
@@ -88,6 +88,7 @@ public class VideoMatrixCalculator {
         // TODO: this wil lbe fine only if video and wall ratios are equal
         float scaleY = wall.height()/monitorHeight;
         float scaleX = (float) (scaleY / initialScale);
+        Log.d(TAG, "scaleY = "+scaleY+" scaleX = "+ scaleX);
         return new float[]{scaleX,scaleY};
     }
     
@@ -108,7 +109,6 @@ public class VideoMatrixCalculator {
         Log.d(TAG,"monitorHeight = " + monitorHeight + " dstY = " + dstY + " dResolutionY" + dResolutionY);
 
         Log.d(TAG, "Translation dX = " + dX + " dY = " + dY);
-
 
         return new float[]{dX,dY};
     }

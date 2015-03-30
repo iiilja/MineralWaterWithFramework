@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package ee.promobox.entity;
 
 import java.io.Serializable;
@@ -37,13 +36,13 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "CampaignsFiles.findByFileType", query = "SELECT c FROM CampaignsFiles c WHERE c.fileType = :fileType"),
     @NamedQuery(name = "CampaignsFiles.findByOrderId", query = "SELECT c FROM CampaignsFiles c WHERE c.orderId = :orderId")})
 public class CampaignsFiles implements Serializable {
-    
+
     public static final int STATUS_UPLOADED = 0;
     public static final int STATUS_CONVERTED = 1;
     public static final int STATUS_ACTIVE = 2;
     public static final int STATUS_ARCHIVED = 3;
     public static final int STATUS_CONVERTING = 4;
-    
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -64,22 +63,20 @@ public class CampaignsFiles implements Serializable {
     private Integer orderId;
     @Column(name = "status")
     private Integer status;
-    
+
     @Column(name = "size")
     private Integer size;
-    
+
     @Column(name = "filename")
     private String filename;
-    
+
     @Column(name = "updated_dt")
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedDt;
-    
+
     @Column(name = "created_dt")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDt;
-    
-    
 
     public CampaignsFiles() {
     }
@@ -143,7 +140,7 @@ public class CampaignsFiles implements Serializable {
     public void setStatus(Integer status) {
         this.status = status;
     }
-    
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -211,20 +208,20 @@ public class CampaignsFiles implements Serializable {
         this.filename = filename;
     }
 
-	public Integer getPage() {
-		return page;
-	}
+    public Integer getPage() {
+        return page;
+    }
 
-	public void setPage(Integer page) {
-		this.page = page;
-	}
+    public void setPage(Integer page) {
+        this.page = page;
+    }
 
-	public Date getUpdatedDt() {
-		return updatedDt;
-	}
+    public Date getUpdatedDt() {
+        return updatedDt;
+    }
 
-	public void setUpdatedDt(Date updatedDt) {
-		this.updatedDt = updatedDt;
-	}
+    public void setUpdatedDt(Date updatedDt) {
+        this.updatedDt = updatedDt;
+    }
 
 }

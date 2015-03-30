@@ -146,9 +146,9 @@
     "lang_ru": "Русский",
     "lang_lv": "Latvijas",
     "settings_account_name": "Account name",
-    "settings_account_updated": "Данные аккаунта обновлены", 
-    "settings_account_short_password": "Пароль должен быть длиннее 6 символов",
-    "settings_account_passwords_dont_match": "Пароли не совпадают",
+    "settings_account_updated": "Account information updated", 
+    "settings_account_short_password": "Password should contain at least 6 symbols",
+    "settings_account_passwords_dont_match": "Passwords do not match",
     "footer_nav_about_us":"About us",
     "footer_nav_privacy_policy":"Privacy policy",
     "footer_nav_terms_of_use":"Terms of Use",
@@ -178,7 +178,7 @@
     "campaigns_title":"Setting access to campaigns",
     "devices_title":"Setting access to devices",
     "users_title":"Users",
-    "account_title":"Акаунт",
-    "payment_title":"Оплата",
+    "account_title":"Account",
+    "payment_title":"Payment",
     "select_pick": "Pick one..."
 }

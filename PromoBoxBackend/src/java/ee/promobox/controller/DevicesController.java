@@ -51,9 +51,9 @@ import org.springframework.web.bind.annotation.*;
  */
 @Controller
 public class DevicesController {
-	
-	public static final int CHECK_PERIOD = 15 * 60 * 1000;
-	public static final int CHECK_COUNT_BEFORE_EMAIL = 3;
+
+    public static final int CHECK_PERIOD = 15 * 60 * 1000;
+    public static final int CHECK_COUNT_BEFORE_EMAIL = 3;
 
     private final static Logger log = LoggerFactory.getLogger(
             DevicesController.class);
@@ -65,56 +65,56 @@ public class DevicesController {
 
     @Autowired
     private SessionService sessionService;
-    
+
     @Autowired
     private KioskConfig config;
-    
+
     @Autowired
     @Qualifier("mailDestination")
     private Destination mailDestination;
     @Autowired
     private JmsTemplate jmsTemplate;
-    
+
     @Scheduled(fixedDelay = CHECK_PERIOD)
     public void checkDeviceStatus() {
-        for (Devices d: userService.findAllDevices()) {
+        for (Devices d : userService.findAllDevices()) {
             if (System.currentTimeMillis() - d.getLastDeviceRequestDt().getTime() >= CHECK_PERIOD) {
-                if (d.getStatus() != Devices.STATUS_AHRCHIVED && 
-                        d.getStatus() != Devices.STATUS_OFFLINE) {
-                	if (d.getStatus() == Devices.STATUS_ONLINE || d.getStatus() == Devices.STATUS_USED) {
-                		d.setStatePeriod(d.getStatePeriod() + d.getCheckCounter() * CHECK_PERIOD);
-                		d.setCheckCounter(0);
-                	}
-                   
-                    
+                if (d.getStatus() != Devices.STATUS_AHRCHIVED
+                        && d.getStatus() != Devices.STATUS_OFFLINE) {
+                    if (d.getStatus() == Devices.STATUS_ONLINE || d.getStatus() == Devices.STATUS_USED) {
+                        d.setStatePeriod(d.getStatePeriod() + d.getCheckCounter() * CHECK_PERIOD);
+                        d.setCheckCounter(0);
+                    }
+
                     d.setStatus(Devices.STATUS_OFFLINE);
                     userService.updateDevice(d);
                 }
-                
+
                 if (d.getStatus() == Devices.STATUS_OFFLINE) {
-                	d.setCheckCounter(d.getCheckCounter() + 1);
-                	
-                	if (d.getCheckCounter() == CHECK_COUNT_BEFORE_EMAIL) {
-                		 sendDeviceEmail(d, "OFFLINE!");
-                	}
-                	
-                	userService.updateDevice(d);
+                    d.setCheckCounter(d.getCheckCounter() + 1);
+
+                    if (d.getCheckCounter() == CHECK_COUNT_BEFORE_EMAIL) {
+                        sendDeviceEmail(d, "OFFLINE!");
+                    }
+
+                    userService.updateDevice(d);
                 }
-              
+
             } else if (d.getStatus() == Devices.STATUS_ONLINE) {
-            	d.setCheckCounter(d.getCheckCounter() + 1);
-            	
-            	if (d.getCheckCounter() == CHECK_COUNT_BEFORE_EMAIL) {
-	           		 sendDeviceEmail(d, "ONLINE!");
-	           	}
-            	
-            	userService.updateDevice(d);
+                d.setCheckCounter(d.getCheckCounter() + 1);
+
+                if (d.getCheckCounter() == CHECK_COUNT_BEFORE_EMAIL) {
+                    sendDeviceEmail(d, "ONLINE!");
+                }
+
+                userService.updateDevice(d);
             }
-        } 
+        }
     }
 
     @RequestMapping("/device/{uuid}/pull")
-    public @ResponseBody String showCampaign(
+    public @ResponseBody
+    String showCampaign(
             @PathVariable("uuid") String uuid,
             @RequestParam String json,
             HttpServletRequest request,
@@ -126,8 +126,8 @@ public class DevicesController {
         Devices d = userService.findDeviceByUuid(uuid);
 
         if (d != null) {
-        	resp.put("currentDt", new Date().getTime());
-        	
+            resp.put("currentDt", new Date().getTime());
+
             JSONObject objectGiven = new JSONObject(json);
 
             d.setFreeSpace(objectGiven.has("freeSpace") ? objectGiven.getLong("freeSpace") : 0);
@@ -136,59 +136,58 @@ public class DevicesController {
             d.setCurrentCampaignId(objectGiven.has("currentCampaignId") ? objectGiven.getInt("currentCampaignId") : null);
             d.setLoadingCampaignId(objectGiven.has("loadingCampaingId") ? objectGiven.getInt("loadingCampaingId") : null);
             d.setLoadingCampaignProgress(objectGiven.has("loadingCampaingProgress") ? objectGiven.getInt("loadingCampaingProgress") : null);
-            
+
             boolean onTop = objectGiven.has("isOnTop") ? objectGiven.getBoolean("isOnTop") : true;
             d.setOnTop(onTop);
-            
-            
+
             if (objectGiven.has("ip")) {
                 d.setNetworkData(objectGiven.getJSONArray("ip").toString());
             }
-            
+
             if (objectGiven.has("errors")) {
-            	JSONArray errors = objectGiven.getJSONArray("errors");
-            	for (int i = 0; i < errors.length(); i++) {
-            		JSONObject jsonError = errors.getJSONObject(i);
-            		
-            		String name = StringUtils.abbreviate(jsonError.getString("name"), 255);
-            		String message = StringUtils.abbreviate(jsonError.getString("message"), 255);
-            		String stackTrace = jsonError.getString("stackTrace");
-            		
-            		ErrorLog errorLog = new ErrorLog();
-            		errorLog.setDeviceId(d.getId());
-            		errorLog.setName(name);
-            		errorLog.setMessage(message);
-            		errorLog.setStackTrace(stackTrace);
-            		errorLog.setCreatedDt(new Date(jsonError.getInt("date")));
-            		
-            		userService.addErrorLog(errorLog);
-            	}
+                JSONArray errors = objectGiven.getJSONArray("errors");
+                for (int i = 0; i < errors.length(); i++) {
+                    JSONObject jsonError = errors.getJSONObject(i);
+
+                    String name = StringUtils.abbreviate(jsonError.getString("name"), 255);
+                    String message = StringUtils.abbreviate(jsonError.getString("message"), 255);
+                    String stackTrace = jsonError.getString("stackTrace");
+
+                    ErrorLog errorLog = new ErrorLog();
+                    errorLog.setDeviceId(d.getId());
+                    errorLog.setName(name);
+                    errorLog.setMessage(message);
+                    errorLog.setStackTrace(stackTrace);
+                    errorLog.setCreatedDt(new Date(jsonError.getInt("date")));
+
+                    userService.addErrorLog(errorLog);
+                }
             }
 
             resp.put("audioOut", d.getAudioOut());
-            
+
             resp.put("nextFile", d.getNextFile());
-            
+
             resp.put("lastUpdate", d.getLastDeviceRequestDt().getTime());
             resp.put("orientation", d.getOrientation());
             resp.put("clearCache", d.isClearCache());
             resp.put("openApp", d.isOpenApp());
-            
+
             resp.put("videoWall", d.isVideoWall());
             resp.put("resolutionVertical", d.getResolutionVertical());
             resp.put("resolutionHorizontal", d.getResolutionHorizontal());
-            
+
             JSONArray displaysArray = new JSONArray();
             for (DevicesDisplays display : userService.findDevicesDisplays(d.getId())) {
-            	JSONObject displayJson = new JSONObject();
-            	displayJson.put("displayId", display.getDisplayId());
-            	displayJson.put("deviceId", display.getDeviceId());
-            	displayJson.put("point1", display.getPoint1());
-            	displayJson.put("point2", display.getPoint2());
-            	displayJson.put("point3", display.getPoint3());
-            	displayJson.put("point4", display.getPoint4());
-            	
-            	displaysArray.put(displayJson);
+                JSONObject displayJson = new JSONObject();
+                displayJson.put("displayId", display.getDisplayId());
+                displayJson.put("deviceId", display.getDeviceId());
+                displayJson.put("point1", display.getPoint1());
+                displayJson.put("point2", display.getPoint2());
+                displayJson.put("point3", display.getPoint3());
+                displayJson.put("point4", display.getPoint4());
+
+                displaysArray.put(displayJson);
             }
             resp.put("displays", displaysArray);
 
@@ -241,9 +240,9 @@ public class DevicesController {
                                     jsonCampaignFile.put("size", file.getSize());
                                     jsonCampaignFile.put("orderId", file.getOrderId());
                                     jsonCampaignFile.put("name", file.getFilename());
-                                    
+
                                     if (file.getUpdatedDt() != null) {
-                                    	jsonCampaignFile.put("updatedDt", file.getUpdatedDt().getTime());
+                                        jsonCampaignFile.put("updatedDt", file.getUpdatedDt().getTime());
                                     }
 
                                     jsonCampaignFiles.put(jsonCampaignFile);
@@ -258,9 +257,9 @@ public class DevicesController {
 
                     resp.put("campaigns", campaigns);
                 }
-                
+
                 if (d.getStatus() == Devices.STATUS_OFFLINE) {
-                	d.setStatePeriod(d.getStatePeriod() + d.getCheckCounter() * CHECK_PERIOD);
+                    d.setStatePeriod(d.getStatePeriod() + d.getCheckCounter() * CHECK_PERIOD);
                     d.setCheckCounter(0);
                 }
 
@@ -274,7 +273,7 @@ public class DevicesController {
                 return resp.toString();
 
             } else {
-            	resp.put("status", "error");
+                resp.put("status", "error");
                 resp.put("error", "no_active_campaign");
 
                 response.setStatus(HttpServletResponse.SC_OK);
@@ -291,11 +290,11 @@ public class DevicesController {
             return resp.toString();
         }
     }
-    
+
     private void sendDeviceEmail(Devices d, String status) {
-    	SimpleDateFormat dt = new SimpleDateFormat("dd.MM.yyyy hh:mm");
-    	String now = dt.format(new Date());
-    	
+        SimpleDateFormat dt = new SimpleDateFormat("dd.MM.yyyy hh:mm");
+        String now = dt.format(new Date());
+
         MailDto mailDto = new MailDto();
         mailDto.setFrom("no-reply@promobox.ee");
         mailDto.setSubject("Device " + d.getUuid() + " " + status + " (" + now + ")");
@@ -307,22 +306,22 @@ public class DevicesController {
         text.append("Description: " + d.getDescription() + "\n");
         text.append("Status: " + status + "\n");
         text.append("Date: " + now + "\n");
-        
-		PeriodFormatter formatter = new PeriodFormatterBuilder()
-			.printZeroNever()
-		    .appendDays()
-		    .appendSuffix(" day ", " days ")
-		    .printZeroAlways()
-		    .appendHours()
-		    .appendSeparator(":")
-		    .minimumPrintedDigits(2)
-		    .appendMinutes()
-		    .toFormatter();
-		
-		Period period = new Period(d.getStatePeriod());
-		
-		text.append("Time between states: " + formatter.print(period.normalizedStandard()) + "\n");
-		d.setStatePeriod(0);
+
+        PeriodFormatter formatter = new PeriodFormatterBuilder()
+                .printZeroNever()
+                .appendDays()
+                .appendSuffix(" day ", " days ")
+                .printZeroAlways()
+                .appendHours()
+                .appendSeparator(":")
+                .minimumPrintedDigits(2)
+                .appendMinutes()
+                .toFormatter();
+
+        Period period = new Period(d.getStatePeriod());
+
+        text.append("Time between states: " + formatter.print(period.normalizedStandard()) + "\n");
+        d.setStatePeriod(0);
 
         mailDto.setText(text.toString());
 
@@ -330,7 +329,8 @@ public class DevicesController {
     }
 
     @RequestMapping(value = "token/{token}/devices", method = RequestMethod.GET)
-    public @ResponseBody String showAllDevices(
+    public @ResponseBody
+    String showAllDevices(
             @PathVariable("token") String token,
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
@@ -343,11 +343,11 @@ public class DevicesController {
         if (session != null) {
             int clientId = session.getClientId();
 
-            List<Devices> devices = null; 
+            List<Devices> devices = null;
             if (session.isAdmin()) {
-            	devices = userService.findUserDevieces(clientId);
+                devices = userService.findUserDevieces(clientId);
             } else {
-            	devices = userService.findUserDevieces(clientId, session.getUserId());
+                devices = userService.findUserDevieces(clientId, session.getUserId());
             }
 
             JSONArray devicesArray = new JSONArray();
@@ -374,11 +374,11 @@ public class DevicesController {
                     jsonD.put("audioOut", d.getAudioOut());
                     jsonD.put("lastRequestDt", d.getLastDeviceRequestDt().getTime());
                     jsonD.put("onTop", d.isOnTop());
-                    
+
                     if (session.isAdmin()) {
-                    	jsonD.put("permissionWrite", true);
+                        jsonD.put("permissionWrite", true);
                     } else {
-                    	jsonD.put("permissionWrite", checkWritePermission(session, d.getId()));
+                        jsonD.put("permissionWrite", checkWritePermission(session, d.getId()));
                     }
 
                     if (d.getCurrentCampaignId() != null) {
@@ -437,9 +437,9 @@ public class DevicesController {
 
                     List<AdCampaigns> adCampaignses = null;
                     if (session.isAdmin()) {
-                    	adCampaignses = userService.findUserAdCompaigns(session.getClientId());
+                        adCampaignses = userService.findUserAdCompaigns(session.getClientId());
                     } else {
-                    	adCampaignses = userService.findUserAdCompaigns(session.getClientId(), session.getUserId());
+                        adCampaignses = userService.findUserAdCompaigns(session.getClientId(), session.getUserId());
                     }
 
                     JSONArray array = new JSONArray();
@@ -464,7 +464,7 @@ public class DevicesController {
                     devicesArray.put(jsonD);
                 }
             }
-            
+
             resp.put("devices", devicesArray);
 
             response.setStatus(HttpServletResponse.SC_OK);
@@ -478,7 +478,8 @@ public class DevicesController {
     }
 
     @RequestMapping(value = "token/{token}/devices/{id}", method = RequestMethod.DELETE)
-    public @ResponseBody String deleteDevice(
+    public @ResponseBody
+    String deleteDevice(
             @PathVariable("token") String token,
             @PathVariable("id") int id,
             HttpServletRequest request,
@@ -509,7 +510,8 @@ public class DevicesController {
     }
 
     @RequestMapping(value = "token/{token}/devices/{id}/campaign/{campaignId}", method = RequestMethod.DELETE)
-    public @ResponseBody String deleteDeviceCampaign(
+    public @ResponseBody
+    String deleteDeviceCampaign(
             @PathVariable("token") String token,
             @PathVariable("id") int id,
             @PathVariable("campaignId") int campaignId,
@@ -536,19 +538,19 @@ public class DevicesController {
         }
 
         RequestUtils.sendUnauthorized(response);
-        
+
         return null;
     }
 
     @RequestMapping(value = "token/{token}/devices/{id}", method = RequestMethod.PUT)
-    public @ResponseBody String updateDevice(
+    public @ResponseBody
+    String updateDevice(
             @PathVariable("token") String token,
             @PathVariable("id") int id,
             @RequestBody String json,
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
-    	
         JSONObject resp = new JSONObject();
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
@@ -578,7 +580,7 @@ public class DevicesController {
                 device.setFri(deviceUpdate.getBoolean("fr"));
                 device.setSat(deviceUpdate.getBoolean("sa"));
                 device.setSun(deviceUpdate.getBoolean("su"));
-           
+
                 for (int i = 0; i < deviceUpdate.getJSONArray("campaignIds").length(); i++) {
                     int campaignId = deviceUpdate.getJSONArray("campaignIds").getInt(i);
 
@@ -600,10 +602,10 @@ public class DevicesController {
                         }
 
                         if (!timeIntersection) {
-                        	resp.put("WARN", "time_intersection");
+                            resp.put("WARN", "time_intersection");
                             resp.put("name", intersectionName);
                         }
-                        
+
                         devicesCampaigns = new DevicesCampaigns();
 
                         devicesCampaigns.setDeviceId(device.getId());
@@ -632,46 +634,46 @@ public class DevicesController {
                 RequestUtils.sendUnauthorized(response);
             }
         }
-        
+
         return null;
     }
 
     public static boolean checkTimeIntersection(AdCampaigns campaign1, AdCampaigns campaign2) {
         try {
-        	boolean startCheck = campaign1.getStart().after(campaign2.getStart()) && campaign1.getStart().before(campaign2.getFinish());
-        	boolean finishCheck = campaign1.getFinish().after(campaign2.getStart()) && campaign1.getFinish().before(campaign2.getFinish());
-        	
-        	if (startCheck || finishCheck) { 
-	            JSONObject workTime1 = new JSONObject(campaign1.getWorkTimeData());
-	            JSONObject workTime2 = new JSONObject(campaign2.getWorkTimeData());
-	
-	            boolean daysMatch = false;
-	            List<String> workDays1 = new ArrayList<>();
-	            for (int i = 0; i < workTime1.getJSONArray("days").length(); i++) {
-	                workDays1.add(workTime1.getJSONArray("days").getString(i));
-	            }
-	
-	            for (int i = 0; i < workTime2.getJSONArray("days").length(); i++) {
-	                if (workDays1.contains(workTime2.getJSONArray("days").getString(i))) {
-	                    daysMatch = true;
-	
-	                    break;
-	                }
-	            }
-	
-	            if (daysMatch) {
-	                List<String> workHours1 = new ArrayList<>();
-	                for (int i = 0; i < workTime1.getJSONArray("hours").length(); i++) {
-	                    workHours1.add(workTime1.getJSONArray("hours").getString(i));
-	                }
-	
-	                for (int i = 0; i < workTime2.getJSONArray("hours").length(); i++) {
-	                    if (workHours1.contains(workTime2.getJSONArray("hours").getString(i))) {
-	                        return true;
-	                    }
-	                }
-	            }
-        	}
+            boolean startCheck = campaign1.getStart().after(campaign2.getStart()) && campaign1.getStart().before(campaign2.getFinish());
+            boolean finishCheck = campaign1.getFinish().after(campaign2.getStart()) && campaign1.getFinish().before(campaign2.getFinish());
+
+            if (startCheck || finishCheck) {
+                JSONObject workTime1 = new JSONObject(campaign1.getWorkTimeData());
+                JSONObject workTime2 = new JSONObject(campaign2.getWorkTimeData());
+
+                boolean daysMatch = false;
+                List<String> workDays1 = new ArrayList<>();
+                for (int i = 0; i < workTime1.getJSONArray("days").length(); i++) {
+                    workDays1.add(workTime1.getJSONArray("days").getString(i));
+                }
+
+                for (int i = 0; i < workTime2.getJSONArray("days").length(); i++) {
+                    if (workDays1.contains(workTime2.getJSONArray("days").getString(i))) {
+                        daysMatch = true;
+
+                        break;
+                    }
+                }
+
+                if (daysMatch) {
+                    List<String> workHours1 = new ArrayList<>();
+                    for (int i = 0; i < workTime1.getJSONArray("hours").length(); i++) {
+                        workHours1.add(workTime1.getJSONArray("hours").getString(i));
+                    }
+
+                    for (int i = 0; i < workTime2.getJSONArray("hours").length(); i++) {
+                        if (workHours1.contains(workTime2.getJSONArray("hours").getString(i))) {
+                            return true;
+                        }
+                    }
+                }
+            }
         } catch (Exception ex) {
             log.error(ex.getMessage(), ex);
         }
@@ -680,7 +682,8 @@ public class DevicesController {
     }
 
     @RequestMapping(value = "token/{token}/devices/{id}/clearcache", method = RequestMethod.PUT)
-    public @ResponseBody String clearDeviceCache(
+    public @ResponseBody
+    String clearDeviceCache(
             @PathVariable("token") String token,
             @PathVariable("id") int id,
             HttpServletRequest request,
@@ -691,7 +694,7 @@ public class DevicesController {
 
         Session session = sessionService.findSession(token);
 
-        if (session != null  && checkWritePermission(session, id)) {
+        if (session != null && checkWritePermission(session, id)) {
             int clientId = session.getClientId();
 
             Devices device = userService.findDeviceByIdAndClientId(id, clientId);
@@ -704,18 +707,19 @@ public class DevicesController {
 
                 response.setStatus(HttpServletResponse.SC_OK);
 
-               return resp.toString();
+                return resp.toString();
 
             } else {
                 RequestUtils.sendUnauthorized(response);
             }
         }
-        
+
         return null;
     }
-    
+
     @RequestMapping(value = "token/{token}/devices/{id}/openapp", method = RequestMethod.PUT)
-    public @ResponseBody String openApp(
+    public @ResponseBody
+    String openApp(
             @PathVariable("token") String token,
             @PathVariable("id") int id,
             HttpServletRequest request,
@@ -745,10 +749,10 @@ public class DevicesController {
                 RequestUtils.sendUnauthorized(response);
             }
         }
-        
+
         return null;
     }
-    
+
     private Date parseTimeString(String timeString) {
         Calendar cal = GregorianCalendar.getInstance();
 
@@ -770,7 +774,8 @@ public class DevicesController {
     }
 
     @RequestMapping(value = "token/{token}/devices", method = RequestMethod.POST)
-    public @ResponseBody String createDevice(
+    public @ResponseBody
+    String createDevice(
             @PathVariable("token") String token,
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
@@ -841,15 +846,15 @@ public class DevicesController {
 
         return null;
     }
-    
+
     private boolean checkWritePermission(Session session, int deviceId) {
-    	if (session.isAdmin()) {
-    		return true;
-    	}
-    	
-    	UsersDevicesPermissions permission = userService.findUsersDevicesPermissions(session.getUserId(), deviceId);
-    	
-    	return permission == null ? false : permission.isPermissionWrite();
+        if (session.isAdmin()) {
+            return true;
+        }
+
+        UsersDevicesPermissions permission = userService.findUsersDevicesPermissions(session.getUserId(), deviceId);
+
+        return permission == null ? false : permission.isPermissionWrite();
     }
 
     @ExceptionHandler(Exception.class)

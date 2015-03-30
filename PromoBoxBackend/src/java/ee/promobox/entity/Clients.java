@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package ee.promobox.entity;
 
 import java.io.Serializable;
@@ -34,6 +33,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Clients.findById", query = "SELECT c FROM Clients c WHERE c.id = :id"),
     @NamedQuery(name = "Clients.findByCompanyName", query = "SELECT c FROM Clients c WHERE c.companyName = :companyName")})
 public class Clients implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,11 +42,11 @@ public class Clients implements Serializable {
     private Integer id;
     @Column(name = "company_name")
     private String companyName;
-    
+
     @Column(name = "created_dt")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDt;
-    
+
     @Column(name = "updated_dt")
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedDt;
@@ -75,22 +75,22 @@ public class Clients implements Serializable {
     }
 
     public Date getCreatedDt() {
-		return createdDt;
-	}
+        return createdDt;
+    }
 
-	public void setCreatedDt(Date createdDt) {
-		this.createdDt = createdDt;
-	}
+    public void setCreatedDt(Date createdDt) {
+        this.createdDt = createdDt;
+    }
 
-	public Date getUpdatedDt() {
-		return updatedDt;
-	}
+    public Date getUpdatedDt() {
+        return updatedDt;
+    }
 
-	public void setUpdatedDt(Date updatedDt) {
-		this.updatedDt = updatedDt;
-	}
+    public void setUpdatedDt(Date updatedDt) {
+        this.updatedDt = updatedDt;
+    }
 
-	@Override
+    @Override
     public int hashCode() {
         int hash = 0;
         hash += (id != null ? id.hashCode() : 0);
@@ -114,5 +114,5 @@ public class Clients implements Serializable {
     public String toString() {
         return "ee.promobox.entity.Clients[ id=" + id + " ]";
     }
-    
+
 }

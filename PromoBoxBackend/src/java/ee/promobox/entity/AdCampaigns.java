@@ -13,7 +13,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Lob;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
@@ -35,14 +34,13 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "AdCampaigns.findByClientId", query = "SELECT a FROM AdCampaigns a WHERE a.clientId = :clientId"),
     @NamedQuery(name = "AdCampaigns.findByStatus", query = "SELECT a FROM AdCampaigns a WHERE a.status = :active")})
 public class AdCampaigns implements Serializable {
-    
-    
+
     public static final int STATUS_CREATED = 0;
     public static final int STATUS_PREPARED = 1;
     public static final int STATUS_PUBLISHED = 2;
     public static final int STATUS_UNPUBLISHED = 3;
     public static final int STATUS_AHRCHIVED = 4;
-    
+
     public final static int ORDER_ASC = 1;
     public final static int ORDER_RANDOM = 2;
 
@@ -76,25 +74,25 @@ public class AdCampaigns implements Serializable {
     private Date createdDate;
     @Column(name = "work_time_data")
     private String workTimeData;
-    
+
     @Column(name = "count_files", nullable = false)
     private int countFiles;
-    
+
     @Column(name = "count_images", nullable = false)
     private int countImages;
-    
+
     @Column(name = "count_audios", nullable = false)
     private int countAudios;
-    
+
     @Column(name = "count_videos", nullable = false)
     private int countVideos;
-    
+
     @Column(name = "audio_length", nullable = false)
     private long audioLength;
-    
+
     @Column(name = "video_length", nullable = false)
     private long videoLength;
-    
+
     @Column(name = "files_archived", nullable = false)
     private boolean filesArchived;
 
@@ -136,7 +134,7 @@ public class AdCampaigns implements Serializable {
     public void setStatus(int status) {
         this.status = status;
     }
-    
+
     public int getSequence() {
         return sequence;
     }
@@ -216,7 +214,7 @@ public class AdCampaigns implements Serializable {
     public void setVideoLength(long videoLength) {
         this.videoLength = videoLength;
     }
-    
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -279,4 +277,4 @@ public class AdCampaigns implements Serializable {
     public void setCreatedDate(Date createdDate) {
         this.createdDate = createdDate;
     }
-}   
+}

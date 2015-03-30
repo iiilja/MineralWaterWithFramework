@@ -18,52 +18,51 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class Versions {
 
-	@Id
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable =  false)
+    @Column(name = "id", nullable = false)
     private Integer id;
-	
-	@Column(name="version", nullable = false)
-	private Integer version;
-	
-	@Column(name = "version_dt", nullable = false)
+
+    @Column(name = "version", nullable = false)
+    private Integer version;
+
+    @Column(name = "version_dt", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date versionDt;
-	
-	@Column(name = "is_current", nullable = false)
-	private boolean isCurrent;
 
-	public Integer getId() {
-		return id;
-	}
+    @Column(name = "is_current", nullable = false)
+    private boolean isCurrent;
 
-	public void setId(Integer id) {
-		this.id = id;
-	}
+    public Integer getId() {
+        return id;
+    }
 
-	public Integer getVersion() {
-		return version;
-	}
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-	public void setVersion(Integer version) {
-		this.version = version;
-	}
+    public Integer getVersion() {
+        return version;
+    }
 
-	public Date getVersionDt() {
-		return versionDt;
-	}
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
 
-	public void setVersionDt(Date versionDt) {
-		this.versionDt = versionDt;
-	}
+    public Date getVersionDt() {
+        return versionDt;
+    }
 
-	public boolean isCurrent() {
-		return isCurrent;
-	}
+    public void setVersionDt(Date versionDt) {
+        this.versionDt = versionDt;
+    }
 
-	public void setCurrent(boolean isCurrent) {
-		this.isCurrent = isCurrent;
-	}
-	
-	
+    public boolean isCurrent() {
+        return isCurrent;
+    }
+
+    public void setCurrent(boolean isCurrent) {
+        this.isCurrent = isCurrent;
+    }
+
 }

@@ -19,74 +19,74 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class ErrorLog implements Serializable {
 
-	@Id
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-	
-	@Column(name = "device_id")
-	private Integer deviceId;
-	
-	@Column(name = "name")
-	private String name;
-	
-	@Column(name = "message")
-	private String message;
-	
-	@Column(name = "date")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date createdDt;
-	
-	@Column(name = "stack_trace")
-	private String stackTrace;
 
-	public Integer getId() {
-		return id;
-	}
+    @Column(name = "device_id")
+    private Integer deviceId;
 
-	public void setId(Integer id) {
-		this.id = id;
-	}
+    @Column(name = "name")
+    private String name;
 
-	public String getName() {
-		return name;
-	}
+    @Column(name = "message")
+    private String message;
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    @Column(name = "date")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdDt;
 
-	public String getMessage() {
-		return message;
-	}
+    @Column(name = "stack_trace")
+    private String stackTrace;
 
-	public void setMessage(String message) {
-		this.message = message;
-	}
+    public Integer getId() {
+        return id;
+    }
 
-	public Date getCreatedDt() {
-		return createdDt;
-	}
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-	public void setCreatedDt(Date createdDt) {
-		this.createdDt = createdDt;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public String getStackTrace() {
-		return stackTrace;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public void setStackTrace(String stackTrace) {
-		this.stackTrace = stackTrace;
-	}
+    public String getMessage() {
+        return message;
+    }
 
-	public Integer getDeviceId() {
-		return deviceId;
-	}
+    public void setMessage(String message) {
+        this.message = message;
+    }
 
-	public void setDeviceId(Integer deviceId) {
-		this.deviceId = deviceId;
-	}
+    public Date getCreatedDt() {
+        return createdDt;
+    }
+
+    public void setCreatedDt(Date createdDt) {
+        this.createdDt = createdDt;
+    }
+
+    public String getStackTrace() {
+        return stackTrace;
+    }
+
+    public void setStackTrace(String stackTrace) {
+        this.stackTrace = stackTrace;
+    }
+
+    public Integer getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(Integer deviceId) {
+        this.deviceId = deviceId;
+    }
 
 }

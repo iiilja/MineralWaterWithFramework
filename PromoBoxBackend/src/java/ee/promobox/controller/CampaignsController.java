@@ -53,7 +53,8 @@ public class CampaignsController {
     private UserService userService;
 
     @RequestMapping(value = "token/{token}/campaigns/{campaignId}", method = RequestMethod.GET)
-    public @ResponseBody String showCampaign(
+    public @ResponseBody
+    String showCampaign(
             @PathVariable("token") String token,
             @PathVariable("campaignId") int campaignId,
             HttpServletRequest request,
@@ -87,11 +88,11 @@ public class CampaignsController {
                 resp.put("countVideos", campaign.getCountVideos());
                 resp.put("audioLength", campaign.getAudioLength());
                 resp.put("videoLength", campaign.getVideoLength());
-                
+
                 if (session.isAdmin()) {
-                	resp.put("permissionWrite", true);
+                    resp.put("permissionWrite", true);
                 } else {
-                	resp.put("permissionWrite", checkWritePermission(session, campaign.getId()));
+                    resp.put("permissionWrite", checkWritePermission(session, campaign.getId()));
                 }
 
                 try {
@@ -120,7 +121,8 @@ public class CampaignsController {
     }
 
     @RequestMapping(value = "token/{token}/campaigns", method = RequestMethod.GET)
-    public @ResponseBody String showAllCampaigns(
+    public @ResponseBody
+    String showAllCampaigns(
             @PathVariable("token") String token,
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
@@ -134,39 +136,39 @@ public class CampaignsController {
             int clientId = session.getClientId();
             List<AdCampaigns> campaigns = null;
             if (session.isAdmin()) {
-            	campaigns = userService.findUserAdCompaigns(clientId);
+                campaigns = userService.findUserAdCompaigns(clientId);
             } else {
-            	campaigns = userService.findUserAdCompaigns(clientId, session.getUserId());
+                campaigns = userService.findUserAdCompaigns(clientId, session.getUserId());
             }
 
             JSONArray campaignsArray = new JSONArray();
             if (!campaigns.isEmpty()) {
                 // array for holding campaigns
-                
+
                 // iterate trough the list of campaigns that belong to the client
                 SimpleDateFormat hourFowmat = new SimpleDateFormat("H");
                 SimpleDateFormat dayOfWeekFormat = new SimpleDateFormat("EE");
-            	Date now = new Date();
-                
+                Date now = new Date();
+
                 for (AdCampaigns campaign : campaigns) {
-                	if (campaign.getStart().before(now) && 
-                			campaign.getFinish().after(now)) {
-                		
-                		String dayOfWeek = dayOfWeekFormat.format(now).substring(0, 2).toLowerCase();
-                		if (campaign.getWorkTimeData().contains(dayOfWeek)) {
-                			String hour = "\"" + hourFowmat.format(now) + "\"";
-                			if (campaign.getWorkTimeData().contains(hour)) {
-                				campaign.setStatus(AdCampaigns.STATUS_PUBLISHED);
-                			} else {
-                				campaign.setStatus(AdCampaigns.STATUS_UNPUBLISHED);
-                			}
-                		} else {
-                			campaign.setStatus(AdCampaigns.STATUS_UNPUBLISHED);
-                		}
-                	} else {
-                		campaign.setStatus(AdCampaigns.STATUS_UNPUBLISHED);
-                	}
-                	
+                    if (campaign.getStart().before(now)
+                            && campaign.getFinish().after(now)) {
+
+                        String dayOfWeek = dayOfWeekFormat.format(now).substring(0, 2).toLowerCase();
+                        if (campaign.getWorkTimeData().contains(dayOfWeek)) {
+                            String hour = "\"" + hourFowmat.format(now) + "\"";
+                            if (campaign.getWorkTimeData().contains(hour)) {
+                                campaign.setStatus(AdCampaigns.STATUS_PUBLISHED);
+                            } else {
+                                campaign.setStatus(AdCampaigns.STATUS_UNPUBLISHED);
+                            }
+                        } else {
+                            campaign.setStatus(AdCampaigns.STATUS_UNPUBLISHED);
+                        }
+                    } else {
+                        campaign.setStatus(AdCampaigns.STATUS_UNPUBLISHED);
+                    }
+
                     JSONObject jsonCampaign = new JSONObject();
 
                     jsonCampaign.put("id", campaign.getId());
@@ -184,21 +186,22 @@ public class CampaignsController {
                     campaignsArray.put(jsonCampaign);
                 }
             }
-            
+
             resp.put("campaigns", campaignsArray);
-            
+
             response.setStatus(HttpServletResponse.SC_OK);
             return resp.toString();
         } else {
             RequestUtils.sendUnauthorized(response);
-            
+
             return null;
         }
 
     }
 
     @RequestMapping(value = "token/{token}/campaigns", method = RequestMethod.POST)
-    public @ResponseBody String createCampaign(
+    public @ResponseBody
+    String createCampaign(
             @PathVariable("token") String token,
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
@@ -211,16 +214,16 @@ public class CampaignsController {
         if (session != null && session.isAdmin()) {
 
             AdCampaigns campaign = new AdCampaigns();
-            
+
             Date today = new Date();
-            
+
             Calendar start = GregorianCalendar.getInstance();
             start.setTime(today);
             start.set(Calendar.HOUR_OF_DAY, 0);
             start.set(Calendar.MINUTE, 0);
             start.set(Calendar.SECOND, 0);
             start.set(Calendar.MILLISECOND, 0);
-            
+
             Calendar finish = GregorianCalendar.getInstance();
             finish.setTime(today);
             finish.set(Calendar.YEAR, 2099);
@@ -228,7 +231,7 @@ public class CampaignsController {
             finish.set(Calendar.MINUTE, 0);
             finish.set(Calendar.SECOND, 0);
             finish.set(Calendar.MILLISECOND, 0);
-            
+
             Date createdDate = new Date();
 
             campaign.setName("New campaign");
@@ -267,14 +270,15 @@ public class CampaignsController {
 
         } else {
             RequestUtils.sendUnauthorized(response);
-            
+
             return null;
         }
 
     }
 
     @RequestMapping(value = "token/{token}/campaigns/{id}", method = RequestMethod.DELETE)
-    public @ResponseBody String deleteCampaign(
+    public @ResponseBody
+    String deleteCampaign(
             @PathVariable("token") String token,
             @PathVariable("id") int id,
             HttpServletRequest request,
@@ -286,41 +290,42 @@ public class CampaignsController {
         Session session = sessionService.findSession(token);
 
         if (session != null && checkWritePermission(session, id)) {
-        	List<Devices> devices =  userService.findDevicesByCampaing(id);
-        	if (devices.isEmpty()) {
+            List<Devices> devices = userService.findDevicesByCampaing(id);
+            if (devices.isEmpty()) {
 
-	            AdCampaigns camp = userService.findCampaignByIdAndClientId(id, session.getClientId());
-	            camp.setStatus(AdCampaigns.STATUS_AHRCHIVED);
-	
-	            userService.updateCampaign(camp);
-	            
-	            List<CampaignsFiles> files = userService.findCampaignFiles(camp.getId());
-	            
-	            for (CampaignsFiles f: files) {
-	                
-	                f.setStatus(CampaignsFiles.STATUS_ARCHIVED);
-	                f.setUpdatedDt(new Date());
-	                
-	                userService.updateCampaignFile(f);
-	
-	            }
-        	} else {
-        		resp.put("error", "campaign_in_use");
-        	}
+                AdCampaigns camp = userService.findCampaignByIdAndClientId(id, session.getClientId());
+                camp.setStatus(AdCampaigns.STATUS_AHRCHIVED);
+
+                userService.updateCampaign(camp);
+
+                List<CampaignsFiles> files = userService.findCampaignFiles(camp.getId());
+
+                for (CampaignsFiles f : files) {
+
+                    f.setStatus(CampaignsFiles.STATUS_ARCHIVED);
+                    f.setUpdatedDt(new Date());
+
+                    userService.updateCampaignFile(f);
+
+                }
+            } else {
+                resp.put("error", "campaign_in_use");
+            }
 
             response.setStatus(HttpServletResponse.SC_OK);
             return resp.toString();
 
         } else {
             RequestUtils.sendUnauthorized(response);
-            
+
             return null;
         }
 
     }
 
     @RequestMapping(value = "token/{token}/campaigns/{id}", method = RequestMethod.PUT)
-    public @ResponseBody String updateCampaign(
+    public @ResponseBody
+    String updateCampaign(
             @PathVariable("token") String token,
             @PathVariable("id") int id,
             @RequestBody String json,
@@ -337,7 +342,7 @@ public class CampaignsController {
 
             int clientId = session.getClientId();
             AdCampaigns campaign = userService.findCampaignByIdAndClientId(id, clientId);
-            
+
             if (campaign != null) {
 
                 JSONObject objectGiven = new JSONObject(json);
@@ -360,30 +365,30 @@ public class CampaignsController {
 
                     campaign.setWorkTimeData(workTimeData.toString());
                 }
-                
+
                 // Check time intersection
                 boolean timeIntersection = false;
                 String intersectionName = "";
-                for (Devices d: userService.findDevicesByCampaing(id)) {
-                	for (AdCampaigns c: userService.findCampaignByDeviceId(d.getId())) {
-                		if (c.getId() == (int) campaign.getId() || c.getStatus() != AdCampaigns.STATUS_PUBLISHED) {
-                			continue;
-                		}
-                		
-                		timeIntersection = DevicesController.checkTimeIntersection(campaign, c);
-                		
-                		if (timeIntersection) {
-                			intersectionName = c.getName();
-                			break;
-                		}
-                	}
+                for (Devices d : userService.findDevicesByCampaing(id)) {
+                    for (AdCampaigns c : userService.findCampaignByDeviceId(d.getId())) {
+                        if (c.getId() == (int) campaign.getId() || c.getStatus() != AdCampaigns.STATUS_PUBLISHED) {
+                            continue;
+                        }
+
+                        timeIntersection = DevicesController.checkTimeIntersection(campaign, c);
+
+                        if (timeIntersection) {
+                            intersectionName = c.getName();
+                            break;
+                        }
+                    }
                 }
 
                 if (timeIntersection) {
-                	resp.put("WARN", "time_intersection");
-                	resp.put("name", intersectionName);
+                    resp.put("WARN", "time_intersection");
+                    resp.put("name", intersectionName);
                 }
-                
+
                 campaign.setUpdateDate(new Date());
                 userService.updateCampaign(campaign);
 
@@ -396,9 +401,10 @@ public class CampaignsController {
 
         return null;
     }
-    
+
     @RequestMapping(value = "token/{token}/campaigns/{id}/nextFile/{file}", method = RequestMethod.PUT)
-    public @ResponseBody String nextFile(
+    public @ResponseBody
+    String nextFile(
             @PathVariable("token") String token,
             @PathVariable("id") int id,
             @PathVariable("file") int fileId,
@@ -412,12 +418,11 @@ public class CampaignsController {
 
         if (session != null && checkWritePermission(session, id)) {
             int clientId = session.getClientId();
-            
 
             List<Devices> devices = userService.findDevicesByCampaignId(id, clientId);
 
             if (!devices.isEmpty()) {
-                for (Devices device: devices) {
+                for (Devices device : devices) {
                     device.setNextFile(fileId);
 
                     userService.updateDevice(device);
@@ -425,34 +430,34 @@ public class CampaignsController {
             } else {
                 resp.put("error", "no_device");
             }
-            
+
             response.setStatus(HttpServletResponse.SC_OK);
             return resp.toString();
         } else {
             RequestUtils.sendUnauthorized(response);
         }
-        
+
         return null;
     }
-    
+
     private boolean checkReadPermission(Session session, int campaignId) {
-    	if (session.isAdmin()) {
-    		return true;
-    	}
-    	
-    	UsersCampaignsPermissions permission = userService.findUsersCampaignsPermissions(session.getUserId(), campaignId);
-    	
-    	return permission == null ? false : permission.isPermissionRead();
+        if (session.isAdmin()) {
+            return true;
+        }
+
+        UsersCampaignsPermissions permission = userService.findUsersCampaignsPermissions(session.getUserId(), campaignId);
+
+        return permission == null ? false : permission.isPermissionRead();
     }
 
     private boolean checkWritePermission(Session session, int campaignId) {
-    	if (session.isAdmin()) {
-    		return true;
-    	}
-    	
-    	UsersCampaignsPermissions permission = userService.findUsersCampaignsPermissions(session.getUserId(), campaignId);
-    	
-    	return permission == null ? false : permission.isPermissionWrite();
+        if (session.isAdmin()) {
+            return true;
+        }
+
+        UsersCampaignsPermissions permission = userService.findUsersCampaignsPermissions(session.getUserId(), campaignId);
+
+        return permission == null ? false : permission.isPermissionWrite();
     }
 
     @ExceptionHandler(Exception.class)

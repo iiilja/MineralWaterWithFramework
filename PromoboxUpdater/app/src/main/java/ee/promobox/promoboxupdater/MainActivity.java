@@ -1,6 +1,9 @@
 package ee.promobox.promoboxupdater;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -33,8 +36,9 @@ public class MainActivity extends ActionBarActivity {
 
         if (getIntent().getBooleanExtra("install",false)){
             Log.d(TAG,"install");
-
-            if (installApk()){
+            int installedVersion = getInstalledAppVersion();
+            int actualVersion = getIntent().getIntExtra("actualVersion",installedVersion);
+            if (installApk() && installedVersion != actualVersion){
                 tryRunning();
             } else {
                 Log.w(TAG, "NOT INSTALLED");
@@ -58,6 +62,7 @@ public class MainActivity extends ActionBarActivity {
                     Intent i = getPackageManager().getLaunchIntentForPackage(PROMOBOX_PACKAGE);
                     if ( i != null){
                         startActivity(i);
+                        finish();
                     } else {
                         Log.w(TAG, "getLaunchIntentForPackage() is NULL");
                         starter.postDelayed(this,10000);
@@ -88,6 +93,24 @@ public class MainActivity extends ActionBarActivity {
         } catch (InterruptedException | IOException e) {
             e.printStackTrace();
             return false;
+        }
+    }
+
+    public int getInstalledAppVersion() {
+        int version = 0;
+        Context otherAppsContext;
+        try {
+            otherAppsContext = createPackageContext("ee.promobox.promoboxandroid", 0);
+            PackageInfo pInfo = null;
+
+            pInfo = getPackageManager().getPackageInfo(otherAppsContext.getPackageName(), 0);
+            Log.d(TAG, "VERSION name = " + pInfo.versionName + " code = " + pInfo.versionCode);
+            version = pInfo.versionCode;
+
+            return version;
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.e(TAG,e.getMessage());
+            return MainService.VERSION_0;
         }
     }
 }

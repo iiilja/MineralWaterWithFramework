@@ -1,6 +1,7 @@
 package ee.promobox.promoboxupdater;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -27,6 +28,7 @@ public class UpdaterTask extends AsyncTask<Void,Void,Boolean> {
     private String fileUrl = "http://www.tud.ttu.ee/web/Ilja.Denissov/promobox/promobox_%d.apk";
     public static final String APK_FILE_NAME = "promobox.apk";
     private MainService service;
+    private int actualVersion = MainService.VERSION_0;
 
     public UpdaterTask(MainService service){
         this.service = service;
@@ -49,21 +51,21 @@ public class UpdaterTask extends AsyncTask<Void,Void,Boolean> {
                 }
             }
         } catch (IOException | JSONException e) {
-            e.printStackTrace();
+            Log.e(TAG, e.getLocalizedMessage());
         }
         return MainService.VERSION_0;
     }
 
     @Override
     protected Boolean doInBackground(Void... params) {
-        int installedVersion = service.getInstalledAppVersion();
-        int actualVersion = getActualVersion();
+        int installedVersion = 0;
+        installedVersion = service.getInstalledAppVersion();
+        actualVersion = getActualVersion();
         if (actualVersion == installedVersion){
             Log.d(TAG, "Versions are equal - " + actualVersion);
-        } else {
+        } else if(actualVersion != MainService.VERSION_0){
             Log.d(TAG, "Versions NOT equal actual = " + actualVersion + " installed = " + installedVersion);
-            boolean downloaded = downloadFile(String.format(fileUrl,actualVersion), APK_FILE_NAME);
-            return downloaded;
+            return downloadFile(String.format(fileUrl,actualVersion), APK_FILE_NAME);
         }
         return false;
     }
@@ -77,6 +79,7 @@ public class UpdaterTask extends AsyncTask<Void,Void,Boolean> {
             mainActivity.addCategory(Intent.CATEGORY_LAUNCHER);
             mainActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY);
             mainActivity.putExtra("install",true);
+            mainActivity.putExtra("actualVersion",actualVersion);
 
             service.startActivity(mainActivity);
 

@@ -1,18 +1,37 @@
 package ee.promobox.promoboxandroid;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
+import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Matrix;
+import android.graphics.Point;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
 import android.os.Bundle;
-import android.support.v4.content.LocalBroadcastManager;
+import android.os.Handler;
+import android.support.annotation.Nullable;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 
-import java.util.ArrayList;
+import org.apache.commons.io.FilenameUtils;
+
+import java.io.File;
+import java.io.IOException;
 
 import ee.promobox.promoboxandroid.data.CampaignFile;
+import ee.promobox.promoboxandroid.data.CampaignFileType;
+import ee.promobox.promoboxandroid.data.Display;
+import ee.promobox.promoboxandroid.interfaces.FragmentPlaybackListener;
+import ee.promobox.promoboxandroid.interfaces.VideoWallMasterListener;
+import ee.promobox.promoboxandroid.util.VideoMatrixCalculator;
+import ee.promobox.promoboxandroid.util.geom.Rectangle;
+import ee.promobox.promoboxandroid.util.geom.TriangleEquilateral;
 import ee.promobox.promoboxandroid.widgets.FragmentVideoWall;
 
 /**
@@ -21,182 +40,202 @@ import ee.promobox.promoboxandroid.widgets.FragmentVideoWall;
 public class FragmentWallVideo extends FragmentVideoWall implements TextureView.SurfaceTextureListener {
 
 
+    private static final String TAG = "FragmentWallVideo";
+
+    private View fragmentView;
     private TextureView videoView;
-    private LocalBroadcastManager bManager;
-    private ArrayList<CampaignFile> files;
-    private int position = 0;
     private MoviePlayer player;
+
+    private int viewOriginalHeight = 0;
+    private int viewOriginalWidth = 0;
+
+
+    private FragmentPlaybackListener playbackListener;
+    private VideoWallMasterListener masterListener;
+    MoviePlayer.PlayTask mPlayTask = null;
+
+    private MainActivity mainActivity;
+
+    private boolean textureAvailable;
+    private boolean requestedStop = false;
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.d(TAG, "onCreateView");
+        fragmentView = inflater.inflate(R.layout.fragment_wall_video, container, false);
+        fragmentView.setOnLongClickListener(mainActivity);
+
+        videoView = (TextureView) fragmentView.findViewById(R.id.video_texture_view);
+        super.setView(fragmentView);
+        return fragmentView;
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        Log.d(TAG, "onAttach");
+        super.onAttach(activity);
+        playbackListener = (FragmentPlaybackListener) activity;
+        masterListener = (VideoWallMasterListener) activity;
+        mainActivity = (MainActivity) activity;
+    }
 
     @Override
     public void onCreate(Bundle b) {
+        Log.d(TAG,"onCreate");
         super.onCreate(b);
-
-//        setContentView(R.layout.activity_video);
-//
-//        bManager = LocalBroadcastManager.getInstance(this);
-//
-//        IntentFilter intentFilter = new IntentFilter();
-//
-//        intentFilter.addAction(MainActivity.ACTIVITY_FINISH);
-//
-//        bManager.registerReceiver(bReceiver, intentFilter);
-//
-//        Bundle extras = getIntent().getExtras();
-//
-//        files = extras.getParcelableArrayList("files");
-
     }
-
-
-    public void playVideo() {/*
-        if (files.size() > 0) {
-            try {
-
-                Surface surface = new Surface(videoView.getSurfaceTexture());
-
-                try {
-                    player = new MoviePlayer(
-                            new File(files.get(position).getPath()), surface, new SpeedControlCallback());
-                } catch (IOException ioe) {
-                    Log.e("Vi", "Unable to play movie", ioe);
-                    surface.release();
-                    return;
-                }
-
-                MoviePlayer.PlayTask mPlayTask = new MoviePlayer.PlayTask(player, new MoviePlayer.PlayerFeedback() {
-                    @Override
-                    public void playbackStopped() {
-                        if (position < files.size()) {
-                            playVideo();
-                        } else {
-
-                            Intent returnIntent = new Intent();
-
-                            returnIntent.putExtra("result", MainActivity.RESULT_FINISH_PLAY);
-
-                            setResult(RESULT_OK, returnIntent);
-
-                            VideoActivity.this.finish();
-                        }
-                    }
-                });
-
-                mPlayTask.execute();
-
-                sendPlayCampaignFile();
-
-                position++;
-
-
-            } catch (Exception ex) {
-                Log.e("VideoActivity", ex.getMessage(), ex);
-
-                Intent returnIntent = new Intent();
-
-                returnIntent.putExtra("result", MainActivity.RESULT_FINISH_PLAY);
-
-                VideoActivity.this.setResult(RESULT_OK, returnIntent);
-
-                VideoActivity.this.finish();
-            }
-        }*/
-    }
-
-    private void hideSystemUI() {/*
-
-        this.getWindow().getDecorView().setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
-                        | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
-        );
-
-        View view = findViewById(R.id.video_view);
-
-        view.setOnLongClickListener(new View.OnLongClickListener() {
-
-            public boolean onLongClick(View view) {
-
-                Intent i = new Intent(VideoActivity.this, SettingsActivity.class);
-                startActivity(i);
-
-                return true;
-            }
-        });*/
-    }
-
 
     @Override
-    public void onResume() {/*
+    public void onResume() {
+        Log.d(TAG, "onResume");
         super.onResume();
-
-        hideSystemUI();
-
-        if (getIntent().getExtras().getInt("orientation") == MainActivity.ORIENTATION_PORTRAIT) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+//        videoView.removeCallbacks(runnable);
+        Display display = mainActivity.getDisplay();
+        if (display != null) {
+            Point[] points = display.getPoints();
+            float rotation = (float) - TriangleEquilateral.getAngleAlpha(points[3], points[0]);
+            Log.d(TAG, "rotation = " + rotation );
+//            videoView.setRotation(rotation);
         } else {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            Log.e(TAG, "NO DISPLAY CHOSEN");
+            Point[] points = DEFAULT_POINTS;
+//            slide.setInitialValues(DEFAULT_HEIGHT, DEFAULT_WIDTH, points);
+//            slide.setRotation(0f);
         }
 
-        if (position > files.size() - 1) {
-            position = 0;
+        if (textureAvailable){
+            tryNextFile();
         }
+        requestedStop = false;
+        videoView.setSurfaceTextureListener(this);
 
-        videoView = (TextureView) findViewById(R.id.videoview);
+    }
 
-        videoView.setSurfaceTextureListener(this);*/
+    @Override
+    public void onClick(View v) {
+        if (mainActivity.isMaster()) {
+            super.onClick(v);
+        }
+    }
 
+    private void tryNextFile() {
+        if (mainActivity.isMaster()){
+            masterListener.onFileNotPrepared();
+        }
+    }
+
+
+    public void prepareVideo(final CampaignFile campaignFile) {
+        try {
+            cleanUp();
+            requestedStop = false;
+
+            String pathToFile = campaignFile.getPath();
+            Point videoSize = VideoMatrixCalculator.calculateVideoSize(pathToFile);
+
+            if (mainActivity.getOrientation() == MainActivity.ORIENTATION_PORTRAIT_EMULATION){
+                videoSize = VideoMatrixCalculator.calculateNeededVideoSize(videoSize,viewOriginalHeight,viewOriginalWidth);
+                RelativeLayout.LayoutParams relPar = (RelativeLayout.LayoutParams) videoView.getLayoutParams();
+                relPar.width = videoSize.x;
+                relPar.height = videoSize.y;
+                videoView.setLayoutParams(relPar);
+
+//                fragmentVideoLayout.setRotation(270);
+            }
+
+            Log.d(TAG,"playVideo() file = " + FilenameUtils.getBaseName(pathToFile));
+            Log.d(TAG,pathToFile);
+
+            Point [] points = mainActivity.getDisplay().getPoints();
+            float rotation = (float) - TriangleEquilateral.getAngleAlpha(points[3], points[0]);
+
+            Matrix matrix = new Matrix();
+            RectF src = new RectF(0,0,mainActivity.getWallWidth(),mainActivity.getWallHeight());
+            Rect rect = Rectangle.getOuterRect(points);
+            RectF dst = new RectF(rect.left,rect.bottom,rect.right,rect.top);
+            Log.w(TAG, "*** src");
+            Log.d(TAG, "bottom = " + src.bottom + " top " + src.top);
+            Log.d(TAG, "left = " + src.left + " right " + src.right);
+
+            Log.w(TAG, "*** dst");
+            Log.d(TAG, "bottom = " + dst.bottom + " top " + dst.top);
+            Log.d(TAG, "left = " + dst.left + " right " + dst.right);
+
+            int vidHeight = videoSize.y;
+            int vidWidth = videoSize.x;
+            float[] scaleXY = VideoMatrixCalculator.calculateScaleXY(vidWidth, vidHeight,viewOriginalWidth,viewOriginalHeight,src);
+            matrix.setScale(scaleXY[0],scaleXY[1]);
+
+            float[] translationAndXY = VideoMatrixCalculator.calculateTranslationAndXY(points, src, dst, viewOriginalWidth, viewOriginalHeight);
+            matrix.postTranslate(translationAndXY[0], translationAndXY[1]);
+
+            RectF rectF = new RectF(0,0,viewOriginalWidth,viewOriginalHeight);
+            matrix.postRotate(rotation,rectF.centerX(),rectF.centerY());
+            videoView.setTransform(matrix);
+            Surface surface = new Surface(videoView.getSurfaceTexture());
+            try {
+                player = new MoviePlayer(
+                        new File(campaignFile.getPath()), surface, new SpeedControlCallback());
+            } catch (IOException ioe) {
+                Log.e("Vi", "Unable to play movie", ioe);
+                surface.release();
+                return;
+            }
+
+            mPlayTask = new MoviePlayer.PlayTask(player, new MoviePlayer.PlayerFeedback() {
+                @Override
+                public void playbackStopped() {
+                    Log.d(TAG, "playbackStopped  - requestedStop = " + requestedStop);
+                    if ( !requestedStop ){
+                        tryNextFile();
+                    }
+                    requestedStop = false;
+                }
+            });
+            if (mainActivity.isMaster()){
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        masterListener.onFileStartedPlaying(campaignFile.getId(),0);
+                    }
+                },1000);
+            }
+
+
+        } catch (Exception ex) {
+            Log.e("VideoActivity", ex.getMessage(), ex);
+
+            Intent returnIntent = new Intent();
+
+            returnIntent.putExtra("result", MainActivity.RESULT_FINISH_PLAY);
+
+        }
     }
 
     @Override
     public void onPause() {
-        super.onPause();
+        Log.d(TAG, "onPause");
         cleanUp();
+        super.onPause();
 
-    }
-
-    private void sendPlayCampaignFile() {/*
-        Intent playFile = new Intent(MainActivity.CURRENT_FILE_ID);
-        playFile.putExtra("fileId", files.get(position).getId());
-        LocalBroadcastManager.getInstance(VideoActivity.this).sendBroadcast(playFile);*/
     }
 
     public void cleanUp() {
-        player.requestStop();
-    }
-
-    @Override
-    public void onDestroy() {
-        cleanUp();
-
-        bManager.unregisterReceiver(bReceiver);
-
-        super.onDestroy();
-    }
-
-
-    private BroadcastReceiver bReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {/*
-            if (intent.getAction().equals(MainActivity.ACTIVITY_FINISH)) {
-                Intent returnIntent = new Intent();
-
-                returnIntent.putExtra("result", MainActivity.RESULT_FINISH_PLAY);
-
-                VideoActivity.this.setResult(RESULT_OK, returnIntent);
-
-                VideoActivity.this.finish();
-            }*/
+        if (player !=null){
+            requestedStop = true;
+            player.requestStop();
         }
-    };
-
-
+    }
 
 
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture, int width, int height) {
-        playVideo();
+        Log.d(TAG, "onSurfaceTextureAvailable");
+        viewOriginalHeight =  videoView.getMeasuredHeight();
+        viewOriginalWidth =  videoView.getMeasuredWidth();
+        textureAvailable = true;
+        tryNextFile();
     }
 
     @Override
@@ -206,7 +245,9 @@ public class FragmentWallVideo extends FragmentVideoWall implements TextureView.
 
     @Override
     public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
-        return false;
+        Log.d(TAG, "onSurfaceTextureDestroyed");
+        textureAvailable = false;
+        return true;
     }
 
     @Override
@@ -215,12 +256,21 @@ public class FragmentWallVideo extends FragmentVideoWall implements TextureView.
     }
     @Override
     public void playFile(CampaignFile campaignFile, long frameId) {
-
+        Log.d(TAG, "Received start playing");
+        if (textureAvailable){
+            mainActivity.getNextFile(CampaignFileType.VIDEO);
+            mPlayTask.execute();
+        }
     }
 
     @Override
     public void prepareFile(CampaignFile campaignFile) {
-
+        Log.d(TAG, "Received file preparing");
+        if (campaignFile.getType() == CampaignFileType.VIDEO){
+            prepareVideo(campaignFile);
+        } else {
+            playbackListener.onPlaybackStop();
+        }
     }
 
     @Override

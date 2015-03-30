@@ -5,6 +5,7 @@ import android.net.wifi.WifiManager;
 import android.os.Handler;
 import android.util.Log;
 
+import org.jgroups.Address;
 import org.jgroups.JChannel;
 import org.jgroups.Message;
 import org.jgroups.ReceiverAdapter;
@@ -30,6 +31,7 @@ public class JGroupsMessenger extends ReceiverAdapter{
     private AtomicBoolean isMaster = new AtomicBoolean(false);
     private JChannel channel;
     private final Handler incomingMessageHandler;
+    private String master4Char;
 
     public JGroupsMessenger(Handler messageReceivedHandler){
         incomingMessageHandler = messageReceivedHandler;
@@ -71,13 +73,23 @@ public class JGroupsMessenger extends ReceiverAdapter{
         return address.substring(address.length() - 4);
     }
 
+    public String getMasterAddress4Char(Address address){
+        String addressString = address.toString();
+        String fourCharString = addressString.substring(addressString.length() - 4);
+        Log.d(TAG, "Master address is " + addressString);
+        Log.d(TAG, "Master 4char is " + fourCharString);
+        return fourCharString;
+    }
+
     @Override
     public void viewAccepted(View view) {
         boolean wasMaster = isMaster.get();
         Log.d(TAG, "** view: " + view);
         Log.d(TAG, "** My address: " + channel.getAddress());
         Log.d(TAG, "** First address: " + view.getMembers().get(0));
-        if (channel.getAddress().equals(view.getMembers().get(0))){
+        Address master  = view.getMembers().get(0);
+        master4Char = getMasterAddress4Char(master);
+        if (channel.getAddress().equals(master)){
             isMaster.set(true);
             Log.d(TAG,"I HAVE become the master!");
         } else {
@@ -100,7 +112,11 @@ public class JGroupsMessenger extends ReceiverAdapter{
         Log.d(TAG, multiCastMessage.toString());
         android.os.Message message = new android.os.Message();
         message.obj = multiCastMessage;
-        incomingMessageHandler.sendMessage(message);
+        if ( multiCastMessage.getDeviceId().equals(master4Char) ){
+            incomingMessageHandler.sendMessage(message);
+        } else {
+            Log.e(TAG, "Received message from non master :" + multiCastMessage.toString());
+        }
     }
 
 

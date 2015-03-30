@@ -49,6 +49,11 @@ public class Rectangle {
         return new Rect(leftX,topY,rightX,bottomY);
     }
 
+    public static Rect getOuterRect(Point[] points){
+        Rectangle rectangle = new Rectangle(points);
+        return rectangle.getOuterRect();
+    }
+
     public double getAvgAngle(){
         return TriangleEquilateral.getAngleAlpha(bottomLeft, topLeft);
     }

@@ -164,10 +164,12 @@ public class FragmentWallVideo extends FragmentVideoWall implements TextureView.
 
             int vidHeight = videoSize.y;
             int vidWidth = videoSize.x;
-            float[] scaleXY = VideoMatrixCalculator.calculateScaleXY(vidWidth, vidHeight,viewOriginalWidth,viewOriginalHeight,src);
+            VideoMatrixCalculator.WallData wallData = new VideoMatrixCalculator.WallData(
+                    points,src,dst,viewOriginalWidth,viewOriginalHeight,vidWidth,vidHeight);
+            float[] scaleXY = VideoMatrixCalculator.calculateScaleXY(wallData);
             matrix.setScale(scaleXY[0],scaleXY[1]);
 
-            float[] translationAndXY = VideoMatrixCalculator.calculateTranslationAndXY(points, src, dst, viewOriginalWidth, viewOriginalHeight);
+            float[] translationAndXY = VideoMatrixCalculator.calculateTranslationXY(wallData);
             matrix.postTranslate(translationAndXY[0], translationAndXY[1]);
 
             RectF rectF = new RectF(0,0,viewOriginalWidth,viewOriginalHeight);

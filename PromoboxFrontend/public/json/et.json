@@ -28,7 +28,7 @@
     "top_menu_devices": "Seaded",
     "top_menu_company": "Firma",
     "top_menu_exit": "Logi välja",
-    "settings_menu_account": "Konto",
+    "settings_menu_account": "Kasutaja",
     "settings_menu_users": "Kasutajad",
     "settings_menu_devices": "Seaded",
     "settings_menu_campaigns": "Kampaaniad",
@@ -146,9 +146,9 @@
     "lang_ru": "Русский",
     "lang_lv": "Latvijas",
     "settings_account_name": "Nimi",
-    "settings_account_updated": "Данные аккаунта обновлены", 
-    "settings_account_short_password": "Пароль должен быть длиннее 6 символов",
-    "settings_account_passwords_dont_match": "Пароли не совпадают",
+    "settings_account_updated": "KAsutaja andmed uuendatud", 
+    "settings_account_short_password": "Salasõna peab olema pikem kui 6 tähemärki",
+    "settings_account_passwords_dont_match": "Paroolid ei kattu",
     "footer_nav_about_us":"Meist",
     "footer_nav_privacy_policy":"Privaatsuse poliitika",
     "footer_nav_terms_of_use":"Kasutus tingimused",
@@ -178,8 +178,8 @@
     "campaigns_title":"Juurdepääs kampaaniate seadetele",
     "devices_title":"Juurdepääs seadmete seadetele",
     "users_title":"Kasutajad",
-    "account_title":"Акаунт",
-    "payment_title":"Оплата",
-    "select_pick": "Pick one..."
+    "account_title":"Kasutaja",
+    "payment_title":"Tasumine",
+    "select_pick": "Vali üks..."
 }
 

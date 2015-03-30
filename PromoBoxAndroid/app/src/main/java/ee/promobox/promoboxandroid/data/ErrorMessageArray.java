@@ -9,16 +9,12 @@ import org.json.JSONObject;
  */
 public class ErrorMessageArray extends JSONArray {
 
-    public void addError(ErrorMessage msg) {
+    public void addError(ErrorMessage msg) throws JSONException {
         JSONObject json = new JSONObject();
-        try {
-            json.put("name", msg.getName());
-            json.put("message", msg.getMessage());
+            json.put("name", msg.getName() + "");
+            json.put("message", msg.getMessage() + "");
             json.put("date", msg.getDate());
-            json.put("stackTrace", msg.getStackTrace());
-        }
-        catch (JSONException ignored){
-        }
+            json.put("stackTrace", msg.getStackTrace() + "");
 
         put(json);
     }

@@ -13,6 +13,7 @@ import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
@@ -126,7 +127,7 @@ public class MainService extends Service {
         } catch (Exception ex) {
             Log.e(TAG, ex.getMessage(), ex);
             bManager.sendBroadcast(new ToastIntent(String.format(MainActivity.ERROR_MESSAGE, 61, ex.getClass().getSimpleName())));
-            errors.addError(new ErrorMessage(ex.toString(),ex.getMessage(),ex.getStackTrace()));
+            addError(new ErrorMessage(ex.toString(), ex.getMessage(), ex.getStackTrace()), false);
 
         }
         if (getUuid() != null) {
@@ -217,7 +218,7 @@ public class MainService extends Service {
         catch (Exception ex){
             Log.e(TAG, ex.getMessage(), ex);
             bManager.sendBroadcast(new ToastIntent(String.format(MainActivity.ERROR_MESSAGE, 62, ex.getClass().getSimpleName())));
-            errors.addError(new ErrorMessage(ex));
+            addError(new ErrorMessage(ex), false);
         }
     }
 
@@ -233,7 +234,7 @@ public class MainService extends Service {
             } catch (IOException ex) {
                 Log.e(TAG, ex.getMessage());
                 bManager.sendBroadcast(new ToastIntent(String.format(MainActivity.ERROR_MESSAGE, 63, ex.getClass().getSimpleName())));
-                errors.addError(new ErrorMessage(ex.toString(),ex.getMessage(),ex.getStackTrace()));
+                addError(new ErrorMessage(ex.toString(), ex.getMessage(), ex.getStackTrace()), false);
             }
         }
         Log.d(TAG, " ROOT  = " + ROOT.getPath());
@@ -450,7 +451,19 @@ public class MainService extends Service {
 
     public void addError(ErrorMessage msg, boolean broadcastNow){
         Log.d(TAG,"error added");
-        errors.addError(msg);
+        try {
+            errors.addError(msg);
+        } catch (JSONException e) {
+            Log.e(TAG, e.getMessage());
+            bManager.sendBroadcast(new ToastIntent(String.format(MainActivity.ERROR_MESSAGE, 64, e.getClass().getSimpleName())));
+            try {
+                broadcastNow = true;
+                errors.addError(new ErrorMessage(e));
+            } catch (JSONException e2){
+                Log.e(TAG, e.getMessage());
+                bManager.sendBroadcast(new ToastIntent(String.format(MainActivity.ERROR_MESSAGE, 65, e.getClass().getSimpleName())));
+            }
+        }
         if (broadcastNow) {
             dTask = new DownloadFilesTask(this);
             dTask.setOnlySendData(true);

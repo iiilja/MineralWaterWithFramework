@@ -8,8 +8,8 @@ android {
         applicationId "ee.promobox.promoboxandroid"
         minSdkVersion 17
         targetSdkVersion 21
-        versionCode 4
-        versionName "Wall master election"
+        versionCode 5
+        versionName "Wall video working"
     }
     buildTypes {
         release {

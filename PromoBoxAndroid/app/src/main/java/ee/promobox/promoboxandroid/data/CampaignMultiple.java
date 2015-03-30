@@ -100,7 +100,7 @@ public class CampaignMultiple extends Campaign {
 
     @Override
     public boolean equals(Object o) {
-        if (!o.getClass().equals(getClass())){
+        if (o == null || !o.getClass().equals(getClass())){
             Log.d(TAG, "not same class");
             return false;
         }

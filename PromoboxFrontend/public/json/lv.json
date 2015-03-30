@@ -171,5 +171,6 @@
     "devices_title":"Настройки доступа к устройствам",
     "users_title":"Пользователи",
     "payment_title":"Оплата",
-    "account_title":"Акаунт"
+    "account_title":"Акаунт",
+    "select_pick": "Pick one..."
 }

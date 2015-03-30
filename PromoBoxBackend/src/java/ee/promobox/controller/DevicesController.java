@@ -155,6 +155,7 @@ public class DevicesController {
             		String stackTrace = jsonError.getString("stackTrace");
             		
             		ErrorLog errorLog = new ErrorLog();
+            		errorLog.setDeviceId(d.getId());
             		errorLog.setName(name);
             		errorLog.setMessage(message);
             		errorLog.setStackTrace(stackTrace);

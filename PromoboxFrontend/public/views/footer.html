@@ -14,7 +14,9 @@
 <div class="lang">
     <ui-select ng-model="lang.code"
             on-select="change_language(lang.code)" theme="select2" search-enabled="false">
-        <ui-select-match placeholder="Pick one...">{{ 'lang_' + lang.code | translate }}</ui-select-match>
+        <ui-select-match placeholder="{{'select_pick' | translate }}">
+            <span class="{{lang.code}}">{{ 'lang_' + lang.code | translate }}</span>
+        </ui-select-match>
         <ui-select-choices repeat="l in langs">
             <span class="{{l}}">{{ 'lang_' + l | translate }}</span>
         </ui-select-choices>

@@ -182,7 +182,7 @@ app.controller('FooterController', ['$scope', '$location', '$http', 'token', '$r
     function ($scope, $location, $http, token, $rootScope, $translate, $filter) {
 
         $scope.lang = {};
-        $scope.lang.code = "en";
+        $scope.lang.code = "et";
         $scope.langs = ["en", "et", "lv", "ru"];
 
         $scope.change_language = function(lang) {
@@ -452,7 +452,7 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         };
  
         var dataToTime = function(data, time) {
-            var timePart = $scope.formatWorkingHours(time.split(":"));
+            var timePart = $scope.formatWorkingHours(time).split(":");
             return data.getTime() + (timePart[0] * 60 * 60 + timePart[1] * 60) * 1000;
         };
         $scope.edit_company = function () {

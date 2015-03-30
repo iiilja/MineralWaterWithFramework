@@ -25,6 +25,9 @@ public class ErrorLog implements Serializable {
     @Column(name = "id")
     private Integer id;
 	
+	@Column(name = "device_id")
+	private Integer deviceId;
+	
 	@Column(name = "name")
 	private String name;
 	
@@ -76,6 +79,14 @@ public class ErrorLog implements Serializable {
 
 	public void setStackTrace(String stackTrace) {
 		this.stackTrace = stackTrace;
+	}
+
+	public Integer getDeviceId() {
+		return deviceId;
+	}
+
+	public void setDeviceId(Integer deviceId) {
+		this.deviceId = deviceId;
 	}
 
 }

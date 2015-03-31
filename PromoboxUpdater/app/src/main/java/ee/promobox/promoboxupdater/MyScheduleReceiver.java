@@ -31,9 +31,9 @@ public class MyScheduleReceiver extends BroadcastReceiver {
 
         Calendar cal = Calendar.getInstance();
 
-        cal.add(Calendar.SECOND, 30);
+        cal.add(Calendar.SECOND, 300);
 
-        Log.i("MyScheduleReceiver", "Started fetch every 30 seconds");
+        Log.i("MyScheduleReceiver", "Started fetch every 300 seconds");
 
         service.setInexactRepeating(AlarmManager.RTC_WAKEUP,
                 cal.getTimeInMillis(), REPEAT_TIME, pending);

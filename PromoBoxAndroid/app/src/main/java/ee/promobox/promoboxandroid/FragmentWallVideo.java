@@ -134,16 +134,6 @@ public class FragmentWallVideo extends FragmentVideoWall implements TextureView.
             String pathToFile = campaignFile.getPath();
             Point videoSize = VideoMatrixCalculator.calculateVideoSize(pathToFile);
 
-            if (mainActivity.getOrientation() == MainActivity.ORIENTATION_PORTRAIT_EMULATION){
-                videoSize = VideoMatrixCalculator.calculateNeededVideoSize(videoSize,viewOriginalHeight,viewOriginalWidth);
-                RelativeLayout.LayoutParams relPar = (RelativeLayout.LayoutParams) videoView.getLayoutParams();
-                relPar.width = videoSize.x;
-                relPar.height = videoSize.y;
-                videoView.setLayoutParams(relPar);
-
-//                fragmentVideoLayout.setRotation(270);
-            }
-
             Log.d(TAG,"playVideo() file = " + FilenameUtils.getBaseName(pathToFile));
             Log.d(TAG,pathToFile);
 
@@ -282,7 +272,6 @@ public class FragmentWallVideo extends FragmentVideoWall implements TextureView.
 
     @Override
     public void onPlayerPause() {
-
     }
 
     @Override

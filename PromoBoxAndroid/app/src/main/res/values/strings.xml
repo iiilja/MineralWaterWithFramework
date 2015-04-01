@@ -40,5 +40,6 @@
     <string name="signal_strength_strong">Strong</string>
     <string name="pref_monitor_id">Monitor ID</string>
     <string name="skip">skip</string>
+    <string name="web_page_loading">Loading page..</string>
 
 </resources>

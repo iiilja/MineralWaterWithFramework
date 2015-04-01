@@ -41,8 +41,8 @@ public class MainService extends Service {
 
     public final static String TAG = "MainService ";
 
-//    public final static String DEFAULT_SERVER = "http://46.182.31.101:8080"; //"http://api.promobox.ee/";
-    public final static String DEFAULT_SERVER = "http://46.182.30.93:8080"; // production
+    public final static String DEFAULT_SERVER = "http://46.182.31.101:8080"; //"http://api.promobox.ee/";
+//    public final static String DEFAULT_SERVER = "http://46.182.30.93:8080"; // production
     public final static String DEFAULT_SERVER_JSON = DEFAULT_SERVER + "/service/device/%s/pull";
 
     private SharedPreferences sharedPref;

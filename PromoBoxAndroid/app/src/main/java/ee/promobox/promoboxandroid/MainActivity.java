@@ -24,6 +24,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import java.io.File;
+
 import ee.promobox.promoboxandroid.data.Campaign;
 import ee.promobox.promoboxandroid.data.CampaignFile;
 import ee.promobox.promoboxandroid.data.CampaignFileType;
@@ -86,6 +88,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
     Fragment audioFragment = new FragmentAudio();
     Fragment videoFragment = new FragmentVideo();
     Fragment imageFragment = new FragmentImage();
+    Fragment webFragment = new FragmentWeb();
     Fragment currentFragment;
 
 //    private UDPMessenger udpMessenger;
@@ -377,6 +380,8 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
                 return audioFragment;
             case VIDEO:
                 return videoFragment;
+            case HTML:
+                return webFragment;
             default:
                 return mainFragment;
         }
@@ -458,6 +463,17 @@ public class MainActivity extends Activity implements FragmentPlaybackListener ,
             Log.d(TAG, " file type not as needed");
             campaignFile = null;
         }
+//
+//        campaignFile = new CampaignFile();
+//
+//        campaignFile.setId(100);
+//        campaignFile.setType(CampaignFileType.HTML);
+//        campaignFile.setOrderId(1);
+//        campaignFile.setPath("http://www.google.ru/");
+//        campaignFile.setSize(1);
+//        campaignFile.setUpdatedDt(0);
+//        campaignFile.setName("not named file");
+//        campaignFile.setDelay(60);
 
         return campaignFile;
     }

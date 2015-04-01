@@ -13,8 +13,8 @@ public enum CampaignFileType {
     }
 
     public static CampaignFileType valueOf(int type) {
-        for (CampaignFileType ctype : CampaignFileType.values()) {
-            if (ctype.type == type) return ctype;
+        for (CampaignFileType cType : CampaignFileType.values()) {
+            if (cType.type == type) return cType;
         }
 
         return  CampaignFileType.IMAGE;

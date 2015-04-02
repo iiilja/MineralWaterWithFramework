@@ -6,20 +6,20 @@
 		<div class="setting-header clearfix">
 			<h3 class="pull-left" ng-show="deviceSettings">{{ 'system_device' | translate }} {{entity.name}}</h3>
 			<h3 class="pull-left" ng-hide="deviceSettings">{{ 'system_campaign' | translate }} {{entity.name}}</h3>
-			<button type="button" class="btn btn-success pull-right"
-				ng-click="openAddPermission(entity.userPermissions)">{{ 'modal_add' | translate }}</button>
 		</div>
 
 		<div class="setting-body row">
 
-			<div class="col-sm-4 setting-item" ng-repeat="permission in entity.userPermissions" 
+			<div class="col-sm-4 setting-item" ng-repeat="permission in entity.userPermissions"
 				ng-show="permission.permissionRead || permission.permissionWrite">
-				<h4> 
-					{{permission.firstname}} {{permission.surname}} 
+				<h4>
+					{{permission.firstname}} {{permission.surname}}
 					<a class="edit" ng-click="openEditPermission(entity.userPermissions, permission)"><i class="glyphicon glyphicon-pencil"></i></a>
 					<a class="delete" ng-click="deletePermission(permission)"><i class="glyphicon glyphicon-remove"></i></a>
 				</h4>
 			</div>
+			<button type="button" class="btn btn-success"
+				ng-click="openAddPermission(entity.userPermissions)">{{ 'modal_add' | translate }}</button>
 		</div>
 	</div>
 </section>

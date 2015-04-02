@@ -1897,6 +1897,10 @@ input[readonly] {
     margin: 0;
     padding:3px;
 }
+.setting-body .btn-success{
+    margin-top: 3px;
+    margin-left: 3px;
+}
 
 .setting-item h4 {
     height: 34px;

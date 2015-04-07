@@ -161,6 +161,8 @@
     "modal_cancel":"Tühista",
     "modal_read":"Lugemine",
     "modal_record":"Salvestamine",
+    "modal_confirm" : "Kinnita",
+    "modal_confirm_campaign_deletion" : "Palun kinnitage pampaania kustutamist",
     "form_title":"Muuda konto",
     "form_last_name":"Perekonnanimi",
     "form_firm":"Firma",

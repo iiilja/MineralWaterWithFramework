@@ -226,6 +226,20 @@ angular.module('promobox.services').controller('ModalPermissionsController', fun
         $modalInstance.dismiss('cancel');
     };
 });
+angular.module('promobox.services').controller('ModalConfirmController', function ($scope, $modalInstance, facade, model) {
+    var $filter = facade.getFilter();
+    var entity = model.entity;
+
+    $scope.confirmationText = model.confirmationText;
+
+    $scope.confirm = function(){
+        model.toDo();
+    }
+
+    $scope.cancel = function() {
+        $modalInstance.dismiss('cancel');
+    };
+});
 
 angular.module('promobox.services').controller('ModalUserController', function ($scope, $modalInstance, facade, model) {
         var $filter = facade.getFilter();

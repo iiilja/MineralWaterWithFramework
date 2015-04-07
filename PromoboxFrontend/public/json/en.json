@@ -161,6 +161,8 @@
     "modal_cancel":"Cancel",
     "modal_read":"Read",
     "modal_record":"Record",
+    "modal_confirm" : "Confirm",
+    "modal_confirm_campaign_deletion" : "Do you really want to delete campaign ?",
     "form_title":"Edit account",
     "form_last_name":"Last name",
     "form_firm":"Company",

@@ -252,8 +252,10 @@ app.controller('CampaignNewController', ['token', 'Campaign', 'sysLocation',
         });
     }]);
 
-app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Campaign', '$location', '$http', 'toaster', 'Files','sysMessage', 'sysLocation', 'FileUploader', '$rootScope', '$filter', 'orderByFilter', '$timeout', 'browser',
-    function ($scope, $stateParams, token, Campaign, $location, $http, toaster, Files, sysMessage, sysLocation, FileUploader, $rootScope, $filter, orderByFilter, $timeout, browser) {
+app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Campaign', '$location', '$http', 'toaster',
+    'Files','sysMessage', 'sysLocation', 'FileUploader', '$rootScope', '$filter', 'orderByFilter', '$timeout', 'browser', 'facade',
+    function ($scope, $stateParams, token, Campaign, $location, $http, toaster,
+              Files, sysMessage, sysLocation, FileUploader, $rootScope, $filter, orderByFilter, $timeout, browser, facade) {
         $rootScope.left_menu_active = 'campaign';
         $scope.filesArray = [];
         $scope.checkedDays = [];
@@ -481,15 +483,44 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         $scope.close_settings = function () {
             sysLocation.goList();
         }
-        
-        $scope.remove_company = function () {
-            Campaign.delete_campaigns({token: token.get(), id: $scope.campaign.id}, function (response) {
-                if (response.error) {
-                    sysMessage.error($filter('translate')('system_device') + ' ' + $filter('translate')('campaign_edit_in_use'));
-                } else {
-                    sysLocation.goList();
+
+        var openConfirmDialog = function(toDo, confirmationText) {
+            var modalInstance = facade.getModal().open({
+                templateUrl: '/views/modal/confirmation.html',
+                controller: 'ModalConfirmController',
+                windowClass: 'confirmation-dialog',
+                resolve: {
+                    facade: function() {
+                        return facade;
+                    },
+                    model: function() {
+                        return {
+                            toDo: toDo,
+                            confirmationText : confirmationText
+                        }
+                    }
                 }
             });
+
+            modalInstance.result.then(function(model) {
+                console.log(model);
+                if (!model.editUser) {
+                    $scope.users.push(model.selectedUser);
+                }
+            });
+        }
+        
+        $scope.remove_company = function () {
+            var toDo = function(){
+                Campaign.delete_campaigns({token: token.get(), id: $scope.campaign.id}, function (response) {
+                    if (response.error) {
+                        sysMessage.error($filter('translate')('system_device') + ' ' + $filter('translate')('campaign_edit_in_use'));
+                    } else {
+                        sysLocation.goList();
+                    }
+                });
+            }
+            openConfirmDialog(toDo, 'modal_confirm_campaign_deletion');
         };
        
         $scope.fileSort = {

@@ -165,6 +165,7 @@ input[readonly] {
 
 .edit-campaign .name-company input[type="text"] {
     border:1px solid #cbcbcb;
+    border:1px solid #cbcbcb;
     width: 26.8%!important;
     height: 38px;
     padding: 0 12px;
@@ -651,6 +652,13 @@ input[readonly] {
 .modal-header .close {
     margin-top: 10px;
     margin-right: 20px;
+}
+
+.modal.confirmation-dialog .modal-dialog{
+    width : 300px;
+    position: absolute;
+    top: 20%;
+    left: 50%;
 }
 
 .statistics-list  {

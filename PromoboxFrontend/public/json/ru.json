@@ -162,6 +162,8 @@
     "modal_cancel":"Отмена",
     "modal_read":"Чтение",
     "modal_record":"Запись",
+    "modal_confirm" : "Подтвердить",
+    "modal_confirm_campaign_deletion" : "Подтвердите удаление компании",
     "form_title":"Редактировать аккаунт",
     "form_last_name":"Фамилия",
     "form_firm":"Фирма",

@@ -226,15 +226,24 @@ angular.module('promobox.services').controller('ModalPermissionsController', fun
         $modalInstance.dismiss('cancel');
     };
 });
-angular.module('promobox.services').controller('ModalConfirmController', function ($scope, $modalInstance, facade, model) {
-    var $filter = facade.getFilter();
-    var entity = model.entity;
+angular.module('promobox.services').controller('ModalConfirmController', function ($scope, $modalInstance, model) {
 
     $scope.confirmationText = model.confirmationText;
 
     $scope.confirm = function(){
         model.toDo();
+        $scope.cancel();
     }
+
+    $scope.cancel = function() {
+        $modalInstance.dismiss('cancel');
+    };
+});
+angular.module('promobox.services').controller('ModalInfoController', function ($scope, $modalInstance, model) {
+
+    $scope.titleText = model.titleText
+    $scope.bodyText  = model.bodyText
+    $scope.okBtnText = model.okBtnText
 
     $scope.cancel = function() {
         $modalInstance.dismiss('cancel');

@@ -178,23 +178,43 @@ app.controller('TopMenuController', ['$scope', '$location', '$http', 'token', 'C
         }
     }]);
 
-app.controller('FooterController', ['$scope', '$location', '$http', 'token', '$rootScope', '$translate', '$filter',
-    function ($scope, $location, $http, token, $rootScope, $translate, $filter) {
+app.controller('FooterController', ['$scope', '$location', '$http', 'token', '$rootScope', '$translate', '$filter','$locale',
+    function ($scope, $location, $http, token, $rootScope, $translate, $filter, $locale) {
 
         $scope.lang = {};
-        $scope.lang.code = "et";
         $scope.langs = ["en", "et", "lv", "ru"];
+
+        var code = '';
+        switch ($locale.id.substring(0,2)){
+            case 'et':
+                code = "et";
+                break;
+            case 'ru' :
+                code = "ru";
+                break;
+            case 'lv' :
+                code = "lv";
+                break;
+            default :
+                code = "en";
+                break;
+        }
+
+        $scope.lang.code = code;
 
         $scope.change_language = function(lang) {
             $translate.use(lang);
-        }
+        };
+
+        $scope.change_language(code);
+
         //setTimeout(function(){jQuery('input[type="checkbox"], input[type="radio"],select').styler();}, 50);
 
     }]);
 
 //Update When Create new Design
-app.controller('LoginController', ['$scope', '$location', '$http', 'token', '$rootScope', 'sysMessage', '$filter',
-    function ($scope, $location, $http, token, $rootScope, sysMessage, $filter) {
+app.controller('LoginController', ['$scope', '$location', '$http', 'token', '$rootScope', 'sysMessage', '$filter','facade',
+    function ($scope, $location, $http, token, $rootScope, sysMessage, $filter, facade) {
         $rootScope.bodyClass = 'main_bg';
         if (!token.check()) {
             $scope.login_form = {email: '', password: '', remember: false};
@@ -209,11 +229,30 @@ app.controller('LoginController', ['$scope', '$location', '$http', 'token', '$ro
                         if (data.response == 'OK') {
                             token.put(data.token);
                             $location.path('/list');
+                            return true;
                         } else {
                             sysMessage.login_failed($filter('translate')('system_thenameorpassworddonotmatch'))
                         }
                     });
             };
+
+            $scope.forgot_password = function(){
+                    var modalInstance = facade.getModal().open({
+                        templateUrl: '/views/modal/info.html',
+                        controller: 'ModalInfoController',
+                        windowClass: 'info-dialog',
+                        resolve: {
+                            model: function() {
+                                return {
+                                    titleText : 'modal_forgot_pswd',
+                                    bodyText  : 'modal_forgot_pswd_body',
+                                    okBtnText : 'modal_forgot_pswd_ok_btn'
+                                }
+                            }
+                        }
+                    });
+            }
+
         } else {
             $location.path('/list');
         }
@@ -229,7 +268,7 @@ app.controller('RegistrationController', ['$scope', '$http', 'token', 'sysLocati
                 firstname: $scope.register_form.firstname,
                 surname: $scope.register_form.surname,
                 companyName: $scope.register_form.companyName,
-                email: $scope.register_form.email,
+                email: $scope.register_form.email
             }, function(response) {
                 if(response.response == "ERROR") {
                     if (response.reason == "invalidEmail") {  
@@ -499,13 +538,6 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
                             confirmationText : confirmationText
                         }
                     }
-                }
-            });
-
-            modalInstance.result.then(function(model) {
-                console.log(model);
-                if (!model.editUser) {
-                    $scope.users.push(model.selectedUser);
                 }
             });
         }

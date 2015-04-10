@@ -7,9 +7,9 @@ var adminView = function(contentController, contentTemplate) {
         "topView": { controller: 'TopMenuController', templateUrl: '/views/top_menu.html' },
         "leftMenuView": {controller: 'LeftMenuController', templateUrl: '/views/left_menu.html' },
         "contentView": { controller: contentController, templateUrl: contentTemplate },
-        "footerView": {controller: 'FooterController', templateUrl: '/views/footer.html'},
+        "footerView": {controller: 'FooterController', templateUrl: '/views/footer.html'}
     }
-}
+};
 
 app.config(['$routeProvider','$stateProvider','$urlRouterProvider', function ($routeProvider, $stateProvider, $urlRouterProvider) {
     $urlRouterProvider.otherwise('/');
@@ -104,14 +104,11 @@ app.config(function ($httpProvider) {
 
 });
 
-app.config(function ($translateProvider) {
+app.config(function ($translateProvider,$localeProvider) {
     $translateProvider.useStaticFilesLoader({
         prefix: '/json/',
         suffix: '.json'
     });
-
-    $translateProvider.preferredLanguage('et');
-
 });
 
 app.filter('bytes', function() {
@@ -183,30 +180,31 @@ app.controller('FooterController', ['$scope', '$location', '$http', 'token', '$r
 
         $scope.lang = {};
         $scope.langs = ["en", "et", "lv", "ru"];
-
-        var code = '';
-        switch ($locale.id.substring(0,2)){
-            case 'et':
-                code = "et";
-                break;
-            case 'ru' :
-                code = "ru";
-                break;
-            case 'lv' :
-                code = "lv";
-                break;
-            default :
-                code = "en";
-                break;
-        }
-
-        $scope.lang.code = code;
+        $scope.lang.code = $translate.use();
 
         $scope.change_language = function(lang) {
             $translate.use(lang);
         };
 
-        $scope.change_language(code);
+        if (! $translate.use() ){
+            switch ($locale.id.substring(0,2)){
+                case 'et':
+                    $scope.lang.code = "et";
+                    break;
+                case 'ru' :
+                    $scope.lang.code = "ru";
+                    break;
+                case 'lv' :
+                    $scope.lang.code = "lv";
+                    break;
+                default :
+                    $scope.lang.code = "en";
+                    break;
+            }
+            $scope.change_language($scope.lang.code);
+        }
+
+
 
         //setTimeout(function(){jQuery('input[type="checkbox"], input[type="radio"],select').styler();}, 50);
 
@@ -217,17 +215,20 @@ app.controller('LoginController', ['$scope', '$location', '$http', 'token', '$ro
     function ($scope, $location, $http, token, $rootScope, sysMessage, $filter, facade) {
         $rootScope.bodyClass = 'main_bg';
         if (!token.check()) {
-            $scope.login_form = {email: '', password: '', remember: false};
+            $scope.loginForm = { email: '', password: '', remember: true};
+            console.log($scope);
+
 
             $scope.login = function () {
                 $http.post(apiEndpoint + "user/login",
                     $.param({
-                        email: $scope.login_form.email,
-                        password: $scope.login_form.password
+                        email: $scope.loginForm.email,
+                        password: $scope.loginForm.password
                     }))
                     .success(function (data) {
                         if (data.response == 'OK') {
-                            token.put(data.token);
+                            console.log($scope.loginForm.remember);
+                            token.put(data.token, $scope.loginForm.remember);
                             $location.path('/list');
                             return true;
                         } else {
@@ -314,7 +315,7 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
                                     campaign_start: timeToData($scope.campaign.start), 
                                     campaign_finish: timeToData($scope.campaign.finish),
                                     campaign_start_time: timeToDataTime($scope.campaign.start),
-                                    campaign_finish_time: timeToDataTime($scope.campaign.finish),
+                                    campaign_finish_time: timeToDataTime($scope.campaign.finish)
                                     };
             $scope.campaign_stat = {campaign_count_files: $scope.campaign.countFiles,
                                     campaign_count_images: $scope.campaign.countImages,
@@ -335,7 +336,7 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         $scope.isWebmVideo = function() {
             var browserName = browser.detectBrowser();
             return browserName == "chrome" || browserName == "firefox" || browserName == "opera";
-        }
+        };
 
         $scope.getFileExt = function(file) {
             var browserName = browser.detectBrowser();
@@ -353,11 +354,17 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
             }
 
             return ext;
-        }
+        };
 
         $scope.isFileConverting = function (file) {
             return file.status == 0 || file.status == 4;
-        }
+        };
+        
+        $scope.getFileThumb = function(file){
+            var src = apiEndpoint + "files/thumb/" + file.id + "?t=" + file.t;
+            console.log(src);
+            return src;
+        };
         
         var extstsConvertingFiles = function(id) {
             for (var i = 0; file = $scope.campaign.files[i]; i++) {
@@ -365,7 +372,7 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
             }
             
             return false;
-        }
+        };
         
         var findFileById = function(id) {
             for (var i = 0; file = $scope.campaign.files[i]; i++) {
@@ -375,7 +382,7 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
             }
             
             return null;
-        } 
+        } ;
         
         var refreshFileStatuses = function() {
             var files = [];
@@ -427,7 +434,7 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
             } else {
                 return time/60 + ' ' + $filter('translate')('campaign_edit_min'); 
             }
-        }
+        };
         
         $scope.campaignOrders = [1, 2];
         $scope.orderName = function(order) {
@@ -436,7 +443,7 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
             } else {
                 return $filter('translate')('campaign_edit_accident');
             }
-        }
+        };
         
         
         $scope.toggleWorkHours = function (ar, hour) {
@@ -452,14 +459,14 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
                 $scope.checkedHours.push($scope.addWorkhours[i]);
             }
             $scope.addWorkhours = [];
-        }
+        };
         
         $scope.removeWorkingHours = function () {
             for (i = 0; i < $scope.removeWorkhours.length; i++) {
                 $scope.checkedHours.splice($scope.checkedHours.indexOf($scope.removeWorkhours[i]), 1);
             }
             $scope.removeWorkhours = [];
-        }
+        };
         
         $scope.formatWorkingHours = function (hour) {
             if (hour) {
@@ -469,12 +476,12 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
                 
                 return hour;
             }
-        }
+        };
         $scope.sanitizeWorkingHours = function(hour) {
             if (hour) {
                 return hour.replace(":00", "").replace(":0", "").replace(":", "");
             }
-        }
+        };
         
 
         var timeToData = function(time) {
@@ -487,9 +494,7 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
             
             var h = date.getHours();
             //var m = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
-            var result =  h + ":00";
-            
-            return result;
+            return  h + ":00";
         };
  
         var dataToTime = function(data, time) {
@@ -521,7 +526,7 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         
         $scope.close_settings = function () {
             sysLocation.goList();
-        }
+        };
 
         var openConfirmDialog = function(toDo, confirmationText) {
             var modalInstance = facade.getModal().open({
@@ -540,7 +545,7 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
                     }
                 }
             });
-        }
+        };
         
         $scope.remove_company = function () {
             var toDo = function(){
@@ -551,7 +556,7 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
                         sysLocation.goList();
                     }
                 });
-            }
+            };
             openConfirmDialog(toDo, 'modal_confirm_campaign_deletion');
         };
        
@@ -559,7 +564,7 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
             stop: function(e, ui) {
                 update_files_order_id();
             }
-        }
+        };
         
         $scope.selectedFile = null;
         $scope.file_sort_select_file = function(file) { 
@@ -611,7 +616,7 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
             for (var index in $scope.campaign.files) {
                 $scope.campaign.files[index].orderId = index;
             }
-        }
+        };
         
         $scope.reorder_files = function() {
             Files.reorderFiles({
@@ -661,7 +666,7 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         $scope.settingsVisible = false;
         $scope.showSettings = function(show) {
             $scope.settingsVisible = show;
-        }
+        };
         
         var refreshFilesModel = function () {
             Campaign.get_campaigns({token: token.get(), id: $stateParams.cId}, function (response) {
@@ -752,7 +757,7 @@ app.controller('CampaignsController', ['$scope', 'token', 'Campaign', 'sysMessag
             });
             $scope.show_statistics = function(campaign) {
                 $scope.currentCampaign = campaign;
-            }
+            };
             $scope.remove = function (campaign) {
                 $scope.campaigns.splice($scope.campaigns.indexOf(campaign), 1);
                 Campaign.delete_campaigns({token: token.get(), id: campaign.id}, function (response) {
@@ -805,7 +810,7 @@ app.controller('DevicesController', ['$scope', 'token', 'Device', 'sysMessage', 
                 }
                 
                 return $scope.currentDevice.campaignIds.indexOf(value.id) == -1;
-            }
+            };
             $scope.toggle_campaign = function(campaignId) {
                 var index = $scope.tmpCampaignIds.indexOf(campaignId);
                 if (index == -1) {
@@ -813,7 +818,7 @@ app.controller('DevicesController', ['$scope', 'token', 'Device', 'sysMessage', 
                 } else {
                     $scope.tmpCampaignIds.splice(index, 1);
                 }
-            }
+            };
             $scope.add_campaigns = function() {
                 for (var index in $scope.tmpCampaignIds) {
                     var campId = $scope.tmpCampaignIds[index];
@@ -822,7 +827,7 @@ app.controller('DevicesController', ['$scope', 'token', 'Device', 'sysMessage', 
                         $scope.currentDevice.campaignIds.push(campId);
                     }
                 }
-            }
+            };
             
             $scope.change_device = function(device) {
                 var deviceUpdate = {token: token.get(), 
@@ -834,7 +839,7 @@ app.controller('DevicesController', ['$scope', 'token', 'Device', 'sysMessage', 
                     audioOut: device.audioOut,
                     workStartAt: device.workStartAt,
                     workEndAt: device.workEndAt
-                }
+                };
                 
                 for (index in $scope.workdays) {
                     var day = $scope.workdays[index];
@@ -881,18 +886,18 @@ app.controller('DevicesController', ['$scope', 'token', 'Device', 'sysMessage', 
                 Device.clearCache({token: token.get() , id: deviceId}, function (response) {
                     sysMessage.update_s($filter('translate')('system_device_cachecleared'));
                 });
-            }
+            };
 
             $scope.openApp =  function(deviceId) {
                 Device.openApp({token: token.get() , id: deviceId}, function (response) {
                     sysMessage.update_s($filter('translate')('system_device_ontop'));
                 });
-            }
+            };
             
             $scope.workdays = ['mo', 'tu', 'we', 'th', 'fr', 'sa', 'su'];
             $scope.toggleWorkDay = function(device, day) {
                 device[day] = !device[day];
-            }
+            };
             $scope.workhours = [];
             for (var i = 0; i < 24; i++) {
                  $scope.workhours.push(i + ":00");
@@ -908,7 +913,7 @@ app.controller('DevicesController', ['$scope', 'token', 'Device', 'sysMessage', 
                 } else {
                     return $filter('translate')('device_verticalorientation_emu');
                 }
-            }
+            };
 
             $scope.deviceAudioOuts = [1, 2];
             $scope.audioOutName = function(audioOut) {
@@ -917,11 +922,11 @@ app.controller('DevicesController', ['$scope', 'token', 'Device', 'sysMessage', 
                 } else if (audioOut == 2) {
                     return 'Mini jack';
                 }
-            }
+            };
 
             $scope.visibleDeviceSettings = 0;
             $scope.showDeviceSettings = function(id) {
                 $scope.visibleDeviceSettings = id;
             };
-        };
+        }
     }]);

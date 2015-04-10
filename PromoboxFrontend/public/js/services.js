@@ -166,10 +166,14 @@ services.factory("Clients", ['$resource',
             }
         });
     }]);
+services.config(['$cookiesProvider', function ($cookiesProvider){
+    var d = new Date();
+    d.setMilliseconds(d.getMilliseconds() + 4*60*60*1000);
+    $cookiesProvider.defaults.expires = d;
+}]);
 
 services.factory("token", ['$cookies', '$location', function ($cookies, $location) {
-    var token = '';
-    token = $cookies.token;
+    var token = $cookies.get('token');
 
     return {
         check: function () {
@@ -181,9 +185,14 @@ services.factory("token", ['$cookies', '$location', function ($cookies, $locatio
             return true;
         },
 
-        put: function (value) {
+        put: function (value, forever) {
             token = value;
-            $cookies.token = value;
+            console.log('puttung cookie ' + forever);
+            if (forever) {
+                $cookies.put('token', value, {'expires' : undefined});
+            } else {
+                $cookies.put('token', value, $cookies.defaults);
+            }
         },
 
         get: function () {
@@ -193,7 +202,7 @@ services.factory("token", ['$cookies', '$location', function ($cookies, $locatio
 
         remove: function () {
             token = undefined;
-            delete $cookies["token"];
+            $cookies.remove('token');
             $location.path('/');
         }
     }

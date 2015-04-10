@@ -19,7 +19,7 @@
                     <div class="load-wrap img-thumbnail">
                         <div>
                             <img ng-click="isFileConverting(promofile) ? false : openPlayer($index)" 
-                                ng-src="{{apiEndpoint}}files/thumb/{{promofile.id}}?t={{promofile.t}}" alt="">
+                                ng-src="{{apiEndpoint}}files/thumb/{{promofile.id}}" alt="">
                         </div>
                                                     
                         <ul class="controll-block" ng-if="promofile.fileType == 2">
@@ -44,7 +44,7 @@
                     <div class="Video-picture-wrap img-thumbnail" ng-if="promofile.fileType != 2">
                         <div class="cont">
                             <img ng-click="isFileConverting(promofile) ? false : openPlayer($index)"
-                                 ng-src="{{apiEndpoint}}files/thumb/{{promofile.id}}?t={{promofile.t}}"  alt="">
+                                 ng-src="{{apiEndpoint}}files/thumb/{{promofile.id}}"  alt="">
 
                             <a  ng-if="!isFileConverting(promofile)"
                                 ng-click="openPlayer($index)"

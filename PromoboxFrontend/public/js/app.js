@@ -362,7 +362,6 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         
         $scope.getFileThumb = function(file){
             var src = apiEndpoint + "files/thumb/" + file.id + "?t=" + file.t;
-            console.log(src);
             return src;
         };
         

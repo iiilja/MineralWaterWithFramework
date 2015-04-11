@@ -187,7 +187,6 @@ services.factory("token", ['$cookies', '$location', function ($cookies, $locatio
 
         put: function (value, forever) {
             token = value;
-            console.log('puttung cookie ' + forever);
             if (forever) {
                 $cookies.put('token', value, {'expires' : undefined});
             } else {
@@ -230,7 +229,7 @@ services.factory("sysMessage", ['toaster','$filter', function (toaster, $filter)
         },
         error: function (message) {
             toaster.pop('error', $filter('translate')('system_error'), message);
-        },
+        }
     }
 }]);
 

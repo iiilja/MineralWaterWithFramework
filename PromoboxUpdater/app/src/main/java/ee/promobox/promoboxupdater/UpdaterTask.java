@@ -25,7 +25,7 @@ import java.io.InputStream;
  */
 public class UpdaterTask extends AsyncTask<Void,Void,Boolean> {
     private static final String TAG = "UpdaterTask";
-    private String fileUrl = "http://www.admin.promobox.ee/updates/v%d.apk";
+    private String fileUrl = "http://admin.promobox.ee/updates/v%d.apk";
     public static final String APK_FILE_NAME = "promobox.apk";
     private MainService service;
     private int actualVersion = MainService.VERSION_0;

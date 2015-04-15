@@ -1,0 +1,40 @@
+<div class="user-grid">
+    <div class="modal-header">
+        <button type="button" class="close" ng-click="cancel()"><span>&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel" ng-hide="editMode">{{ 'modal_user_add_user' | translate }}</h4>
+    </div>
+
+    <div class="modal-body">
+        <div class="add-company-list mCustomScrollbar">
+            <ul class="btn-group">
+                <li ng-repeat="permission in userPermissions | filter: { admin: false }" ng-click="selectPermission(permission)">
+                    <label  class="btn btn-primary"
+                            ng-class="selectedPermission.id == permission.id ? 'active' : ''">
+                        {{permission.firstname}} {{permission.surname}}
+                        <span class="glyphicon glyphicon-ok"></span>
+                    </label>
+                </li>
+            </ul>
+        </div>
+        <div class="right-block">
+
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" ng-model="selectedPermission.permissionRead" ng-change="savePermission()"> {{ 'modal_read' | translate }}
+                </label>
+            </div>
+
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" ng-model="selectedPermission.permissionWrite" ng-change="savePermission()"> {{ 'modal_record' | translate }}
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-success" ng-hide="editMode" ng-click="cancel()">{{ 'modal_add' | translate }}</button>
+        <button type="button" class="btn btn-success" ng-show="editMode" ng-click="cancel()">{{ 'modal_change' | translate }}</button>
+        <button type="button" class="btn btn-default" ng-click="cancel()">{{ 'modal_cancel' | translate }}</button>
+    </div>
+</div>

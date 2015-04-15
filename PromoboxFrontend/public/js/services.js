@@ -166,6 +166,53 @@ services.factory("Clients", ['$resource',
             }
         });
     }]);
+
+services.factory("DevicesGroups", ['$resource',
+    function($resource) {
+        return $resource('',{},{
+            list: {
+                method: 'GET',
+                url: apiEndpoint + 'token/:token/groups',
+                params: {
+                    token: '@token'
+                }
+            },
+            create: {
+                method: 'PUT',
+                url: apiEndpoint + 'token/:token/groups',
+                params: {
+                    token: '@token'
+                }
+            },
+            delete: {
+                method: 'DELETE',
+                url: apiEndpoint + 'token/:token/groups/:groupId',
+                params: {
+                    token: '@token',
+                    groupId: '@groupId'
+                }
+            },
+            addDevice: {
+                method: 'PUT',
+                url: apiEndpoint + 'token/:token/groups/:groupId/devices/:deviceId',
+                params: {
+                    token: '@token',
+                    groupId: '@groupId',
+                    deviceId: '@deviceId'
+                }
+            },
+            removeDevice: {
+                method: 'DELETE',
+                url: apiEndpoint + 'token/:token/groups/:groupId/devices/:deviceId',
+                params: {
+                    token: '@token',
+                    groupId: '@groupId',
+                    deviceId: '@deviceId'
+                }
+            }
+        });
+    }]);
+
 services.config(['$cookiesProvider', function ($cookiesProvider){
     var d = new Date();
     d.setMilliseconds(d.getMilliseconds() + 4*60*60*1000);
@@ -274,7 +321,7 @@ services.factory('browser', ['$window', function($window) {
     }
 }]);
 
-services.factory('facade', function(token, sysMessage, Clients, Device, Campaign, $location, $filter, $modal) {
+services.factory('facade', function(token, sysMessage, Clients, Device, Campaign, DevicesGroups, $location, $filter, $modal) {
 
      return {
 
@@ -292,6 +339,9 @@ services.factory('facade', function(token, sysMessage, Clients, Device, Campaign
         },
         getCampaigns: function() {
             return Campaign;
+        },
+        getDevicesGroups: function(){
+            return DevicesGroups;
         },
         getLocation: function() {
             return $location;

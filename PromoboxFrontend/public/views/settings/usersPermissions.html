@@ -22,4 +22,25 @@
 				ng-click="openAddPermission(entity.userPermissions)">{{ 'modal_add' | translate }}</button>
 		</div>
 	</div>
+
+	<h2 class="section-title" ng-show="deviceSettings">{{ 'devices_title' | translate }}</h2>
+
+	<div class="setting-row" ng-repeat="group in groups" ng-show="deviceSettings">
+		<div class="setting-header clearfix">
+			<h3 class="pull-left">{{group.name}}
+			</h3><button type="button" ng-click="delete_group(group.id)" class="btn btn-default pull-right ng-binding">{{ 'device_remove' | translate }}</button>
+		</div>
+
+		<div class="setting-body row">
+
+			<div class="col-sm-4 setting-item" ng-repeat="device in group.devices">
+				<h4>
+					{{device.id}}
+					<a class="delete" ng-click="deletePermission(permission)"><i class="glyphicon glyphicon-remove"></i></a>
+				</h4>
+			</div>
+			<button type="button" class="btn btn-success"
+					ng-click="openAddPermission(entity.userPermissions)">{{ 'modal_add' | translate }}</button>
+		</div>
+	</div>
 </section>

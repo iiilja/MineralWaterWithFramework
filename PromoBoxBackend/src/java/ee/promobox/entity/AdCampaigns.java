@@ -237,7 +237,7 @@ public class AdCampaigns implements Serializable {
 
     @Override
     public String toString() {
-        return "ee.promobox.entity.AdCampaigns[ id=" + id + " ]";
+        return "ee.promobox.entity.AdCampaigns[ id=" + id + " name = "+name+"]";
     }
 
     public Date getUpdateDate() {

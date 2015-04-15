@@ -153,7 +153,7 @@ public class CampaignsController {
                 for (AdCampaigns campaign : campaigns) {
                     if (campaign.getStart().before(now)
                             && campaign.getFinish().after(now)) {
-
+                            
                         String dayOfWeek = dayOfWeekFormat.format(now).substring(0, 2).toLowerCase();
                         if (campaign.getWorkTimeData().contains(dayOfWeek)) {
                             String hour = "\"" + hourFowmat.format(now) + "\"";

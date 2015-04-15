@@ -1,0 +1,14 @@
+CREATE TABLE devices_group
+(
+  id serial NOT NULL,
+  client_id integer NOT NULL,
+  name character varying(127) NOT NULL,
+  CONSTRAINT pk_group_id PRIMARY KEY (id),
+  CONSTRAINT fk_client_id FOREIGN KEY (client_id) REFERENCES clients(id)
+);
+CREATE TABLE devices_group_devices
+(
+  group_id integer NOT NULL
+  device_id integer NOT NULL,
+  CONSTRAINT pk_devices_group_devices PRIMARY KEY (devices_group_id,device_id)
+);

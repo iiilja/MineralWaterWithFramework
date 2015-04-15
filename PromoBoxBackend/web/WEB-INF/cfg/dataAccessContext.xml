@@ -64,6 +64,7 @@
     </bean>
     
     <bean id="userService" class="ee.promobox.service.UserServiceImpl" />
+    <bean id="groupService" class="ee.promobox.service.DevicesGroupServiceImpl" />
     
    
     

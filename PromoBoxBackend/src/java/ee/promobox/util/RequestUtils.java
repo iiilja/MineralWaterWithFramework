@@ -20,6 +20,8 @@ public class RequestUtils {
 
     public final static String ERROR = "ERROR";
     public final static String OK = "OK";
+    public final static String RESULT = "result";
+    public final static String REASON = "reason";
     
     private final static Logger log = LoggerFactory.getLogger(
             RequestUtils.class);

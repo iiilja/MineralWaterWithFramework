@@ -38,6 +38,7 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private SessionFactory sessionFactory;
 
+    @Override
     public List<Users> findAllUsers() {
         Session session = sessionFactory.getCurrentSession();
         List<Users> list = session.createQuery("from Users").list();
@@ -55,6 +56,7 @@ public class UserServiceImpl implements UserService {
         return q.list();
     }
 
+    @Override
     public Users findUserByEmailAndPassword(String email, String password) {
         Session session = sessionFactory.getCurrentSession();
 
@@ -163,6 +165,7 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    @Override
     public CampaignsFiles findCampaignFileById(int id) {
         Session session = sessionFactory.getCurrentSession();
 
@@ -173,6 +176,7 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    @Override
     public List<CampaignsFiles> findCampaignFileByIds(List<Integer> ids) {
         Session session = sessionFactory.getCurrentSession();
 
@@ -204,6 +208,7 @@ public class UserServiceImpl implements UserService {
         return (CampaignsFiles) q.uniqueResult();
     }
 
+    @Override
     public List<CampaignsFiles> findCampaignFiles(int campaignId) {
         Session session = sessionFactory.getCurrentSession();
 
@@ -213,6 +218,7 @@ public class UserServiceImpl implements UserService {
         return q.list();
     }
 
+    @Override
     public List<CampaignsFiles> findUsersCampaignFiles(int campaignId, int clientId) {
         Session session = sessionFactory.getCurrentSession();
 
@@ -227,6 +233,7 @@ public class UserServiceImpl implements UserService {
         return q.list();
     }
 
+    @Override
     public AdCampaigns findCampaignByIdAndClientId(int id, int clientId) {
         Session session = sessionFactory.getCurrentSession();
 
@@ -247,6 +254,7 @@ public class UserServiceImpl implements UserService {
      return (AdCampaigns) q.uniqueResult();
      }
      */
+    @Override
     public Devices findDeviceByUuid(String uuid) {
         Session session = sessionFactory.getCurrentSession();
 

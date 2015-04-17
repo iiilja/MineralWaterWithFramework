@@ -107,15 +107,15 @@ var userPermissionsController = function ($scope, $rootScope, facade, deviceSett
                 }
             }
         });
-    }
+    };
 
     $scope.openAddPermission = function (userPermissions) {
         openPermissionsDialog(userPermissions, null, false);
-    }
+    };
 
     $scope.openEditPermission = function (userPermissions, selectedPermission) {
         openPermissionsDialog(userPermissions, selectedPermission, true);
-    }
+    };
 
     $scope.deletePermission = function (permission) {
         entity.deletePermissions({
@@ -127,19 +127,75 @@ var userPermissionsController = function ($scope, $rootScope, facade, deviceSett
             permission.permissionRead = false;
         });
     }
-}
+};
 
 var devicesGroupsController = function ($scope, facade){
+
+    var devices = [];
+
+    facade.getClients().getClient({token: facade.getToken().get()}, function (response) {
+        $scope.admin = response.admin;
+    });
 
     facade.getDevicesGroups().list({
         token: facade.getToken().get()
     }, function (response) {
-        console.log(response.groups);
         $scope.groups = response.groups;
+        devices = response.devices;
     });
 
-    var openAddToGroupDialog = function (userPermissions, selectedPermission, editMode) {
-        var modalInstanse = facade.getModal().open({
+    $scope.addDeviceToGroup = function (group){
+        openAddToGroupDialog(group, group.devices);
+    };
+
+    $scope.removeDeviceFromGroup = function (group, device){
+        facade.getDevicesGroups().removeDevice({
+            token: facade.getToken().get(),
+            groupId : group.id,
+            deviceId : device.id
+        }, function (response) {
+            device.contains = false;
+        });
+    };
+
+    $scope.addGroup = function (){
+        console.log($scope.groupName);
+        facade.getDevicesGroups().create({
+            token: facade.getToken().get(),
+            name : $scope.groupName
+        }, function (response) {
+            var group = {};
+            group.id = response.id;
+            group.name = $scope.groupName;
+            group.devices = devices.slice(0);
+            $scope.groups.splice(-1,0,group);
+            $scope.groupName = '';
+            $scope.isAddingGroup = false;
+        });
+    };
+
+    $scope.delete_group = function (group) {
+        facade.getDevicesGroups().delete(
+            {
+                token : facade.getToken().get(),
+                groupId : group.id
+            }, function (response){
+                $scope.groups.splice($scope.groups.indexOf(group), 1);
+            }
+        )
+    };
+
+    $scope.groupContainsDevices = function(group){
+        for(var i = 0; i < group.devices.length; i++) {
+            if( group.devices[i].contains){
+                return true;
+            }
+        }
+        return false;
+    };
+
+    var openAddToGroupDialog = function (group, devices) {
+        var modalInstance = facade.getModal().open({
             templateUrl: '/views/modal/addDeviceToGroup.html',
             controller: 'ModalAddDeviceToGroupController',
             windowClass: 'add-user user-grid',
@@ -149,10 +205,8 @@ var devicesGroupsController = function ($scope, facade){
                 },
                 model: function () {
                     return {
-                        userPermissions: userPermissions,
-                        selectedPermission: selectedPermission,
-                        entity: entity,
-                        editMode: editMode
+                        devices: devices,
+                        group: group
                     }
                 }
             }
@@ -240,7 +294,7 @@ angular.module('promobox.services').controller('ModalPermissionsController', fun
 
     $scope.selectPermission = function (permission) {
         $scope.selectedPermission = permission;
-    }
+    };
     $scope.savePermission = function () {
         if ($scope.selectedPermission) {
             entity.updatePermissions({
@@ -253,7 +307,7 @@ angular.module('promobox.services').controller('ModalPermissionsController', fun
 
             });
         }
-    }
+    };
     $scope.cancel = function () {
         $modalInstance.dismiss('cancel');
     };
@@ -265,7 +319,7 @@ angular.module('promobox.services').controller('ModalConfirmController', functio
     $scope.confirm = function () {
         model.toDo();
         $scope.cancel();
-    }
+    };
 
     $scope.cancel = function () {
         $modalInstance.dismiss('cancel');
@@ -273,24 +327,50 @@ angular.module('promobox.services').controller('ModalConfirmController', functio
 });
 angular.module('promobox.services').controller('ModalInfoController', function ($scope, $modalInstance, model) {
 
-    $scope.titleText = model.titleText
-    $scope.bodyText = model.bodyText
-    $scope.okBtnText = model.okBtnText
+    $scope.titleText = model.titleText;
+    $scope.bodyText = model.bodyText;
+    $scope.okBtnText = model.okBtnText;
 
     $scope.cancel = function () {
         $modalInstance.dismiss('cancel');
     };
 });
 
-angular.module('promobox.services').controller('ModalAddDeviceToGroupController', function ($scope, $modalInstance,facade, model) {
+angular.module('promobox.services').controller('ModalAddDeviceToGroupController', function ($scope, $modalInstance, facade, model) {
 
-    $scope.titleText = model.titleText
-    $scope.bodyText = model.bodyText
-    $scope.okBtnText = model.okBtnText
+    $scope.devices = model.devices;
+    $scope.group = model.group;
+    $scope.selectedDevices = [];
+    $scope.selectedDevicesIds = [];
 
     $scope.cancel = function () {
         $modalInstance.dismiss('cancel');
     };
+
+    $scope.selectDevice = function (device){
+        var selectedIndex = $scope.selectedDevicesIds.indexOf(device.id);
+        var selectedIndexDevice = $scope.selectedDevices.indexOf(device);
+        if (selectedIndex == -1){
+            $scope.selectedDevicesIds.push(device.id);
+            $scope.selectedDevices.push(device);
+        } else {
+            $scope.selectedDevicesIds.splice(selectedIndex,1);
+            $scope.selectedDevices.splice(selectedIndexDevice,1);
+        }
+    };
+
+    $scope.addDevices = function (){
+        for (var i=0; i< $scope.selectedDevices.length; i++ ){
+            $scope.selectedDevices[i].contains = true;
+        }
+        facade.getDevicesGroups().addDevices({
+            deviceIdsArray : JSON.stringify($scope.selectedDevicesIds),
+            token : facade.getToken().get(),
+            groupId : $scope.group.id
+        }, function(responce){
+            $scope.cancel();
+        });
+    }
 });
 
 angular.module('promobox.services').controller('ModalUserController', function ($scope, $modalInstance, facade, model) {

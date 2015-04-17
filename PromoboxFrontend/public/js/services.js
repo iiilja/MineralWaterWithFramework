@@ -178,10 +178,11 @@ services.factory("DevicesGroups", ['$resource',
                 }
             },
             create: {
-                method: 'PUT',
+                method: 'POST',
                 url: apiEndpoint + 'token/:token/groups',
                 params: {
-                    token: '@token'
+                    token: '@token',
+                    name : '@name'
                 }
             },
             delete: {
@@ -192,13 +193,13 @@ services.factory("DevicesGroups", ['$resource',
                     groupId: '@groupId'
                 }
             },
-            addDevice: {
-                method: 'PUT',
-                url: apiEndpoint + 'token/:token/groups/:groupId/devices/:deviceId',
+            addDevices: {
+                method: 'POST',
+                url: apiEndpoint + 'token/:token/groups/:groupId/devices',
                 params: {
                     token: '@token',
                     groupId: '@groupId',
-                    deviceId: '@deviceId'
+                    deviceIdsArray: '@deviceIdsArray'
                 }
             },
             removeDevice: {

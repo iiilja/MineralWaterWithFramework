@@ -1,5 +1,5 @@
 //var apiEndpoint = "http://46.182.31.101:8080/service/";
-var apiEndpoint = "http://127.0.0.1:8080/backend/service/";
+var apiEndpoint = "http://192.168.1.52:8080/backend/service/";
 
 var app = angular.module('promobox', ['ngRoute', 'ngSanitize', 'ui.bootstrap', 'pascalprecht.translate', 'promobox.services', 'angularFileUpload', 'toaster', 'ui.router', 'ui.sortable', 'ui.select', 'angularMoment', 'ui.bootstrap.datetimepicker', 'checklist-model']);
 

@@ -149,6 +149,13 @@
     "settings_account_updated": "Account information updated", 
     "settings_account_short_password": "Password should contain at least 6 symbols",
     "settings_account_passwords_dont_match": "Passwords do not match",
+    "settings_users_add_user": "Add user",
+    "settings_devices_groups": "Groups of devices",
+    "settings_devices_group_add": "Add group",
+    "settings_devices_group_name_placeholder": "Enter group name",
+    "settings_devices_group_delete": "Remove group",
+    "settings_devices_group_device_add": "Add device",
+    "settings_devices_group_cancel": "Cancel",
     "footer_nav_about_us":"About us",
     "footer_nav_privacy_policy":"Privacy policy",
     "footer_nav_terms_of_use":"Terms of Use",
@@ -183,7 +190,7 @@
     "campaigns_title":"Setting access to campaigns",
     "devices_title":"Setting access to devices",
     "users_title":"Users",
-    "account_title":"Account",
     "payment_title":"Payment",
+    "account_title":"Account",
     "select_pick": "Pick one..."
 }

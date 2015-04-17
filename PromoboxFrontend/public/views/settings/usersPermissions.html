@@ -23,24 +23,36 @@
 		</div>
 	</div>
 
-	<h2 class="section-title" ng-show="deviceSettings">{{ 'devices_title' | translate }}</h2>
-
-	<div class="setting-row" ng-repeat="group in groups" ng-show="deviceSettings">
-		<div class="setting-header clearfix">
-			<h3 class="pull-left">{{group.name}}
-			</h3><button type="button" ng-click="delete_group(group.id)" class="btn btn-default pull-right ng-binding">{{ 'device_remove' | translate }}</button>
+	<div ng-show="deviceSettings && admin">
+		<h2 class="section-title" >{{ 'settings_devices_groups' | translate }}</h2>
+		<div>
+			<button ng-click="isAddingGroup = false" type="button" class="btn btn-primary pull-left" ng-show="isAddingGroup">{{ 'settings_devices_group_cancel' | translate }}</button>
+			<button ng-click="isAddingGroup = true" type="button" class="btn btn-primary pull-left" ng-show="!isAddingGroup">{{ 'settings_devices_group_add' | translate }}</button>
+			<div class="col-sm-7">
+				<input type="text" ng-show="isAddingGroup" ng-model="groupName" class="form-control device-groups" placeholder="{{ 'settings_devices_group_name_placeholder' | translate }}">
+			</div>
+			<button ng-click="addGroup()" type="button" class="btn btn-submit pull-left"  ng-show="isAddingGroup">{{ 'settings_devices_group_add' | translate }}</button>
+			<div style="height:40px;"></div>
 		</div>
 
-		<div class="setting-body row">
 
-			<div class="col-sm-4 setting-item" ng-repeat="device in group.devices">
-				<h4>
-					{{device.id}}
-					<a class="delete" ng-click="deletePermission(permission)"><i class="glyphicon glyphicon-remove"></i></a>
-				</h4>
+		<div class="setting-row" ng-repeat="group in groups">
+			<div class="setting-header clearfix">
+				<h3 class="pull-left">{{group.name}}</h3>
+				<button type="button" ng-click="delete_group(group)" class="btn btn-danger pull-right ng-binding" ng-show="!groupContainsDevices(group)">{{ 'settings_devices_group_delete' | translate }}</button>
 			</div>
-			<button type="button" class="btn btn-success"
-					ng-click="openAddPermission(entity.userPermissions)">{{ 'modal_add' | translate }}</button>
+
+			<div class="setting-body row">
+
+				<div class="col-sm-4 setting-item device-groups" ng-repeat="device in group.devices | filter: { contains: true }">
+					<h4>
+						{{device.name}}
+						<a class="delete" ng-click="removeDeviceFromGroup(group, device)"><i class="glyphicon glyphicon-remove"></i></a>
+					</h4>
+				</div>
+				<button type="button" class="btn btn-success"
+						ng-click="addDeviceToGroup(group)">{{ 'settings_devices_group_device_add' | translate }}</button>
+			</div>
 		</div>
 	</div>
 </section>

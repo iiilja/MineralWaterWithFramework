@@ -8,14 +8,13 @@ package ee.promobox.entity;
 import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Column;
-import javax.persistence.Embeddable;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -26,25 +25,23 @@ import javax.persistence.Table;
 @NamedQueries({
     @NamedQuery(name = "DevicesGroupDevices.findAll", query = "SELECT d FROM DevicesGroupDevices d"),
     @NamedQuery(name = "DevicesGroupDevices.findByGroupId", query = "SELECT d FROM DevicesGroupDevices d WHERE d.devicesGroupDevicesPK.groupId = :groupId"),
-    @NamedQuery(name = "DevicesGroupDevices.findByDeviceId", query = "SELECT d FROM DevicesGroupDevices d WHERE d.devicesGroupDevicesPK.deviceId = :deviceId")})
+    @NamedQuery(name = "DevicesGroupDevices.findByDeviceId", query = "SELECT d FROM DevicesGroupDevices d WHERE d.devicesGroupDevicesPK.deviceId = :deviceId"),
+    @NamedQuery(name = "DevicesGroupDevices.findByDeviceName", query = "SELECT d FROM DevicesGroupDevices d WHERE d.deviceName = :deviceName")})
 public class DevicesGroupDevices implements Serializable {
-
+    
     private static final long serialVersionUID = 1L;
     @EmbeddedId
     protected DevicesGroupDevicesPK devicesGroupDevicesPK;
-    @JoinColumn(name = "group_id", referencedColumnName = "id", insertable = false, updatable = false)
-    @ManyToOne(optional = false)
-    private DevicesGroup devicesGroup;
+    @Basic(optional = false)
+    @Column(name = "device_name")
+    private String deviceName;
 
     public DevicesGroupDevices() {
     }
 
-    public DevicesGroupDevices(DevicesGroupDevicesPK devicesGroupDevicesPK) {
-        this.devicesGroupDevicesPK = devicesGroupDevicesPK;
-    }
-
-    public DevicesGroupDevices(int groupId, int deviceId) {
+    public DevicesGroupDevices(int groupId, int deviceId , String deviceName) {
         this.devicesGroupDevicesPK = new DevicesGroupDevicesPK(groupId, deviceId);
+        this.deviceName = deviceName;
     }
 
     public int getGroupId() {
@@ -55,12 +52,12 @@ public class DevicesGroupDevices implements Serializable {
         return devicesGroupDevicesPK.getDeviceId();
     }
 
-    public DevicesGroup getDevicesGroup() {
-        return devicesGroup;
+    public String getDeviceName() {
+        return deviceName;
     }
 
-    public void setDevicesGroup(DevicesGroup devicesGroup) {
-        this.devicesGroup = devicesGroup;
+    public void setDeviceName(String deviceName) {
+        this.deviceName = deviceName;
     }
 
     @Override
@@ -87,5 +84,5 @@ public class DevicesGroupDevices implements Serializable {
     public String toString() {
         return "ee.promobox.entity.DevicesGroupDevices[ devicesGroupDevicesPK=" + devicesGroupDevicesPK + " ]";
     }
-
+    
 }

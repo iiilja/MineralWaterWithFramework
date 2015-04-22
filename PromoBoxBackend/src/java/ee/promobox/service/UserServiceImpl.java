@@ -119,6 +119,7 @@ public class UserServiceImpl implements UserService {
         return q.list();
     }
 
+    @Override
     public List<Devices> findUserDevieces(int clientId) {
         Session session = sessionFactory.getCurrentSession();
 
@@ -129,6 +130,7 @@ public class UserServiceImpl implements UserService {
         return q.list();
     }
 
+    @Override
     public List<Devices> findUserDevieces(int clientId, int userId) {
         Session session = sessionFactory.getCurrentSession();
 

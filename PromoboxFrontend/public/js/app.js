@@ -1,5 +1,5 @@
-//var apiEndpoint = "http://46.182.31.101:8080/service/";
-var apiEndpoint = "http://192.168.1.52:8080/backend/service/";
+var apiEndpoint = "http://46.182.31.101:8080/service/";
+//var apiEndpoint = "http://192.168.1.52:8080/backend/service/";
 
 var app = angular.module('promobox', ['ngRoute', 'ngSanitize', 'ui.bootstrap', 'pascalprecht.translate', 'promobox.services', 'angularFileUpload', 'toaster', 'ui.router', 'ui.sortable', 'ui.select', 'angularMoment', 'ui.bootstrap.datetimepicker', 'checklist-model']);
 
@@ -769,9 +769,10 @@ app.controller('CampaignsController', ['$scope', 'token', 'Campaign', 'sysMessag
         }
     }]);
 
-app.controller('DevicesController', ['$scope', 'token', 'Device', 'sysMessage', '$rootScope', '$filter',
-    function ($scope, token, Device, sysMessage, $rootScope, $filter) {
+app.controller('DevicesController', ['$scope', 'token', 'Device', 'DevicesGroups', 'sysMessage', '$rootScope', '$filter',
+    function ($scope, token, Device, DevicesGroups, sysMessage, $rootScope, $filter) {
         if (token.check()) {
+            $scope.currentGroupId = 0;
             $rootScope.left_menu_active = 'device';
             Device.get_data({token: token.get()}, function (response) {
                 console.log(response);
@@ -784,8 +785,49 @@ app.controller('DevicesController', ['$scope', 'token', 'Device', 'sysMessage', 
                 if ($scope.devices.length > 0) {
                     $scope.currentDevice = $scope.devices[0];
                 }
-                //setTimeout(function(){jQuery('.styler').styler();}, 800); 
+                //setTimeout(function(){jQuery('.styler').styler();}, 800);
+                loadGroups();
             });
+
+            $scope.changeCurrentGroupId = function(id){
+                console.log($scope.currentGroupId);
+                $scope.currentGroupId = id;
+            }
+
+             var loadGroups = function(){
+                 DevicesGroups.list({token: token.get()}, function (response) {
+                     //$scope.currentGroup = {};
+                     $scope.groups = [];
+
+                     var findDeviceById = function(deviceId){
+                         for (var i=0; i<$scope.devices.length; i++){
+                             if ($scope.devices[i].id == deviceId){
+                                 return $scope.devices[i];
+                             }
+                         }
+                     };
+
+                     for (var i=0; i < response.groups.length; i++){
+                         var respGroup = response.groups[i];
+                         var group = {};
+                         group.id = respGroup.id;
+                         group.name = respGroup.name;
+                         group.devices = [];
+                         for (var j=0; j < respGroup.devices.length; j++){
+                             var respDevice = respGroup.devices[j];
+                             if ( respDevice.contains){
+                                 var foundDevice = findDeviceById(respDevice.id);
+                                 if (foundDevice){
+                                     group.devices.splice(-1,0,foundDevice);
+                                 }
+                             }
+                         }
+                         console.log("Group number " + i);
+                         console.log(group);
+                         $scope.groups.splice(-1,0,group);
+                     }
+                 });
+             };
             
             $scope.open_add_campaign = function(device) {
                 $scope.currentDevice = device;

@@ -13,6 +13,7 @@ import ee.promobox.service.Session;
 import ee.promobox.service.SessionService;
 import ee.promobox.service.UserService;
 import ee.promobox.util.RequestUtils;
+import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -64,31 +65,47 @@ public class DevicesGroupsController {
             if (session.isAdmin()) {
                 groups = groupService.findGroupsByClientId(clientId);
             }
+            
+            List<Devices> userDevices = userService.findUserDevieces(clientId);
 
             JSONArray groupsArray = new JSONArray();
             if (groups != null && !groups.isEmpty()) {
-
+            
                 for (DevicesGroup group : groups) {
+                    List<DevicesGroupDevices> groupDevices = groupService.findDevicesByGroupId(group.getId());
 
                     JSONObject jsonGroup = new JSONObject();
-
                     jsonGroup.put("id", group.getId());
                     jsonGroup.put("name", group.getName());
 
                     JSONArray devicesJSON = new JSONArray();
-                    for (DevicesGroupDevices device : groupService.findDevicesByGroupId(group.getId())) {
+                    
+                    for (Devices userDevice : userDevices) {
                         JSONObject deviceJSON = new JSONObject();
-                        deviceJSON.put("id", device.getDeviceId());
+                        deviceJSON.put("id", userDevice.getId());
+                        deviceJSON.put("name", userDevice.getUuid());
+                        deviceJSON.put("contains", groupDeviceListContainsUserDevice(groupDevices, userDevice));
+                        
                         devicesJSON.put(deviceJSON);
-
                     }
+                    
                     jsonGroup.put("devices", devicesJSON);
 
                     groupsArray.put(jsonGroup);
                 }
             }
-
             resp.put("groups", groupsArray);
+            
+            JSONArray devicesArray = new JSONArray();
+            for (Devices device : userDevices) {
+                JSONObject deviceJSON = new JSONObject();
+                deviceJSON.put("id", device.getId());
+                deviceJSON.put("name", device.getUuid());
+                deviceJSON.put("contains",false);
+                devicesArray.put(deviceJSON);
+            }
+            
+            resp.put("devices", devicesArray);
 
             response.setStatus(HttpServletResponse.SC_OK);
             return resp.toString();
@@ -100,7 +117,7 @@ public class DevicesGroupsController {
 
     }
 
-    @RequestMapping(value = "token/{token}/groups/create", method = RequestMethod.GET)
+    @RequestMapping(value = "token/{token}/groups", method = RequestMethod.POST)
     public @ResponseBody
     String createGroup(
             @PathVariable("token") String token,
@@ -130,7 +147,7 @@ public class DevicesGroupsController {
 
     }
 
-    @RequestMapping(value = "token/{token}/groups/{groupId}/delete", method = RequestMethod.GET)
+    @RequestMapping(value = "token/{token}/groups/{groupId}", method = RequestMethod.DELETE)
     public @ResponseBody
     String deleteGroup(
             @PathVariable("token") String token,
@@ -148,7 +165,6 @@ public class DevicesGroupsController {
             DevicesGroup devicesGroup = groupService.findGroupByClientAndGroupId(clientId, groupId);
             if (devicesGroup != null) {
                 groupService.deleteEntity(devicesGroup);
-
                 response.setStatus(HttpServletResponse.SC_OK);
             }
 
@@ -161,12 +177,12 @@ public class DevicesGroupsController {
 
     }
 
-    @RequestMapping(value = "token/{token}/groups/{groupId}/addDevice", method = RequestMethod.GET)
+    @RequestMapping(value = "token/{token}/groups/{groupId}/devices/{deviceId}", method = RequestMethod.POST)
     public @ResponseBody
     String addDeviceToGroup(
             @PathVariable("token") String token,
             @PathVariable("groupId") int groupId,
-            @RequestParam(required = true) int deviceId,
+            @PathVariable("deviceId") int deviceId,
             HttpServletRequest request,
             HttpServletResponse response) {
         try {
@@ -183,7 +199,7 @@ public class DevicesGroupsController {
 
                     Devices device = userService.findDeviceByIdAndClientId(deviceId, clientId);
                     if (device != null) {
-                        DevicesGroupDevices groupDevice = new DevicesGroupDevices(groupId, device.getId());
+                        DevicesGroupDevices groupDevice = new DevicesGroupDevices(groupId, device.getId(), device.getUuid());
                         groupService.addDeviceToDeviceGroup(groupDevice);
                         resp.put(RequestUtils.RESULT, RequestUtils.OK);
                     } else {
@@ -202,12 +218,12 @@ public class DevicesGroupsController {
         }
     }
 
-    @RequestMapping(value = "token/{token}/groups/{groupId}/removeDevice", method = RequestMethod.GET)
+    @RequestMapping(value = "token/{token}/groups/{groupId}/devices/{deviceId}", method = RequestMethod.DELETE)
     public @ResponseBody
     String removeDeviceFromGroup(
             @PathVariable("token") String token,
             @PathVariable("groupId") int groupId,
-            @RequestParam(required = true) int deviceId,
+            @PathVariable("deviceId") int deviceId,
             HttpServletRequest request,
             HttpServletResponse response) {
         try {
@@ -236,7 +252,7 @@ public class DevicesGroupsController {
 
     }
 
-    @RequestMapping(value = "token/{token}/groups/{groupId}/addDevices", method = RequestMethod.GET)
+    @RequestMapping(value = "token/{token}/groups/{groupId}/devices", method = RequestMethod.POST)
     public @ResponseBody
     String addDevicesToGroup(
             @PathVariable("token") String token,
@@ -262,7 +278,7 @@ public class DevicesGroupsController {
                         int deviceId = deviceIds.getInt(i);
                         Devices device = userService.findDeviceByIdAndClientId(deviceId, clientId);
                         if (device != null) {
-                            DevicesGroupDevices groupDevice = new DevicesGroupDevices(groupId, device.getId());
+                            DevicesGroupDevices groupDevice = new DevicesGroupDevices(groupId, device.getId(), device.getUuid());
                             groupService.addDeviceToDeviceGroup(groupDevice);
                             added.put(device.getId());
                         } else {
@@ -284,7 +300,7 @@ public class DevicesGroupsController {
         }
     }
 
-    @RequestMapping(value = "token/{token}/groups/{groupId}/removeDevices", method = RequestMethod.GET)
+    @RequestMapping(value = "token/{token}/groups/{groupId}/devices", method = RequestMethod.DELETE)
     public @ResponseBody
     String removeDevicesFromGroup(
             @PathVariable("token") String token,
@@ -325,6 +341,15 @@ public class DevicesGroupsController {
             return null;
         }
 
+    }
+    
+    private boolean groupDeviceListContainsUserDevice(List<DevicesGroupDevices> groupDevices, Devices userDevice){
+        for (DevicesGroupDevices groupDevice : groupDevices) {
+            if (userDevice.getId() == groupDevice.getDeviceId()) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

@@ -15,66 +15,65 @@ import javax.persistence.Embeddable;
  * @author ilja
  */
 @Embeddable
-    public class DevicesGroupDevicesPK implements Serializable {
+public class DevicesGroupDevicesPK implements Serializable {
+    @Basic(optional = false)
+    @Column(name = "group_id")
+    private int groupId;
+    @Basic(optional = false)
+    @Column(name = "device_id")
+    private int deviceId;
 
-        @Basic(optional = false)
-        @Column(name = "group_id")
-        private int groupId;
-        @Basic(optional = false)
-        @Column(name = "device_id")
-        private int deviceId;
-
-        public DevicesGroupDevicesPK() {
-        }
-
-        public DevicesGroupDevicesPK(int groupId, int deviceId) {
-            this.groupId = groupId;
-            this.deviceId = deviceId;
-        }
-
-        public int getGroupId() {
-            return groupId;
-        }
-
-        public void setGroupId(int groupId) {
-            this.groupId = groupId;
-        }
-
-        public int getDeviceId() {
-            return deviceId;
-        }
-
-        public void setDeviceId(int deviceId) {
-            this.deviceId = deviceId;
-        }
-
-        @Override
-        public int hashCode() {
-            int hash = 0;
-            hash += (int) groupId;
-            hash += (int) deviceId;
-            return hash;
-        }
-
-        @Override
-        public boolean equals(Object object) {
-            // TODO: Warning - this method won't work in the case the id fields are not set
-            if (!(object instanceof DevicesGroupDevicesPK)) {
-                return false;
-            }
-            DevicesGroupDevicesPK other = (DevicesGroupDevicesPK) object;
-            if (this.groupId != other.groupId) {
-                return false;
-            }
-            if (this.deviceId != other.deviceId) {
-                return false;
-            }
-            return true;
-        }
-
-        @Override
-        public String toString() {
-            return "ee.promobox.entity.DevicesGroupDevicesPK[ groupId=" + groupId + ", deviceId=" + deviceId + " ]";
-        }
-
+    public DevicesGroupDevicesPK() {
     }
+
+    public DevicesGroupDevicesPK(int groupId, int deviceId) {
+        this.groupId = groupId;
+        this.deviceId = deviceId;
+    }
+
+    public int getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(int groupId) {
+        this.groupId = groupId;
+    }
+
+    public int getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(int deviceId) {
+        this.deviceId = deviceId;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (int) groupId;
+        hash += (int) deviceId;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof DevicesGroupDevicesPK)) {
+            return false;
+        }
+        DevicesGroupDevicesPK other = (DevicesGroupDevicesPK) object;
+        if (this.groupId != other.groupId) {
+            return false;
+        }
+        if (this.deviceId != other.deviceId) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "ee.promobox.entity.DevicesGroupDevicesPK[ groupId=" + groupId + ", deviceId=" + deviceId + " ]";
+    }
+    
+}

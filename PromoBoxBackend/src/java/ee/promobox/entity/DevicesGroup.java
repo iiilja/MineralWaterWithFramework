@@ -6,9 +6,7 @@
 package ee.promobox.entity;
 
 import java.io.Serializable;
-import java.util.Collection;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -16,7 +14,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 /**
@@ -40,11 +37,8 @@ public class DevicesGroup implements Serializable {
     @Basic(optional = false)
     @Column(name = "client_id")
     private int clientId;
-    @Basic(optional = false)
     @Column(name = "name")
     private String name;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "devicesGroup")
-    private Collection<DevicesGroupDevices> devicesGroupDevicesCollection;
 
     public DevicesGroup() {
     }
@@ -78,14 +72,6 @@ public class DevicesGroup implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Collection<DevicesGroupDevices> getDevicesGroupDevicesCollection() {
-        return devicesGroupDevicesCollection;
-    }
-
-    public void setDevicesGroupDevicesCollection(Collection<DevicesGroupDevices> devicesGroupDevicesCollection) {
-        this.devicesGroupDevicesCollection = devicesGroupDevicesCollection;
     }
 
     @Override

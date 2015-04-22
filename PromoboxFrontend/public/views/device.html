@@ -9,165 +9,168 @@
  type="button" class="btn btn-primary" style="margin: 15px 0 0 15px;">{{ 'device_newdevice' | translate }}</button>
  <div style="height:15px;"></div>
 
-<div ng-repeat="device in devices">
-    <div class="center-block campaigns_block">
-        <div class="row">
-            <div class="device clearfix">
-                <div class="device-info">
-                    <div class="top-block">
-                        <h3 class="pull-left">{{ 'device_devicenumber' | translate }}: {{device.uuid}}</h3>
-                        <span ng-if="device.status == 1" class="label label-warning pull-right">{{ 'device_used' | translate }}</span>
-                        <span ng-if="device.status == 2" class="label label-success pull-right">{{ 'device_online' | translate }}</span>
-                        <span ng-if="device.status == 3" class="label label-danger pull-right">{{ 'device_off' | translate }}</span>
-                    </div>
-                    <textarea ng-model="device.description" placeholder="{{ 'device_description' | translate }}"></textarea>
-                    <p class="free-space">{{ 'device_space' | translate }}: {{ device.space |  bytes }}</p>
-                    <div class="bottom-block">
-                        <a class="pull-left btn btn-default" 
-                           ng-click="showDeviceSettings(device.id)"
-                           ng-hide="visibleDeviceSettings == device.id"><span class="glyphicon glyphicon-cog"></span>{{'campaign_edit_showsettings' | translate}}</a>
-                        
-                        <a class="pull-left btn btn-default" 
-                           ng-click="showDeviceSettings(0)"
-                           ng-show="visibleDeviceSettings == device.id"><span class="glyphicon glyphicon-cog"></span>{{'campaign_edit_hidesettings' | translate}}</a>
-                        <p class="pull-right">
-                            {{ 'device_updatedate' | translate }}:<br/> {{device.lastRequestDt | dateConvert}}
-                        </p>
-                    </div>
-                </div>
-                <div class="company-info success" ng-class="device.status == 2 ? 'success' : (device.status == 1 ? 'warning' : 'danger')">
-                    <div ng-if="device.status == 3">
-                        <h4>{{ 'device_offtime' | translate }}</h4>
-                        <p>{{device.lastRequestDt | timeConvert}}</p>
-                    </div>
-                    <div ng-if="device.currentCamp && device.status != 3">
-                        <h4>{{ 'device_currentcompany' | translate }}</h4>
-                        <p>{{device.currentCamp.name}}</p>
-                        <ul>
-                            <li><span class="glyphicon glyphicon-play"></span>{{device.currentCamp.file}}</li>
-                        </ul>
-                    </div>
-                    <div ng-if="device.loadingCamp && device.status != 3">
-                        <h4>{{ 'device_companyloading' | translate }}</h4>
+<div ng-repeat="group in groups">
+    <h4 ng-click="changeCurrentGroupId(group.id)">{{group.name}}</h4>
+    <div ng-repeat="device in group.devices" ng-show="currentGroupId == group.id">
+        <div class="center-block campaigns_block">
+            <div class="row">
+                <div class="device clearfix">
+                    <div class="device-info">
+                        <div class="top-block">
+                            <h3 class="pull-left">{{ 'device_devicenumber' | translate }}: {{device.uuid}}</h3>
+                            <span ng-if="device.status == 1" class="label label-warning pull-right">{{ 'device_used' | translate }}</span>
+                            <span ng-if="device.status == 2" class="label label-success pull-right">{{ 'device_online' | translate }}</span>
+                            <span ng-if="device.status == 3" class="label label-danger pull-right">{{ 'device_off' | translate }}</span>
+                        </div>
+                        <textarea ng-model="device.description" placeholder="{{ 'device_description' | translate }}"></textarea>
+                        <p class="free-space">{{ 'device_space' | translate }}: {{ device.space |  bytes }}</p>
+                        <div class="bottom-block">
+                            <a class="pull-left btn btn-default"
+                               ng-click="showDeviceSettings(device.id)"
+                               ng-hide="visibleDeviceSettings == device.id"><span class="glyphicon glyphicon-cog"></span>{{'campaign_edit_showsettings' | translate}}</a>
 
-                        <p class="progress-name">{{device.loadingCamp.name}}</p>
-
-                        <div class="progress">
-                            <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: {{device.loadingCampaingProgress}}%;">
-                                {{device.loadingCampaingProgress}}%
-                            </div>
+                            <a class="pull-left btn btn-default"
+                               ng-click="showDeviceSettings(0)"
+                               ng-show="visibleDeviceSettings == device.id"><span class="glyphicon glyphicon-cog"></span>{{'campaign_edit_hidesettings' | translate}}</a>
+                            <p class="pull-right">
+                                {{ 'device_updatedate' | translate }}:<br/> {{device.lastRequestDt | dateConvert}}
+                            </p>
                         </div>
                     </div>
-                    <div ng-if="device.onTop == false && device.status == 1">
-                        <a class="btn btn-default" ng-click="openApp(device.id)">
-                            {{ 'device_launch_promobox' | translate }}
-                        </a>
-                    </div>  
-                </div>
-            </div>
-
-            <div class="preferences-wrap" ng-show="visibleDeviceSettings == device.id">
-                <div class="preferences">
-                    <div class="row">
-                        <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'device_cache' | translate }}</label></div>
-                        <div class="col-md-7 col-xs-9 col-sm-8">
-                            <p class="pull-left">{{ device.cache |  bytes }}</p>
-                            <button type="button" class="btn btn-warning pull-right"
-                                    ng-click="clearCache(device.id)"
-                                    ng-show="device.permissionWrite">{{ 'device_clearcache' | translate }}</button>
+                    <div class="company-info success" ng-class="device.status == 2 ? 'success' : (device.status == 1 ? 'warning' : 'danger')">
+                        <div ng-if="device.status == 3">
+                            <h4>{{ 'device_offtime' | translate }}</h4>
+                            <p>{{device.lastRequestDt | timeConvert}}</p>
                         </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'device_orientation' | translate }}</label></div>
-                        <div class="col-md-7 col-xs-9 col-sm-8">
-                            <ui-select ng-model="device.orientation" theme="select2" search-enabled="false">
-                                <ui-select-match placeholder="{{'select_pick' | translate }}">{{orientationName(device.orientation)}}</ui-select-match>
-                                <ui-select-choices repeat="orientation in deviceOrientations">
-                                    <span>{{orientationName(orientation)}}</span>
-                                </ui-select-choices>
-                            </ui-select>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'device_audioaut' | translate }}</label></div>
-                        <div class="col-md-7 col-xs-9 col-sm-8">
-                            <ui-select ng-model="device.audioOut" theme="select2" search-enabled="false">
-                                <ui-select-match placeholder="{{'select_pick' | translate }}">{{audioOutName(device.audioOut)}}</ui-select-match>
-                                <ui-select-choices repeat="audioOut in deviceAudioOuts">
-                                    <span>{{audioOutName(audioOut)}}</span>
-                                </ui-select-choices>
-                            </ui-select>
-                        </div>
-                    </div>
-
-                    <div class="row" style="padding-top:20px;">
-                        <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'device_choosecampaign' | translate }}</label></div>
-                        <div class="col-md-7 col-xs-9 col-sm-8">
-                            <ul class="opting-list btn-group" data-toggle="buttons">
-                                <li ng-repeat="campaign in campaigns"
-                                    ng-show="device.campaignIds.indexOf(campaign.id) != -1">
-                                    <label class="btn btn-primary active">
-                                        <input type="checkbox" autocomplete="off" checked><span class="glyphicon glyphicon-play"></span> {{campaign.name}}
-                                    </label>
-                                    <a class="close" 
-                                        ng-click="delete_device_campaign(device, campaign.id)"
-                                        ng-show="device.permissionWrite"><span class="glyphicon glyphicon-remove"></span></a>
-                                </li>     
-                            </ul>
-                            <button type="button" class="btn btn-info"
-                                    data-toggle="modal" data-target="#add-company"
-                                    ng-show="device.permissionWrite"
-                                    ng-click="open_add_campaign(device)">{{ 'device_addcampaign' | translate }}</button>
-                        </div>
-                    </div>
-
-                    <div class="row" style="padding-top:20px;">
-                        <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'campaign_edit_workdays' | translate }}</label></div>
-                        <div class="col-md-7 col-xs-9 col-sm-8">
-                            <div class="btn-group days">
-                               <label  class="btn btn-primary " 
-                                       ng-class="device[day] ? 'active' : ''"
-                                       ng-repeat="day in workdays"
-                                       ng-click="toggleWorkDay(device, day)">
-                                     {{ day | translate }}
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    <div  class="row operation-time">
-                        <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'device_worktime' | translate }}</label></div>
-                        <div class="col-md-7 col-xs-9 col-sm-8">
+                        <div ng-if="device.currentCamp && device.status != 3">
+                            <h4>{{ 'device_currentcompany' | translate }}</h4>
+                            <p>{{device.currentCamp.name}}</p>
                             <ul>
-<!--                                 <li><span></span></li> -->
-                                <li>
-                                    <ui-select ng-model="device.workStartAt" theme="select2">
-                                        <ui-select-match placeholder="{{'select_pick' | translate }}">{{device.workStartAt}}</ui-select-match>
-                                        <ui-select-choices repeat="hour in workhours  | filter: $select.search">
-                                            <span ng-bind-html="hour | highlight: $select.search"></span>
-                                        </ui-select-choices>
-                                    </ui-select>
-
-                                </li>
-                                <li class="line"><span> - </span></li>
-                                <li>
-                                    <ui-select ng-model="device.workEndAt" theme="select2">
-                                        <ui-select-match placeholder="{{'select_pick' | translate }}">{{device.workEndAt}}</ui-select-match>
-                                        <ui-select-choices repeat="hour in workhours  | filter: $select.search">
-                                            <span ng-bind-html="hour | highlight: $select.search"></span>
-                                        </ui-select-choices>
-                                    </ui-select>
-                                </li>
+                                <li><span class="glyphicon glyphicon-play"></span>{{device.currentCamp.file}}</li>
                             </ul>
+                        </div>
+                        <div ng-if="device.loadingCamp && device.status != 3">
+                            <h4>{{ 'device_companyloading' | translate }}</h4>
+
+                            <p class="progress-name">{{device.loadingCamp.name}}</p>
+
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: {{device.loadingCampaingProgress}}%;">
+                                    {{device.loadingCampaingProgress}}%
+                                </div>
+                            </div>
+                        </div>
+                        <div ng-if="device.onTop == false && device.status == 1">
+                            <a class="btn btn-default" ng-click="openApp(device.id)">
+                                {{ 'device_launch_promobox' | translate }}
+                            </a>
                         </div>
                     </div>
                 </div>
-                <div class="button-wrap" ng-show="device.permissionWrite">
-                    <div class="form-group">
-                        <button type="submit" ng-click="change_device(device)" class="btn btn-primary ng-binding">{{ 'device_save' | translate }}</button>
-                        <button type="button" ng-click="showDeviceSettings(0)" class="btn btn-default ng-binding" style="margin-left: 15px;">{{ 'device_cancel' | translate }}</button>
-                        <button type="button" ng-click="delete_device(device)" class="btn btn-default pull-right" >{{ 'device_remove' | translate }}</button>
+
+                <div class="preferences-wrap" ng-show="visibleDeviceSettings == device.id">
+                    <div class="preferences">
+                        <div class="row">
+                            <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'device_cache' | translate }}</label></div>
+                            <div class="col-md-7 col-xs-9 col-sm-8">
+                                <p class="pull-left">{{ device.cache |  bytes }}</p>
+                                <button type="button" class="btn btn-warning pull-right"
+                                        ng-click="clearCache(device.id)"
+                                        ng-show="device.permissionWrite">{{ 'device_clearcache' | translate }}</button>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'device_orientation' | translate }}</label></div>
+                            <div class="col-md-7 col-xs-9 col-sm-8">
+                                <ui-select ng-model="device.orientation" theme="select2" search-enabled="false">
+                                    <ui-select-match placeholder="{{'select_pick' | translate }}">{{orientationName(device.orientation)}}</ui-select-match>
+                                    <ui-select-choices repeat="orientation in deviceOrientations">
+                                        <span>{{orientationName(orientation)}}</span>
+                                    </ui-select-choices>
+                                </ui-select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'device_audioaut' | translate }}</label></div>
+                            <div class="col-md-7 col-xs-9 col-sm-8">
+                                <ui-select ng-model="device.audioOut" theme="select2" search-enabled="false">
+                                    <ui-select-match placeholder="{{'select_pick' | translate }}">{{audioOutName(device.audioOut)}}</ui-select-match>
+                                    <ui-select-choices repeat="audioOut in deviceAudioOuts">
+                                        <span>{{audioOutName(audioOut)}}</span>
+                                    </ui-select-choices>
+                                </ui-select>
+                            </div>
+                        </div>
+
+                        <div class="row" style="padding-top:20px;">
+                            <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'device_choosecampaign' | translate }}</label></div>
+                            <div class="col-md-7 col-xs-9 col-sm-8">
+                                <ul class="opting-list btn-group" data-toggle="buttons">
+                                    <li ng-repeat="campaign in campaigns"
+                                        ng-show="device.campaignIds.indexOf(campaign.id) != -1">
+                                        <label class="btn btn-primary active">
+                                            <input type="checkbox" autocomplete="off" checked><span class="glyphicon glyphicon-play"></span> {{campaign.name}}
+                                        </label>
+                                        <a class="close"
+                                           ng-click="delete_device_campaign(device, campaign.id)"
+                                           ng-show="device.permissionWrite"><span class="glyphicon glyphicon-remove"></span></a>
+                                    </li>
+                                </ul>
+                                <button type="button" class="btn btn-info"
+                                        data-toggle="modal" data-target="#add-company"
+                                        ng-show="device.permissionWrite"
+                                        ng-click="open_add_campaign(device)">{{ 'device_addcampaign' | translate }}</button>
+                            </div>
+                        </div>
+
+                        <div class="row" style="padding-top:20px;">
+                            <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'campaign_edit_workdays' | translate }}</label></div>
+                            <div class="col-md-7 col-xs-9 col-sm-8">
+                                <div class="btn-group days">
+                                    <label  class="btn btn-primary "
+                                            ng-class="device[day] ? 'active' : ''"
+                                            ng-repeat="day in workdays"
+                                            ng-click="toggleWorkDay(device, day)">
+                                        {{ day | translate }}
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div  class="row operation-time">
+                            <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'device_worktime' | translate }}</label></div>
+                            <div class="col-md-7 col-xs-9 col-sm-8">
+                                <ul>
+                                    <!--                                 <li><span></span></li> -->
+                                    <li>
+                                        <ui-select ng-model="device.workStartAt" theme="select2">
+                                            <ui-select-match placeholder="{{'select_pick' | translate }}">{{device.workStartAt}}</ui-select-match>
+                                            <ui-select-choices repeat="hour in workhours  | filter: $select.search">
+                                                <span ng-bind-html="hour | highlight: $select.search"></span>
+                                            </ui-select-choices>
+                                        </ui-select>
+
+                                    </li>
+                                    <li class="line"><span> - </span></li>
+                                    <li>
+                                        <ui-select ng-model="device.workEndAt" theme="select2">
+                                            <ui-select-match placeholder="{{'select_pick' | translate }}">{{device.workEndAt}}</ui-select-match>
+                                            <ui-select-choices repeat="hour in workhours  | filter: $select.search">
+                                                <span ng-bind-html="hour | highlight: $select.search"></span>
+                                            </ui-select-choices>
+                                        </ui-select>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="button-wrap" ng-show="device.permissionWrite">
+                        <div class="form-group">
+                            <button type="submit" ng-click="change_device(device)" class="btn btn-primary ng-binding">{{ 'device_save' | translate }}</button>
+                            <button type="button" ng-click="showDeviceSettings(0)" class="btn btn-default ng-binding" style="margin-left: 15px;">{{ 'device_cancel' | translate }}</button>
+                            <button type="button" ng-click="delete_device(device)" class="btn btn-default pull-right" >{{ 'device_remove' | translate }}</button>
+                        </div>
                     </div>
                 </div>
             </div>

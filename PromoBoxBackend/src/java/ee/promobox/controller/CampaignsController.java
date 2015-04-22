@@ -19,6 +19,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -147,14 +148,23 @@ public class CampaignsController {
 
                 // iterate trough the list of campaigns that belong to the client
                 SimpleDateFormat hourFowmat = new SimpleDateFormat("H");
-                SimpleDateFormat dayOfWeekFormat = new SimpleDateFormat("EE");
+                SimpleDateFormat dayOfWeekFormat = new SimpleDateFormat("EE",Locale.US);
                 Date now = new Date();
 
                 for (AdCampaigns campaign : campaigns) {
                     if (campaign.getStart().before(now)
                             && campaign.getFinish().after(now)) {
                             
-                        String dayOfWeek = dayOfWeekFormat.format(now).substring(0, 2).toLowerCase();
+                        String dayOfWeek = "";
+                        try {
+                            dayOfWeek = dayOfWeekFormat.format(now).substring(0, 2).toLowerCase();
+                        } catch (StringIndexOutOfBoundsException e){
+                            String message = "Caugth StringIndexOutOfBoundsException on " + dayOfWeekFormat.format(now) + " substring(0, 2) ";
+                            SimpleDateFormat format = new SimpleDateFormat("EEEEEEEEEEE, d MMM yyyy HH:mm:ss Z");
+                            message += format.format(now);
+                            log.error(message);
+                            throw new Exception(message, e);
+                        }
                         if (campaign.getWorkTimeData().contains(dayOfWeek)) {
                             String hour = "\"" + hourFowmat.format(now) + "\"";
                             if (campaign.getWorkTimeData().contains(hour)) {

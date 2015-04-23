@@ -112,6 +112,44 @@ public class DevicesController {
         }
     }
 
+    @RequestMapping("/device/{uuid}/saveError")
+    public @ResponseBody
+    String saveError(
+            @PathVariable("uuid") String uuid,
+            @RequestParam String json,
+            HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+        
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        
+        JSONObject objectGiven = new JSONObject(json);
+        JSONObject resp = new JSONObject();
+        Devices d = userService.findDeviceByUuid(uuid);
+        if (d != null && objectGiven.has("errors")) {
+            JSONArray errors = objectGiven.getJSONArray("errors");
+            for (int i = 0; i < errors.length(); i++) {
+                JSONObject jsonError = errors.getJSONObject(i);
+
+                String name = StringUtils.abbreviate(jsonError.getString("name"), 255);
+                String message = StringUtils.abbreviate(jsonError.getString("message"), 255);
+                String stackTrace = jsonError.getString("stackTrace");
+
+                ErrorLog errorLog = new ErrorLog();
+                errorLog.setDeviceId(d.getId());
+                errorLog.setName(name);
+                errorLog.setMessage(message);
+                errorLog.setStackTrace(stackTrace);
+                errorLog.setCreatedDt(new Date(jsonError.getLong("date")));
+
+                userService.addErrorLog(errorLog);
+                response.setStatus(HttpServletResponse.SC_OK);
+                resp.put(RequestUtils.RESULT, RequestUtils.OK);
+            }
+        }
+        
+        return resp.toString();
+    }
+    
     @RequestMapping("/device/{uuid}/pull")
     public @ResponseBody
     String showCampaign(
@@ -158,7 +196,7 @@ public class DevicesController {
                     errorLog.setName(name);
                     errorLog.setMessage(message);
                     errorLog.setStackTrace(stackTrace);
-                    errorLog.setCreatedDt(new Date(jsonError.getInt("date")));
+                    errorLog.setCreatedDt(new Date(jsonError.getLong("date")));
 
                     userService.addErrorLog(errorLog);
                 }

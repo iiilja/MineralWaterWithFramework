@@ -8,8 +8,8 @@ android {
         applicationId "ee.promobox.promoboxandroid"
         minSdkVersion 17
         targetSdkVersion 21
-        versionCode 4
-        versionName "testg"
+        versionCode 6
+        versionName "Service in different process"
     }
     buildTypes {
         release {

@@ -26,13 +26,14 @@ public class MyScheduleReceiver extends BroadcastReceiver {
 
         Intent i = new Intent(context, MyStartServiceReceiver.class);
 
-        if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED) ) {
+        String action = intent.getAction();
+
+        if (action.equals(Intent.ACTION_BOOT_COMPLETED) || action.equals(MainActivity.UI_RESURRECT) ) {
             Intent mainService = new Intent(context, MainService.class);
             mainService.putExtra("startMainActivity", true);
             context.startService(mainService);
-        } else if (intent.getAction().equals(MainActivity.APP_START) ) {
+        } else if (action.equals(MainActivity.APP_START) ) {
             Intent mainService = new Intent(context, MainService.class);
-            mainService.putExtra("startedFromMainActivity", true);
             context.startService(mainService);
         }
 

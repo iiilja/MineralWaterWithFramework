@@ -1,6 +1,12 @@
 package ee.promobox.promoboxandroid.data;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +19,7 @@ public class CampaignMultiple extends Campaign {
     private static final String TAG = "CampaignMultiple ";
 
     private ArrayList<Campaign> campaigns;
+    private JSONArray json;
     private int campaignPosition = 0;
 
     public CampaignMultiple(ArrayList<Campaign> campaigns){
@@ -25,6 +32,29 @@ public class CampaignMultiple extends Campaign {
                 files.addAll(campaign.getFiles());
             }
         }
+    }
+
+    public CampaignMultiple(JSONArray campaignsJSON){
+        try {
+            campaigns = new ArrayList<>();
+            order  = ORDER_ASC;
+            files = new ArrayList<>();
+            json = campaignsJSON;
+            for (int i = 0; i < campaignsJSON.length(); i++) {
+                JSONObject campaignPlusRoot = campaignsJSON.getJSONObject(i);
+                Campaign campaign = new Campaign(campaignPlusRoot.getJSONObject("campaign"),campaignPlusRoot.getString("ROOT"));
+                if (campaign.getFiles() != null){
+                    files.addAll(campaign.getFiles());
+                }
+                this.campaigns.add(campaign);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public CampaignMultiple(Parcel in) throws JSONException {
+        this(new JSONArray(in.readString()));
     }
 
     @Override
@@ -110,5 +140,34 @@ public class CampaignMultiple extends Campaign {
             if (!other.campaigns.contains(campaign)) return false;
         }
         return true;
+    }
+
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        JSONArray campaignsArray = new JSONArray();
+        for (Campaign campaign : campaigns) {
+            try {
+                JSONObject campaignPlusRoot = new JSONObject();
+                campaignPlusRoot.put("ROOT",campaign.getROOTString());
+                campaignPlusRoot.put("campaign",campaign.getJson());
+                campaignsArray.put(campaignPlusRoot);
+            } catch (JSONException e){
+                e.printStackTrace();
+            }
+        }
+        dest.writeString(campaignsArray.toString());
+    }
+
+
+    @Override
+    public JSONObject getJson() {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("campaigns",this.json);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return json;
     }
 }

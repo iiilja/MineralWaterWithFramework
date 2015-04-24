@@ -10,10 +10,9 @@ import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.Environment;
 import android.os.IBinder;
+import android.os.RemoteException;
 import android.preference.PreferenceManager;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-import android.widget.Toast;
 
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
@@ -31,18 +30,20 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import ee.promobox.promoboxandroid.data.Campaign;
 import ee.promobox.promoboxandroid.data.CampaignList;
 import ee.promobox.promoboxandroid.data.CampaignMultiple;
+import ee.promobox.promoboxandroid.data.Display;
 import ee.promobox.promoboxandroid.data.DisplayArrayList;
 import ee.promobox.promoboxandroid.data.ErrorMessage;
 import ee.promobox.promoboxandroid.data.ErrorMessageArray;
 import ee.promobox.promoboxandroid.intents.ToastIntent;
+import ee.promobox.promoboxandroid.util.ExceptionHandler;
 
 
 public class MainService extends Service {
 
     public final static String TAG = "MainService ";
 
-//    public final static String DEFAULT_SERVER = "http://46.182.31.101:8080"; //"http://api.promobox.ee/";
-    public final static String DEFAULT_SERVER = "http://46.182.30.93:8080"; // production
+    public final static String DEFAULT_SERVER = "http://46.182.31.101:8080"; //"http://api.promobox.ee/";
+//    public final static String DEFAULT_SERVER = "http://46.182.30.93:8080"; // production
     public final static String DEFAULT_SERVER_JSON = DEFAULT_SERVER + "/service/device/%s/pull";
 
     private SharedPreferences sharedPref;
@@ -65,7 +66,8 @@ public class MainService extends Service {
     private boolean videoWall;
 
     private boolean firstStart = true; // To read DATA.JSON only on first start of service
-    private boolean firstStartWatchDog = true; // To read DATA.JSON only on first start of service
+    private boolean closedNormally = false;
+    private boolean firstStartWatchDog = true;
     private boolean activityReceivedUpdate = false; // Sometimes mainActivity receiver starts after this broadcasts
 
     private String previousCampaignsJSON = new String();
@@ -80,15 +82,15 @@ public class MainService extends Service {
 
     private File ROOT = new File(Environment.getExternalStorageDirectory().getAbsoluteFile() + "/promobox/");
 
-    private final IBinder mBinder = new MainServiceBinder();
-    private LocalBroadcastManager bManager;
+//    private LocalBroadcastManager bManager;
     private DownloadFilesTask dTask;
 
     @Override
     public void onCreate() {
         Log.i(TAG, "onCreate()");
         setSharedPref(PreferenceManager.getDefaultSharedPreferences(this));
-        bManager = LocalBroadcastManager.getInstance(this);
+        Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this, false, getUuid()));
+//        bManager = LocalBroadcastManager.getInstance(this);
         dTask = new DownloadFilesTask(this);
 
         checkExternalSD();
@@ -107,8 +109,10 @@ public class MainService extends Service {
         setUuid(getSharedPref().getString("uuid", "fail"));
         setOrientation(getSharedPref().getInt("orientation", MainActivity.ORIENTATION_LANDSCAPE));
 
-
-        if ( startMainActivity || !startedFromMainActivity && firstStartWatchDog ) {
+        boolean isOnTop = getOnTopComponentInfo().getPackageName().startsWith(getPackageName());
+        if ( startMainActivity
+                || !startedFromMainActivity && firstStartWatchDog && !isOnTop
+                || !isOnTop && !closedNormally) {
             if (!startedFromMainActivity && firstStartWatchDog){
                 Log.d("WatchDog", "Activity started from watchdog");
             }
@@ -117,7 +121,7 @@ public class MainService extends Service {
         firstStartWatchDog = false;
 
         checkAndDownloadCampaign();
-        return Service.START_NOT_STICKY;
+        return Service.START_STICKY;
     }
 
     public void checkAndDownloadCampaign() {
@@ -126,7 +130,7 @@ public class MainService extends Service {
             selectNextCampaign();
         } catch (Exception ex) {
             Log.e(TAG, ex.getMessage(), ex);
-            bManager.sendBroadcast(new ToastIntent(String.format(MainActivity.ERROR_MESSAGE, 61, ex.getClass().getSimpleName())));
+            sendBroadcast(new ToastIntent(String.format(MainActivity.ERROR_MESSAGE, 61, ex.getClass().getSimpleName())));
             addError(new ErrorMessage(ex.toString(), ex.getMessage(), ex.getStackTrace()), false);
 
         }
@@ -136,7 +140,6 @@ public class MainService extends Service {
         }
 
     }
-
 
     public Campaign getCurrentCampaign() {
         return currentCampaign;
@@ -199,7 +202,7 @@ public class MainService extends Service {
                     dataJSON = new JSONObject(dataString);
                 }  catch (JSONException ex ){
                     Log.e(TAG, "Can not read JSON : " + dataString);
-                    bManager.sendBroadcast(new ToastIntent(String.format(MainActivity.ERROR_MESSAGE, 62, ex.getClass().getSimpleName())));
+                    sendBroadcast(new ToastIntent(String.format(MainActivity.ERROR_MESSAGE, 62, ex.getClass().getSimpleName())));
                     errors.addError(new ErrorMessage(JSONException.class.getSimpleName(),dataString,ex.getStackTrace()));
                 }
                 JSONArray campaignsJSON = new JSONArray();
@@ -217,7 +220,7 @@ public class MainService extends Service {
         }
         catch (Exception ex){
             Log.e(TAG, ex.getMessage(), ex);
-            bManager.sendBroadcast(new ToastIntent(String.format(MainActivity.ERROR_MESSAGE, 62, ex.getClass().getSimpleName())));
+            sendBroadcast(new ToastIntent(String.format(MainActivity.ERROR_MESSAGE, 62, ex.getClass().getSimpleName())));
             addError(new ErrorMessage(ex), false);
         }
     }
@@ -233,7 +236,7 @@ public class MainService extends Service {
                 FileUtils.forceMkdir(ROOT);
             } catch (IOException ex) {
                 Log.e(TAG, ex.getMessage());
-                bManager.sendBroadcast(new ToastIntent(String.format(MainActivity.ERROR_MESSAGE, 63, ex.getClass().getSimpleName())));
+                sendBroadcast(new ToastIntent(String.format(MainActivity.ERROR_MESSAGE, 63, ex.getClass().getSimpleName())));
                 addError(new ErrorMessage(ex.toString(), ex.getMessage(), ex.getStackTrace()), false);
             }
         }
@@ -244,6 +247,95 @@ public class MainService extends Service {
     public IBinder onBind(Intent arg0) {
         return mBinder;
     }
+
+    private AidlInterface.Stub mBinder = new AidlInterface.Stub() {
+        @Override
+        public void addError(ErrorMessage errorMessage, boolean broadcastNow) throws RemoteException {
+            MainService.this.addError(errorMessage,broadcastNow);
+        }
+
+        @Override
+        public void setActivityReceivedUpdate(boolean activityReceivedUpdate) throws RemoteException {
+            MainService.this.setActivityReceivedUpdate(activityReceivedUpdate);
+        }
+
+        @Override
+        public Campaign getCampaignWithId(int campaignId) throws RemoteException {
+            if (campaigns != null){
+                for (Campaign campaign : campaigns){
+                    if (campaign.getCampaignId() == campaignId){
+                        return campaign;
+                    }
+                }
+            }
+            return null;
+        }
+
+        @Override
+        public boolean isVideoWall() throws RemoteException {
+            return MainService.this.isVideoWall();
+        }
+
+        @Override
+        public int getWallWidth() throws RemoteException {
+            return MainService.this.getWallWidth();
+        }
+
+        @Override
+        public int getWallHeight() throws RemoteException {
+            return MainService.this.getWallHeight();
+        }
+
+        @Override
+        public String getAudioDevice() throws RemoteException {
+            return MainService.this.getAudioDevice();
+        }
+
+        @Override
+        public void setCurrentFileId(int id) throws RemoteException {
+            MainService.this.setCurrentFileId(id);
+        }
+
+        @Override
+        public int getCurrentFileId() throws RemoteException {
+            return MainService.this.getCurrentFileId();
+        }
+
+        @Override
+        public void setUuid(String uuid) throws RemoteException {
+            MainService.this.setUuid(uuid);
+        }
+
+        @Override
+        public String getUuid() throws RemoteException {
+            return MainService.this.getUuid();
+        }
+
+        @Override
+        public int getOrientation() throws RemoteException {
+            return MainService.this.getOrientation();
+        }
+
+        @Override
+        public Campaign getCurrentCampaign() throws RemoteException {
+            return MainService.this.getCurrentCampaign();
+        }
+
+        @Override
+        public void checkAndDownloadCampaign() throws RemoteException {
+            MainService.this.checkAndDownloadCampaign();
+        }
+
+        @Override
+        public List<Display> getDisplays() throws RemoteException {
+            return MainService.this.getDisplays();
+        }
+
+        @Override
+        public void setClosedNormally(boolean closedNormally) throws RemoteException {
+            MainService.this.closedNormally = closedNormally;
+        }
+    };
 
     public int getOrientation() {
         return orientation;
@@ -306,7 +398,7 @@ public class MainService extends Service {
             setActivityReceivedUpdate(false);
             this.currentCampaign = currentCampaign;
             Intent update = new Intent(MainActivity.CAMPAIGN_UPDATE);
-            bManager.sendBroadcast(update);
+            sendBroadcast(update);
         }
         else {
             this.currentCampaign = currentCampaign;
@@ -361,6 +453,7 @@ public class MainService extends Service {
     }
 
     public boolean isVideoWall() {
+        Log.d(TAG, "ASKED IF IS VIDEO WALL - " + videoWall);
         return videoWall;
     }
 
@@ -455,13 +548,13 @@ public class MainService extends Service {
             errors.addError(msg);
         } catch (JSONException e) {
             Log.e(TAG, e.getMessage());
-            bManager.sendBroadcast(new ToastIntent(String.format(MainActivity.ERROR_MESSAGE, 64, e.getClass().getSimpleName())));
+            sendBroadcast(new ToastIntent(String.format(MainActivity.ERROR_MESSAGE, 64, e.getClass().getSimpleName())));
             try {
                 broadcastNow = true;
                 errors.addError(new ErrorMessage(e));
             } catch (JSONException e2){
                 Log.e(TAG, e.getMessage());
-                bManager.sendBroadcast(new ToastIntent(String.format(MainActivity.ERROR_MESSAGE, 65, e.getClass().getSimpleName())));
+                sendBroadcast(new ToastIntent(String.format(MainActivity.ERROR_MESSAGE, 65, e.getClass().getSimpleName())));
             }
         }
         if (broadcastNow) {

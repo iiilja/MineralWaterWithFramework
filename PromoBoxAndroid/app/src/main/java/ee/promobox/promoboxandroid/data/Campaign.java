@@ -1,11 +1,14 @@
 package ee.promobox.promoboxandroid.data;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.awt.font.TextAttribute;
 import java.io.File;
 import java.util.Calendar;
 import java.util.Collections;
@@ -17,11 +20,12 @@ import java.util.Random;
 /**
  * Created by MaximDorofeev on 12.07.2014.
  */
-public class Campaign {
+public class Campaign implements Parcelable{
 
     public final static int ORDER_ASC = 1;
     public final static int ORDER_RANDOM = 2;
 
+    private JSONObject json;
     private int clientId;
     private int campaignId;
     private String campaignName;
@@ -49,6 +53,7 @@ public class Campaign {
     public Campaign(JSONObject json, String ROOT) {
         try {
             this.ROOT  = ROOT;
+            this.json = json;
 
             clientId = json.getInt("clientId");
             campaignId = json.getInt("campaignId");
@@ -93,8 +98,16 @@ public class Campaign {
 
     }
 
+    public Campaign(Parcel in) throws JSONException {
+        this(new JSONObject(in.readString()),in.readString());
+    }
+
     public File getRoot() {
         return new File(ROOT + "/" + campaignId + "/");
+    }
+
+    public String getROOTString() {
+        return ROOT;
     }
 
     public int getCampaignId() {
@@ -220,4 +233,39 @@ public class Campaign {
         }
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(json.toString());
+        dest.writeString(ROOT);
+    }
+
+    public static final Parcelable.Creator<Campaign> CREATOR = new Parcelable.Creator<Campaign>() {
+        public Campaign createFromParcel(Parcel in) {
+            int initialPosition = in.dataPosition();
+            try {
+                return new Campaign(in);
+            } catch (JSONException e) {
+                try {
+                    in.setDataPosition(initialPosition);
+                    return new CampaignMultiple(in);
+                } catch (JSONException e1) {
+                    e1.printStackTrace();
+                }
+            }
+            return null;
+        }
+
+        public Campaign[] newArray(int size) {
+            return new Campaign[size];
+        }
+    };
+
+    public JSONObject getJson() {
+        return json;
+    }
 }

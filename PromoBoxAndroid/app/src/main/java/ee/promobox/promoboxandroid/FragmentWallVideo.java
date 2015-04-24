@@ -9,6 +9,7 @@ import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.RemoteException;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -127,7 +128,7 @@ public class FragmentWallVideo extends FragmentVideoWall implements TextureView.
 
 
     public void prepareVideo(final CampaignFile campaignFile) {
-        try {
+//        try {
             cleanUp();
             requestedStop = false;
 
@@ -141,7 +142,17 @@ public class FragmentWallVideo extends FragmentVideoWall implements TextureView.
             float rotation = (float) - TriangleEquilateral.getAngleAlpha(points[3], points[0]);
 
             Matrix matrix = new Matrix();
-            RectF src = new RectF(0,0,mainActivity.getWallWidth(),mainActivity.getWallHeight());
+            int wallWidth;
+            int wallHeight;
+            try {
+                wallHeight = mainActivity.getWallHeight();
+                wallWidth = mainActivity.getWallWidth();
+            } catch (RemoteException e) {
+                Log.e(TAG,"Setting WIDTH AND HEIGHT DEFAULT " + e.getMessage());
+                wallWidth = DEFAULT_WIDTH;
+                wallHeight = DEFAULT_HEIGHT;
+            }
+            RectF src = new RectF(0,0,wallWidth,wallHeight);
             Rect rect = Rectangle.getOuterRect(points);
             RectF dst = new RectF(rect.left,rect.bottom,rect.right,rect.top);
             Log.w(TAG, "*** src");
@@ -195,14 +206,14 @@ public class FragmentWallVideo extends FragmentVideoWall implements TextureView.
             }
 
 
-        } catch (Exception ex) {
-            Log.e("VideoActivity", ex.getMessage(), ex);
-
-            Intent returnIntent = new Intent();
-
-            returnIntent.putExtra("result", MainActivity.RESULT_FINISH_PLAY);
-
-        }
+//        } catch (Exception ex) {
+//            Log.e("VideoActivity", ex.getMessage(), ex);
+//
+//            Intent returnIntent = new Intent();
+//
+//            returnIntent.putExtra("result", MainActivity.RESULT_FINISH_PLAY);
+//
+//        }
     }
 
     @Override

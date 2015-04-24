@@ -6,6 +6,7 @@ import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.RemoteException;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -78,7 +79,17 @@ public class FragmentWallImage extends FragmentVideoWall {
         Display display = mainActivity.getDisplay();
         if (display != null) {
             Point[] points = display.getPoints();
-            slide.setInitialValues(mainActivity.getWallHeight(), mainActivity.getWallWidth(), points);
+            int wallWidth;
+            int wallHeight;
+            try {
+                wallHeight = mainActivity.getWallHeight();
+                wallWidth = mainActivity.getWallWidth();
+            } catch (RemoteException e) {
+                Log.e(TAG,"Setting WIDTH AND HEIGHT DEFAULT " + e.getMessage());
+                wallWidth = DEFAULT_WIDTH;
+                wallHeight = DEFAULT_HEIGHT;
+            }
+            slide.setInitialValues(wallHeight, wallWidth, points);
             float rotation = (float) - TriangleEquilateral.getAngleAlpha(points[3], points[0]);
             Log.d(TAG, "rotation = " + rotation );
             slide.setRotation(rotation);

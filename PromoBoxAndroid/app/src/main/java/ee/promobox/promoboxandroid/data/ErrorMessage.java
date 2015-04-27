@@ -32,6 +32,10 @@ public class ErrorMessage implements Parcelable{
         this(ex.getClass().getSimpleName(),ex.getLocalizedMessage(),ex.getStackTrace());
     }
 
+    public void putMoreInfo(String someInfo){
+        stackTrace += " My additional info:\t" + someInfo;
+    }
+
     public long getDate() {
         return date;
     }

@@ -108,21 +108,20 @@ public class MainService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        boolean startMainActivity       =  intent == null || intent.getBooleanExtra("startMainActivity",false);
-        boolean startedFromMainActivity =  intent == null || intent.getBooleanExtra("startedFromMainActivity",false);
-        boolean serviceAlarm =  intent == null || intent.getBooleanExtra("serviceAlarm",false);
+        boolean startMainActivity       =  intent != null && intent.getBooleanExtra("startMainActivity",false);
+        boolean serviceAlarm            =  intent != null && intent.getBooleanExtra("serviceAlarm",false);
 
 //        This os not much needed, just in case if something happens with !isOnTop && !closedNormally this will help
 //        For example if user closed (onPause) activity and app died while was closedNormally
-        if (serviceAlarm ){
+        if (!serviceAlarm ){
             Date previous = new Date(lastScheduledCallDate.getTime() + MyScheduleReceiver.REPEAT_TIME + 10000 );
-            lastScheduledCallDate = new Date();
-            if (previous.after(new Date())){
-                return Service.START_STICKY;
-            } else {
-                Log.w(TAG, "Probably mainActivity died, trying to resurrect it");
+            if (previous.before(new Date())){
                 startMainActivity = true;
+                lastScheduledCallDate = new Date();
             }
+        } else {
+            lastScheduledCallDate = new Date();
+            return Service.START_STICKY;
         }
 
         Log.i(TAG, "Start command");
@@ -133,13 +132,15 @@ public class MainService extends Service {
         boolean isOnTop = getOnTopComponentInfo().getPackageName().startsWith(getPackageName());
         if ( startMainActivity
 //                When application killed by user
-                || !startedFromMainActivity && firstStartWatchDog && !isOnTop
+                || (firstStartWatchDog && !isOnTop)
 //                When main process died
-                || !isOnTop && !closedNormally) {
-            if (!startedFromMainActivity && firstStartWatchDog){
-                Log.w("WatchDog", "Activity and service started from alarm");
+                || (!isOnTop && !closedNormally)) {
+            if (firstStartWatchDog && !isOnTop){
+                Log.w(TAG, "Activity and service started from alarm");
             } else if (!isOnTop && !closedNormally ) {
                 Log.w(TAG, "Activity was not closed normally, starting it");
+            } else {
+                Log.w(TAG, "Starting main activity");
             }
             startMainActivity();
         }

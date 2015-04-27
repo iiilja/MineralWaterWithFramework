@@ -20,7 +20,6 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -58,6 +57,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener, 
     public static final String SET_STATUS = "ee.promobox.promoboxandroid.SET_STATUS";
     public static final String ADD_ERROR_MSG = "ee.promobox.promoboxandroid.ADD_ERROR_MSG";
     public static final String WRONG_UUID = "ee.promobox.promoboxandroid.WRONG_UUID";
+    public static final String SETTINGS_UUID_CHANGE = "ee.promobox.promoboxandroid.SETTINGS_UUID_CHANGE";
     public static final String PLAY_SPECIFIC_FILE = "ee.promobox.promoboxandroid.PLAY_SPECIFIC_FILE";
     public static final String WALL_UPDATE = "ee.promobox.promoboxandroid.WALL_UPDATE";
 
@@ -134,6 +134,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener, 
         intentFilter.addAction(SET_STATUS);
         intentFilter.addAction(ADD_ERROR_MSG);
         intentFilter.addAction(WRONG_UUID);
+        intentFilter.addAction(SETTINGS_UUID_CHANGE);
         intentFilter.addAction(WALL_UPDATE);
 
         this.getBaseContext().registerReceiver(bReceiver, intentFilter);
@@ -485,7 +486,9 @@ public class MainActivity extends Activity implements FragmentPlaybackListener, 
         Intent i = new Intent(MainActivity.this, SettingsActivity.class);
         ArrayList<Display> displays = null;
         try {
-            displays = new ArrayList<>(mainService.getDisplays());
+            if (mainService.getDisplays() != null){
+                displays = new ArrayList<>(mainService.getDisplays());
+            }
         } catch (RemoteException e) {
             makeToast("Could not get displays ");
             Log.e(TAG, "Could not get displays " + e.getMessage());
@@ -682,6 +685,15 @@ public class MainActivity extends Activity implements FragmentPlaybackListener, 
                         videoFragment = new FragmentWallVideo();
                         videoWall = true;
                         startNextFile();
+                    }
+                    break;
+                case SETTINGS_UUID_CHANGE:
+                    Log.d(RECEIVER_STRING, SETTINGS_UUID_CHANGE);
+                    String uuid = intent.getStringExtra("uuid");
+                    try {
+                        mainService.setUuid(uuid);
+                    } catch ( RemoteException e ){
+                        makeToast("Could not set UUID, please try again later.");
                     }
             }
         }

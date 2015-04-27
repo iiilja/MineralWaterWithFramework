@@ -10,6 +10,7 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.support.v4.app.NavUtils;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.MenuItem;
@@ -96,10 +97,7 @@ public class SettingsActivity extends PreferenceActivity {
                 for (int i = 0; i < displays.size(); i++) {
                     Display d = displays.get(i);
                     entryValues[i] = d.getId() + "";
-
-                    int width = (int) Line.getLineLength(d.getPoints()[0], d.getPoints()[1]);
-                    int height = (int) Line.getLineLength(d.getPoints()[1], d.getPoints()[2]);
-                    entries[i] = d.getId() + " - (" + width + " X " + height + ")";
+                    entries[i] = d.getId() + " - [" + d.getPoints()[0] + "; " + d.getPoints()[2] + "]";
                 }
                 list.setEntries(entries);
                 list.setEntryValues(entryValues);
@@ -130,8 +128,13 @@ public class SettingsActivity extends PreferenceActivity {
                     String uuid = (String) o;
                     Log.d(TAG,o.toString());
                     Log.d(TAG, uuid);
-
-                    return !uuid.equals("");
+                    boolean ok = !uuid.equals("");
+                    if (ok) {
+                        Intent uuidChange = new Intent(MainActivity.SETTINGS_UUID_CHANGE);
+                        uuidChange.putExtra("uuid",uuid);
+                        getActivity().sendBroadcast(uuidChange);
+                    }
+                    return ok;
                 }
             });
 

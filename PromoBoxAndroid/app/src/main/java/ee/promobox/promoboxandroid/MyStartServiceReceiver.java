@@ -15,6 +15,7 @@ public class MyStartServiceReceiver extends BroadcastReceiver {
         Log.i("MyStartServiceReceiver", "Main service starting");
 
         Intent service = new Intent(context, MainService.class);
+        service.putExtra("serviceAlarm",true);
         context.startService(service);
     }
 }

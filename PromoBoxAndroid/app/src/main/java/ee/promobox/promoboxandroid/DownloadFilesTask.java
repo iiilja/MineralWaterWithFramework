@@ -10,7 +10,6 @@ import android.os.StatFs;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
@@ -34,7 +33,6 @@ import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -364,19 +362,19 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
         service.setErrors(new ErrorMessageArray());
 
         if (service.getLoadingCampaign() != null) {
-            json.put("loadingCampaingId", service.getLoadingCampaign().getCampaignId());
-            json.put("loadingCampaingProgress", (int) service.getLoadingCampaignProgress());
+            json.put("loadingCampaignId", service.getLoadingCampaign().getCampaignId());
+            json.put("loadingCampaignProgress", (int) service.getLoadingCampaignProgress());
         }
 
 
         Log.i(TAG, "Pull info:" + json.toString());
 
-        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+        List<NameValuePair> nameValuePairs = new ArrayList<>();
         nameValuePairs.add(new BasicNameValuePair("json", json.toString()));
         httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 
         Log.i(TAG, httppost.getRequestLine().toString());
-        HttpResponse response = null;
+        HttpResponse response;
         try{
             response = httpclient.execute(httppost);
         } catch (HttpHostConnectException ex){
@@ -510,7 +508,6 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
 
             Campaign oldCampaign;
 
-            int oldCampaignIndex = -1;
             int newCampaignId;
 
             for (Campaign newCampaign : newCampaigns) {

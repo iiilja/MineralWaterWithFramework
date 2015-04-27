@@ -14,8 +14,8 @@ import java.util.Calendar;
  */
 public class MyScheduleReceiver extends BroadcastReceiver {
 
-
-    private static final long REPEAT_TIME = 1000 * 30;
+    private static final int REPEAT_TIME_SECONDS = 60;
+    public static final long REPEAT_TIME = 1000 * REPEAT_TIME_SECONDS;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -42,9 +42,9 @@ public class MyScheduleReceiver extends BroadcastReceiver {
 
         Calendar cal = Calendar.getInstance();
 
-        cal.add(Calendar.SECOND, 30);
+        cal.add(Calendar.SECOND, REPEAT_TIME_SECONDS);
 
-        Log.i("MyScheduleReceiver", "Started fetch every 30 seconds");
+        Log.i("MyScheduleReceiver", "Started fetch every "+REPEAT_TIME_SECONDS+" seconds");
 
         service.setInexactRepeating(AlarmManager.RTC_WAKEUP,
                 cal.getTimeInMillis(), REPEAT_TIME, pending);

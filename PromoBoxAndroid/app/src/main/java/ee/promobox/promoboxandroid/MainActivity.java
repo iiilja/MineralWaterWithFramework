@@ -25,9 +25,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 
 import ee.promobox.promoboxandroid.data.Campaign;
 import ee.promobox.promoboxandroid.data.CampaignFile;
@@ -35,11 +33,11 @@ import ee.promobox.promoboxandroid.data.CampaignFileType;
 import ee.promobox.promoboxandroid.data.Display;
 import ee.promobox.promoboxandroid.data.DisplayArrayList;
 import ee.promobox.promoboxandroid.data.ErrorMessage;
-import ee.promobox.promoboxandroid.util.ExceptionHandler;
 import ee.promobox.promoboxandroid.interfaces.FragmentPlaybackListener;
+import ee.promobox.promoboxandroid.interfaces.VideoWallMasterListener;
+import ee.promobox.promoboxandroid.util.ExceptionHandler;
 import ee.promobox.promoboxandroid.util.InternetConnectionUtil;
 import ee.promobox.promoboxandroid.util.StatusEnum;
-import ee.promobox.promoboxandroid.interfaces.VideoWallMasterListener;
 import ee.promobox.promoboxandroid.util.udp_multicasting.JGroupsMessenger;
 import ee.promobox.promoboxandroid.util.udp_multicasting.MessageReceivedListener;
 import ee.promobox.promoboxandroid.util.udp_multicasting.messages.MultiCastMessage;
@@ -76,9 +74,8 @@ public class MainActivity extends Activity implements FragmentPlaybackListener, 
     public static final int ORIENTATION_LANDSCAPE = 1;
     public static final int ORIENTATION_PORTRAIT = 2;
     public static final int ORIENTATION_PORTRAIT_EMULATION = 3;
-    private LocalBroadcastManager bManager;
 
-    private AidlInterface mainService;
+    private AIDLInterface mainService;
     private Campaign campaign;
 
     private CampaignFile nextSpecificFile = null;
@@ -128,8 +125,6 @@ public class MainActivity extends Activity implements FragmentPlaybackListener, 
         exceptionHandlerError = getIntent().getStringExtra("error");
 
         setContentView(R.layout.activity_main);
-
-        bManager = LocalBroadcastManager.getInstance(this);
 
         IntentFilter intentFilter = new IntentFilter();
 
@@ -336,7 +331,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener, 
 
             Log.d(TAG, "onServiceConnected");
 
-            mainService = AidlInterface.Stub.asInterface(binder);
+            mainService = AIDLInterface.Stub.asInterface(binder);
 
             if (exceptionHandlerError != null) {
                 addError(new ErrorMessage("UncaughtException", exceptionHandlerError, null), true);
@@ -359,7 +354,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener, 
                 Log.d(TAG, "Starting jGroups");
             }
 
-            Campaign serviceCurrent = null;
+            Campaign serviceCurrent;
             try {
                 serviceCurrent = mainService.getCurrentCampaign();
             } catch (RemoteException e) {
@@ -372,7 +367,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener, 
                 campaignWasUpdated(TAG + " mConnection");
             }
 
-            String uuid = null;
+            String uuid;
             try {
                 uuid = mainService.getUuid();
             } catch (RemoteException e) {
@@ -530,7 +525,6 @@ public class MainActivity extends Activity implements FragmentPlaybackListener, 
 
         } else {
             if (campaign != null) {
-                Log.d(TAG, "JSON : " + campaign.getJson().toString());
                 mainFragment.updateStatus(StatusEnum.NO_FILES, "No files to play in " + campaign.getCampaignName());
                 try {
                     mainService.setCurrentFileId(0);

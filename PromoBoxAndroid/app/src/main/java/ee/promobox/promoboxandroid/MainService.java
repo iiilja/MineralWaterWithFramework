@@ -7,7 +7,6 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.os.Binder;
 import android.os.Environment;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -25,6 +24,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import ee.promobox.promoboxandroid.data.Campaign;
@@ -36,14 +37,15 @@ import ee.promobox.promoboxandroid.data.ErrorMessage;
 import ee.promobox.promoboxandroid.data.ErrorMessageArray;
 import ee.promobox.promoboxandroid.intents.ToastIntent;
 import ee.promobox.promoboxandroid.util.ExceptionHandler;
+import ee.promobox.promoboxandroid.util.MainServiceTimerTask;
 
 
 public class MainService extends Service {
 
     public final static String TAG = "MainService ";
 
-    public final static String DEFAULT_SERVER = "http://46.182.31.101:8080"; //"http://api.promobox.ee/";
-//    public final static String DEFAULT_SERVER = "http://46.182.30.93:8080"; // production
+//    public final static String DEFAULT_SERVER = "http://46.182.31.101:8080"; //"http://api.promobox.ee/";
+    public final static String DEFAULT_SERVER = "http://46.182.30.93:8080"; // production
     public final static String DEFAULT_SERVER_JSON = DEFAULT_SERVER + "/service/device/%s/pull";
 
     private SharedPreferences sharedPref;
@@ -69,8 +71,9 @@ public class MainService extends Service {
     private boolean closedNormally = false;
     private boolean firstStartWatchDog = true;
     private boolean activityReceivedUpdate = false; // Sometimes mainActivity receiver starts after this broadcasts
+    private Date lastScheduledCallDate = new Date();
 
-    private String previousCampaignsJSON = new String();
+    private String previousCampaignsJSON = "";
 
     private final AtomicBoolean isDownloading = new AtomicBoolean(false);
 
@@ -95,6 +98,10 @@ public class MainService extends Service {
 
         checkExternalSD();
         setCampaignsFromJSONFile();
+
+        Timer timer = new Timer();
+        TimerTask serviceTimer = new MainServiceTimerTask(this);
+        timer.scheduleAtFixedRate(serviceTimer, 0, 30000);
     }
 
 
@@ -103,6 +110,20 @@ public class MainService extends Service {
 
         boolean startMainActivity       =  intent == null || intent.getBooleanExtra("startMainActivity",false);
         boolean startedFromMainActivity =  intent == null || intent.getBooleanExtra("startedFromMainActivity",false);
+        boolean serviceAlarm =  intent == null || intent.getBooleanExtra("serviceAlarm",false);
+
+//        This os not much needed, just in case if something happens with !isOnTop && !closedNormally this will help
+//        For example if user closed (onPause) activity and app died while was closedNormally
+        if (serviceAlarm ){
+            Date previous = new Date(lastScheduledCallDate.getTime() + MyScheduleReceiver.REPEAT_TIME + 10000 );
+            lastScheduledCallDate = new Date();
+            if (previous.after(new Date())){
+                return Service.START_STICKY;
+            } else {
+                Log.w(TAG, "Probably mainActivity died, trying to resurrect it");
+                startMainActivity = true;
+            }
+        }
 
         Log.i(TAG, "Start command");
 
@@ -111,10 +132,14 @@ public class MainService extends Service {
 
         boolean isOnTop = getOnTopComponentInfo().getPackageName().startsWith(getPackageName());
         if ( startMainActivity
+//                When application killed by user
                 || !startedFromMainActivity && firstStartWatchDog && !isOnTop
+//                When main process died
                 || !isOnTop && !closedNormally) {
             if (!startedFromMainActivity && firstStartWatchDog){
-                Log.d("WatchDog", "Activity started from watchdog");
+                Log.w("WatchDog", "Activity and service started from alarm");
+            } else if (!isOnTop && !closedNormally ) {
+                Log.w(TAG, "Activity was not closed normally, starting it");
             }
             startMainActivity();
         }
@@ -248,7 +273,7 @@ public class MainService extends Service {
         return mBinder;
     }
 
-    private AidlInterface.Stub mBinder = new AidlInterface.Stub() {
+    private AIDLInterface.Stub mBinder = new AIDLInterface.Stub() {
         @Override
         public void addError(ErrorMessage errorMessage, boolean broadcastNow) throws RemoteException {
             MainService.this.addError(errorMessage,broadcastNow);
@@ -505,12 +530,6 @@ public class MainService extends Service {
             return new Date(System.currentTimeMillis() - timeDifference);
         } else {
             return new Date();
-        }
-    }
-
-    public class MainServiceBinder extends Binder {
-        MainService getService() {
-            return MainService.this;
         }
     }
 

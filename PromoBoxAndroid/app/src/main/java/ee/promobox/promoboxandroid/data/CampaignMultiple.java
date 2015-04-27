@@ -1,7 +1,6 @@
 package ee.promobox.promoboxandroid.data;
 
 import android.os.Parcel;
-import android.os.Parcelable;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -9,7 +8,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by ilja on 7.03.2015.
@@ -88,8 +86,6 @@ public class CampaignMultiple extends Campaign {
                 setNextFilePosition();
             }
         }
-        Log.w(TAG, "POSITION = " + position);
-        Log.w(TAG, "POSITION IN CAMPAIGN = " + campaigns.get(campaignPosition).position);
     }
 
     @Override
@@ -108,8 +104,6 @@ public class CampaignMultiple extends Campaign {
                 setPreviousFilePosition();
             }
         }
-        Log.w(TAG, "PREV POSITION = " + position);
-        Log.w(TAG, "PREV POSITION IN CAMPAIGN = " + campaigns.get(campaignPosition).position);
 
     }
 
@@ -144,7 +138,7 @@ public class CampaignMultiple extends Campaign {
 
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(Parcel parcel, int flags) {
         JSONArray campaignsArray = new JSONArray();
         for (Campaign campaign : campaigns) {
             try {
@@ -156,7 +150,7 @@ public class CampaignMultiple extends Campaign {
                 e.printStackTrace();
             }
         }
-        dest.writeString(campaignsArray.toString());
+        parcel.writeString(campaignsArray.toString());
     }
 
 

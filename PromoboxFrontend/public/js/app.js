@@ -217,8 +217,6 @@ app.controller('LoginController', ['$scope', '$location', '$http', 'token', '$ro
         $rootScope.bodyClass = 'main_bg';
         if (!token.check()) {
             $scope.loginForm = { email: '', password: '', remember: true};
-            console.log($scope);
-
 
             $scope.login = function () {
                 $http.post(apiEndpoint + "user/login",
@@ -238,7 +236,7 @@ app.controller('LoginController', ['$scope', '$location', '$http', 'token', '$ro
             };
 
             $scope.forgot_password = function(){
-                    var modalInstance = facade.getModal().open({
+                    facade.getModal().open({
                         templateUrl: '/views/modal/info.html',
                         controller: 'ModalInfoController',
                         windowClass: 'info-dialog',
@@ -528,7 +526,7 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         };
 
         var openConfirmDialog = function(toDo, confirmationText) {
-            var modalInstance = facade.getModal().open({
+            facade.getModal().open({
                 templateUrl: '/views/modal/confirmation.html',
                 controller: 'ModalConfirmController',
                 windowClass: 'confirmation-dialog',
@@ -791,8 +789,12 @@ app.controller('DevicesController', ['$scope', 'token', 'Device', 'DevicesGroups
 
             $scope.changeCurrentGroupId = function(id){
                 console.log($scope.currentGroupId);
-                $scope.currentGroupId = id;
-            }
+                if ($scope.currentGroupId == id){
+                    $scope.currentGroupId = -1;
+                } else{
+                    $scope.currentGroupId = id;
+                }
+            };
 
              var loadGroups = function(){
                  DevicesGroups.list({token: token.get()}, function (response) {
@@ -826,6 +828,12 @@ app.controller('DevicesController', ['$scope', 'token', 'Device', 'DevicesGroups
                          console.log(group);
                          $scope.groups.splice(-1,0,group);
                      }
+                     var group = {};
+                     group.id = 0;
+                     group.name = $filter('translate')('device_group_all_devices');
+                     group.devices = $scope.devices;
+                     $scope.groups.splice(-1,0,group);
+
                  });
              };
             
@@ -841,7 +849,7 @@ app.controller('DevicesController', ['$scope', 'token', 'Device', 'DevicesGroups
                     $scope.tmpCampaignIds.push(device.campaignIds[index]);
                 }
             };
-            $scope.filter_device_campigns = function(value, index) {
+            $scope.filter_device_campaigns = function(value, index) {
                 if (!$scope.currentDevice) {
                     $scope.currentDevice = {campaignIds: []};
                 }
@@ -907,6 +915,15 @@ app.controller('DevicesController', ['$scope', 'token', 'Device', 'DevicesGroups
             
             $scope.delete_device = function(device) {
                 Device.delete({token: token.get(), id: device.id}, function (response){
+                    for (var i=0; i< $scope.groups.length; i++){
+                        var group = $scope.groups[i];
+                        var index = group.devices.indexOf(device);
+                        if(index != -1){
+                            group.devices.splice(index,1);
+                            DevicesGroups.removeDevice({token: token.get(),groupId: group.id, deviceId: device.id});
+                        }
+                    }
+
                     Device.get_data({token: token.get()}, function (response) {
                         $scope.devices = response.devices;
                         sysMessage.update_s($filter('translate')('system_device') + ' ' + device.uuid + ' ' + $filter('translate')('system_removed'));
@@ -914,13 +931,26 @@ app.controller('DevicesController', ['$scope', 'token', 'Device', 'DevicesGroups
                 });
             };
             $scope.add_device = function() {
+                var findGroupWithId = function(groupId){
+                    for (var i=0; i<$scope.groups.length; i++){
+                        if ($scope.groups[i].id == groupId){
+                            return $scope.groups[i];
+                        }
+                    }
+                };
+
                 Device.add({token: token.get()}, function (response){
                     Device.get_data({token: token.get()}, function (response) {
                         $scope.devices = response.devices;
+                        var allDevicesGroup = findGroupWithId(0);
+                        if (allDevicesGroup) {
+                            allDevicesGroup.devices = response.devices;
+                        }
                         sysMessage.update_s($filter('translate')('system_deviceadded'));
 
                     });
                 });
+
             };
             
             $scope.clearCache =  function(deviceId) {

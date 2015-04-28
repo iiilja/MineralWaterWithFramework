@@ -9,7 +9,7 @@
  type="button" class="btn btn-primary" style="margin: 15px 0 0 15px;">{{ 'device_newdevice' | translate }}</button>
  <div style="height:15px;"></div>
 
-<div ng-repeat="group in groups">
+<div ng-repeat="group in groups"  ng-show="group.devices.length > 0">
     <h4 ng-click="changeCurrentGroupId(group.id)">{{group.name}}</h4>
     <div ng-repeat="device in group.devices" ng-show="currentGroupId == group.id">
         <div class="center-block campaigns_block">
@@ -121,7 +121,7 @@
                                 <button type="button" class="btn btn-info"
                                         data-toggle="modal" data-target="#add-company"
                                         ng-show="device.permissionWrite"
-                                        ng-click="open_add_campaign(device)">{{ 'device_addcampaign' | translate }}</button>
+                                        ng-click="open_add_campaign(device)">{{ 'device_add_campaign' | translate }}</button>
                             </div>
                         </div>
 
@@ -185,12 +185,12 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only"></span></button>
-                <h4 class="modal-title" id="myModalLabel">{{ 'device_addcampaign' | translate }}</h4>
+                <h4 class="modal-title" id="myModalLabel">{{ 'device_add_campaign' | translate }}</h4>
             </div>
             <div class="modal-body">
                 <div class="add-company-list mCustomScrollbar">
                     <ul class="btn-group">
-                        <li ng-repeat="campaign in campaigns | filter:filter_device_campigns" 
+                        <li ng-repeat="campaign in campaigns | filter:filter_device_campaigns"
                             ng-click="toggle_campaign(campaign.id)">
                             <label  class="btn btn-primary" 
                                     ng-class="tmpCampaignIds.indexOf(campaign.id) != -1 ? 'active' : ''">

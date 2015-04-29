@@ -2123,6 +2123,7 @@ input[readonly] {
     top: 12px;
     margin: 0 6px;
 }
+
 .acardion-title i:after {
     width: 0;
     height: 0;
@@ -2130,6 +2131,13 @@ input[readonly] {
     border-width: 7px 4.5px 0 4.5px;
     border-color: #333 transparent transparent transparent;
     content: "";
+}
+
+.acardion-title.active span {display: none;}
+.acardion-title.active i {top: -12px;}
+.acardion-title.active i:after {
+    border-width: 0 4.5px 7px 4.5px;
+    border-color: transparent transparent #333 transparent;
 }
 
 .acardion-title span {

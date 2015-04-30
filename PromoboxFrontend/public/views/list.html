@@ -17,9 +17,25 @@
         <span class="date">{{campaign.start | dateConvert}}-{{campaign.finish | dateConvert}}</span>
 
         <span class="pull-right">
+ <!--            
             <a class="campaigns_link" data-toggle="modal" data-target=".stat" style="margin-right: 15px;"
                ng-click="show_statistics(campaign)"><i class="glyphicon glyphicon-signal"></i> {{ 'list_statistics' | translate }}</a>
+ -->
             <a class="campaigns_link" href="/#/campaign/edit/{{campaign.id}}" style="margin-right: 15px;"><i class="glyphicon glyphicon-pencil"></i> {{ 'list_change' | translate }}</a>
+            
+            <div class="menu-dropdown-campaigns">
+                <span></span>
+
+                <div class="dropdown-campaigns">
+                    <ul>
+                        <li><a href="#">Установить</a></li>
+                        <li><a href="#"> Снять</a></li>
+                        <li><a href="#">Копироать</a></li>
+                    </ul>
+                </div>
+
+            </div>
+
             <!--<a class="campaigns_link" href="#"><i class="glyphicon glyphicon-remove"></i> Удалить</a>-->
         </span>
     </div>

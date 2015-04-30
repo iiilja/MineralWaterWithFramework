@@ -44,8 +44,9 @@ public class MainService extends Service {
 
     public final static String TAG = "MainService ";
 
-//    public final static String DEFAULT_SERVER = "http://46.182.31.101:8080"; //"http://api.promobox.ee/";
-    public final static String DEFAULT_SERVER = "http://46.182.30.93:8080"; // production
+    public final static String DEFAULT_SERVER = "http://46.182.31.101:8080"; //"http://api.promobox.ee/";
+//    public final static String DEFAULT_SERVER = "https://api.promobox.ee"; // production
+//    public final static String DEFAULT_SERVER = "http://46.182.30.93:8080"; // production
     public final static String DEFAULT_SERVER_JSON = DEFAULT_SERVER + "/service/device/%s/pull";
 
     private SharedPreferences sharedPref;
@@ -91,7 +92,7 @@ public class MainService extends Service {
     @Override
     public void onCreate() {
         Log.i(TAG, "onCreate()");
-        setSharedPref(PreferenceManager.getDefaultSharedPreferences(this));
+        setSharedPref(getSharedPreferences(getPackageName()+"_preferences",MODE_MULTI_PROCESS));
         Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this, false, getUuid()));
 //        bManager = LocalBroadcastManager.getInstance(this);
         dTask = new DownloadFilesTask(this);
@@ -114,9 +115,11 @@ public class MainService extends Service {
 //        This os not much needed, just in case if something happens with !isOnTop && !closedNormally this will help
 //        For example if user closed (onPause) activity and app died while was closedNormally
         if (!serviceAlarm ){
-            Date previous = new Date(lastScheduledCallDate.getTime() + MyScheduleReceiver.REPEAT_TIME + 10000 );
+            Date previous = new Date(lastScheduledCallDate.getTime() + MyScheduleReceiver.REPEAT_TIME * 3 );
             if (previous.before(new Date())){
                 startMainActivity = true;
+                closedNormally = true;
+                Log.w(TAG, "starting MainActivity because alarm was not called at time.");
                 lastScheduledCallDate = new Date();
             }
         } else {
@@ -373,8 +376,9 @@ public class MainService extends Service {
 
     public String getUuid() {
         if (uuid == null){
-            return getSharedPref().getString("uuid", "fail");
+            uuid = getSharedPref().getString("uuid", "fail");
         }
+        Log.d(TAG, "UUID = " + uuid);
         return uuid;
     }
 

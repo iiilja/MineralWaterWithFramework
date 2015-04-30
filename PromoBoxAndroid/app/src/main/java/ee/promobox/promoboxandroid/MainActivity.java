@@ -298,6 +298,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener, 
     protected void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "onDestroy");
+        this.getBaseContext().unregisterReceiver(bReceiver);
 
         if (mBound) {
             unbindService(mConnection);
@@ -335,7 +336,9 @@ public class MainActivity extends Activity implements FragmentPlaybackListener, 
             mainService = AIDLInterface.Stub.asInterface(binder);
 
             if (exceptionHandlerError != null) {
-                addError(new ErrorMessage("UncaughtException", exceptionHandlerError, null), true);
+                ErrorMessage errorMessage = new ErrorMessage("UncaughtException", exceptionHandlerError, null);
+                errorMessage.putMoreInfo(exceptionHandlerError);
+                addError(errorMessage, true);
             }
 
             boolean isWall = false;
@@ -629,7 +632,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener, 
                         Campaign serviceCampaign = mainService.getCurrentCampaign();
 
                         boolean updated = campaign != null && !campaign.equals(serviceCampaign)
-                                || serviceCampaign != null && serviceCampaign.equals(campaign);
+                                || serviceCampaign != null && !serviceCampaign.equals(campaign);
                         campaign = serviceCampaign;
                         mainService.setActivityReceivedUpdate(true);
                         if (updated) {

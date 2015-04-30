@@ -26,18 +26,31 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
+
+import javax.net.ssl.HttpsURLConnection;
 
 import ee.promobox.promoboxandroid.data.Campaign;
 import ee.promobox.promoboxandroid.data.CampaignFile;
@@ -276,32 +289,28 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
 
             Log.i(TAG, fileURL);
 
-            HttpClient httpclient = new DefaultHttpClient();
+            URL url = new URL(fileURL);
+            URLConnection urlConnection = url.openConnection();
+            InputStream in = new BufferedInputStream(urlConnection.getInputStream());
 
-            HttpGet httpget = new HttpGet(fileURL);
+            File dir = new File(service.getROOT().getAbsolutePath() + String.format("/%s/", camp.getCampaignId()));
 
-            HttpResponse response = httpclient.execute(httpget);
+            File file = new File(dir, fileName);
 
-            HttpEntity entity = response.getEntity();
+            FileOutputStream f = new FileOutputStream(file);
 
-            if (entity != null) {
-                File dir = new File(service.getROOT().getAbsolutePath() + String.format("/%s/", camp.getCampaignId()));
-
-                File file = new File(dir, fileName);
-
-                FileOutputStream f = new FileOutputStream(file);
-
-                InputStream in = entity.getContent();
-
+            try {
                 IOUtils.copy(in, f);
-
+            } finally{
                 IOUtils.closeQuietly(in);
-                IOUtils.closeQuietly(f);
-
-                Log.i(TAG, "Size " + file.getAbsolutePath() + " = " + file.length());
-
-                return true;
             }
+
+            IOUtils.closeQuietly(f);
+
+            Log.i(TAG, "Size " + file.getAbsolutePath() + " = " + file.length());
+
+            return true;
+
 
 
         } catch (Exception ex) {
@@ -312,10 +321,16 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
         return false;
     }
 
-    private JSONObject loadData(String url) throws Exception {
+    private JSONObject loadData(String urlString) throws Exception {
 
-        HttpClient httpclient = new DefaultHttpClient();
-        HttpPost httppost = new HttpPost(url);
+        URL url = new URL(urlString);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+//        conn.setReadTimeout(10000);
+//        conn.setConnectTimeout(15000);
+        conn.setRequestMethod("POST");
+        conn.setRequestProperty("User-Agent", "Mozilla/5.0");
+//        conn.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
+        conn.setDoOutput(true);
 
         JSONObject json = new JSONObject();
 
@@ -366,41 +381,29 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
 
 
         Log.i(TAG, "Pull info:" + json.toString());
+        Log.i(TAG, conn.getURL().toString());
 
-        List<NameValuePair> nameValuePairs = new ArrayList<>();
-        nameValuePairs.add(new BasicNameValuePair("json", json.toString()));
-        httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 
-        Log.i(TAG, httppost.getRequestLine().toString());
-        HttpResponse response;
-        try{
-            response = httpclient.execute(httppost);
-        } catch (HttpHostConnectException ex){
-            service.sendBroadcast(new ToastIntent("Internet connection problem (HttpHostConnectException)"));
-            service.addError(new ErrorMessage(ex.toString(), ex.getMessage(), ex.getStackTrace()), false);
-            return null;
-        } catch (SocketException ex){
-            service.sendBroadcast(new ToastIntent("Internet connection problem (SocketException)"));
-            service.addError(new ErrorMessage(ex.toString(), ex.getMessage(), ex.getStackTrace()), false);
-            return null;
-        }
+        String query = "json=" + URLEncoder.encode(json.toString(), "UTF-8");
+        IOUtils.write(query.getBytes(),conn.getOutputStream());
+        String response = "";
 
-        if (response.getStatusLine().getStatusCode() == 200 && !service.getIsDownloading().get()) {
-            HttpEntity entity = response.getEntity();
-            if (entity != null) {
-                String jsonString = IOUtils.toString(response.getEntity().getContent());
+        if (conn.getResponseCode() == HttpURLConnection.HTTP_OK && !service.getIsDownloading().get()) {
+            Log.d(TAG, "Response code = " + conn.getResponseCode());
+            response = IOUtils.toString(conn.getInputStream(),"UTF-8");
+            if (!response.equals("")) {
                 try {
-                    return new JSONObject(jsonString);
+                    return new JSONObject(response);
                 } catch (JSONException e) {
                     ErrorMessage message = new ErrorMessage("JSONException", e.getMessage(), e.getStackTrace());
-                    message.putMoreInfo("json:" + jsonString);
+                    message.putMoreInfo("json:" + response);
                     service.addError(message, false);
                     service.sendBroadcast(new ToastIntent("Error 53 - reading JSON from server"));
                 }
             }
         } else if ( !service.getIsDownloading().get() ){
-            String error = " Status code:" + response.getStatusLine().getStatusCode();
-            String content = IOUtils.toString(response.getEntity().getContent(), "UTF-8");
+            String error = " Status code:" + conn.getResponseCode();
+            String content = IOUtils.toString(conn.getErrorStream(), "UTF-8");
             error += ". Content:" + content ;
             Log.e(TAG, error);
             json = null;
@@ -441,14 +444,14 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
             if ( lastWifiRestartDt == null) {
                 service.setLastWifiRestartDt(service.getCurrentDate());
             } else if ( lastWifiRestartDt.before(calendar.getTime())){
-                Log.d(TAG, "Restarting WiFi");
                 service.setLastWifiRestartDt(service.getCurrentDate());
                 service.setWifiRestartCounter(service.getWifiRestartCounter() + 1 );
                 WifiManager wifiManager = (WifiManager) service.getSystemService(Context.WIFI_SERVICE);
                 if (wifiManager.isWifiEnabled()){
+                    Log.d(TAG, "Restarting WiFi");
                     wifiManager.setWifiEnabled(false);
+                    wifiManager.setWifiEnabled(true);
                 }
-                wifiManager.setWifiEnabled(true);
             }
         }
         else {

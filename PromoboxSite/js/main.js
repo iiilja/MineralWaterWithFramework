@@ -39,6 +39,10 @@ $(document).ready(function(){
 
 	// ===
 	$("a.anchorLink").anchorAnimate();
+	
+	$("#change-lang").change(function(e) {
+		$("[data-translate]").jqTranslate('index', {forceLang: this.value});
+	});
         
         
 });

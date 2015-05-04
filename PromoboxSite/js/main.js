@@ -39,7 +39,10 @@ $(document).ready(function(){
 
 	// ===
 	$("a.anchorLink").anchorAnimate();
+        
+        
 });
+
 
 function tabs(tab_wrap,tab_nav) {
 	$(tab_nav).find('a').click(function(e){

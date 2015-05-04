@@ -13,3 +13,8 @@ CREATE TABLE devices_group_devices
   device_name character varying(255) NOT NULL,
   CONSTRAINT pk_devices_group_devices PRIMARY KEY (group_id,device_id)
 );
+
+ALTER TABLE devices DROP COLUMN check_counter;
+ALTER TABLE devices ADD COLUMN on_off_counter integer DEFAULT 0 NOT NULL;
+ALTER TABLE devices ADD COLUMN on_off_counter_check integer DEFAULT 0 NOT NULL;
+ALTER TABLE devices ADD COLUMN on_off_check_number integer DEFAULT 1 NOT NULL;

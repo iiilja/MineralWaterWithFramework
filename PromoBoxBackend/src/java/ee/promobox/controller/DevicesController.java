@@ -82,29 +82,38 @@ public class DevicesController {
                 if (d.getStatus() != Devices.STATUS_AHRCHIVED
                         && d.getStatus() != Devices.STATUS_OFFLINE) {
                     if (d.getStatus() == Devices.STATUS_ONLINE || d.getStatus() == Devices.STATUS_USED) {
-                        d.setStatePeriod(d.getStatePeriod() + d.getCheckCounter() * CHECK_PERIOD);
-                        d.setCheckCounter(0);
+                        if (d.getOnOffCounterCheck() >= d.getOnOffCheckNumber()) {
+                            d.setOnOffCounterCheck(0);
+                        } else {
+                            d.setOnOffCounterCheck(d.getOnOffCounter());
+                        }
                     }
-
                     d.setStatus(Devices.STATUS_OFFLINE);
-                    userService.updateDevice(d);
                 }
 
                 if (d.getStatus() == Devices.STATUS_OFFLINE) {
-                    d.setCheckCounter(d.getCheckCounter() + 1);
+                    d.setOnOffCounterCheck(d.getOnOffCounterCheck() + 1);
+                    d.setOnOffCounter(d.getOnOffCounter() + 1);
 
-                    if (d.getCheckCounter() == CHECK_COUNT_BEFORE_EMAIL) {
+                    if (d.getOnOffCounterCheck() == d.getOnOffCheckNumber()) {
+                        d.setStatePeriod(d.getStatePeriod() 
+                                + (d.getOnOffCounter() - d.getOnOffCheckNumber())* CHECK_PERIOD);
                         sendDeviceEmail(d, "OFFLINE!");
+                        d.setOnOffCounter(d.getOnOffCounterCheck());
                     }
 
                     userService.updateDevice(d);
                 }
 
             } else if (d.getStatus() == Devices.STATUS_ONLINE) {
-                d.setCheckCounter(d.getCheckCounter() + 1);
+                d.setOnOffCounterCheck(d.getOnOffCounterCheck() + 1);
+                d.setOnOffCounter(d.getOnOffCounter()+ 1);
 
-                if (d.getCheckCounter() == CHECK_COUNT_BEFORE_EMAIL) {
+                if (d.getOnOffCounterCheck()== d.getOnOffCheckNumber()) {
+                    d.setStatePeriod(d.getStatePeriod() 
+                                + (d.getOnOffCounter() - d.getOnOffCheckNumber())* CHECK_PERIOD);
                     sendDeviceEmail(d, "ONLINE!");
+                    d.setOnOffCounter(d.getOnOffCounterCheck());
                 }
 
                 userService.updateDevice(d);
@@ -116,35 +125,31 @@ public class DevicesController {
     public @ResponseBody
     String saveError(
             @PathVariable("uuid") String uuid,
-            @RequestParam String json,
+            @RequestParam String error,
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
         
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         
-        JSONObject objectGiven = new JSONObject(json);
         JSONObject resp = new JSONObject();
         Devices d = userService.findDeviceByUuid(uuid);
-        if (d != null && objectGiven.has("errors")) {
-            JSONArray errors = objectGiven.getJSONArray("errors");
-            for (int i = 0; i < errors.length(); i++) {
-                JSONObject jsonError = errors.getJSONObject(i);
+        if (d != null) {
+            JSONObject jsonError = new JSONObject(error);
 
-                String name = StringUtils.abbreviate(jsonError.getString("name"), 255);
-                String message = StringUtils.abbreviate(jsonError.getString("message"), 255);
-                String stackTrace = jsonError.getString("stackTrace");
+            String name = StringUtils.abbreviate(jsonError.getString("name"), 255);
+            String message = StringUtils.abbreviate(jsonError.getString("message"), 255);
+            String stackTrace = jsonError.getString("stackTrace");
 
-                ErrorLog errorLog = new ErrorLog();
-                errorLog.setDeviceId(d.getId());
-                errorLog.setName(name);
-                errorLog.setMessage(message);
-                errorLog.setStackTrace(stackTrace);
-                errorLog.setCreatedDt(new Date(jsonError.getLong("date")));
+            ErrorLog errorLog = new ErrorLog();
+            errorLog.setDeviceId(d.getId());
+            errorLog.setName(name);
+            errorLog.setMessage(message);
+            errorLog.setStackTrace(stackTrace);
+            errorLog.setCreatedDt(new Date(jsonError.getLong("date")));
 
-                userService.addErrorLog(errorLog);
-                response.setStatus(HttpServletResponse.SC_OK);
-                resp.put(RequestUtils.RESULT, RequestUtils.OK);
-            }
+            userService.addErrorLog(errorLog);
+            response.setStatus(HttpServletResponse.SC_OK);
+            resp.put(RequestUtils.RESULT, RequestUtils.OK);
         }
         
         return resp.toString();
@@ -297,8 +302,11 @@ public class DevicesController {
                 }
 
                 if (d.getStatus() == Devices.STATUS_OFFLINE) {
-                    d.setStatePeriod(d.getStatePeriod() + d.getCheckCounter() * CHECK_PERIOD);
-                    d.setCheckCounter(0);
+                    if (d.getOnOffCounterCheck() >= d.getOnOffCheckNumber()) {
+                        d.setOnOffCounterCheck(0);
+                    } else {
+                        d.setOnOffCounterCheck(d.getOnOffCounter());
+                    }
                 }
 
                 d.setLastDeviceRequestDt(new Date());

@@ -1,3 +1,4 @@
+/// <reference path="../../typings/jquery/jquery.d.ts"/>
 $(document).ready(function(){
 	
 	$('input, select').styler();

@@ -2,14 +2,14 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 21
-    buildToolsVersion '21.1.1'
+    buildToolsVersion '22.0.1'
 
     defaultConfig {
         applicationId "ee.promobox.promoboxandroid"
         minSdkVersion 17
         targetSdkVersion 21
-        versionCode 7
-        versionName "Service in different process bug fix"
+        versionCode 8
+        versionName "Service in different process bug fix 2"
     }
     buildTypes {
         release {

@@ -107,9 +107,7 @@ public abstract class FragmentWithSeekBar extends Fragment implements PlayerButt
 
     @Override
     public void onClick(View v) {
-
-
-
+        Log.d(TAG, "click");
 
         switch (v.getId()){
             case R.id.player_settings:

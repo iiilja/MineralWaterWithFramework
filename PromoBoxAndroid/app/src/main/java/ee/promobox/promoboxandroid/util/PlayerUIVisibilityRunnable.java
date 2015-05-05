@@ -22,7 +22,7 @@ public class PlayerUIVisibilityRunnable implements Runnable {
 
     @Override
     public void run() {
-        Log.d(TAG, "PlayerUIVisibilityRunnable");
+        Log.d(TAG, TAG);
         View playerControlsLayout = playerControlsLayoutLayoutReference.get();
         if (playerControlsLayout != null) {
             playerControlsLayout.setVisibility(View.INVISIBLE);

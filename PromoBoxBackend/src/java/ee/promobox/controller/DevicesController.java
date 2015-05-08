@@ -96,8 +96,8 @@ public class DevicesController {
                     d.setOnOffCounter(d.getOnOffCounter() + 1);
 
                     if (d.getOnOffCounterCheck() == d.getOnOffCheckNumber()) {
-                        d.setStatePeriod(d.getStatePeriod() 
-                                + (d.getOnOffCounter() - d.getOnOffCheckNumber())* CHECK_PERIOD);
+                        d.setStatePeriod(d.getStatePeriod()
+                                + (d.getOnOffCounter() - d.getOnOffCheckNumber()) * CHECK_PERIOD);
                         sendDeviceEmail(d, "OFFLINE!");
                         d.setOnOffCounter(d.getOnOffCounterCheck());
                     }
@@ -107,11 +107,11 @@ public class DevicesController {
 
             } else if (d.getStatus() == Devices.STATUS_ONLINE) {
                 d.setOnOffCounterCheck(d.getOnOffCounterCheck() + 1);
-                d.setOnOffCounter(d.getOnOffCounter()+ 1);
+                d.setOnOffCounter(d.getOnOffCounter() + 1);
 
-                if (d.getOnOffCounterCheck()== d.getOnOffCheckNumber()) {
-                    d.setStatePeriod(d.getStatePeriod() 
-                                + (d.getOnOffCounter() - d.getOnOffCheckNumber())* CHECK_PERIOD);
+                if (d.getOnOffCounterCheck() == d.getOnOffCheckNumber()) {
+                    d.setStatePeriod(d.getStatePeriod()
+                            + (d.getOnOffCounter() - d.getOnOffCheckNumber()) * CHECK_PERIOD);
                     sendDeviceEmail(d, "ONLINE!");
                     d.setOnOffCounter(d.getOnOffCounterCheck());
                 }
@@ -128,9 +128,9 @@ public class DevicesController {
             @RequestParam String error,
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
-        
+
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        
+
         JSONObject resp = new JSONObject();
         Devices d = userService.findDeviceByUuid(uuid);
         if (d != null) {
@@ -151,10 +151,10 @@ public class DevicesController {
             response.setStatus(HttpServletResponse.SC_OK);
             resp.put(RequestUtils.RESULT, RequestUtils.OK);
         }
-        
+
         return resp.toString();
     }
-    
+
     @RequestMapping("/device/{uuid}/pull")
     public @ResponseBody
     String showCampaign(
@@ -523,6 +523,65 @@ public class DevicesController {
         return null;
     }
 
+    @RequestMapping(value = "token/{token}/devicesCampaigns", method = RequestMethod.GET)
+    public @ResponseBody
+    String showAllDevicesCampaignsShort(
+            @PathVariable("token") String token,
+            HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+
+        JSONObject resp = new JSONObject();
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+        Session session = sessionService.findSession(token);
+
+        if (session != null) {
+            int clientId = session.getClientId();
+
+            List<Devices> devices = null;
+            if (session.isAdmin()) {
+                devices = userService.findUserDevieces(clientId);
+            } else {
+                devices = userService.findUserDevieces(clientId, session.getUserId());
+            }
+
+            JSONArray devicesArray = new JSONArray();
+            if (!devices.isEmpty()) {
+                for (Devices d : devices) {
+                    JSONObject jsonD = new JSONObject();
+
+                    jsonD.put("id", d.getId());
+                    jsonD.put("uuid", d.getUuid());
+
+                    List<AdCampaigns> acs = userService.findCampaignByDeviceId(d.getId());
+
+                    if (acs != null) {
+                        JSONArray campaigns = new JSONArray();
+                        for (AdCampaigns ac : acs) {
+                            JSONObject campaign = new JSONObject();
+                            campaign.put("id", ac.getId());
+                            campaign.put("name", ac.getName());
+                            campaigns.put(campaign);
+                        }
+                        jsonD.put("campaigns", campaigns);
+                    }
+
+                    devicesArray.put(jsonD);
+                }
+            }
+
+            resp.put("devices", devicesArray);
+
+            response.setStatus(HttpServletResponse.SC_OK);
+
+            return resp.toString();
+        } else {
+            RequestUtils.sendUnauthorized(response);
+        }
+
+        return null;
+    }
+
     @RequestMapping(value = "token/{token}/devices/{id}", method = RequestMethod.DELETE)
     public @ResponseBody
     String deleteDevice(
@@ -569,22 +628,67 @@ public class DevicesController {
 
         Session session = sessionService.findSession(token);
 
-        if (session != null && checkWritePermission(session, id)) {
+        boolean ok = deleteDeviceCampaign(session, id, campaignId);
 
-            Devices device = userService.findDeviceByIdAndClientId(id, session.getClientId());
-
-            if (device != null) {
-                userService.deleteDeviceCampaign(device.getId(), campaignId);
-
-                response.setStatus(HttpServletResponse.SC_OK);
-
-                return resp.toString();
-            }
-
+        if (ok) {
+            response.setStatus(HttpServletResponse.SC_OK);
+            return resp.toString();
         }
 
         RequestUtils.sendUnauthorized(response);
 
+        return null;
+    }
+
+    @RequestMapping(value = "token/{token}/devices/deleteAndSetCampaign", method = RequestMethod.PUT)
+    public @ResponseBody
+    String deleteOrSetCampaignToDevices(
+            @PathVariable("token") String token,
+            @RequestBody String jsonString,
+            HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+
+        JSONObject resp = new JSONObject();
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+        Session session = sessionService.findSession(token);
+        if (session != null) {
+            JSONObject json = new JSONObject(jsonString);
+            JSONArray devicesJSON = json.getJSONArray("devices");
+            int campaignId = json.getInt("campaignId");
+            boolean allOK = true;
+            JSONArray couldntSet = new JSONArray();
+            JSONArray couldntDelete = new JSONArray();
+            for (int i = 0; i < devicesJSON.length(); i++) {
+                JSONObject device = devicesJSON.getJSONObject(i);
+                int deviceId = device.getInt("id");
+                boolean added = device.getBoolean("selected");
+                if (!added) {
+                    boolean ok = deleteDeviceCampaign(session, deviceId, campaignId);
+                    if (!ok) {
+                        couldntDelete.put(device);
+                    }
+                    allOK &= ok;
+                } else {
+                    boolean ok = addDeviceCampaign(session, deviceId, campaignId);
+                    if (!ok) {
+                        couldntDelete.put(device);
+                    }
+                    allOK &= ok;
+                }
+            }
+            if (allOK) {
+                resp.put(RequestUtils.RESULT, RequestUtils.OK);
+            } else {
+                resp.put("couldntDelete", couldntDelete);
+                resp.put("couldntSet", couldntSet);
+                resp.put(RequestUtils.RESULT, RequestUtils.ERROR);
+            }
+            response.setStatus(HttpServletResponse.SC_OK);
+            return resp.toString();
+        } else {
+            RequestUtils.sendUnauthorized(response);
+        }
         return null;
     }
 
@@ -906,5 +1010,45 @@ public class DevicesController {
     @ExceptionHandler(Exception.class)
     public void handleAllException(Exception ex) {
         log.error(ex.getMessage(), ex);
+    }
+
+    private boolean addDeviceCampaign(Session session, int deviceId, int campaignId) {
+        if (session != null && checkWritePermission(session, deviceId)) {
+            
+            DevicesCampaigns devicesCampaigns = userService.findDeviceCampaignByCampaignId(deviceId, campaignId);
+            AdCampaigns campaign = userService.findCampaignByCampaignId(campaignId);
+            Devices device = userService.findDeviceByIdAndClientId(deviceId, session.getClientId());
+            
+            if (devicesCampaigns == null && campaign!= null && device != null) {
+
+
+                devicesCampaigns = new DevicesCampaigns();
+
+                devicesCampaigns.setDeviceId(deviceId);
+                devicesCampaigns.setAdCampaignsId(campaignId);
+                devicesCampaigns.setUpdatedDt(new Date());
+
+                userService.addDeviceAdCampaign(devicesCampaigns);
+
+                userService.updateDevice(device);
+                
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean deleteDeviceCampaign(Session session, int deviceId, int campaignId) {
+        if (session != null && checkWritePermission(session, deviceId)) {
+
+            Devices device = userService.findDeviceByIdAndClientId(deviceId, session.getClientId());
+            DevicesCampaigns devicesCampaign = userService.findDeviceCampaignByCampaignId(deviceId, campaignId);
+            if (device != null && devicesCampaign != null) {
+                userService.deleteDeviceCampaign(device.getId(), campaignId);
+                return true;
+            }
+
+        }
+        return false;
     }
 }

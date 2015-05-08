@@ -1,11 +1,13 @@
 <div class="center-block campaigns-top-wrap" style="padding: 15px;">
     <div class="alert alert-info" role="alert" ng-show="campaigns.length == 0">
-        <strong>{{ 'list_empty' | translate }}!</strong> 
-        <span ng-show="$root.admin" >{{ 'list_createnewcampaign' | translate }}.</span>
+        <strong>{{ 'list_empty' | translate }}!</strong>
+        <span ng-show="$root.admin">{{ 'list_createnewcampaign' | translate }}.</span>
     </div>
 
-    <button ui-sref="campaign_new" 
-        ng-show="$root.admin" type="button" class="new-company-btn btn btn-primary">{{ 'list_newcampaign' | translate }}</button>
+    <button ui-sref="campaign_new"
+            ng-show="$root.admin" type="button" class="new-company-btn btn btn-primary">{{ 'list_newcampaign' |
+        translate }}
+    </button>
 </div>
 
 
@@ -21,14 +23,16 @@
             <a class="campaigns_link" data-toggle="modal" data-target=".stat" style="margin-right: 15px;"
                ng-click="show_statistics(campaign)"><i class="glyphicon glyphicon-signal"></i> {{ 'list_statistics' | translate }}</a>
  -->
-            <a class="campaigns_link" href="/#/campaign/edit/{{campaign.id}}" style="margin-right: 15px;"><i class="glyphicon glyphicon-pencil"></i> {{ 'list_change' | translate }}</a>
+            <a class="campaigns_link" href="/#/campaign/edit/{{campaign.id}}" style="margin-right: 15px;"><i
+                    class="glyphicon glyphicon-pencil"></i> {{ 'list_change' | translate }}</a>
             
             <div class="menu-dropdown-campaigns">
                 <span></span>
 
                 <div class="dropdown-campaigns">
                     <ul>
-                        <li><a href="#">Установить</a></li>
+                        <li><a href="#" data-toggle="modal" data-target="#installToGroup" href="javascript:void(0)"
+                               ng-click="installCampaign(campaign)">Установить</a></li>
                         <li><a href="#"> Снять</a></li>
                         <li><a href="#">Копироать</a></li>
                     </ul>
@@ -42,50 +46,41 @@
 </div>
 
 <!-- Modal statistics -->
-<div class="modal fade stat"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="installToGroup" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only"></span></button>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                        class="sr-only"></span></button>
                 <h4 class="modal-title" id="myModalLabel">{{"campaign_edit_statistics"| translate}}</h4>
             </div>
             <div class="modal-body">
-                <ul class="statistics-list">
+                <div ng-repeat="group in groups" ng-show="group.devices.length > 0" class="acardion-wrap">
+                    <h4 ng-click="currentGroupId = (currentGroupId == group.id ? -1 : group.id)" class="acardion-title"
+                        ng-class="{active: group.id == currentGroupId}"><i></i>{{group.name}}
+                        <span>{{group.devices.length}} {{ 'device_devices_multiple' | translate }}</span>
+                    </h4>
+                    <div class="checkbox pull-right">
+                        <label><input type="checkbox" ng-model="group.selected" ng-change="selectGroup(group)"></label>
+                    </div>
 
-                    <li>
-                        <div class="img-block">
-                            <img src="img/files.png" alt="">
-                        </div>
-                        <span>{{currentCampaign.countFiles}}</span>
-                        <p >{{'campaign_edit_allfilescount'| translate}}</p>
-                    </li>
-
-                    <li>
-                        <div class="img-block">
-                            <img src="img/pic.png" alt="">
-                        </div>
-                        <span>{{currentCampaign.countImages}}</span>
-                        <p>{{"campaign_edit_allimagescount"| translate}}</p>
-                    </li>
-
-                    <li>
-                        <div class="img-block">
-                            <img src="img/video.png" alt="">
-                        </div>
-                        <span>{{currentCampaign.countVideos}}</span>
-                        <p>{{"campaign_edit_allvideoscount"| translate}}<br/>{{currentCampaign.videoLength | humanLength}}</p>
-                    </li>
-
-                    <li>
-                        <div class="img-block">
-                            <img src="img/songs.png" alt="">
-                        </div>
-                        <span>{{currentCampaign.countAudios}}</span>
-                        <p>{{"campaign_edit_allaudioscount"| translate}}<br/>{{currentCampaign.audioLength | humanLength}}</p>
-                    </li>
-                </ul>
+                    <div class="add-company-list mCustomScrollbar" ng-show="currentGroupId == group.id">
+                        <ul class="btn-group">
+                            <li ng-repeat="device in group.devices" ng-click="selectDevice(device,group)">
+                                <label class="btn btn-primary" ng-class="device.selected ? 'active' : ''">
+                                    {{device.name}}
+                                    <span class="glyphicon glyphicon-ok"></span>
+                                </label>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
-
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-dismiss="modal" ng-click="confirm()">{{ 'modal_confirm' | translate }}</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">{{ 'modal_cancel' | translate }}</button>
+            </div>
         </div>
     </div>
 </div>

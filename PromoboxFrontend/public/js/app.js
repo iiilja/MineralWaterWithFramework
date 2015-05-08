@@ -105,7 +105,7 @@ app.config(function ($httpProvider) {
 
 });
 
-app.config(function ($translateProvider,$localeProvider) {
+app.config(function ($translateProvider) {
     $translateProvider.useStaticFilesLoader({
         prefix: '/json/',
         suffix: '.json'
@@ -154,7 +154,7 @@ app.controller('Exit', ['token',
     }]);
 
 app.controller('LeftMenuController', ['$scope', '$location', '$http', 'token', 'Clients', '$rootScope', '$translate',
-    function ($scope, $location, $http, token, Clients, $rootScope, $translate) {
+    function ($scope, $location, $http, token, Clients, $rootScope) {
         Clients.getClient({token: token.get()}, function(response) {
             $scope.admin = response.admin;
             $rootScope.admin = response.admin;
@@ -740,8 +740,8 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         //setTimeout(function(){jQuery('.styler').styler();}, 800);
     }]);
 
-app.controller('CampaignsController', ['$scope', 'token', 'Campaign', 'sysMessage', '$rootScope', '$filter',
-    function ($scope, token, Campaign, sysMessage, $rootScope, $filter) {
+app.controller('CampaignsController', ['$scope', 'token', 'Campaign', 'DevicesGroups', 'Device', 'sysMessage', '$rootScope', '$filter',
+    function ($scope, token, Campaign, DevicesGroups, Device, sysMessage, $rootScope, $filter) {
         if (token.check()) {
             $rootScope.left_menu_active = 'campaign';
             $scope.currentCampaign = {};
@@ -763,6 +763,128 @@ app.controller('CampaignsController', ['$scope', 'token', 'Campaign', 'sysMessag
                         sysMessage.delete_s($filter('translate')('system_campaign') + ' ' + campaign.name + ' ' + $filter('translate')('system_theremoved'));
                     });
                 });
+            };
+
+            $scope.installCampaign = function(campaign){
+                var devicesCampaigns = [];
+
+                Device.devicesCampaigns({token: token.get()}, function (response) {
+                    devicesCampaigns = response.devices;
+
+                    DevicesGroups.list({token: token.get()}, function (response) {
+
+                        var deviceContainsCampaign = function(devicesCampaigns, deviceId, campaignId){
+                            for(var i = 0; i < devicesCampaigns.length; i++){
+                                var device = devicesCampaigns[i];
+                                if(device.id == deviceId){
+                                    console.log(device);
+                                    for(var j = 0; j < device.campaigns.length; j++){
+                                        if(device.campaigns[j].id == campaignId) { return true; }
+                                    }
+                                    return false;
+                                }
+                            }
+                            return false;
+                        };
+
+                        var removeDeviceFromDevices = function(devices, deviceId){
+                            for (var i = 0; i < devices.length; i++){
+                                if ( devices[i].id == deviceId){
+                                    devices.splice(i,1);
+                                    return;
+                                }
+                            }
+                        };
+
+                        var findDeviceWithId = function(devices,deviceId){
+                            for (var i = 0; i < devices.length; i++){
+                                if ( devices[i].id == deviceId){
+                                    return devices[i];
+                                }
+                            }
+                        };
+
+                        $scope.groups = response.groups;
+                        $scope.devices = response.devices;
+                        var unGroupedDevices = response.devices.slice();
+                        for(var i = 0; i < $scope.groups.length; i++){
+                            var group = $scope.groups[i];
+                            var devices = [];
+                            for(var j = 0; j < group.devices.length; j++){
+                                var device = group.devices[j];
+                                if(device.contains){
+                                    device = findDeviceWithId($scope.devices,device.id);
+                                    devices.splice(0,0,device);
+                                    removeDeviceFromDevices(unGroupedDevices,device.id);
+                                }
+                            }
+                            group.devices = devices;
+                        }
+
+                        var ungoupedGroup = {};
+                        ungoupedGroup.id = 0;
+                        ungoupedGroup.name = $filter('translate')('modal_group_ungrouped_devices');
+                        ungoupedGroup.devices = unGroupedDevices;
+                        $scope.groups.splice(0,0,ungoupedGroup);
+
+                        console.log(devicesCampaigns);
+                        for(var i = 0; i < $scope.devices.length; i++){
+                            var device = $scope.devices[i];
+                            var campaignIsSet = deviceContainsCampaign(devicesCampaigns, device.id, campaign.id);
+                            console.log("Device " + device.id + " contains = " + campaignIsSet + " campaign " + campaign.id);
+                            device.initialSelected = campaignIsSet;
+                            device.selected = campaignIsSet;
+                        }
+
+                        $scope.toLog();
+
+                    });
+                });
+
+                $scope.currentGroupId = -1;
+
+                $scope.selectGroup = function(group){
+                    console.log(group.selected);
+                    console.log(group);
+                    for(var i=0; i < group.devices.length; i++){
+                        group.devices[i].selected = group.selected;
+                    }
+                    console.log(group);
+                };
+
+                $scope.selectDevice = function(device,group){
+                    device.selected = !device.selected;
+                    group.selected = false;
+                };
+
+                $scope.confirm = function(){
+                    var changedDevices = [];
+                    for(var i = 0; i < $scope.devices.length; i++){
+                        var device = $scope.devices[i];
+                        if(device.initialSelected != device.selected){
+                            changedDevices.push(device);
+                        }
+                    }
+                    var devicesUpdate = {token: token.get(),
+                        devices : changedDevices,
+                        campaignId : campaign.id
+                    };
+
+                    Device.delete_and_set_devices_campaign(devicesUpdate, function (response) {
+                        if (response.result != "OK"){
+                            sysMessage.error($filter('translate')('system_error'));
+                        }
+                        console.log("Sent info : ");
+                        console.log(devicesUpdate);
+                        console.log("Confirmed");
+                    });
+
+                };
+
+                $scope.toLog = function(){
+                    console.log($scope.groups);
+                    console.log($scope.devices);
+                }
             };
         }
     }]);
@@ -820,19 +942,17 @@ app.controller('DevicesController', ['$scope', 'token', 'Device', 'DevicesGroups
                              if ( respDevice.contains){
                                  var foundDevice = findDeviceById(respDevice.id);
                                  if (foundDevice){
-                                     group.devices.splice(-1,0,foundDevice);
+                                     group.devices.push(foundDevice);
                                  }
                              }
                          }
-                         console.log("Group number " + i);
-                         console.log(group);
-                         $scope.groups.splice(-1,0,group);
+                         $scope.groups.push(group);
                      }
                      var group = {};
                      group.id = 0;
                      group.name = $filter('translate')('device_group_all_devices');
                      group.devices = $scope.devices;
-                     $scope.groups.splice(-1,0,group);
+                     $scope.groups.push(group);
 
                  });
              };

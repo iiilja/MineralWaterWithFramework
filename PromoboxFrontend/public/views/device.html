@@ -10,7 +10,7 @@
  <div style="height:15px;"></div>
 
 <div ng-repeat="group in groups"  ng-show="group.devices.length > 0" class="acardion-wrap">
-    <h4 ng-click="changeCurrentGroupId(group.id)" class="acardion-title" ng-class="{active: group.id == currentGroupId}"><i></i>{{group.name}} <span>12 устройств</span></h4>
+    <h4 ng-click="changeCurrentGroupId(group.id)" class="acardion-title" ng-class="{active: group.id == currentGroupId}"><i></i>{{group.name}} <span>{{group.devices.length}} {{ 'device_devices_multiple' | translate }}</span></h4>
     <div ng-repeat="device in group.devices" ng-show="currentGroupId == group.id">
         <div class="campaigns_block">
             <div class="device clearfix">

@@ -77,37 +77,17 @@ services.factory('Device', ['$resource',
     function ($resource) {
         return $resource('',{},{
                 get_data: {method: 'GET', url: apiEndpoint + 'token/:token/devices/', params: {token: '@token'}},
+                devicesCampaigns: {method: 'GET', url: apiEndpoint + 'token/:token/devicesCampaigns/', params: {token: '@token'}},
                 update: {method: 'PUT', url:apiEndpoint + 'token/:token/devices/:id', params: {token: '@token', id: '@id'}},
                 delete: {method: 'DELETE', url:apiEndpoint + 'token/:token/devices/:id', params: {token: '@token', id: '@id'}},
                 add: {method: 'POST', url:apiEndpoint + 'token/:token/devices/', params: {token: '@token'}},
                 clearCache: {method: 'PUT', url:apiEndpoint + 'token/:token/devices/:id/clearcache', params: {token: '@token', id: '@id'}},
                 openApp: {method: 'PUT', url:apiEndpoint + 'token/:token/devices/:id/openapp', params: {token: '@token', id: '@id'}},
                 delete_device_campaign: {method: 'DELETE', url:apiEndpoint + 'token/:token/devices/:id/campaign/:campaignId', params: {token: '@token', id: '@id', campaignId: '@campaignId'}},
-                listPermissions: {
-                    method: 'GET',
-                    url: apiEndpoint + 'token/:token/device/permissions',
-                    params: {
-                        token: '@token'
-                    }
-                },
-                updatePermissions: {
-                    method: 'PUT',
-                    url: apiEndpoint + 'token/:token/users/:userId/permissions/device/:entityId',
-                    params: {
-                        token: '@token',
-                        userId: '@userId',
-                        entityId: '@entityId'
-                    }
-                },
-                deletePermissions: {
-                    method: 'DELETE',
-                    url: apiEndpoint + 'token/:token/users/:userId/permissions/device/:entityId',
-                    params: {
-                        token: '@token',
-                        userId: '@userId',
-                        entityId: '@entityId'
-                    }
-                }
+                delete_and_set_devices_campaign: {method: 'PUT', url:apiEndpoint + 'token/:token/devices/deleteAndSetCampaign', params: {token: '@token'}},
+                listPermissions: { method: 'GET', url: apiEndpoint + 'token/:token/device/permissions', params: { token: '@token' } },
+                updatePermissions: { method: 'PUT', url: apiEndpoint + 'token/:token/users/:userId/permissions/device/:entityId', params: { token: '@token', userId: '@userId', entityId: '@entityId'}},
+                deletePermissions: {method: 'DELETE',url: apiEndpoint + 'token/:token/users/:userId/permissions/device/:entityId',params: {token: '@token',userId: '@userId',entityId: '@entityId'}}
             });}]);
 
 services.factory('Files', ['$resource',

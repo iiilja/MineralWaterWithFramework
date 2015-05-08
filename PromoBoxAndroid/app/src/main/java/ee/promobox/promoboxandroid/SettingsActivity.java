@@ -1,40 +1,33 @@
 package ee.promobox.promoboxandroid;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
-import android.preference.PreferenceScreen;
 import android.support.v4.app.NavUtils;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.MenuItem;
 
 import java.util.ArrayList;
 
 import ee.promobox.promoboxandroid.data.Display;
-import ee.promobox.promoboxandroid.util.geom.Line;
-import ee.promobox.promoboxandroid.util.geom.Rectangle;
-import ee.promobox.promoboxandroid.util.geom.TriangleEquilateral;
 
 
 public class SettingsActivity extends PreferenceActivity {
     private static String TAG = "SettingsActivity";
 
     private ArrayList<Display> displays;
+    private String uuid;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         displays = getIntent().getParcelableArrayListExtra("displays");
-//        PreferenceManager.getDefaultSharedPreferences(this).edit()
-//                .putString("version" , BuildConfig.VERSION_CODE + "").apply();
+        uuid = getIntent().getStringExtra("uuid");
     }
 
 
@@ -55,21 +48,20 @@ public class SettingsActivity extends PreferenceActivity {
         super.onPostCreate(savedInstanceState);
 
         GeneralPreferenceFragment fragment = new GeneralPreferenceFragment();
+        Bundle arguments = new Bundle();
         if ( displays != null ) {
-            Bundle arguments = new Bundle();
             arguments.putParcelableArrayList("displays", displays);
-            fragment.setArguments(arguments);
         } else {
             Log.w(TAG, "displays is null");
         }
+        arguments.putString("uuid",uuid);
+        Log.d(TAG,"UUID in settings is " + uuid);
+
+        fragment.setArguments(arguments);
 
         getFragmentManager().beginTransaction()
                 .replace(android.R.id.content, fragment)
                 .commit();
-    }
-
-    public ArrayList<Display> getDisplays() {
-        return displays;
     }
 
     @Override
@@ -122,16 +114,20 @@ public class SettingsActivity extends PreferenceActivity {
                 }
             });
 
-            findPreference("uuid").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            EditTextPreference preference = (EditTextPreference) findPreference("uuid");
+            Log.d(TAG, "GeneralPreferenceFragment UUID = " + getArguments().getString("uuid","no uuid"));
+            preference.setText(getArguments().getString("uuid", "no uuid"));
+            preference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object o) {
+                    Log.d(TAG, "onUUIDPreference changed");
                     String uuid = (String) o;
-                    Log.d(TAG,o.toString());
+                    Log.d(TAG, o.toString());
                     Log.d(TAG, uuid);
                     boolean ok = !uuid.equals("");
                     if (ok) {
                         Intent uuidChange = new Intent(MainActivity.SETTINGS_UUID_CHANGE);
-                        uuidChange.putExtra("uuid",uuid);
+                        uuidChange.putExtra("uuid", uuid);
                         getActivity().sendBroadcast(uuidChange);
                     }
                     return ok;

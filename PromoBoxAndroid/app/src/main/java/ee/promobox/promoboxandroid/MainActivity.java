@@ -224,7 +224,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener, 
                 Toast.makeText(this, String.format(
                                 ERROR_MESSAGE, 31, ex.getClass().getSimpleName()),
                         Toast.LENGTH_LONG).show();
-                Log.e(this.getClass().getName(), ex.getMessage(), ex);
+                Log.e(TAG, ex.getMessage(), ex);
                 addError(new ErrorMessage(ex.toString(), ex.getMessage(), ex.getStackTrace()), false);
             }
         } else if (requestCode == RESULT_FINISH_NETWORK_SETTING) {
@@ -300,6 +300,13 @@ public class MainActivity extends Activity implements FragmentPlaybackListener, 
         Log.d(TAG, "onDestroy");
         this.getBaseContext().unregisterReceiver(bReceiver);
 
+        if (mainService != null) {
+            try {
+                mainService.setClosedNormally(false);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
         if (mBound) {
             unbindService(mConnection);
             mBound = false;
@@ -488,10 +495,12 @@ public class MainActivity extends Activity implements FragmentPlaybackListener, 
     public boolean onLongClick(View view) {
         Intent i = new Intent(MainActivity.this, SettingsActivity.class);
         ArrayList<Display> displays = null;
+        String uuid = "";
         try {
             if (mainService.getDisplays() != null){
                 displays = new ArrayList<>(mainService.getDisplays());
             }
+            uuid = mainService.getUuid();
         } catch (RemoteException e) {
             makeToast("Could not get displays ");
             Log.e(TAG, "Could not get displays " + e.getMessage());
@@ -501,6 +510,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener, 
         } else {
             Log.w(TAG, "mainService.getDisplays() == nul");
         }
+        i.putExtra("uuid", uuid);
 
         startActivityForResult(i, RESULT_FINISH_PLAY);
         startActivity(i);

@@ -44,12 +44,12 @@ public class MainService extends Service {
 
     public final static String TAG = "MainService ";
 
-    public final static String DEFAULT_SERVER = "http://46.182.31.101:8080"; //"http://api.promobox.ee/";
+//    public final static String DEFAULT_SERVER = "http://46.182.31.101:8080"; //"http://api.promobox.ee/";   DEV
 //    public final static String DEFAULT_SERVER = "https://api.promobox.ee"; // production
-//    public final static String DEFAULT_SERVER = "http://46.182.30.93:8080"; // production
+    public final static String DEFAULT_SERVER = "http://46.182.30.93:8080"; // production
     public final static String DEFAULT_SERVER_JSON = DEFAULT_SERVER + "/service/device/%s/pull";
 
-    private SharedPreferences sharedPref;
+//    private SharedPreferences sharedPref;
 
     private String uuid;
     private String audioDevice; // which audio interface is used for output
@@ -92,7 +92,13 @@ public class MainService extends Service {
     @Override
     public void onCreate() {
         Log.i(TAG, "onCreate()");
-        setSharedPref(getSharedPreferences(getPackageName()+"_preferences",MODE_MULTI_PROCESS));
+
+        String uuid = getSharedPref().getString("uuid","fail");
+        if (uuid.equals("fail")){
+            setUuid(getUuid(), false);
+        } else {
+            setUuid(uuid, true);
+        }
         Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this, false, getUuid()));
 //        bManager = LocalBroadcastManager.getInstance(this);
         dTask = new DownloadFilesTask(this);
@@ -128,8 +134,6 @@ public class MainService extends Service {
         }
 
         Log.i(TAG, "Start command");
-
-        setUuid(getSharedPref().getString("uuid", "fail"));
         setOrientation(getSharedPref().getInt("orientation", MainActivity.ORIENTATION_LANDSCAPE));
 
         boolean isOnTop = getOnTopComponentInfo().getPackageName().startsWith(getPackageName());
@@ -332,7 +336,7 @@ public class MainService extends Service {
 
         @Override
         public void setUuid(String uuid) throws RemoteException {
-            MainService.this.setUuid(uuid);
+            MainService.this.setUuid(uuid, true);
         }
 
         @Override
@@ -362,6 +366,7 @@ public class MainService extends Service {
 
         @Override
         public void setClosedNormally(boolean closedNormally) throws RemoteException {
+            Log.d(TAG, "MainActivity was closed " + (closedNormally ? "normally": "NOT normally"));
             MainService.this.closedNormally = closedNormally;
         }
     };
@@ -376,14 +381,26 @@ public class MainService extends Service {
 
     public String getUuid() {
         if (uuid == null){
-            uuid = getSharedPref().getString("uuid", "fail");
+            File file = new File(getROOT(),"UUID");
+            try {
+                uuid = FileUtils.readFileToString(file);
+            } catch (IOException e) {
+                uuid = "fail";
+            }
         }
         Log.d(TAG, "UUID = " + uuid);
         return uuid;
     }
 
-    public void setUuid(String uuid) {
-        getSharedPref().edit().putString("uuid", uuid).commit();
+    public void setUuid(String uuid, boolean writeToFile) {
+        if (writeToFile) {
+            File file = new File(getROOT(),"UUID");
+            try {
+                FileUtils.write(file,uuid);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         this.uuid = uuid;
     }
 
@@ -405,12 +422,12 @@ public class MainService extends Service {
     }
 
     public SharedPreferences getSharedPref() {
-        return sharedPref;
+        return getSharedPreferences(getPackageName()+"_preferences",MODE_MULTI_PROCESS);
     }
 
-    public void setSharedPref(SharedPreferences sharedPref) {
-        this.sharedPref = sharedPref;
-    }
+//    public void setSharedPref(SharedPreferences sharedPref) {
+//        this.sharedPref = sharedPref;
+//    }
 
     public AtomicBoolean getIsDownloading() {
         return isDownloading;

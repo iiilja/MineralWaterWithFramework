@@ -44,13 +44,13 @@ public class Devices implements Serializable {
     public static final int RESOLUTION_1280X1024 = 3;
     public static final int RESOLUTION_1280X800 = 4;
     public static final int RESOLUTION_1024X768 = 5;
-    
+
     public static final int STATUS_CREATED = 0;
     public static final int STATUS_USED = 1;
     public static final int STATUS_ONLINE = 2;
     public static final int STATUS_OFFLINE = 3;
     public static final int STATUS_AHRCHIVED = 4;
-    
+
     public static final int AUDIO_OUT_HDMI = 1;
     public static final int AUDIO_OUT_MINI_JACK = 2;
 
@@ -68,7 +68,7 @@ public class Devices implements Serializable {
     private Integer status;
     @Column(name = "description")
     private String description;
-    
+
     @Column(name = "network_data")
     private String networkData;
 
@@ -77,86 +77,92 @@ public class Devices implements Serializable {
 
     @Column(name = "resolution")
     private Integer resolution;
-    
+
     @Column(name = "audio_out")
     private Integer audioOut;
-    
+
     @Column(name = "work_start_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date workStartAt;
-    
+
     @Column(name = "work_end_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date workEndAt;
-    
+
     @Column(name = "mon")
     private boolean mon;
-    
+
     @Column(name = "tue")
     private boolean tue;
-    
+
     @Column(name = "wed")
     private boolean wed;
-    
+
     @Column(name = "thu")
     private boolean thu;
-    
+
     @Column(name = "fri")
     private boolean fri;
-    
+
     @Column(name = "sat")
     private boolean sat;
-    
+
     @Column(name = "sun")
     private boolean sun;
 
     @Column(name = "last_device_request_dt")
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastDeviceRequestDt;
-    
+
     @Column(name = "free_space")
     private long freeSpace;
-    
+
     @Column(name = "cache")
     private long cache;
-    
+
     @Column(name = "clear_cache")
     private boolean clearCache;
-    
+
     @Column(name = "current_file_id")
     private Integer currentFileId;
-    
+
     @Column(name = "current_campaign_id")
     private Integer currentCampaignId;
-    
+
     @Column(name = "loading_campaign_id")
     private Integer loadingCampaignId;
-    
+
     @Column(name = "loading_compaign_progress")
     private Integer loadingCampaignProgress;
-    
+
     @Column(name = "next_file")
-    private Integer nextFile; 
-    
+    private Integer nextFile;
+
     @Column(name = "is_on_top")
     private boolean onTop;
-    
+
     @Column(name = "open_app")
     private boolean openApp;
-    
+
     @Column(name = "video_wall")
     private boolean videoWall;
-    
+
     @Column(name = "resolution_vertical")
     private Integer resolutionVertical;
-    
+
     @Column(name = "resolution_horizontal")
     private Integer resolutionHorizontal;
-    
-    @Column(name = "check_counter", nullable = false)
-    private int checkCounter;
-    
-    @Column(name = "state_period" , nullable = false)
+
+    @Column(name = "on_off_counter", nullable = false)
+    private int onOffCounter;
+
+    @Column(name = "on_off_counter_check", nullable = false)
+    private int onOffCounterCheck;
+
+    @Column(name = "on_off_check_number", nullable = false)
+    private int onOffCheckNumber;
+
+    @Column(name = "state_period", nullable = false)
     private long statePeriod;
 
     @Column(name = "created_dt")
@@ -337,7 +343,6 @@ public class Devices implements Serializable {
     public void setLoadingCampaignProgress(Integer loadingCampaignProgress) {
         this.loadingCampaignProgress = loadingCampaignProgress;
     }
-    
 
     public boolean isClearCache() {
         return clearCache;
@@ -346,16 +351,16 @@ public class Devices implements Serializable {
     public void setClearCache(boolean clearCache) {
         this.clearCache = clearCache;
     }
-    
+
     public Date getCreatedDt() {
-		return createdDt;
-	}
+        return createdDt;
+    }
 
-	public void setCreatedDt(Date createdDt) {
-		this.createdDt = createdDt;
-	}
+    public void setCreatedDt(Date createdDt) {
+        this.createdDt = createdDt;
+    }
 
-	@Override
+    @Override
     public int hashCode() {
         int hash = 0;
         hash += (id != null ? id.hashCode() : 0);
@@ -426,60 +431,72 @@ public class Devices implements Serializable {
         this.nextFile = nextFile;
     }
 
-	public boolean isOnTop() {
-		return onTop;
-	}
+    public boolean isOnTop() {
+        return onTop;
+    }
 
-	public void setOnTop(boolean onTop) {
-		this.onTop = onTop;
-	}
+    public void setOnTop(boolean onTop) {
+        this.onTop = onTop;
+    }
 
-	public boolean isOpenApp() {
-		return openApp;
-	}
+    public boolean isOpenApp() {
+        return openApp;
+    }
 
-	public void setOpenApp(boolean openApp) {
-		this.openApp = openApp;
-	}
+    public void setOpenApp(boolean openApp) {
+        this.openApp = openApp;
+    }
 
-	public boolean isVideoWall() {
-		return videoWall;
-	}
+    public boolean isVideoWall() {
+        return videoWall;
+    }
 
-	public void setVideoWall(boolean videoWall) {
-		this.videoWall = videoWall;
-	}
+    public void setVideoWall(boolean videoWall) {
+        this.videoWall = videoWall;
+    }
 
-	public Integer getResolutionVertical() {
-		return resolutionVertical;
-	}
+    public Integer getResolutionVertical() {
+        return resolutionVertical;
+    }
 
-	public void setResolutionVertical(Integer resolutionVertical) {
-		this.resolutionVertical = resolutionVertical;
-	}
+    public void setResolutionVertical(Integer resolutionVertical) {
+        this.resolutionVertical = resolutionVertical;
+    }
 
-	public Integer getResolutionHorizontal() {
-		return resolutionHorizontal;
-	}
+    public Integer getResolutionHorizontal() {
+        return resolutionHorizontal;
+    }
 
-	public void setResolutionHorizontal(Integer resolutionHorizontal) {
-		this.resolutionHorizontal = resolutionHorizontal;
-	}
+    public void setResolutionHorizontal(Integer resolutionHorizontal) {
+        this.resolutionHorizontal = resolutionHorizontal;
+    }
 
-	public int getCheckCounter() {
-		return checkCounter;
-	}
+    public int getOnOffCounter() {
+        return onOffCounter;
+    }
 
-	public void setCheckCounter(int checkCounter) {
-		this.checkCounter = checkCounter;
-	}
+    public void setOnOffCounter(int onOffCounter) {
+        this.onOffCounter = onOffCounter;
+    }
 
-	public long getStatePeriod() {
-		return statePeriod;
-	}
+    public int getOnOffCheckNumber() {
+        return onOffCheckNumber;
+    }
 
-	public void setStatePeriod(long statePeriod) {
-		this.statePeriod = statePeriod;
-	}
-	
+    public int getOnOffCounterCheck() {
+        return onOffCounterCheck;
+    }
+
+    public void setOnOffCounterCheck(int onOffCounterCheck) {
+        this.onOffCounterCheck = onOffCounterCheck;
+    }
+
+    public long getStatePeriod() {
+        return statePeriod;
+    }
+
+    public void setStatePeriod(long statePeriod) {
+        this.statePeriod = statePeriod;
+    }
+
 }

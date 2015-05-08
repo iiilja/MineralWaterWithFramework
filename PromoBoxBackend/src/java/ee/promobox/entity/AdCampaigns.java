@@ -215,31 +215,6 @@ public class AdCampaigns implements Serializable {
         this.videoLength = videoLength;
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof AdCampaigns)) {
-            return false;
-        }
-        AdCampaigns other = (AdCampaigns) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "ee.promobox.entity.AdCampaigns[ id=" + id + " name = "+name+"]";
-    }
-
     public Date getUpdateDate() {
         return updateDate;
     }
@@ -277,4 +252,55 @@ public class AdCampaigns implements Serializable {
     public void setCreatedDate(Date createdDate) {
         this.createdDate = createdDate;
     }
+    
+    
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (id != null ? id.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof AdCampaigns)) {
+            return false;
+        }
+        AdCampaigns other = (AdCampaigns) object;
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "ee.promobox.entity.AdCampaigns[ id=" + id + " name = "+name+"]";
+    }
+//
+//    @Override
+//    public Object clone() throws CloneNotSupportedException {
+//        AdCampaigns campaign = new AdCampaigns();
+//        campaign.name = "Copy of " + name;
+//        campaign.clientId = clientId;
+//        campaign.status = status;
+//        campaign.sequence = sequence;
+//        campaign.start = start;
+//        campaign.finish = finish;
+//        campaign.duration = duration;
+//        campaign.updateDate = updateDate;
+//        campaign.createdDate = createdDate;
+//        campaign.workTimeData = workTimeData;
+//        campaign.countFiles = countFiles;
+//        campaign.countImages = countVideos;
+//        campaign.countAudios = countAudios;
+//        campaign.countVideos = countVideos;
+//        campaign.audioLength = audioLength;
+//        campaign.videoLength = videoLength;
+//        campaign.filesArchived = filesArchived;
+//        return campaign;
+//    }
+    
+    
 }

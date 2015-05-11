@@ -53,7 +53,7 @@ public interface UserService {
     
     public CampaignsFiles findFileByIdAndPage(int fileId, int page);
     
-    public AdCampaigns findCampaignByIdAndClientId(int id, int clientId);
+    public AdCampaigns findCampaignByIdAndClientId(int campaign, int clientId);
     
     public void addDevice(Devices devices);
     

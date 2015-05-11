@@ -285,7 +285,7 @@ app.controller('RegistrationController', ['$scope', '$http', 'token', 'sysLocati
 
 app.controller('CampaignNewController', ['token', 'Campaign', 'sysLocation',
     function (token, Campaign, sysLocation) {
-        Campaign.create_new_campaignts({token: token.get()}, function(response){
+        Campaign.create_new_campaign({token: token.get()}, function(response){
             sysLocation.goLink('/campaign/edit/' + response.id)
         });
     }]);
@@ -390,7 +390,7 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
                 }
             }
             if (files.length > 0) {
-                Campaign.refrehs_files_stautes({token: token.get(), files: files}, function(responce) {
+                Campaign.refresh_files_status({token: token.get(), files: files}, function(responce) {
                     for (var i = 0; i < responce.files.length; i++) {
                         var f = responce.files[i];
 
@@ -777,7 +777,6 @@ app.controller('CampaignsController', ['$scope', 'token', 'Campaign', 'DevicesGr
                             for(var i = 0; i < devicesCampaigns.length; i++){
                                 var device = devicesCampaigns[i];
                                 if(device.id == deviceId){
-                                    console.log(device);
                                     for(var j = 0; j < device.campaigns.length; j++){
                                         if(device.campaigns[j].id == campaignId) { return true; }
                                     }
@@ -827,16 +826,12 @@ app.controller('CampaignsController', ['$scope', 'token', 'Campaign', 'DevicesGr
                         ungoupedGroup.devices = unGroupedDevices;
                         $scope.groups.splice(0,0,ungoupedGroup);
 
-                        console.log(devicesCampaigns);
                         for(var i = 0; i < $scope.devices.length; i++){
                             var device = $scope.devices[i];
                             var campaignIsSet = deviceContainsCampaign(devicesCampaigns, device.id, campaign.id);
-                            console.log("Device " + device.id + " contains = " + campaignIsSet + " campaign " + campaign.id);
                             device.initialSelected = campaignIsSet;
                             device.selected = campaignIsSet;
                         }
-
-                        $scope.toLog();
 
                     });
                 });
@@ -844,12 +839,9 @@ app.controller('CampaignsController', ['$scope', 'token', 'Campaign', 'DevicesGr
                 $scope.currentGroupId = -1;
 
                 $scope.selectGroup = function(group){
-                    console.log(group.selected);
-                    console.log(group);
                     for(var i=0; i < group.devices.length; i++){
                         group.devices[i].selected = group.selected;
                     }
-                    console.log(group);
                 };
 
                 $scope.selectDevice = function(device,group){
@@ -869,22 +861,31 @@ app.controller('CampaignsController', ['$scope', 'token', 'Campaign', 'DevicesGr
                         devices : changedDevices,
                         campaignId : campaign.id
                     };
-
+                    if (changedDevices.length == 0) {
+                        sysMessage.warning($filter('translate')('system_no_changes'));
+                        return;
+                    }
                     Device.delete_and_set_devices_campaign(devicesUpdate, function (response) {
                         if (response.result != "OK"){
                             sysMessage.error($filter('translate')('system_error'));
+                        } else {
+                            var devicesNames = "";
+                            for(var i = 0; i < changedDevices.length; i++){
+                                devicesNames += changedDevices[i].name;
+                                devicesNames += (i < changedDevices.length-1) ? ", ": ".";
+                            }
+                            sysMessage.update_s($filter('translate')('system_devices_updated') + devicesNames);
                         }
-                        console.log("Sent info : ");
-                        console.log(devicesUpdate);
-                        console.log("Confirmed");
                     });
 
                 };
+            };
 
-                $scope.toLog = function(){
-                    console.log($scope.groups);
-                    console.log($scope.devices);
-                }
+            $scope.copyCampaign = function(campaign){
+                Campaign.create_campaign_copy({token: token.get(),id: campaign.id}, function(response){
+                    var indexOfCampaign = $scope.campaigns.indexOf(campaign);
+                    $scope.campaigns.splice(indexOfCampaign, 0, response.campaign);
+                });
             };
         }
     }]);

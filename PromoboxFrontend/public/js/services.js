@@ -7,70 +7,18 @@ var services = angular.module('promobox.services', ['ngResource', 'ngCookies']);
 services.factory('Campaign', ['$resource',
     function ($resource) {
         return $resource('',{},{
-                create_new_campaignts: {method: 'POST', url: apiEndpoint + 'token/:token/campaigns/', params: {token: '@token'}},
+                create_new_campaign: {method: 'POST', url: apiEndpoint + 'token/:token/campaigns/', params: {token: '@token'}},
+                create_campaign_copy: {method: 'POST', url: apiEndpoint + 'token/:token/campaigns/:id/copy', params: {token: '@token', id: '@id'}},
                 edit_campaigns: {method: 'PUT', url: apiEndpoint + 'token/:token/campaigns/:id', params: {token: '@token', id: '@id'}},
                 get_campaigns: {method: 'GET', url: apiEndpoint + 'token/:token/campaigns/:id/', params: {token: '@token', id: '@id'}},
                 get_all_campaigns: {method: 'GET', url: apiEndpoint + 'token/:token/campaigns/', params: {token: '@token'}},
-                refrehs_files_stautes: {
-                    method: 'GET',
-                    url: apiEndpoint + 'token/:token/files/status',
-                    params: {
-                        token: '@token'
-                    }
-                },
-                play_next_file: {
-                    method: 'PUT',
-                    url: apiEndpoint + 'token/:token/campaigns/:id/nextFile/:file',
-                    params: {
-                        token: '@token',
-                        id: '@id',
-                        file: '@file'
-                    }
-                },
-                rotate_file: {
-                    method: 'PUT',
-                    url: apiEndpoint + "token/:token/campaigns/:id/files/:file/rotate/:angle",
-                    params: {
-                        token: '@token',
-                        id: '@id',
-                        file: '@file',
-                        angle: '@angle'
-                    }
-                },
-                delete_campaigns: {
-                    method: 'DELETE', 
-                    url: apiEndpoint + 'token/:token/campaigns/:id/', 
-                    params: {
-                        token: '@token',
-                         id: '@id'
-                    }
-                },
-                listPermissions: {
-                    method: 'GET',
-                    url: apiEndpoint + 'token/:token/campaign/permissions',
-                    params: {
-                        token: '@token'
-                    }
-                },
-                updatePermissions: {
-                    method: 'PUT',
-                    url: apiEndpoint + 'token/:token/users/:userId/permissions/campaign/:entityId',
-                    params: {
-                        token: '@token',
-                        userId: '@userId',
-                        entityId: '@entityId'
-                    }
-                },
-                deletePermissions: {
-                    method: 'DELETE',
-                    url: apiEndpoint + 'token/:token/users/:userId/permissions/campaign/:entityId',
-                    params: {
-                        token: '@token',
-                        userId: '@userId',
-                        entityId: '@entityId'
-                    }
-                }
-                
+                refresh_files_status: { method: 'GET', url: apiEndpoint + 'token/:token/files/status', params: { token: '@token' } },
+                play_next_file: { method: 'PUT', url: apiEndpoint + 'token/:token/campaigns/:id/nextFile/:file', params: { token: '@token', id: '@id', file: '@file' } },
+                rotate_file: { method: 'PUT', url: apiEndpoint + "token/:token/campaigns/:id/files/:file/rotate/:angle", params: { token: '@token', id: '@id', file: '@file', angle: '@angle' } },
+                delete_campaigns: { method: 'DELETE', url: apiEndpoint + 'token/:token/campaigns/:id/', params: { token: '@token', id: '@id' } },
+                listPermissions: { method: 'GET', url: apiEndpoint + 'token/:token/campaign/permissions', params: { token: '@token' } },
+                updatePermissions: { method: 'PUT', url: apiEndpoint + 'token/:token/users/:userId/permissions/campaign/:entityId', params: { token: '@token', userId: '@userId', entityId: '@entityId' } },
+                deletePermissions: { method: 'DELETE', url: apiEndpoint + 'token/:token/users/:userId/permissions/campaign/:entityId', params: { token: '@token', userId: '@userId', entityId: '@entityId' } }
             });}]);
 
 services.factory('Device', ['$resource',
@@ -150,47 +98,11 @@ services.factory("Clients", ['$resource',
 services.factory("DevicesGroups", ['$resource',
     function($resource) {
         return $resource('',{},{
-            list: {
-                method: 'GET',
-                url: apiEndpoint + 'token/:token/groups',
-                params: {
-                    token: '@token'
-                }
-            },
-            create: {
-                method: 'POST',
-                url: apiEndpoint + 'token/:token/groups',
-                params: {
-                    token: '@token',
-                    name : '@name'
-                }
-            },
-            delete: {
-                method: 'DELETE',
-                url: apiEndpoint + 'token/:token/groups/:groupId',
-                params: {
-                    token: '@token',
-                    groupId: '@groupId'
-                }
-            },
-            addDevices: {
-                method: 'POST',
-                url: apiEndpoint + 'token/:token/groups/:groupId/devices',
-                params: {
-                    token: '@token',
-                    groupId: '@groupId',
-                    deviceIdsArray: '@deviceIdsArray'
-                }
-            },
-            removeDevice: {
-                method: 'DELETE',
-                url: apiEndpoint + 'token/:token/groups/:groupId/devices/:deviceId',
-                params: {
-                    token: '@token',
-                    groupId: '@groupId',
-                    deviceId: '@deviceId'
-                }
-            }
+            list: {method: 'GET', url: apiEndpoint + 'token/:token/groups', params: { token: '@token' } },
+            create: { method: 'POST', url: apiEndpoint + 'token/:token/groups', params: { token: '@token', name : '@name' } },
+            delete: { method: 'DELETE', url: apiEndpoint + 'token/:token/groups/:groupId', params: { token: '@token', groupId: '@groupId' } },
+            addDevices: { method: 'POST', url: apiEndpoint + 'token/:token/groups/:groupId/devices', params: { token: '@token', groupId: '@groupId', deviceIdsArray: '@deviceIdsArray' } },
+            removeDevice: { method: 'DELETE', url: apiEndpoint + 'token/:token/groups/:groupId/devices/:deviceId', params: { token: '@token', groupId: '@groupId', deviceId: '@deviceId' } }
         });
     }]);
 

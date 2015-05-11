@@ -8,11 +8,14 @@ package ee.promobox.controller;
 import ee.promobox.entity.AdCampaigns;
 import ee.promobox.entity.CampaignsFiles;
 import ee.promobox.entity.Devices;
+import ee.promobox.entity.Files;
 import ee.promobox.entity.UsersCampaignsPermissions;
+import ee.promobox.service.FileService;
 import ee.promobox.service.Session;
 import ee.promobox.service.SessionService;
 import ee.promobox.service.UserService;
 import ee.promobox.util.RequestUtils;
+import java.io.File;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -23,8 +26,10 @@ import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.io.FileUtils;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,6 +57,8 @@ public class CampaignsController {
 
     @Autowired
     private UserService userService;
+    
+    @Autowired FileService fileService;
 
     @RequestMapping(value = "token/{token}/campaigns/{campaignId}", method = RequestMethod.GET)
     public @ResponseBody
@@ -147,53 +154,8 @@ public class CampaignsController {
                 // array for holding campaigns
 
                 // iterate trough the list of campaigns that belong to the client
-                SimpleDateFormat hourFowmat = new SimpleDateFormat("H");
-                SimpleDateFormat dayOfWeekFormat = new SimpleDateFormat("EE",Locale.US);
-                Date now = new Date();
-
                 for (AdCampaigns campaign : campaigns) {
-                    if (campaign.getStart().before(now)
-                            && campaign.getFinish().after(now)) {
-                            
-                        String dayOfWeek = "";
-                        try {
-                            dayOfWeek = dayOfWeekFormat.format(now).substring(0, 2).toLowerCase();
-                        } catch (StringIndexOutOfBoundsException e){
-                            String message = "Caugth StringIndexOutOfBoundsException on " + dayOfWeekFormat.format(now) + " substring(0, 2) ";
-                            SimpleDateFormat format = new SimpleDateFormat("EEEEEEEEEEE, d MMM yyyy HH:mm:ss Z");
-                            message += format.format(now);
-                            log.error(message);
-                            throw new Exception(message, e);
-                        }
-                        if (campaign.getWorkTimeData().contains(dayOfWeek)) {
-                            String hour = "\"" + hourFowmat.format(now) + "\"";
-                            if (campaign.getWorkTimeData().contains(hour)) {
-                                campaign.setStatus(AdCampaigns.STATUS_PUBLISHED);
-                            } else {
-                                campaign.setStatus(AdCampaigns.STATUS_UNPUBLISHED);
-                            }
-                        } else {
-                            campaign.setStatus(AdCampaigns.STATUS_UNPUBLISHED);
-                        }
-                    } else {
-                        campaign.setStatus(AdCampaigns.STATUS_UNPUBLISHED);
-                    }
-
-                    JSONObject jsonCampaign = new JSONObject();
-
-                    jsonCampaign.put("id", campaign.getId());
-                    jsonCampaign.put("name", campaign.getName());
-                    jsonCampaign.put("status", campaign.getStatus());
-                    jsonCampaign.put("finish", campaign.getFinish() == null ? null : campaign.getFinish().getTime());
-                    jsonCampaign.put("start", campaign.getStart() == null ? null : campaign.getStart().getTime());
-                    jsonCampaign.put("countFiles", campaign.getCountFiles());
-                    jsonCampaign.put("countImages", campaign.getCountImages());
-                    jsonCampaign.put("countAudios", campaign.getCountAudios());
-                    jsonCampaign.put("countVideos", campaign.getCountVideos());
-                    jsonCampaign.put("audioLength", campaign.getAudioLength());
-                    jsonCampaign.put("videoLength", campaign.getVideoLength());
-
-                    campaignsArray.put(jsonCampaign);
+                    campaignsArray.put(createCampaignJSON(campaign));
                 }
             }
 
@@ -331,6 +293,76 @@ public class CampaignsController {
             return null;
         }
 
+    }
+    
+    
+        @RequestMapping(value = "token/{token}/campaigns/{id}/copy", method = RequestMethod.POST)
+    public @ResponseBody
+    String createCampaignCopy(
+            @PathVariable("token") String token,
+            @PathVariable("id") int id,
+            HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+
+        JSONObject resp = new JSONObject();
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+        Session session = sessionService.findSession(token);
+
+        if (session != null && session.isAdmin()) {
+            AdCampaigns toCopy = userService.findCampaignByIdAndClientId(id, session.getClientId());
+
+            if (toCopy != null) {
+                
+                List<CampaignsFiles> filesToCopy = userService.findCampaignFiles(toCopy.getId());
+                
+                toCopy.setId(null);
+                toCopy.setName("Copy of " + toCopy.getName());
+
+                userService.addCampaign(toCopy);
+                
+                for (CampaignsFiles campaignFileToCopy : filesToCopy) {
+                    Files dbFileToCopy = userService.findFileById(campaignFileToCopy.getFileId());
+                    Integer toCopyDbFileId = dbFileToCopy.getId();
+                    
+                    
+                    dbFileToCopy.setId(null);
+                    userService.addFile(dbFileToCopy);
+                    
+                    File outputFile = fileService.getOutputFile(
+                            session.getClientId(), toCopyDbFileId, campaignFileToCopy.getPage());
+                    File newOutputFile = fileService.getOutputFile(
+                            session.getClientId(), dbFileToCopy.getId(), campaignFileToCopy.getPage());
+
+                    copyFileIfExists(outputFile, newOutputFile);
+                    
+                    File thumb = fileService.getThumbFile(
+                            session.getClientId(), toCopyDbFileId, campaignFileToCopy.getPage());
+                    File newThumb = fileService.getThumbFile(
+                            session.getClientId(), dbFileToCopy.getId(), campaignFileToCopy.getPage());
+                    
+                    copyFileIfExists(thumb, newThumb);
+                    
+                    campaignFileToCopy.setId(null);
+                    campaignFileToCopy.setAdCampaignsId(toCopy.getId());
+                    campaignFileToCopy.setCreatedDt(new Date());
+                    campaignFileToCopy.setUpdatedDt(new Date());
+                    campaignFileToCopy.setFileId(dbFileToCopy.getId());
+                    userService.addCampaignFile(campaignFileToCopy);
+                }
+
+                response.setStatus(HttpServletResponse.SC_OK);
+                resp.put("campaign", createCampaignJSON(toCopy));
+
+                return resp.toString();
+            }
+
+        } else {
+            RequestUtils.sendUnauthorized(response);
+
+            return null;
+        }
+        return null;
     }
 
     @RequestMapping(value = "token/{token}/campaigns/{id}", method = RequestMethod.PUT)
@@ -475,6 +507,64 @@ public class CampaignsController {
 
         log.error(ex.getMessage(), ex);
 
+    }
+    
+    private boolean copyFileIfExists(File src, File dst){
+        try {
+            FileUtils.copyFile(src, dst);
+            return true;
+        } catch (Exception ex) {
+            log.error(ex.getMessage(), ex);
+            return false;
+        }
+    }
+    
+    private JSONObject createCampaignJSON(AdCampaigns campaign) throws Exception{
+        Date now = new Date();
+        SimpleDateFormat hourFowmat = new SimpleDateFormat("H");
+        SimpleDateFormat dayOfWeekFormat = new SimpleDateFormat("EE",Locale.US);
+        if (campaign.getStart().before(now)
+                && campaign.getFinish().after(now)) {
+
+            String dayOfWeek = "";
+            try {
+                dayOfWeek = dayOfWeekFormat.format(now).substring(0, 2).toLowerCase();
+            } catch (StringIndexOutOfBoundsException e){
+                String message = "Caugth StringIndexOutOfBoundsException on " + dayOfWeekFormat.format(now) + " substring(0, 2) ";
+                SimpleDateFormat format = new SimpleDateFormat("EEEEEEEEEEE, d MMM yyyy HH:mm:ss Z");
+                message += format.format(now);
+                log.error(message);
+                throw new Exception(message, e);
+            }
+            if (campaign.getWorkTimeData().contains(dayOfWeek)) {
+                String hour = "\"" + hourFowmat.format(now) + "\"";
+                if (campaign.getWorkTimeData().contains(hour)) {
+                    campaign.setStatus(AdCampaigns.STATUS_PUBLISHED);
+                } else {
+                    campaign.setStatus(AdCampaigns.STATUS_UNPUBLISHED);
+                }
+            } else {
+                campaign.setStatus(AdCampaigns.STATUS_UNPUBLISHED);
+            }
+        } else {
+            campaign.setStatus(AdCampaigns.STATUS_UNPUBLISHED);
+        }
+
+        JSONObject jsonCampaign = new JSONObject();
+
+        jsonCampaign.put("id", campaign.getId());
+        jsonCampaign.put("name", campaign.getName());
+        jsonCampaign.put("status", campaign.getStatus());
+        jsonCampaign.put("finish", campaign.getFinish() == null ? null : campaign.getFinish().getTime());
+        jsonCampaign.put("start", campaign.getStart() == null ? null : campaign.getStart().getTime());
+        jsonCampaign.put("countFiles", campaign.getCountFiles());
+        jsonCampaign.put("countImages", campaign.getCountImages());
+        jsonCampaign.put("countAudios", campaign.getCountAudios());
+        jsonCampaign.put("countVideos", campaign.getCountVideos());
+        jsonCampaign.put("audioLength", campaign.getAudioLength());
+        jsonCampaign.put("videoLength", campaign.getVideoLength());
+        
+        return jsonCampaign;
     }
 
 }

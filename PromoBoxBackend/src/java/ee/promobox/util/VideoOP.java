@@ -64,6 +64,14 @@ public class VideoOP {
         return this;
     }
     
+    
+    public VideoOP threads(int threads) {
+        args.add("-threads");
+        args.add("" + threads);
+
+        return this;
+    }
+    
     public VideoOP crfMax(int crfMax) {
         args.add("-crf_max");
         args.add("" + crfMax);

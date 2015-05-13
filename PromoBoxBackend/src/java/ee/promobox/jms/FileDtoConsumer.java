@@ -501,9 +501,10 @@ public class FileDtoConsumer implements Runnable {
 			videoConvert.input(raw)
 					.codecVideo(codec)
 					//.crfMax(CRF_MAX)
-					.scale("-1:720")
+					.scale("-2:720")
 					.bitrateVideo("3M")
 					.maxrate("3M")
+                                        .threads(4)
 					.format(format)
 					.strict("experimental")
 					.overwrite();
@@ -517,17 +518,18 @@ public class FileDtoConsumer implements Runnable {
 				//.crfMax(CRF_MAX)
 				.bitrateVideo("3M")
 				.maxrate("3M")
+                                .threads(4)
 				.format(format)
 				.strict("experimental")
 				//.crfMax(CRF_MAX)
 				.overwrite();
 
 			if (angle == 90) {
-				videoConvert.vf("scale=-1:720", "transpose=1");
+				videoConvert.vf("scale=-2:720", "transpose=1");
 			} else if (angle == 180) {
-				videoConvert.vf("scale=-1:720", "transpose=1,transpose=1");
+				videoConvert.vf("scale=-2:720", "transpose=1,transpose=1");
 			} else if (angle == 270) {
-				videoConvert.vf("scale=-1:720", "transpose=2");
+				videoConvert.vf("scale=-2:720", "transpose=2");
 			}
 
 			return videoConvert.processToFile(output);

@@ -15,7 +15,7 @@ import ee.promobox.entity.Versions;
 import ee.promobox.service.Session;
 import ee.promobox.service.SessionService;
 import ee.promobox.service.UserService;
-import ee.promobox.util.RequestUtils;
+import ee.promobox.util.ResponseUtils;
 
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -67,12 +67,12 @@ public class UserController {
             HttpServletResponse response) throws Exception {
 
         JSONObject resp = new JSONObject();
-        resp.put("response", RequestUtils.ERROR);
+        resp.put("response", ResponseUtils.ERROR);
 
         Versions version = userService.findCurrentVersion();
         if (version != null) {
             resp.put("version", version.getVersion());
-            resp.put("response", RequestUtils.OK);
+            resp.put("response", ResponseUtils.OK);
         }
 
         return resp.toString();
@@ -88,8 +88,8 @@ public class UserController {
         json = URLDecoder.decode(json, "UTF-8");
 
         JSONObject objectGiven = new JSONObject(json);
-        JSONObject resp = RequestUtils.getErrorResponse();
-        resp.put("response", RequestUtils.ERROR);
+        JSONObject resp = ResponseUtils.getErrorResponse();
+        resp.put("response", ResponseUtils.ERROR);
 
         Users user = new Users();
         if (checkUser(user, objectGiven, resp, "")) {
@@ -109,7 +109,7 @@ public class UserController {
             userService.addUser(user);
 
             response.setStatus(HttpServletResponse.SC_OK);
-            resp.put("response", RequestUtils.OK);
+            resp.put("response", ResponseUtils.OK);
         }
 
         return resp.toString();
@@ -163,7 +163,7 @@ public class UserController {
 
                 resp.put("users", usersArray);
                 response.setStatus(HttpServletResponse.SC_OK);
-                resp.put("response", RequestUtils.OK);
+                resp.put("response", ResponseUtils.OK);
             }
         }
 
@@ -200,11 +200,11 @@ public class UserController {
                 resp.put("user", userToJson(user));
 
                 response.setStatus(HttpServletResponse.SC_OK);
-                resp.put("response", RequestUtils.OK);
+                resp.put("response", ResponseUtils.OK);
             }
 
         } else {
-            RequestUtils.sendUnauthorized(response);
+            ResponseUtils.sendUnauthorized(response);
         }
 
         return resp.toString();
@@ -219,7 +219,7 @@ public class UserController {
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
-        JSONObject resp = RequestUtils.getErrorResponse();
+        JSONObject resp = ResponseUtils.getErrorResponse();
         Session session = sessionService.findSession(token);
 
         if (session != null) {
@@ -227,7 +227,7 @@ public class UserController {
 
                 JSONObject objectGiven = new JSONObject(json);
 
-                resp.put("response", RequestUtils.ERROR);
+                resp.put("response", ResponseUtils.ERROR);
 
                 Users user = userService.findUserById(userId);
                 if (checkUser(user, objectGiven, resp, user.getEmail())) {
@@ -244,12 +244,12 @@ public class UserController {
                     userService.updateUser(user);
 
                     response.setStatus(HttpServletResponse.SC_OK);
-                    resp.put("response", RequestUtils.OK);
+                    resp.put("response", ResponseUtils.OK);
                 }
             }
 
         } else {
-            RequestUtils.sendUnauthorized(response);
+            ResponseUtils.sendUnauthorized(response);
         }
 
         return resp.toString();
@@ -265,7 +265,7 @@ public class UserController {
 
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
-        JSONObject resp = RequestUtils.getErrorResponse();
+        JSONObject resp = ResponseUtils.getErrorResponse();
         Session session = sessionService.findSession(token);
 
         if (session != null) {
@@ -277,10 +277,10 @@ public class UserController {
                 userService.updateUser(user);
 
                 response.setStatus(HttpServletResponse.SC_OK);
-                resp.put("response", RequestUtils.OK);
+                resp.put("response", ResponseUtils.OK);
             }
         } else {
-            RequestUtils.sendUnauthorized(response);
+            ResponseUtils.sendUnauthorized(response);
         }
 
         return resp.toString();
@@ -295,7 +295,7 @@ public class UserController {
 
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
-        JSONObject resp = RequestUtils.getErrorResponse();
+        JSONObject resp = ResponseUtils.getErrorResponse();
         Session session = sessionService.findSession(token);
 
         if (session != null) {
@@ -337,7 +337,7 @@ public class UserController {
                 resp.put("entities", devicesArray);
 
                 response.setStatus(HttpServletResponse.SC_OK);
-                resp.put("response", RequestUtils.OK);
+                resp.put("response", ResponseUtils.OK);
             }
         }
 
@@ -353,7 +353,7 @@ public class UserController {
 
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
-        JSONObject resp = RequestUtils.getErrorResponse();
+        JSONObject resp = ResponseUtils.getErrorResponse();
         Session session = sessionService.findSession(token);
 
         if (session != null) {
@@ -395,7 +395,7 @@ public class UserController {
                 resp.put("entities", campaignsArray);
 
                 response.setStatus(HttpServletResponse.SC_OK);
-                resp.put("response", RequestUtils.OK);
+                resp.put("response", ResponseUtils.OK);
             }
         }
 
@@ -448,7 +448,7 @@ public class UserController {
 
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
-        JSONObject resp = RequestUtils.getErrorResponse();
+        JSONObject resp = ResponseUtils.getErrorResponse();
         Session session = sessionService.findSession(token);
 
         if (session != null) {
@@ -481,11 +481,11 @@ public class UserController {
                 }
 
                 response.setStatus(HttpServletResponse.SC_OK);
-                resp.put("response", RequestUtils.OK);
+                resp.put("response", ResponseUtils.OK);
             }
 
         } else {
-            RequestUtils.sendUnauthorized(response);
+            ResponseUtils.sendUnauthorized(response);
         }
 
         return resp.toString();
@@ -503,7 +503,7 @@ public class UserController {
 
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
-        JSONObject resp = RequestUtils.getErrorResponse();
+        JSONObject resp = ResponseUtils.getErrorResponse();
         Session session = sessionService.findSession(token);
 
         if (session != null) {
@@ -536,11 +536,11 @@ public class UserController {
                 }
 
                 response.setStatus(HttpServletResponse.SC_OK);
-                resp.put("response", RequestUtils.OK);
+                resp.put("response", ResponseUtils.OK);
             }
 
         } else {
-            RequestUtils.sendUnauthorized(response);
+            ResponseUtils.sendUnauthorized(response);
         }
 
         return resp.toString();
@@ -557,7 +557,7 @@ public class UserController {
 
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
-        JSONObject resp = RequestUtils.getErrorResponse();
+        JSONObject resp = ResponseUtils.getErrorResponse();
         Session session = sessionService.findSession(token);
 
         if (session != null) {
@@ -565,10 +565,10 @@ public class UserController {
                 userService.deleteUsersDevicesPermissions(userId, deviceId);
 
                 response.setStatus(HttpServletResponse.SC_OK);
-                resp.put("response", RequestUtils.OK);
+                resp.put("response", ResponseUtils.OK);
             }
         } else {
-            RequestUtils.sendUnauthorized(response);
+            ResponseUtils.sendUnauthorized(response);
         }
 
         return resp.toString();
@@ -585,7 +585,7 @@ public class UserController {
 
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
-        JSONObject resp = RequestUtils.getErrorResponse();
+        JSONObject resp = ResponseUtils.getErrorResponse();
         Session session = sessionService.findSession(token);
 
         if (session != null) {
@@ -593,10 +593,10 @@ public class UserController {
                 userService.deleteUsersCampaignsPermissions(userId, campaignId);
 
                 response.setStatus(HttpServletResponse.SC_OK);
-                resp.put("response", RequestUtils.OK);
+                resp.put("response", ResponseUtils.OK);
             }
         } else {
-            RequestUtils.sendUnauthorized(response);
+            ResponseUtils.sendUnauthorized(response);
         }
 
         return resp.toString();
@@ -610,12 +610,12 @@ public class UserController {
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
-        JSONObject resp = RequestUtils.getErrorResponse();
+        JSONObject resp = ResponseUtils.getErrorResponse();
 
         Users user = userService.findUserByEmailAndPassword(email, password);
 
         if (user != null) {
-            resp.put("response", RequestUtils.OK);
+            resp.put("response", ResponseUtils.OK);
 
             Session session = new Session();
 
@@ -648,7 +648,7 @@ public class UserController {
         Session session = sessionService.findSession(token);
 
         if (session != null) {
-            resp.put("response", RequestUtils.OK);
+            resp.put("response", ResponseUtils.OK);
 
             Clients client = userService.findClientById(session.getClientId());
             if (client != null) {
@@ -699,7 +699,7 @@ public class UserController {
             return resp.toString();
 
         } else {
-            RequestUtils.sendUnauthorized(response);
+            ResponseUtils.sendUnauthorized(response);
         }
 
         return null;

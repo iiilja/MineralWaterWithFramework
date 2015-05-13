@@ -23,9 +23,11 @@ import ee.promobox.service.Session;
 import ee.promobox.service.SessionService;
 import ee.promobox.service.UserService;
 import ee.promobox.util.FileTypeUtils;
-import ee.promobox.util.RequestUtils;
+import ee.promobox.util.ResponseUtils;
 
 import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.List;
 
@@ -35,12 +37,14 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -228,7 +232,7 @@ public class FilesController {
                 return resp.toString();
             }
         } else {
-            RequestUtils.sendUnauthorized(response);
+            ResponseUtils.sendUnauthorized(response);
         }
         
         return null;
@@ -274,7 +278,7 @@ public class FilesController {
                 return resp.toString();
             }
         } else {
-            RequestUtils.sendUnauthorized(response);
+            ResponseUtils.sendUnauthorized(response);
         }
         
         return null;
@@ -408,7 +412,102 @@ public class FilesController {
                 }
             }
         } else {
-            RequestUtils.sendUnauthorized(response);
+            ResponseUtils.sendUnauthorized(response);
+        }
+
+        return null;
+    }
+    
+    @RequestMapping(value = "token/{token}/campaigns/{id}/link", method = RequestMethod.POST)
+    public @ResponseBody String uploadLink(
+            @PathVariable("token") String token,
+            @PathVariable("id") int campaignId,
+            @RequestParam(required = true) String link,
+            HttpServletRequest request,
+            HttpServletResponse response) throws IOException, JSONException{
+
+        JSONObject resp = new JSONObject();
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+        Session session = sessionService.findSession(token);
+
+        
+        if (session != null) {
+            
+            URI uri;
+            String protocol = null;
+            try {
+                uri = new URI(link);
+                protocol = uri.getScheme();
+            } catch (URISyntaxException e) {
+                String message = e.getMessage();
+                response.setStatus(HttpServletResponse.SC_OK);
+                resp.put(ResponseUtils.RESULT, ResponseUtils.ERROR);
+                resp.put(ResponseUtils.REASON, message);
+                
+                return resp.toString();
+            }
+            
+            if(protocol == null){
+                resp.put(ResponseUtils.WARN, "NO_PROTOCOL");
+                link = "http://" + link;
+            } else if ( !isKnownProtocol(protocol)) {
+                response.setStatus(HttpServletResponse.SC_OK);
+                resp.put(ResponseUtils.RESULT, ResponseUtils.ERROR);
+                resp.put(ResponseUtils.REASON, "UNKNOWN_PROTOCOL");
+                return resp.toString();
+            }
+            
+            AdCampaigns campaign = userService.findCampaignByIdAndClientId(campaignId, session.getClientId());
+
+            
+            if (campaign != null ) {
+
+                int fileTypeNumber = FileTypeUtils.FILE_TYPE_HTML;
+
+                Date createdDt = new Date();
+
+                Files databaseFile = new Files();
+
+                databaseFile.setFilename(link);
+                databaseFile.setFileType(fileTypeNumber);
+                databaseFile.setPath(link);
+                databaseFile.setCreatedDt(createdDt);
+                databaseFile.setSize(0L);
+                databaseFile.setClientId(session.getClientId());
+                databaseFile.setContentLength(0L);
+
+                userService.addFile(databaseFile);
+
+                // populate campaign files table with data about file
+                CampaignsFiles campaignFile = new CampaignsFiles();
+
+                campaignFile.setClientId(session.getClientId());
+                campaignFile.setAdCampaignsId(campaignId);
+                campaignFile.setFileId(databaseFile.getId());
+                campaignFile.setFileType(fileTypeNumber);
+                campaignFile.setOrderId(databaseFile.getId());
+                campaignFile.setStatus(CampaignsFiles.STATUS_ACTIVE);
+                campaignFile.setSize(0);
+                campaignFile.setCreatedDt(createdDt);
+                campaignFile.setUpdatedDt(createdDt);
+                campaignFile.setFilename(link);
+
+                userService.addCampaignFile(campaignFile);
+
+                campaignFile.setOrderId(campaignFile.getId());
+
+                campaign.setUpdateDate(new Date());
+
+                userService.updateCampaign(campaign);
+
+                response.setStatus(HttpServletResponse.SC_OK);
+
+                return resp.toString();
+
+            }
+        } else {
+            ResponseUtils.sendUnauthorized(response);
         }
 
         return null;
@@ -436,38 +535,41 @@ public class FilesController {
                 CampaignsFiles cFile = userService.findCampaignFileById(fileId);
                 Files databaseFile = userService.findFileById(cFile.getFileId());
                 
-                angle = databaseFile.getAngle() + angle;
-                if (angle > 360) {
-                    angle -= 360;
+                if (FileTypeUtils.isRotatable(cFile.getFileType())){
+                    angle = databaseFile.getAngle() + angle;
+                    if (angle > 360) {
+                        angle -= 360;
+                    }
+                    databaseFile.setAngle(angle);
+
+                    userService.updateFile(databaseFile);
+
+                    String fileType = FilenameUtils.getExtension(databaseFile.getFilename());
+
+                    FileDto fileDto = new FileDto(cFile.getId(), session.getClientId(), databaseFile.getFileType(), fileType);
+                    fileDto.setAngle(angle);
+                    fileDto.setRotate(true);
+
+                    cFile.setStatus(CampaignsFiles.STATUS_CONVERTING);
+                    cFile.setUpdatedDt(new Date());
+                    userService.updateCampaignFile(cFile);
+
+                    FileDtoProducer producer = new FileDtoProducer(fileDto);
+                    FileDtoConsumer consumer = new FileDtoConsumer(session.getClientId(), config, userService, fileService);
+
+                    ThreadPool threadPool = clientThreadPool.getClientThreadPool(session.getClientId());
+                    threadPool.execute(consumer);
+                    threadPool.execute(producer);
+
+
+                    response.setStatus(HttpServletResponse.SC_OK);
                 }
-                databaseFile.setAngle(angle);
                 
-                userService.updateFile(databaseFile);
-
-                String fileType = FilenameUtils.getExtension(databaseFile.getFilename());
-                
-                FileDto fileDto = new FileDto(cFile.getId(), session.getClientId(), databaseFile.getFileType(), fileType);
-                fileDto.setAngle(angle);
-                fileDto.setRotate(true);
-                
-                cFile.setStatus(CampaignsFiles.STATUS_CONVERTING);
-                cFile.setUpdatedDt(new Date());
-                userService.updateCampaignFile(cFile);
-                
-                FileDtoProducer producer = new FileDtoProducer(fileDto);
-                FileDtoConsumer consumer = new FileDtoConsumer(session.getClientId(), config, userService, fileService);
-                
-                ThreadPool threadPool = clientThreadPool.getClientThreadPool(session.getClientId());
-                threadPool.execute(consumer);
-                threadPool.execute(producer);
-                
-
-                response.setStatus(HttpServletResponse.SC_OK);
 
                 return resp.toString();
             }
         } else {
-            RequestUtils.sendUnauthorized(response);
+            ResponseUtils.sendUnauthorized(response);
         }
 
         return null;
@@ -499,7 +601,7 @@ public class FilesController {
             response.setStatus(HttpServletResponse.SC_OK);
             return resp.toString();
         } else {
-            RequestUtils.sendUnauthorized(response);
+            ResponseUtils.sendUnauthorized(response);
         }
         
         return null;
@@ -550,7 +652,7 @@ public class FilesController {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);
             }
         } else {
-            RequestUtils.sendUnauthorized(response);
+            ResponseUtils.sendUnauthorized(response);
         }
         
         return null;
@@ -624,7 +726,7 @@ public class FilesController {
             File file = null;
             OutputStream outputStream = response.getOutputStream();
 
-            if (dbFile.getFileType() != FileTypeUtils.FILE_TYPE_AUDIO 
+            if (dbFile.getFileType() != FileTypeUtils.FILE_TYPE_AUDIO && dbFile.getFileType() != FileTypeUtils.FILE_TYPE_HTML 
                     && !(dbFile.getStatus() == CampaignsFiles.STATUS_UPLOADED || dbFile.getStatus() == CampaignsFiles.STATUS_CONVERTING)) {
                 file = fileService.getThumbFile(dbFile.getClientId(), dbFile.getFileId(), dbFile.getPage());
 
@@ -636,6 +738,10 @@ public class FilesController {
             } else if (dbFile.getFileType() == FileTypeUtils.FILE_TYPE_AUDIO 
                     && !(dbFile.getStatus() == CampaignsFiles.STATUS_UPLOADED || dbFile.getStatus() == CampaignsFiles.STATUS_CONVERTING)) {
                 InputStream is = getClass().getClassLoader().getResourceAsStream("ee/promobox/assets/play.png");
+                IOUtils.copy(is, outputStream);
+                IOUtils.closeQuietly(is);
+            } else if (dbFile.getFileType() == FileTypeUtils.FILE_TYPE_HTML) {
+                InputStream is = getClass().getClassLoader().getResourceAsStream("ee/promobox/assets/html.png");
                 IOUtils.copy(is, outputStream);
                 IOUtils.closeQuietly(is);
             } else {
@@ -676,6 +782,16 @@ public class FilesController {
         return fileInformation;
     }
     
+    private static boolean isKnownProtocol(String protocol){
+        protocol = protocol.toLowerCase();
+        boolean known = false;
+        known |= protocol.equals("http");
+        known |= protocol.equals("https");
+        known |= protocol.equals("rtmp");
+        known |= protocol.equals("trsp");
+        return known;
+    }
+    
     
     private static String getExtForFile(CampaignsFiles file) {
         String ext = ".png";
@@ -687,6 +803,13 @@ public class FilesController {
         }
 
         return ext;
+    }
+    
+    @ExceptionHandler(Exception.class)
+    public void handleAllException(Exception ex) {
+
+        log.error(ex.getMessage(), ex);
+
     }
 
 

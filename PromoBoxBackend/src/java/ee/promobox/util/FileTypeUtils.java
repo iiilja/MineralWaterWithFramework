@@ -16,8 +16,9 @@ public class FileTypeUtils {
     public static final int FILE_TYPE_IMAGE = 1;
     public static final int FILE_TYPE_AUDIO = 2;
     public static final int FILE_TYPE_VIDEO = 3;
-    public static final int FILE_TYPE_HTNL = 4;
+    public static final int FILE_TYPE_HTML = 4;
     public static final int FILE_TYPE_SWF = 5;
+    public static final int FILE_TYPE_RTP = 5;
 
 
     public static int determineFileTypeNumber(String filetype) {
@@ -70,6 +71,10 @@ public class FileTypeUtils {
             default:
                 return INVALID_FILE_TYPE;
         }
+    }
+    
+    public static boolean isRotatable(int fileType){
+        return fileType != FILE_TYPE_HTML && fileType != FILE_TYPE_AUDIO;
     }
 
 

@@ -18,7 +18,7 @@ public class FileTypeUtils {
     public static final int FILE_TYPE_VIDEO = 3;
     public static final int FILE_TYPE_HTML = 4;
     public static final int FILE_TYPE_SWF = 5;
-    public static final int FILE_TYPE_RTP = 5;
+    public static final int FILE_TYPE_RTP = 6;
 
 
     public static int determineFileTypeNumber(String filetype) {

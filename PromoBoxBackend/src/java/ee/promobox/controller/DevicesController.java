@@ -752,7 +752,7 @@ public class DevicesController {
                         }
 
                         if (!timeIntersection) {
-                            resp.put("WARN", "time_intersection");
+                            resp.put(ResponseUtils.WARN, "time_intersection");
                             resp.put("name", intersectionName);
                         }
 

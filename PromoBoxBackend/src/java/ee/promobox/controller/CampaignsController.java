@@ -14,7 +14,7 @@ import ee.promobox.service.FileService;
 import ee.promobox.service.Session;
 import ee.promobox.service.SessionService;
 import ee.promobox.service.UserService;
-import ee.promobox.util.RequestUtils;
+import ee.promobox.util.ResponseUtils;
 import java.io.File;
 
 import java.text.SimpleDateFormat;
@@ -122,7 +122,7 @@ public class CampaignsController {
             }
 
         } else {
-            RequestUtils.sendUnauthorized(response);
+            ResponseUtils.sendUnauthorized(response);
         }
 
         return null;
@@ -164,7 +164,7 @@ public class CampaignsController {
             response.setStatus(HttpServletResponse.SC_OK);
             return resp.toString();
         } else {
-            RequestUtils.sendUnauthorized(response);
+            ResponseUtils.sendUnauthorized(response);
 
             return null;
         }
@@ -241,7 +241,7 @@ public class CampaignsController {
             return resp.toString();
 
         } else {
-            RequestUtils.sendUnauthorized(response);
+            ResponseUtils.sendUnauthorized(response);
 
             return null;
         }
@@ -288,7 +288,7 @@ public class CampaignsController {
             return resp.toString();
 
         } else {
-            RequestUtils.sendUnauthorized(response);
+            ResponseUtils.sendUnauthorized(response);
 
             return null;
         }
@@ -358,7 +358,7 @@ public class CampaignsController {
             }
 
         } else {
-            RequestUtils.sendUnauthorized(response);
+            ResponseUtils.sendUnauthorized(response);
 
             return null;
         }
@@ -438,7 +438,7 @@ public class CampaignsController {
                 return resp.toString();
             }
         } else {
-            RequestUtils.sendUnauthorized(response);
+            ResponseUtils.sendUnauthorized(response);
         }
 
         return null;
@@ -476,7 +476,7 @@ public class CampaignsController {
             response.setStatus(HttpServletResponse.SC_OK);
             return resp.toString();
         } else {
-            RequestUtils.sendUnauthorized(response);
+            ResponseUtils.sendUnauthorized(response);
         }
 
         return null;

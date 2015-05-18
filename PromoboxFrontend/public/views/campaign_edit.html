@@ -22,7 +22,7 @@
                                 ng-src="{{apiEndpoint}}files/thumb/{{promofile.id}}" alt="">
                         </div>
                                                     
-                        <ul class="controll-block" ng-if="promofile.fileType == 2">
+                        <ul class="controll-block" ng-if="promofile.fileType == 2 || promofile.fileType == 4">
                             <li class="Play-audio" 
                                 ng-if="!isFileConverting(promofile)">
                                 <a ng-click="openPlayer($index)"></a>
@@ -41,7 +41,7 @@
                         
                         <p>{{promofile.name| limitTo: 30 | lowercase }}{{promofile.name.length > 30 ? '...' : ''}}</p>
                     </div>
-                    <div class="Video-picture-wrap img-thumbnail" ng-if="promofile.fileType != 2">
+                    <div class="Video-picture-wrap img-thumbnail" ng-if="promofile.fileType != 2 && promofile.fileType != 4">
                         <div class="cont">
                             <img ng-click="isFileConverting(promofile) ? false : openPlayer($index)"
                                  ng-src="{{apiEndpoint}}files/thumb/{{promofile.id}}"  alt="">
@@ -85,6 +85,9 @@
                     <div class="form-group">
                         <span class="file-input btn btn-primary btn-file">
                             {{ 'campaign_edit_browse' | translate }}&hellip; <input type="file" nv-file-select="" uploader="uploader" multiple  />
+                        </span>
+                        <span class="file-input btn btn-default btn-file" data-toggle="modal" data-target="#insertLink">
+                            {{ 'campaign_edit_add_link' | translate }}
                         </span>
                     </div>
                     <div ng-show="uploader.queue.length > 0">
@@ -402,6 +405,27 @@
                 <div class="bottom-buttons">
                     <button type="button" class="btn btn-success" data-dismiss="modal" 
                             ng-click="reorder_files()">{{ 'list_change' | translate }}</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{{ 'campaign_edit_cancel' | translate }}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal sorting-->
+<div class="modal fade" id="insertLink" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only"></span></button>
+                <h4 class="modal-title" id="myModalLabel">{{ 'campaign_edit_changefilesorder' | translate }}</h4>
+            </div>
+            <div class="modal-body">
+                {{ 'modal_campaign_add_link_txt' | translate }}
+                <input type="text" class="form-control" style="width: 30%;" placeholder="http://" ng-model="httpLink">
+                <div class="bottom-buttons">
+                    <button type="button" class="btn btn-success" data-dismiss="modal"
+                            ng-click="saveLink(httpLink)">{{ 'modal_add' | translate }}</button>
                     <button type="button" class="btn btn-default" data-dismiss="modal">{{ 'campaign_edit_cancel' | translate }}</button>
                 </div>
             </div>

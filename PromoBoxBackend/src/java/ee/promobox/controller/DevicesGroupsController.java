@@ -12,7 +12,7 @@ import ee.promobox.service.DevicesGroupService;
 import ee.promobox.service.Session;
 import ee.promobox.service.SessionService;
 import ee.promobox.service.UserService;
-import ee.promobox.util.RequestUtils;
+import ee.promobox.util.ResponseUtils;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
@@ -110,7 +110,7 @@ public class DevicesGroupsController {
             response.setStatus(HttpServletResponse.SC_OK);
             return resp.toString();
         } else {
-            RequestUtils.sendUnauthorized(response);
+            ResponseUtils.sendUnauthorized(response);
 
             return null;
         }
@@ -140,7 +140,7 @@ public class DevicesGroupsController {
 
             return resp.toString();
         } else {
-            RequestUtils.sendUnauthorized(response);
+            ResponseUtils.sendUnauthorized(response);
 
             return null;
         }
@@ -170,7 +170,7 @@ public class DevicesGroupsController {
 
             return resp.toString();
         } else {
-            RequestUtils.sendUnauthorized(response);
+            ResponseUtils.sendUnauthorized(response);
 
             return null;
         }
@@ -201,14 +201,14 @@ public class DevicesGroupsController {
                     if (device != null) {
                         DevicesGroupDevices groupDevice = new DevicesGroupDevices(groupId, device.getId(), device.getUuid());
                         groupService.addDeviceToDeviceGroup(groupDevice);
-                        resp.put(RequestUtils.RESULT, RequestUtils.OK);
+                        resp.put(ResponseUtils.RESULT, ResponseUtils.OK);
                     } else {
                         log.error("Tried to add others device Client id = " + clientId + "deviceId = " + deviceId + " groupId = " + groupId);
                     }
                 }
                 return resp.toString();
             } else {
-                RequestUtils.sendUnauthorized(response);
+                ResponseUtils.sendUnauthorized(response);
 
                 return null;
             }
@@ -238,11 +238,11 @@ public class DevicesGroupsController {
                 if (devicesGroup != null) {
                     response.setStatus(HttpServletResponse.SC_OK);
                     groupService.removeDeviceFromDeviceGroup(deviceId, groupId);
-                    resp.put(RequestUtils.RESULT, RequestUtils.OK);
+                    resp.put(ResponseUtils.RESULT, ResponseUtils.OK);
                 }
                 return resp.toString();
             } else {
-                RequestUtils.sendUnauthorized(response);
+                ResponseUtils.sendUnauthorized(response);
                 return null;
             }
         } catch (Exception e) {
@@ -290,7 +290,7 @@ public class DevicesGroupsController {
 
                 return resp.toString();
             } else {
-                RequestUtils.sendUnauthorized(response);
+                ResponseUtils.sendUnauthorized(response);
 
                 return null;
             }
@@ -332,7 +332,7 @@ public class DevicesGroupsController {
 
                 return resp.toString();
             } else {
-                RequestUtils.sendUnauthorized(response);
+                ResponseUtils.sendUnauthorized(response);
 
                 return null;
             }

@@ -659,6 +659,24 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
                 refreshFilesModel();
             });
         };
+
+        $scope.saveLink = function(httpLink){
+            if(httpLink && httpLink != ""){
+                Files.addLink({token: token.get(), id: $scope.campaign.id, link: httpLink }, function(response){
+                    if (response.result == "ERROR"){
+                        if (response.reason == "UNKNOWN_PROTOCOL"){
+                            sysMessage.error($filter('translate')('system_unknown_protocol'));
+                        }
+                        return;
+                    } else if (response.WARN == "NO_PROTOCOL"){
+                        sysMessage.warning("No protocol was defined, setting HTTP");
+                    }
+                    refreshFilesModel();
+                });
+            } else {
+                sysMessage.warning($filter('translate')('system_rotatefile'));
+            }
+        };
         
         $scope.settingsVisible = false;
         $scope.showSettings = function(show) {

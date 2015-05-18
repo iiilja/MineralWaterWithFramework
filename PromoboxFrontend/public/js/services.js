@@ -42,6 +42,7 @@ services.factory('Files', ['$resource',
     function ($resource) {
         return $resource('',{},{
             getFiles: {method: 'GET', url: apiEndpoint + 'token/:token/campaigns/:id/files/', params: {token: '@token', id: '@id'}},
+            addLink: {method: 'POST', url: apiEndpoint + 'token/:token/campaigns/:id/link', params: {token: '@token', id: '@id', link: '@link'}},
             arhiveFiles: {method: 'PUT', url: apiEndpoint + 'token/:token/files/archive/:id/', params: {token: '@token', id: '@id'}},
             reorderFiles: {method: 'PUT', url: apiEndpoint + 'token/:token/campaigns/:id/files/order', params: {token: '@token', id: '@id'}}
         });
@@ -50,48 +51,12 @@ services.factory('Files', ['$resource',
 services.factory("Clients", ['$resource',
     function($resource) {
         return $resource('',{},{
-            getClient: {
-                method: 'GET',
-                url: apiEndpoint + 'user/data/:token',
-                params: {
-                    token: '@token'
-                }
-            },
-            list: {
-                method: 'GET',
-                url: apiEndpoint + 'token/:token/users',
-                params: {
-                    token: '@token'
-                }
-            },
-            add: {
-                method: 'POST',
-                url: apiEndpoint + 'token/:token/users',
-                params: {
-                    token: '@token'
-                }
-            },
-            update: {
-                method: 'PUT', 
-                url: apiEndpoint + 'token/:token/users/:id',
-                params: {
-                    token: '@token',
-                    id: '@id'
-                }
-            },
-            remove: {
-                method: 'DELETE', 
-                url: apiEndpoint + 'token/:token/users/:id',
-                params: {
-                    token: '@token',
-                    id: '@id'
-                }
-            },
-            register: {
-                method: 'POST',
-                url: apiEndpoint + "user/register",
-                params: {}
-            }
+            getClient: { method: 'GET', url: apiEndpoint + 'user/data/:token', params: { token: '@token' } },
+            list: { method: 'GET', url: apiEndpoint + 'token/:token/users', params: { token: '@token' } },
+            add: { method: 'POST', url: apiEndpoint + 'token/:token/users', params: { token: '@token' } },
+            update: { method: 'PUT',  url: apiEndpoint + 'token/:token/users/:id', params: { token: '@token', id: '@id' } },
+            remove: { method: 'DELETE',  url: apiEndpoint + 'token/:token/users/:id', params: { token: '@token', id: '@id' } },
+            register: { method: 'POST', url: apiEndpoint + "user/register", params: {} }
         });
     }]);
 

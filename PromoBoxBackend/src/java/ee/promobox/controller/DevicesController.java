@@ -17,7 +17,7 @@ import ee.promobox.jms.MailDto;
 import ee.promobox.service.Session;
 import ee.promobox.service.SessionService;
 import ee.promobox.service.UserService;
-import ee.promobox.util.RequestUtils;
+import ee.promobox.util.ResponseUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -149,7 +149,7 @@ public class DevicesController {
 
             userService.addErrorLog(errorLog);
             response.setStatus(HttpServletResponse.SC_OK);
-            resp.put(RequestUtils.RESULT, RequestUtils.OK);
+            resp.put(ResponseUtils.RESULT, ResponseUtils.OK);
         }
 
         return resp.toString();
@@ -517,7 +517,7 @@ public class DevicesController {
 
             return resp.toString();
         } else {
-            RequestUtils.sendUnauthorized(response);
+            ResponseUtils.sendUnauthorized(response);
         }
 
         return null;
@@ -576,7 +576,7 @@ public class DevicesController {
 
             return resp.toString();
         } else {
-            RequestUtils.sendUnauthorized(response);
+            ResponseUtils.sendUnauthorized(response);
         }
 
         return null;
@@ -608,7 +608,7 @@ public class DevicesController {
             return resp.toString();
 
         } else {
-            RequestUtils.sendUnauthorized(response);
+            ResponseUtils.sendUnauthorized(response);
         }
 
         return null;
@@ -635,7 +635,7 @@ public class DevicesController {
             return resp.toString();
         }
 
-        RequestUtils.sendUnauthorized(response);
+        ResponseUtils.sendUnauthorized(response);
 
         return null;
     }
@@ -678,16 +678,16 @@ public class DevicesController {
                 }
             }
             if (allOK) {
-                resp.put(RequestUtils.RESULT, RequestUtils.OK);
+                resp.put(ResponseUtils.RESULT, ResponseUtils.OK);
             } else {
                 resp.put("couldntDelete", couldntDelete);
                 resp.put("couldntSet", couldntSet);
-                resp.put(RequestUtils.RESULT, RequestUtils.ERROR);
+                resp.put(ResponseUtils.RESULT, ResponseUtils.ERROR);
             }
             response.setStatus(HttpServletResponse.SC_OK);
             return resp.toString();
         } else {
-            RequestUtils.sendUnauthorized(response);
+            ResponseUtils.sendUnauthorized(response);
         }
         return null;
     }
@@ -752,7 +752,7 @@ public class DevicesController {
                         }
 
                         if (!timeIntersection) {
-                            resp.put("WARN", "time_intersection");
+                            resp.put(ResponseUtils.WARN, "time_intersection");
                             resp.put("name", intersectionName);
                         }
 
@@ -781,7 +781,7 @@ public class DevicesController {
                 return resp.toString();
 
             } else {
-                RequestUtils.sendUnauthorized(response);
+                ResponseUtils.sendUnauthorized(response);
             }
         }
 
@@ -860,7 +860,7 @@ public class DevicesController {
                 return resp.toString();
 
             } else {
-                RequestUtils.sendUnauthorized(response);
+                ResponseUtils.sendUnauthorized(response);
             }
         }
 
@@ -896,7 +896,7 @@ public class DevicesController {
                 return resp.toString();
 
             } else {
-                RequestUtils.sendUnauthorized(response);
+                ResponseUtils.sendUnauthorized(response);
             }
         }
 
@@ -991,7 +991,7 @@ public class DevicesController {
             return resp.toString();
 
         } else {
-            RequestUtils.sendUnauthorized(response);
+            ResponseUtils.sendUnauthorized(response);
         }
 
         return null;

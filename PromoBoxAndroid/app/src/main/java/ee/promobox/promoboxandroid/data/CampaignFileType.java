@@ -4,7 +4,7 @@ package ee.promobox.promoboxandroid.data;
  * Created by MaximDorofeev on 12.07.2014.
  */
 public enum CampaignFileType {
-    IMAGE(1), AUDIO(2), VIDEO(3), HTML(4), SWF(5);
+    IMAGE(1), AUDIO(2), VIDEO(3), HTML(4), SWF(5), RTP(6);
 
     private int type;
 

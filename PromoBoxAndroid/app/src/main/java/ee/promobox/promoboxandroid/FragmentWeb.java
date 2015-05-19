@@ -10,6 +10,8 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.URLUtil;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
@@ -45,8 +47,17 @@ public class FragmentWeb extends FragmentWithSeekBar implements View.OnTouchList
         super.setView(fragmentView);
 
         webView = (WebView) fragmentView.findViewById(R.id.webView);
-        webView.getSettings().setJavaScriptEnabled(true);
-        webView.getSettings().setUserAgentString(USER_AGENT);
+        WebSettings settings = webView.getSettings();
+        settings.setJavaScriptEnabled(true);
+//        settings.setUserAgentString(USER_AGENT);
+
+        settings.setLoadWithOverviewMode(true);
+        settings.setUseWideViewPort(true);
+        settings.setAllowFileAccess(false);
+
+        webView.setVerticalScrollBarEnabled(false);
+        webView.setHorizontalScrollBarEnabled(false);
+
         webView.setWebViewClient(new MyWebViewClient());
         webView.setOnTouchListener(this);
         return fragmentView;
@@ -90,7 +101,7 @@ public class FragmentWeb extends FragmentWithSeekBar implements View.OnTouchList
         super.setSeekBarMax(delay);
         super.changeSeekBarState(true, 0);
         webView.postDelayed(runnable, delay);
-        webView.loadUrl(campaignFile.getPath());
+        webView.loadUrl(campaignFile.getName());
 
     }
 

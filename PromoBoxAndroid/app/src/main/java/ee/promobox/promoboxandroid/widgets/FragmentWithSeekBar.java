@@ -1,14 +1,9 @@
 package ee.promobox.promoboxandroid.widgets;
 
 import android.app.Fragment;
-import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.drawable.AnimationDrawable;
-import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -18,7 +13,6 @@ import android.widget.TextView;
 import java.util.concurrent.TimeUnit;
 
 import ee.promobox.promoboxandroid.R;
-import ee.promobox.promoboxandroid.SettingsActivity;
 import ee.promobox.promoboxandroid.interfaces.PlayerButtonsClickListener;
 import ee.promobox.promoboxandroid.util.PlayerUIVisibilityRunnable;
 import ee.promobox.promoboxandroid.util.SeekBarProgressChangerRunnable;
@@ -41,8 +35,10 @@ public abstract class FragmentWithSeekBar extends Fragment implements PlayerButt
 
     private SeekBar seekBar;
     private View playerControlsLayout;
+    private View extendingFragmentView;
 
     protected void setView(View view) {
+        extendingFragmentView = view;
         playerControlsLayout = view.findViewById(R.id.player_controls);
         seekBar = (SeekBar) playerControlsLayout.findViewById(R.id.audio_seekBar);
         seekBar.setOnSeekBarChangeListener(this);
@@ -111,9 +107,8 @@ public abstract class FragmentWithSeekBar extends Fragment implements PlayerButt
 
         switch (v.getId()){
             case R.id.player_settings:
-                Intent i = new Intent(getActivity(), SettingsActivity.class);
-                startActivity(i);
-                return;
+                extendingFragmentView.performLongClick();
+                break;
             case R.id.player_back:
                 onPlayerPrevious();
                 break;

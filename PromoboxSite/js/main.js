@@ -45,12 +45,7 @@ $(document).ready(function(){
 		$("[data-translate]").jqTranslate('index', {forceLang: this.value});
 	});
 	
-	$('#youtube').colorbox({iframe: true, width: 640, height: 390,  closeButton:true, href:function(){
-        var videoId = new RegExp('[\\?&]v=([^&#]*)').exec(this.href);
-        if (videoId && videoId[1]) {
-            return 'https://youtube.com/embed/'+videoId[1]+'?rel=0&wmode=transparent&width=640';
-        }
-    }});
+	$('#youtube').colorbox({iframe: true, width: 800, height: 500,  closeButton:true});
 	
 	
 	$('#terms').colorbox({iframe: true, width: 640, height: 900,  closeButton:true});

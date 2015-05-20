@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.media.AudioManager;
 import android.net.ConnectivityManager;
@@ -19,7 +18,6 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 import android.os.RemoteException;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -32,6 +30,7 @@ import ee.promobox.promoboxandroid.data.CampaignFileType;
 import ee.promobox.promoboxandroid.data.Display;
 import ee.promobox.promoboxandroid.data.DisplayArrayList;
 import ee.promobox.promoboxandroid.data.ErrorMessage;
+import ee.promobox.promoboxandroid.data.Settings;
 import ee.promobox.promoboxandroid.interfaces.FragmentPlaybackListener;
 import ee.promobox.promoboxandroid.interfaces.VideoWallMasterListener;
 import ee.promobox.promoboxandroid.util.ExceptionHandler;
@@ -48,7 +47,6 @@ import ee.promobox.promoboxandroid.widgets.FragmentVideoWall;
 public class MainActivity extends Activity implements FragmentPlaybackListener, View.OnLongClickListener, MessageReceivedListener, VideoWallMasterListener {
 
     private final static String AUDIO_DEVICE_PARAM = "audio_devices_out_active";
-    public final static String AUDIO_DEVICE_PREF = "audio_device";
 
     public static final String CAMPAIGN_UPDATE = "ee.promobox.promoboxandroid.UPDATE";
     public static final String MAKE_TOAST = "ee.promobox.promoboxandroid.MAKE_TOAST";
@@ -57,7 +55,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener, 
     public static final String SET_STATUS = "ee.promobox.promoboxandroid.SET_STATUS";
     public static final String ADD_ERROR_MSG = "ee.promobox.promoboxandroid.ADD_ERROR_MSG";
     public static final String WRONG_UUID = "ee.promobox.promoboxandroid.WRONG_UUID";
-    public static final String SETTINGS_UUID_CHANGE = "ee.promobox.promoboxandroid.SETTINGS_UUID_CHANGE";
+    public static final String SETTINGS_CHANGE = "ee.promobox.promoboxandroid.SETTINGS_CHANGE";
     public static final String PLAY_SPECIFIC_FILE = "ee.promobox.promoboxandroid.PLAY_SPECIFIC_FILE";
     public static final String WALL_UPDATE = "ee.promobox.promoboxandroid.WALL_UPDATE";
 
@@ -91,6 +89,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener, 
     Fragment videoFragment = new FragmentVideo();
     Fragment imageFragment = new FragmentImage();
     Fragment webFragment = new FragmentWeb();
+//    Fragment rtpFragment = new FragmentRTP();
     Fragment currentFragment;
 
     //    private UDPMessenger udpMessenger;
@@ -119,9 +118,8 @@ public class MainActivity extends Activity implements FragmentPlaybackListener, 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this, true, ""));
 
-        String uuid = PreferenceManager.getDefaultSharedPreferences(this).getString("uuid", "fail");
-        Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this, true, uuid));
         exceptionHandlerError = getIntent().getStringExtra("error");
 
         setContentView(R.layout.activity_main);
@@ -134,7 +132,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener, 
         intentFilter.addAction(SET_STATUS);
         intentFilter.addAction(ADD_ERROR_MSG);
         intentFilter.addAction(WRONG_UUID);
-        intentFilter.addAction(SETTINGS_UUID_CHANGE);
+        intentFilter.addAction(SETTINGS_CHANGE);
         intentFilter.addAction(WALL_UPDATE);
 
         this.getBaseContext().registerReceiver(bReceiver, intentFilter);
@@ -145,8 +143,6 @@ public class MainActivity extends Activity implements FragmentPlaybackListener, 
         Intent start = new Intent();
         start.setAction(MainActivity.APP_START);
         sendBroadcast(start);
-
-        setAudioDeviceFromPrefs();
 
         Handler messageHandler = new Handler(Looper.getMainLooper()) {
             @Override
@@ -318,9 +314,8 @@ public class MainActivity extends Activity implements FragmentPlaybackListener, 
         Log.w(TAG, "Back pressed, do nothing");
     }
 
-    private void setAudioDeviceFromPrefs() {
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        String audioDevice = sharedPref.getString(AUDIO_DEVICE_PREF, "AUDIO_CODEC");
+    private void setAudioDeviceFromPrefs() throws RemoteException {
+        String audioDevice = mainService.getAudioDevice();
         setAudioDevice(audioDevice);
     }
 
@@ -331,6 +326,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener, 
             am.setParameters(AUDIO_DEVICE_PARAM + "=" + audioDevice);
         }
     }
+
 
 
     private ServiceConnection mConnection = new ServiceConnection() {
@@ -346,6 +342,12 @@ public class MainActivity extends Activity implements FragmentPlaybackListener, 
                 ErrorMessage errorMessage = new ErrorMessage("UncaughtException", exceptionHandlerError, null);
                 errorMessage.putMoreInfo(exceptionHandlerError);
                 addError(errorMessage, true);
+            }
+
+            try {
+                setAudioDeviceFromPrefs();
+            } catch (RemoteException | NullPointerException e) {
+                Log.e(TAG, "Could not set audio device");
             }
 
             boolean isWall = false;
@@ -415,7 +417,12 @@ public class MainActivity extends Activity implements FragmentPlaybackListener, 
     }
 
     public void makeToast(String toast) {
-        boolean silentMode = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("silent_mode", false);
+        boolean silentMode = false;
+        try {
+            silentMode = mainService.getSettings().getSilentMode();
+        } catch (RemoteException e) {
+            addError(new ErrorMessage(e),false);
+        }
         if (!silentMode) {
             Toast.makeText(this, toast, Toast.LENGTH_LONG).show();
         }
@@ -460,6 +467,8 @@ public class MainActivity extends Activity implements FragmentPlaybackListener, 
                 return videoFragment;
             case HTML:
                 return webFragment;
+//            case RTP:
+//                return rtpFragment;
             default:
                 return mainFragment;
         }
@@ -495,12 +504,12 @@ public class MainActivity extends Activity implements FragmentPlaybackListener, 
     public boolean onLongClick(View view) {
         Intent i = new Intent(MainActivity.this, SettingsActivity.class);
         ArrayList<Display> displays = null;
-        String uuid = "";
+        Settings settings = null;
         try {
             if (mainService.getDisplays() != null){
                 displays = new ArrayList<>(mainService.getDisplays());
             }
-            uuid = mainService.getUuid();
+            settings = mainService.getSettings();
         } catch (RemoteException e) {
             makeToast("Could not get displays ");
             Log.e(TAG, "Could not get displays " + e.getMessage());
@@ -510,7 +519,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener, 
         } else {
             Log.w(TAG, "mainService.getDisplays() == nul");
         }
-        i.putExtra("uuid", uuid);
+        i.putExtra("settings", settings);
 
         startActivityForResult(i, RESULT_FINISH_PLAY);
         startActivity(i);
@@ -582,12 +591,13 @@ public class MainActivity extends Activity implements FragmentPlaybackListener, 
 
 
     public Display getDisplay() {
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        int displayId = Integer.parseInt(sharedPref.getString("monitor_id", "-1"));
-        Log.d(TAG, "getDisplay() = " + displayId + " string = " + sharedPref.getString("monitor_id", "-1"));
+        if (mainService == null) return null;
+
+        int displayId = -1;
         DisplayArrayList displays = null;
         try {
-            displays = mainService != null ? new DisplayArrayList(mainService.getDisplays()) : null;
+            displayId = mainService.getSettings().getMonitorId();
+            displays = new DisplayArrayList(mainService.getDisplays());
         } catch (RemoteException e) {
             Log.e(TAG, e.getMessage());
         }
@@ -700,11 +710,11 @@ public class MainActivity extends Activity implements FragmentPlaybackListener, 
                         startNextFile();
                     }
                     break;
-                case SETTINGS_UUID_CHANGE:
-                    Log.d(RECEIVER_STRING, SETTINGS_UUID_CHANGE);
-                    String uuid = intent.getStringExtra("uuid");
+                case SETTINGS_CHANGE:
+                    Log.d(RECEIVER_STRING, SETTINGS_CHANGE);
+                    Settings settings = intent.getParcelableExtra("settings");
                     try {
-                        mainService.setUuid(uuid);
+                        mainService.setSettings(settings);
                     } catch ( RemoteException e ){
                         makeToast("Could not set UUID, please try again later.");
                     }

@@ -4,6 +4,7 @@ package ee.promobox.promoboxandroid;
 import ee.promobox.promoboxandroid.data.Campaign;
 import ee.promobox.promoboxandroid.data.Display;
 import ee.promobox.promoboxandroid.data.ErrorMessage;
+import ee.promobox.promoboxandroid.data.Settings;
 
 interface AIDLInterface {
     void addError(in ErrorMessage errorMessage, boolean broadcastNow);
@@ -23,5 +24,7 @@ interface AIDLInterface {
      void checkAndDownloadCampaign();
      List<Display> getDisplays();
      void setClosedNormally(boolean closedNormally);
+     Settings getSettings();
+     void setSettings(in Settings settings);
 
 }

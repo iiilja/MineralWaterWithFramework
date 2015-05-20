@@ -28,6 +28,13 @@ import com.google.android.exoplayer.MediaCodecTrackRenderer;
 import com.google.android.exoplayer.MediaCodecVideoTrackRenderer;
 import com.google.android.exoplayer.SampleSource;
 import com.google.android.exoplayer.audio.AudioTrack;
+import com.google.android.exoplayer.chunk.ChunkSampleSource;
+import com.google.android.exoplayer.chunk.ChunkSource;
+import com.google.android.exoplayer.chunk.FormatEvaluator;
+import com.google.android.exoplayer.dash.DashChunkSource;
+import com.google.android.exoplayer.smoothstreaming.SmoothStreamingChunkSource;
+import com.google.android.exoplayer.upstream.DataSource;
+import com.google.android.exoplayer.upstream.HttpDataSource;
 
 
 import org.apache.commons.io.FilenameUtils;

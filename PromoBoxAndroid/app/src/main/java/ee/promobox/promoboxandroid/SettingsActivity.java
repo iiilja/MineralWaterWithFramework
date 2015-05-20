@@ -2,6 +2,7 @@ package ee.promobox.promoboxandroid;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
@@ -14,20 +15,21 @@ import android.view.MenuItem;
 import java.util.ArrayList;
 
 import ee.promobox.promoboxandroid.data.Display;
+import ee.promobox.promoboxandroid.data.Settings;
 
 
 public class SettingsActivity extends PreferenceActivity {
     private static String TAG = "SettingsActivity";
 
     private ArrayList<Display> displays;
-    private String uuid;
+    private Settings settings;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         displays = getIntent().getParcelableArrayListExtra("displays");
-        uuid = getIntent().getStringExtra("uuid");
+        settings = getIntent().getParcelableExtra("settings");
     }
 
 
@@ -54,8 +56,8 @@ public class SettingsActivity extends PreferenceActivity {
         } else {
             Log.w(TAG, "displays is null");
         }
-        arguments.putString("uuid",uuid);
-        Log.d(TAG,"UUID in settings is " + uuid);
+        arguments.putParcelable("settings", settings);
+        Log.d(TAG,"UUID in settings is " + settings.getUuid());
 
         fragment.setArguments(arguments);
 
@@ -72,16 +74,43 @@ public class SettingsActivity extends PreferenceActivity {
 
     public static class GeneralPreferenceFragment extends PreferenceFragment {
 
+        Settings settings;
+        Settings settingsCopy;
+
+        @Override
+        public void onPause() {
+            if (!settings.equals(settingsCopy)){
+                Intent settingsChange = new Intent(MainActivity.SETTINGS_CHANGE);
+                settingsChange.putExtra("settings", settingsCopy);
+                getActivity().sendBroadcast(settingsChange);
+            }
+            super.onPause();
+        }
+
         @Override
         public void onCreate(Bundle savedInstanceState) {
 
             super.onCreate(savedInstanceState);
 
+            settings = getArguments().getParcelable("settings");
+            settingsCopy = Settings.copy(settings);
+
             addPreferencesFromResource(R.xml.pref_general);
 
             findPreference("version").setSummary( BuildConfig.VERSION_CODE + "");
 
-            ListPreference list = (ListPreference) findPreference("monitor_id");
+            ListPreference displayPreference = (ListPreference) findPreference(Settings.MONITOR_ID_PREF);
+            displayPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    try {
+                        settingsCopy.setMonitorId(Integer.parseInt((String) newValue));
+                    } catch (ClassCastException e){
+                        e.printStackTrace();
+                    }
+                    return true;
+                }
+            });
             if (getArguments() != null && getArguments().getParcelableArrayList("displays") != null) {
                 ArrayList<Display> displays = getArguments().getParcelableArrayList("displays");
                 CharSequence[] entries = new CharSequence[displays.size()];
@@ -91,10 +120,10 @@ public class SettingsActivity extends PreferenceActivity {
                     entryValues[i] = d.getId() + "";
                     entries[i] = d.getId() + " - [" + d.getPoints()[0] + "; " + d.getPoints()[2] + "]";
                 }
-                list.setEntries(entries);
-                list.setEntryValues(entryValues);
+                displayPreference.setEntries(entries);
+                displayPreference.setEntryValues(entryValues);
             } else {
-                list.setEnabled(false);
+                displayPreference.setEnabled(false);
             }
 
 
@@ -114,28 +143,41 @@ public class SettingsActivity extends PreferenceActivity {
                 }
             });
 
-            EditTextPreference preference = (EditTextPreference) findPreference("uuid");
-            Log.d(TAG, "GeneralPreferenceFragment UUID = " + getArguments().getString("uuid","no uuid"));
-            preference.setText(getArguments().getString("uuid", "no uuid"));
-            preference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            EditTextPreference uuidPreference = (EditTextPreference) findPreference(Settings.UUID_PREF);
+            uuidPreference.setText(settings.getUuid());
+            uuidPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object o) {
                     Log.d(TAG, "onUUIDPreference changed");
                     String uuid = (String) o;
-                    Log.d(TAG, o.toString());
-                    Log.d(TAG, uuid);
                     boolean ok = !uuid.equals("");
                     if (ok) {
-                        Intent uuidChange = new Intent(MainActivity.SETTINGS_UUID_CHANGE);
-                        uuidChange.putExtra("uuid", uuid);
-                        getActivity().sendBroadcast(uuidChange);
+                        settingsCopy.setUuid(uuid);
                     }
                     return ok;
                 }
             });
 
+            CheckBoxPreference silentModePreference = (CheckBoxPreference) findPreference(Settings.SILENT_MODE_PREF);
+            silentModePreference.setChecked(settings.getSilentMode());
+            silentModePreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    boolean silent = (boolean) newValue;
+                    settingsCopy.setSilentMode(silent);
+                    return true;
+                }
+            });
 
-
+            ListPreference syncFrequencyPreference = (ListPreference) findPreference(Settings.SYNC_FREQUENCY_PREF);
+            syncFrequencyPreference.setValue(settings.getSyncFrequency() + "");
+            syncFrequencyPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    settingsCopy.setSyncFrequency(Integer.parseInt((String) newValue));
+                    return true;
+                }
+            });
         }
     }
 

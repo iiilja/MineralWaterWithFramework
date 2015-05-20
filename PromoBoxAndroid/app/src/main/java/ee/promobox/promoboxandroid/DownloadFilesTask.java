@@ -52,6 +52,7 @@ import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import ee.promobox.promoboxandroid.data.AudioOut;
 import ee.promobox.promoboxandroid.data.Campaign;
 import ee.promobox.promoboxandroid.data.CampaignFile;
 import ee.promobox.promoboxandroid.data.CampaignList;
@@ -118,22 +119,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
             if (data.has("audioOut")) {
                 int deviceId = data.getInt("audioOut");
 
-                String device;
-
-                switch (deviceId) {
-                    case 1:
-                        device = "AUDIO_HDMI";
-                        break;
-                    case 2:
-                        device = "AUDIO_SPDIF";
-                        break;
-                    default:
-                    case 0:
-                        device = "AUDIO_CODEC";
-                        break;
-                }
-
-                service.setAudioDevice(device);
+                service.setAudioDevice(AudioOut.getByOutNumber(deviceId));
             }
             if (data.has("videoWall") && data.getBoolean("videoWall")) {
                 configureVideoWall(data);
@@ -141,7 +127,6 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
 
             if (data.has("campaigns")) {
                 service.setOrientation(data.optInt("orientation", MainActivity.ORIENTATION_LANDSCAPE));
-                service.getSharedPref().edit().putInt("orientation", service.getOrientation()).commit();
 
                 handleCampaigns(data.getJSONArray("campaigns"));
             } else {

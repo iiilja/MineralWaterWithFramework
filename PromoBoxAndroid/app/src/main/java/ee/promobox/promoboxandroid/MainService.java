@@ -10,7 +10,6 @@ import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.IBinder;
 import android.os.RemoteException;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 import org.apache.commons.io.FileUtils;
@@ -28,6 +27,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import ee.promobox.promoboxandroid.data.AudioOut;
 import ee.promobox.promoboxandroid.data.Campaign;
 import ee.promobox.promoboxandroid.data.CampaignList;
 import ee.promobox.promoboxandroid.data.CampaignMultiple;
@@ -35,9 +35,13 @@ import ee.promobox.promoboxandroid.data.Display;
 import ee.promobox.promoboxandroid.data.DisplayArrayList;
 import ee.promobox.promoboxandroid.data.ErrorMessage;
 import ee.promobox.promoboxandroid.data.ErrorMessageArray;
+import ee.promobox.promoboxandroid.data.Settings;
+import ee.promobox.promoboxandroid.intents.SetStatusIntent;
 import ee.promobox.promoboxandroid.intents.ToastIntent;
 import ee.promobox.promoboxandroid.util.ExceptionHandler;
 import ee.promobox.promoboxandroid.util.MainServiceTimerTask;
+import ee.promobox.promoboxandroid.util.SettingsReader;
+import ee.promobox.promoboxandroid.util.SettingsSavingException;
 
 
 public class MainService extends Service {
@@ -49,11 +53,10 @@ public class MainService extends Service {
     public final static String DEFAULT_SERVER = "http://46.182.30.93:8080"; // production
     public final static String DEFAULT_SERVER_JSON = DEFAULT_SERVER + "/service/device/%s/pull";
 
-//    private SharedPreferences sharedPref;
+    private SettingsReader settingsReader;
 
-    private String uuid;
-    private String audioDevice; // which audio interface is used for output
-    private int orientation;
+    private String audioDevice = AudioOut.AUDIO_CODEC.name(); // which audio interface is used for output
+    private int orientation = MainActivity.ORIENTATION_LANDSCAPE;
     private int currentFileId;
 
     private Date lastWifiRestartDt;
@@ -86,24 +89,28 @@ public class MainService extends Service {
 
     private File ROOT = new File(Environment.getExternalStorageDirectory().getAbsoluteFile() + "/promobox/");
 
-//    private LocalBroadcastManager bManager;
     private DownloadFilesTask dTask;
 
     @Override
     public void onCreate() {
         Log.i(TAG, "onCreate()");
 
-        String uuid = getSharedPref().getString("uuid","fail");
-        if (uuid.equals("fail")){
-            setUuid(getUuid(), false);
-        } else {
-            setUuid(uuid, true);
-        }
-        Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this, false, getUuid()));
-//        bManager = LocalBroadcastManager.getInstance(this);
         dTask = new DownloadFilesTask(this);
 
         checkExternalSD();
+        settingsReader = new SettingsReader(ROOT);
+
+        Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this, false, getUuid()));
+
+        int monitorId = Integer.parseInt(getSharedPref().getString("monitor_id", "-1"));
+        boolean silentMode = getSharedPref().getBoolean(Settings.SILENT_MODE_PREF, false);
+        int syncFrequency = Integer.parseInt(getSharedPref().getString(Settings.SYNC_FREQUENCY_PREF, "30"));
+        try {
+            settingsReader.setValuesMigrate(monitorId, silentMode, syncFrequency, getUuidMigrate());
+        } catch (SettingsSavingException e) {
+            e.printStackTrace();
+        }
+
         setCampaignsFromJSONFile();
 
         Timer timer = new Timer();
@@ -134,7 +141,6 @@ public class MainService extends Service {
         }
 
         Log.i(TAG, "Start command");
-        setOrientation(getSharedPref().getInt("orientation", MainActivity.ORIENTATION_LANDSCAPE));
 
         boolean isOnTop = getOnTopComponentInfo().getPackageName().startsWith(getPackageName());
         if ( startMainActivity
@@ -243,6 +249,14 @@ public class MainService extends Service {
                 if (dataJSON.has("campaigns")){
                     campaignsJSON = new JSONObject(dataString).getJSONArray("campaigns");
                 }
+                if (dataJSON.has("audioOut")){
+                    int audioOut = dataJSON.getInt("audioOut");
+                    setAudioDevice(AudioOut.getByOutNumber(audioOut));
+                }
+                if (dataJSON.has("audioOut")){
+                    int audioOut = dataJSON.getInt("audioOut");
+                    setAudioDevice(AudioOut.getByOutNumber(audioOut));
+                }
 
                 if (!previousCampaignsJSON.equals(campaignsJSON.toString())){
                     Log.d(TAG, previousCampaignsJSON + "\n" + dataString);
@@ -260,7 +274,7 @@ public class MainService extends Service {
 
     private void checkExternalSD(){
         File file = new File("/mnt/external_sd");
-        if ( file.exists() && file.listFiles() != null && file.listFiles().length > 1){
+        if ( file.exists() && file.listFiles() != null && file.listFiles().length > 0){
             Log.d(TAG, "/mnt/external_sd EXISTS");
             ROOT = new File(file.getPath() +  "/promobox/");
         }
@@ -336,7 +350,7 @@ public class MainService extends Service {
 
         @Override
         public void setUuid(String uuid) throws RemoteException {
-            MainService.this.setUuid(uuid, true);
+            MainService.this.setUuid(uuid);
         }
 
         @Override
@@ -369,6 +383,21 @@ public class MainService extends Service {
             Log.d(TAG, "MainActivity was closed " + (closedNormally ? "normally": "NOT normally"));
             MainService.this.closedNormally = closedNormally;
         }
+
+        @Override
+        public Settings getSettings() throws RemoteException {
+            return settingsReader.getSettings();
+        }
+
+        @Override
+        public void setSettings(Settings settings) throws RemoteException {
+            try {
+                settingsReader.setSettings(settings);
+            } catch (SettingsSavingException e) {
+                addError(new ErrorMessage(e), false);
+                sendBroadcast(new ToastIntent("Could not save settings"));
+            }
+        }
     };
 
     public int getOrientation() {
@@ -379,29 +408,30 @@ public class MainService extends Service {
         this.orientation = orientation;
     }
 
-    public String getUuid() {
-        if (uuid == null){
-            File file = new File(getROOT(),"UUID");
-            try {
-                uuid = FileUtils.readFileToString(file);
-            } catch (IOException e) {
-                uuid = "fail";
-            }
+    public String getUuidMigrate() {
+        String uuid;
+        File file = new File(getROOT(),"UUID");
+        try {
+            uuid = FileUtils.readFileToString(file);
+            FileUtils.deleteQuietly(file);
+        } catch (IOException e) {
+            uuid = getUuid();
         }
         Log.d(TAG, "UUID = " + uuid);
         return uuid;
     }
 
-    public void setUuid(String uuid, boolean writeToFile) {
-        if (writeToFile) {
-            File file = new File(getROOT(),"UUID");
-            try {
-                FileUtils.write(file,uuid);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+    public String getUuid() {
+        return settingsReader.getUuid();
+    }
+
+    public void setUuid(String uuid) {
+        try {
+            settingsReader.setUuid(uuid);
+        } catch (SettingsSavingException e) {
+            addError(new ErrorMessage(e),false);
+            sendBroadcast(new ToastIntent("Could not set UUID !"));
         }
-        this.uuid = uuid;
     }
 
     public int getCurrentFileId() {
@@ -417,17 +447,12 @@ public class MainService extends Service {
     }
 
     public void setAudioDevice(String audioDevice) {
-        getSharedPref().edit().putString(MainActivity.AUDIO_DEVICE_PREF, audioDevice).commit();
         this.audioDevice = audioDevice;
     }
 
     public SharedPreferences getSharedPref() {
         return getSharedPreferences(getPackageName()+"_preferences",MODE_MULTI_PROCESS);
     }
-
-//    public void setSharedPref(SharedPreferences sharedPref) {
-//        this.sharedPref = sharedPref;
-//    }
 
     public AtomicBoolean getIsDownloading() {
         return isDownloading;

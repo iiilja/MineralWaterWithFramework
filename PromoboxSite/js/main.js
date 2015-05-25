@@ -39,6 +39,16 @@ $(document).ready(function(){
 
 	// ===
 	$("a.anchorLink").anchorAnimate();
+	
+	$("#change-lang").change(function(e) {
+		$("[data-translate]").jqTranslate('index', {forceLang: this.value});
+	});
+	
+	$('#youtube').colorbox({iframe: true, width: 800, height: 500,  closeButton:true});
+	
+	
+	$('#terms').colorbox({iframe: true, width: 640, height: 900,  closeButton:true});
+	$('#privacy').colorbox({iframe: true, width: 640, height: 900,  closeButton:true});
 });
 
 function tabs(tab_wrap,tab_nav) {
@@ -68,7 +78,7 @@ jQuery.fn.anchorAnimate = function(settings) {
 			var locationHref = window.location.href
 			var elementClick = $(caller).attr("href")
 			
-			var destination = $(elementClick).offset().top - parseInt(50);
+			var destination = $(elementClick).offset().top - parseInt(70);
 			$("html:not(:animated),body:not(:animated)").animate({ scrollTop: destination}, settings.speed, function() {
 				window.location.hash = elementClick
 			});

@@ -1,4 +1,3 @@
-/// <reference path="../../typings/jquery/jquery.d.ts"/>
 $(document).ready(function(){
 	
 	$('input, select').styler();
@@ -40,20 +39,7 @@ $(document).ready(function(){
 
 	// ===
 	$("a.anchorLink").anchorAnimate();
-	
-	$("#change-lang").change(function(e) {
-		$("[data-translate]").jqTranslate('index', {forceLang: this.value});
-	});
-	
-	$('#youtube').colorbox({iframe: true, width: 800, height: 500,  closeButton:true});
-	
-	
-	$('#terms').colorbox({iframe: true, width: 640, height: 900,  closeButton:true});
-	$('#privacy').colorbox({iframe: true, width: 640, height: 900,  closeButton:true});
-        
-        
 });
-
 
 function tabs(tab_wrap,tab_nav) {
 	$(tab_nav).find('a').click(function(e){

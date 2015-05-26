@@ -1095,12 +1095,12 @@ body {
   clear: both;
 }
 .social-block ul li {
-  float: left;
+  text-align: center;
 }
 .social-block ul li a {
   background-image: url("images/social.png");
   background-repeat: no-repeat;
-  display: block;
+  display: inline-block;
 }
 .social-block ul li a.tw {
   background-position: -53px -3px;

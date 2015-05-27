@@ -2,36 +2,62 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9b44007b-a825-43ba-8a60-51fd2b364aed" name="Default" comment="#107 Groups of devices">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/data/AudioOut.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/aidl/ee/promobox/promoboxandroid/data/Settings.aidl" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/data/Settings.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/util/SettingsReader.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/util/SettingsSavingException.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/aidl/ee/promobox/promoboxandroid/AIDLInterface.aidl" afterPath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/aidl/ee/promobox/promoboxandroid/AIDLInterface.aidl" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../PromoBoxAndroid/app/signed_v6.apk" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../PromoBoxAndroid/app/signed_v7.apk" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../PromoBoxAndroid/app/signed_v8.apk" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../PromoBoxAndroid/app/signed_v9.apk" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/FragmentRTP.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/widgets/VideoViewVitamio.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/res/layout/fragment_rtp.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../PromoBoxAndroid/.idea/dictionaries/ilja.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../PromoBoxAndroid/vitamio/vitamio.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/AndroidManifest.xml" afterPath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/AndroidManifest.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/widgets/AspectRatioImageView.java" afterPath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/widgets/AspectRatioImageView.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/data/Campaign.java" afterPath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/data/Campaign.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/data/CampaignFile.java" afterPath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/data/CampaignFile.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/data/CampaignFileType.java" afterPath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/data/CampaignFileType.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/data/CampaignList.java" afterPath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/data/CampaignList.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../PromoBoxBackend/src/java/ee/promobox/controller/CampaignsController.java" afterPath="$PROJECT_DIR$/../PromoBoxBackend/src/java/ee/promobox/controller/CampaignsController.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/data/Display.java" afterPath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/data/Display.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/DownloadFilesTask.java" afterPath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/DownloadFilesTask.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/data/ErrorMessage.java" afterPath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/data/ErrorMessage.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/util/ExceptionHandler.java" afterPath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/util/ExceptionHandler.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../PromoBoxBackend/src/java/ee/promobox/controller/FilesController.java" afterPath="$PROJECT_DIR$/../PromoBoxBackend/src/java/ee/promobox/controller/FilesController.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/FirstActivity.java" afterPath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/FirstActivity.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/FragmentAudio.java" afterPath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/FragmentAudio.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/FragmentImage.java" afterPath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/FragmentImage.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/FragmentVideo.java" afterPath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/FragmentVideo.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/widgets/FragmentVideoWall.java" afterPath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/widgets/FragmentVideoWall.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/FragmentWallImage.java" afterPath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/FragmentWallImage.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/FragmentWallVideo.java" afterPath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/FragmentWallVideo.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/FragmentWeb.java" afterPath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/FragmentWeb.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/util/InternetConnectionUtil.java" afterPath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/util/InternetConnectionUtil.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/util/udp_multicasting/JGroupsMessenger.java" afterPath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/util/udp_multicasting/JGroupsMessenger.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/MainActivity.java" afterPath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/MainActivity.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/MainService.java" afterPath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/MainService.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../PromoboxUpdater/app/src/main/java/ee/promobox/promoboxupdater/MainService.java" afterPath="$PROJECT_DIR$/../PromoboxUpdater/app/src/main/java/ee/promobox/promoboxupdater/MainService.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/SettingsActivity.java" afterPath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/SettingsActivity.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/util/udp_multicasting/MessageReceivedListener.java" afterPath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/util/udp_multicasting/MessageReceivedListener.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/util/udp_multicasting/messages/MultiCastMessage.java" afterPath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/util/udp_multicasting/messages/MultiCastMessage.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/util/udp_multicasting/messages/PlayMessage.java" afterPath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/util/udp_multicasting/messages/PlayMessage.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/util/SeekBarProgressChangerRunnable.java" afterPath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/util/SeekBarProgressChangerRunnable.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/com/pheelicks/utils/SystemPropertiesProxy.java" afterPath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/com/pheelicks/utils/SystemPropertiesProxy.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/util/udp_multicasting/UDPMessenger.java" afterPath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/util/udp_multicasting/UDPMessenger.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../PromoboxUpdater/app/src/main/java/ee/promobox/promoboxupdater/UpdaterTask.java" afterPath="$PROJECT_DIR$/../PromoboxUpdater/app/src/main/java/ee/promobox/promoboxupdater/UpdaterTask.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/util/VideoMatrixCalculator.java" afterPath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/util/VideoMatrixCalculator.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/widgets/WallImageView.java" afterPath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/widgets/WallImageView.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/WifiActivity.java" afterPath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/WifiActivity.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../PromoBoxAndroid/app/app.iml" afterPath="$PROJECT_DIR$/../PromoBoxAndroid/app/app.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/js/app.js" afterPath="$PROJECT_DIR$/public/js/app.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../PromoBoxBackend/web/WEB-INF/applicationContext.xml" afterPath="$PROJECT_DIR$/../PromoBoxBackend/web/WEB-INF/applicationContext.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../PromoBoxAndroid/app/build.gradle" afterPath="$PROJECT_DIR$/../PromoBoxAndroid/app/build.gradle" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../PromoBoxBackend/build.gradle" afterPath="$PROJECT_DIR$/../PromoBoxBackend/build.gradle" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/views/campaign_edit.html" afterPath="$PROJECT_DIR$/public/views/campaign_edit.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../PromoBoxBackend/web/META-INF/context.xml" afterPath="$PROJECT_DIR$/../PromoBoxBackend/web/META-INF/context.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/json/en.json" afterPath="$PROJECT_DIR$/public/json/en.json" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/json/et.json" afterPath="$PROJECT_DIR$/public/json/et.json" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/views/device.html" afterPath="$PROJECT_DIR$/public/views/device.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../PromoBoxAndroid/.idea/gradle.xml" afterPath="$PROJECT_DIR$/../PromoBoxAndroid/.idea/gradle.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/json/lv.json" afterPath="$PROJECT_DIR$/public/json/lv.json" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../PromoBoxAndroid/.idea/modules.xml" afterPath="$PROJECT_DIR$/../PromoBoxAndroid/.idea/modules.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../PromoBoxBackend/web/WEB-INF/cfg/production.properties" afterPath="$PROJECT_DIR$/../PromoBoxBackend/web/WEB-INF/cfg/production.properties" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/json/ru.json" afterPath="$PROJECT_DIR$/public/json/ru.json" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/js/services.js" afterPath="$PROJECT_DIR$/public/js/services.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../PromoBoxAndroid/settings.gradle" afterPath="$PROJECT_DIR$/../PromoBoxAndroid/settings.gradle" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/css/styles.css" afterPath="$PROJECT_DIR$/public/css/styles.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../PromoBoxAndroid/.idea/libraries/support_v4_21_0_3.xml" afterPath="$PROJECT_DIR$/../PromoBoxAndroid/.idea/libraries/support_v4_21_0_3.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="PromoboxFrontEnd.iws" />
@@ -46,7 +72,7 @@
   </component>
   <component name="ChangesViewManager" flattened_view="true" show_ignored="false" />
   <component name="CreatePatchCommitExecutor">
-    <option name="PATCH_PATH" value="" />
+    <option name="PATCH_PATH" value="D:\Android Workspace\kiosk\PromoboxFrontend" />
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FavoritesManager">
@@ -57,11 +83,11 @@
       <file leaf-file-name="app.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/public/js/app.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-15.827586">
-              <caret line="671" column="43" selection-start-line="671" selection-start-column="43" selection-end-line="671" selection-end-column="82" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="667" column="95" selection-start-line="667" selection-start-column="95" selection-end-line="667" selection-end-column="95" />
               <folding>
-                <element signature="e#30617#31171#0" expanded="false" />
-                <element signature="e#31229#36701#0" expanded="false" />
+                <element signature="e#30718#31272#0" expanded="false" />
+                <element signature="e#31330#36802#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -71,17 +97,17 @@
         <entry file="file://$PROJECT_DIR$/build/web/css/styles.css">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="207" column="27" selection-start-line="207" selection-start-column="27" selection-end-line="207" selection-end-column="27" />
+              <caret line="206" column="17" selection-start-line="206" selection-start-column="17" selection-end-line="206" selection-end-column="17" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="lv.json" pinned="false" current-in-tab="true">
+      <file leaf-file-name="lv.json" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/public/json/lv.json">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.52927667">
-              <caret line="143" column="32" selection-start-line="143" selection-start-column="32" selection-end-line="143" selection-end-column="32" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="177" column="28" selection-start-line="177" selection-start-column="28" selection-end-line="177" selection-end-column="28" />
               <folding />
             </state>
           </provider>
@@ -90,8 +116,8 @@
       <file leaf-file-name="ru.json" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/public/json/ru.json">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-17.73077">
-              <caret line="143" column="32" selection-start-line="143" selection-start-column="32" selection-end-line="143" selection-end-column="32" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="25" column="0" selection-start-line="25" selection-start-column="0" selection-end-line="25" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -100,8 +126,8 @@
       <file leaf-file-name="et.json" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/public/json/et.json">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-17.807692">
-              <caret line="143" column="35" selection-start-line="143" selection-start-column="35" selection-end-line="143" selection-end-column="35" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="196" column="0" selection-start-line="196" selection-start-column="0" selection-end-line="196" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -110,18 +136,18 @@
       <file leaf-file-name="en.json" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/public/json/en.json">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-20.192308">
-              <caret line="147" column="30" selection-start-line="147" selection-start-column="30" selection-end-line="147" selection-end-column="30" />
+            <state vertical-scroll-proportion="-0.0">
+              <caret line="154" column="44" selection-start-line="154" selection-start-column="44" selection-end-line="154" selection-end-column="44" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="device.html" pinned="false" current-in-tab="false">
+      <file leaf-file-name="device.html" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/public/views/device.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="17" column="30" selection-start-line="17" selection-start-column="25" selection-end-line="17" selection-end-column="30" />
+            <state vertical-scroll-proportion="0.31316727">
+              <caret line="93" column="20" selection-start-line="93" selection-start-column="24" selection-end-line="103" selection-end-column="30" />
               <folding>
                 <element signature="n#style#0;n#div#0;n#div#0;n#div#2;n#div#1;n#div#0;n#div#0;n#div#0;n#div#2;n#!!top" expanded="true" />
               </folding>
@@ -146,7 +172,7 @@
       <file leaf-file-name="campaign_edit.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/public/views/campaign_edit.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-10.0">
+            <state vertical-scroll-proportion="0.0">
               <caret line="403" column="22" selection-start-line="403" selection-start-column="22" selection-end-line="403" selection-end-column="22" />
               <folding>
                 <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
@@ -216,17 +242,17 @@
         <option value="$PROJECT_DIR$/public/views/login.html" />
         <option value="$PROJECT_DIR$/public/views/register.html" />
         <option value="$PROJECT_DIR$/public/views/modal/campaignToGroup.html" />
-        <option value="$PROJECT_DIR$/public/views/device.html" />
         <option value="$PROJECT_DIR$/public/views/modal/shit" />
         <option value="$PROJECT_DIR$/public/views/list.html" />
         <option value="$PROJECT_DIR$/public/css/styles.css" />
         <option value="$PROJECT_DIR$/public/js/services.js" />
         <option value="$PROJECT_DIR$/public/views/campaign_edit.html" />
-        <option value="$PROJECT_DIR$/public/js/app.js" />
         <option value="$PROJECT_DIR$/public/json/en.json" />
         <option value="$PROJECT_DIR$/public/json/et.json" />
-        <option value="$PROJECT_DIR$/public/json/ru.json" />
         <option value="$PROJECT_DIR$/public/json/lv.json" />
+        <option value="$PROJECT_DIR$/public/js/app.js" />
+        <option value="$PROJECT_DIR$/public/json/ru.json" />
+        <option value="$PROJECT_DIR$/public/views/device.html" />
       </list>
     </option>
   </component>
@@ -290,9 +316,6 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="Scratches" />
-      <pane id="PackagesPane" />
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -363,6 +386,9 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scope" />
+      <pane id="Scratches" />
+      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -694,7 +720,11 @@
       <workItem from="1429275189601" duration="12156000" />
       <workItem from="1430124053187" duration="26363000" />
       <workItem from="1430731172730" duration="65782000" />
-      <workItem from="1431442587780" duration="8104000" />
+      <workItem from="1431442587780" duration="8797000" />
+      <workItem from="1431947592775" duration="860000" />
+      <workItem from="1431959507735" duration="157000" />
+      <workItem from="1432548556846" duration="603000" />
+      <workItem from="1432730160054" duration="307000" />
     </task>
     <task id="LOCAL-00001" summary="Test 2">
       <created>1406150675432</created>
@@ -924,11 +954,23 @@
       <option name="project" value="LOCAL" />
       <updated>1431102313230</updated>
     </task>
-    <option name="localTasksCounter" value="39" />
+    <task id="LOCAL-00039" summary="#114 Link">
+      <created>1431542470876</created>
+      <option name="number" value="00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1431542470876</updated>
+    </task>
+    <task id="LOCAL-00040" summary="Locales by Katja">
+      <created>1432549001013</created>
+      <option name="number" value="00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1432549001013</updated>
+    </task>
+    <option name="localTasksCounter" value="41" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="308662000" />
+    <option name="totallyTimeSpent" value="311282000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -949,8 +991,7 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.16051364" sideWeight="0.5" order="13" side_tool="true" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.1911447" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.19027027" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="true" anchor="left" auto_hide="true" internal_type="SLIDING" type="SLIDING" visible="true" weight="0.25479743" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -959,15 +1000,16 @@
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39871383" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39871383" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.23151125" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.329582" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2742616" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.32756758" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
@@ -984,8 +1026,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Add Company Edit" />
-    <MESSAGE value="Chech" />
     <MESSAGE value="Edit Comp" />
     <MESSAGE value="Fixed url service" />
     <MESSAGE value="Fixed method for service" />
@@ -1009,7 +1049,9 @@
     <MESSAGE value="#107 Groups of devicesfix" />
     <MESSAGE value="#112 Setting and deleting campaign on group of devices" />
     <MESSAGE value="#113 Copy campaigns" />
-    <option name="LAST_COMMIT_MESSAGE" value="#113 Copy campaigns" />
+    <MESSAGE value="#114 Link" />
+    <MESSAGE value="Locales by Katja" />
+    <option name="LAST_COMMIT_MESSAGE" value="Locales by Katja" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1132,7 +1174,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.4245176">
           <caret line="184" column="12" selection-start-line="184" selection-start-column="12" selection-end-line="186" selection-end-column="73" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1238,7 +1279,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.69902915">
           <caret line="72" column="46" selection-start-line="72" selection-start-column="46" selection-end-line="72" selection-end-column="46" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1298,16 +1338,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/public/views/device.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="17" column="30" selection-start-line="17" selection-start-column="25" selection-end-line="17" selection-end-column="30" />
-          <folding>
-            <element signature="n#style#0;n#div#0;n#div#0;n#div#2;n#div#1;n#div#0;n#div#0;n#div#0;n#div#2;n#!!top" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/public/views/list.html">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -1340,7 +1370,7 @@
     <entry file="file://$PROJECT_DIR$/build/web/css/styles.css">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="207" column="27" selection-start-line="207" selection-start-column="27" selection-end-line="207" selection-end-column="27" />
+          <caret line="206" column="17" selection-start-line="206" selection-start-column="17" selection-end-line="206" selection-end-column="17" />
           <folding />
         </state>
       </provider>
@@ -1359,7 +1389,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/public/views/campaign_edit.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-10.0">
+        <state vertical-scroll-proportion="0.0">
           <caret line="403" column="22" selection-start-line="403" selection-start-column="22" selection-end-line="403" selection-end-column="22" />
           <folding>
             <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
@@ -1370,44 +1400,54 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/public/js/app.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-15.827586">
-          <caret line="671" column="43" selection-start-line="671" selection-start-column="43" selection-end-line="671" selection-end-column="82" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="667" column="95" selection-start-line="667" selection-start-column="95" selection-end-line="667" selection-end-column="95" />
           <folding>
-            <element signature="e#30617#31171#0" expanded="false" />
-            <element signature="e#31229#36701#0" expanded="false" />
+            <element signature="e#30718#31272#0" expanded="false" />
+            <element signature="e#31330#36802#0" expanded="false" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/json/en.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-20.192308">
-          <caret line="147" column="30" selection-start-line="147" selection-start-column="30" selection-end-line="147" selection-end-column="30" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/json/et.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-17.807692">
-          <caret line="143" column="35" selection-start-line="143" selection-start-column="35" selection-end-line="143" selection-end-column="35" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/public/json/ru.json">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-17.73077">
-          <caret line="143" column="32" selection-start-line="143" selection-start-column="32" selection-end-line="143" selection-end-column="32" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="25" column="0" selection-start-line="25" selection-start-column="0" selection-end-line="25" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/public/json/lv.json">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.52927667">
-          <caret line="143" column="32" selection-start-line="143" selection-start-column="32" selection-end-line="143" selection-end-column="32" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="177" column="28" selection-start-line="177" selection-start-column="28" selection-end-line="177" selection-end-column="28" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/json/et.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="196" column="0" selection-start-line="196" selection-start-column="0" selection-end-line="196" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/json/en.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-0.0">
+          <caret line="154" column="44" selection-start-line="154" selection-start-column="44" selection-end-line="154" selection-end-column="44" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/views/device.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.31316727">
+          <caret line="93" column="20" selection-start-line="93" selection-start-column="24" selection-end-line="103" selection-end-column="30" />
+          <folding>
+            <element signature="n#style#0;n#div#0;n#div#0;n#div#2;n#div#1;n#div#0;n#div#0;n#div#0;n#div#2;n#!!top" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

@@ -91,17 +91,6 @@
                         </div>
                     </div>
 
-                    <div class="row">
-                        <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'device_audioaut' | translate }}</label></div>
-                        <div class="col-md-7 col-xs-9 col-sm-8">
-                            <ui-select ng-model="device.audioOut" theme="select2" search-enabled="false">
-                                <ui-select-match placeholder="{{'select_pick' | translate }}">{{audioOutName(device.audioOut)}}</ui-select-match>
-                                <ui-select-choices repeat="audioOut in deviceAudioOuts">
-                                    <span>{{audioOutName(audioOut)}}</span>
-                                </ui-select-choices>
-                            </ui-select>
-                        </div>
-                    </div>
 
                     <div class="row" style="padding-top:20px;">
                         <div class="col-md-5 col-xs-3 col-sm-4"><label>{{ 'device_choosecampaign' | translate }}</label></div>

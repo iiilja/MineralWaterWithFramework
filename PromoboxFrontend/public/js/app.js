@@ -665,7 +665,9 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
                 Files.addLink({token: token.get(), id: $scope.campaign.id, link: httpLink }, function(response){
                     if (response.result == "ERROR"){
                         if (response.reason == "UNKNOWN_PROTOCOL"){
-                            sysMessage.error($filter('translate')('system_unknown_protocol'));
+                            sysMessage.error($filter('translate')('system_link_unknown_protocol'));
+                        } else {
+                            sysMessage.error(response.reason);
                         }
                         return;
                     } else if (response.WARN == "NO_PROTOCOL"){

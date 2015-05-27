@@ -1,4 +1,3 @@
-/// <reference path="../../typings/jquery/jquery.d.ts"/>
 $(document).ready(function(){
 	
 	$('input, select').styler();
@@ -50,10 +49,7 @@ $(document).ready(function(){
 	
 	$('#terms').colorbox({iframe: true, width: 640, height: 900,  closeButton:true});
 	$('#privacy').colorbox({iframe: true, width: 640, height: 900,  closeButton:true});
-        
-        
 });
-
 
 function tabs(tab_wrap,tab_nav) {
 	$(tab_nav).find('a').click(function(e){
@@ -82,7 +78,7 @@ jQuery.fn.anchorAnimate = function(settings) {
 			var locationHref = window.location.href
 			var elementClick = $(caller).attr("href")
 			
-			var destination = $(elementClick).offset().top - parseInt(50);
+			var destination = $(elementClick).offset().top - parseInt(70);
 			$("html:not(:animated),body:not(:animated)").animate({ scrollTop: destination}, settings.speed, function() {
 				window.location.hash = elementClick
 			});

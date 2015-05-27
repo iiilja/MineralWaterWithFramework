@@ -69,12 +69,18 @@ public class WaterController {
             switch (action){
                 case "save":
                     
-                    Water water = waterService.findById(Integer.parseInt(id));
-                    water.setName(name);
-                    water.setContent(content);
-                    water.setMineralisation(Integer.parseInt(mineralisation));
-                    waterService.update(water);
+                    WaterError error = WaterValidation.validate(id, name, mineralisation);
                     Map<String, Object> model = new HashMap<>();
+                    Water water = waterService.findById(Integer.parseInt(id));
+                    if (error == null) {
+                        water.setName(name);
+                        water.setContent(content);
+                        water.setMineralisation(Integer.parseInt(mineralisation));
+                        waterService.update(water);
+                        
+                    } else {
+                        model.put("formError", error);
+                    }
                     model.put("water", water);
                     return new ModelAndView("water",model);
                 case "create":

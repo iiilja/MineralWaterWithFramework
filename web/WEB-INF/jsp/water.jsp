@@ -17,8 +17,8 @@
                     <td>
                         <table width=100% border=0 cellpadding=2 cellspacing=1>
                             <TR BGCOLOR='#ffffff'><td BGCOLOR='#cccccc' nowrap>id:</td><td>&nbsp;${water.id}&nbsp;</TD></tr>
-                            <TR BGCOLOR='#ffffff'><td BGCOLOR='#cccccc' nowrap>Name</td><td>&nbsp;<b><font color='#0000ff'><input type='text' value='${water.name}' name='name'></font></b>${formError.nameError}</TD></tr>
-                            <TR BGCOLOR='#ffffff'><td BGCOLOR='#cccccc' nowrap>Mineralisation</td><td>&nbsp;<b><font color='#0000ff'><input type='text' value='${water.mineralisation}' name='mineralisation'></font></b>${formError.mineralisationError}</TD></tr>
+                            <TR BGCOLOR='#ffffff'><td BGCOLOR='#cccccc' nowrap>Name</td><td>&nbsp;<b><font color='#0000ff'><input type='text' value='${water.name}' name='name'></font></b>${formError.name}</TD></tr>
+                            <TR BGCOLOR='#ffffff'><td BGCOLOR='#cccccc' nowrap>Mineralisation</td><td>&nbsp;<b><font color='#0000ff'><input type='text' value='${water.mineralisation}' name='mineralisation'></font></b>${formError.mineralisation}</TD></tr>
                             <TR BGCOLOR='#ffffff'><td BGCOLOR='#cccccc' nowrap>Content</td><td>&nbsp;<b><font color='#0000ff'><textarea name='content' cols=25 rows=6>${water.content}</textarea></font></b></TD></tr>
                         </table>
                     </td>

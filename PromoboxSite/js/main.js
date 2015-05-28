@@ -43,6 +43,10 @@ $(document).ready(function(){
 	$("#change-lang").change(function(e) {
 		$("[data-translate]").jqTranslate('index', {forceLang: this.value});
 	});
+        
+        var userLang = navigator.language || navigator.userLanguage;
+        
+        $("#change-lang select").val(userLang);
 	
 	$('#youtube').colorbox({iframe: true, width: 800, height: 500,  closeButton:true});
 	

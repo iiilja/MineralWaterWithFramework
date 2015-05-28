@@ -32,9 +32,9 @@
                 <div class="dropdown-campaigns">
                     <ul>
                         <li><a href="#" data-toggle="modal" data-target="#installToGroup" href="javascript:void(0)"
-                               ng-click="installCampaign(campaign)">Установить</a></li>
-                        <li><a href="#"> Снять</a></li>
-                        <li><a href="#" ng-click="copyCampaign(campaign)">Копировать</a></li>
+                               ng-click="addToGroup(campaign)">{{ 'campaign_add_to_group' | translate }}</a></li>
+                        <!--<li><a href="#">{{ 'campaign_add_to_group' | translate }}</a></li>-->
+                        <li><a href="#" ng-click="copyCampaign(campaign)">{{ 'campaign_make_copy' | translate }}</a></li>
                     </ul>
                 </div>
 

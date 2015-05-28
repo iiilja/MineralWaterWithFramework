@@ -78,6 +78,8 @@
     "down": "Down",
     "toBegin": "To the beginning",
     "toEnd": "To the end",
+    "campaign_add_to_group": "Into group",
+    "campaign_make_copy": "Clone",
     "campaign_edit_editcompany": "Edit company",
     "campaign_edit_companyname": "Company name",
     "campaign_edit_browse": "Browse",

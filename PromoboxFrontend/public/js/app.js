@@ -785,7 +785,7 @@ app.controller('CampaignsController', ['$scope', 'token', 'Campaign', 'DevicesGr
                 });
             };
 
-            $scope.installCampaign = function(campaign){
+            $scope.addToGroup = function(campaign){
                 var devicesCampaigns = [];
 
                 Device.devicesCampaigns({token: token.get()}, function (response) {

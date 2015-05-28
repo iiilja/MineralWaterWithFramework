@@ -78,6 +78,8 @@
     "down": "Ниже",
     "toBegin": "В начало",
     "toEnd": "В конец",
+    "campaign_add_to_group": "К группе",
+    "campaign_make_copy": "Клонировать",
     "campaign_edit_editcompany": "Редактировать кампанию",
     "campaign_edit_companyname": "Название кампании",
     "campaign_edit_browse": "Добавить фаил",

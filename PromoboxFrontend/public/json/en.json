@@ -175,6 +175,8 @@
     "modal_add":"Add",
     "modal_change":"Change",
     "modal_campaign_add_link_txt":"Here you may enter HTTP, rtsp or rtmp link for viewing HTML pages or streaming videos",
+    "modal_campaign_add_to_group_or_devices":"Add or remove campaign from devices",
+    "modal_campaign_select_whole_group":"Select whole group",
     "modal_cancel":"Cancel",
     "modal_read":"Read",
     "modal_record":"Record",

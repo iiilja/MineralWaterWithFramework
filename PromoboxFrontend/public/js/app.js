@@ -859,14 +859,32 @@ app.controller('CampaignsController', ['$scope', 'token', 'Campaign', 'DevicesGr
                 $scope.currentGroupId = -1;
 
                 $scope.selectGroup = function(group){
+                    group.selected = ! group.selected;;
                     for(var i=0; i < group.devices.length; i++){
                         group.devices[i].selected = group.selected;
+                        if (! group.selected){
+                            deselectGroupsWithDevice(group.devices[i]);
+                        }
                     }
                 };
 
                 $scope.selectDevice = function(device,group){
                     device.selected = !device.selected;
                     group.selected = false;
+                    if (! device.selected){
+                        deselectGroupsWithDevice(device);
+                    }
+                };
+
+                var deselectGroupsWithDevice = function(device){
+                    for (var i=0; i < $scope.groups.length; i++){
+                        var group = $scope.groups[i];
+                        for (var j = 0; j < group.devices.length; j++){
+                            if (group.devices[j] == device){
+                                group.selected = false;
+                            }
+                        }
+                    }
                 };
 
                 $scope.confirm = function(){

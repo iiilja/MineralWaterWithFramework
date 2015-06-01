@@ -357,6 +357,14 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         $scope.isFileConverting = function (file) {
             return file.status == 0 || file.status == 4;
         };
+
+        $scope.isPreviewAvailableForFileType = function( fileType ){
+            return fileType != 2 && fileType != 4 && fileType != 6;
+        };
+
+        $scope.isPlaybackAvailableForFileType = function( fileType ){
+            return fileType != 4 && fileType != 6;
+        };
         
         $scope.getFileThumb = function(file){
             var src = apiEndpoint + "files/thumb/" + file.id + "?t=" + file.t;
@@ -633,6 +641,7 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
                     index = index - 1;
                 }
             }
+            console.log("FWDRL.show('playlist', " + index + ");");
             FWDRL.show('playlist', index);
         };
 

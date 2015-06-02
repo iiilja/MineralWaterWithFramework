@@ -357,6 +357,14 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         $scope.isFileConverting = function (file) {
             return file.status == 0 || file.status == 4;
         };
+
+        $scope.isPreviewAvailableForFileType = function( fileType ){
+            return fileType != 2 && fileType != 4 && fileType != 6;
+        };
+
+        $scope.isPlaybackAvailableForFileType = function( fileType ){
+            return fileType != 4 && fileType != 6;
+        };
         
         $scope.getFileThumb = function(file){
             var src = apiEndpoint + "files/thumb/" + file.id + "?t=" + file.t;
@@ -633,6 +641,7 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
                     index = index - 1;
                 }
             }
+            console.log("FWDRL.show('playlist', " + index + ");");
             FWDRL.show('playlist', index);
         };
 
@@ -785,7 +794,7 @@ app.controller('CampaignsController', ['$scope', 'token', 'Campaign', 'DevicesGr
                 });
             };
 
-            $scope.installCampaign = function(campaign){
+            $scope.addToGroup = function(campaign){
                 var devicesCampaigns = [];
 
                 Device.devicesCampaigns({token: token.get()}, function (response) {
@@ -859,14 +868,32 @@ app.controller('CampaignsController', ['$scope', 'token', 'Campaign', 'DevicesGr
                 $scope.currentGroupId = -1;
 
                 $scope.selectGroup = function(group){
+                    group.selected = ! group.selected;;
                     for(var i=0; i < group.devices.length; i++){
                         group.devices[i].selected = group.selected;
+                        if (! group.selected){
+                            deselectGroupsWithDevice(group.devices[i]);
+                        }
                     }
                 };
 
                 $scope.selectDevice = function(device,group){
                     device.selected = !device.selected;
                     group.selected = false;
+                    if (! device.selected){
+                        deselectGroupsWithDevice(device);
+                    }
+                };
+
+                var deselectGroupsWithDevice = function(device){
+                    for (var i=0; i < $scope.groups.length; i++){
+                        var group = $scope.groups[i];
+                        for (var j = 0; j < group.devices.length; j++){
+                            if (group.devices[j] == device){
+                                group.selected = false;
+                            }
+                        }
+                    }
                 };
 
                 $scope.confirm = function(){

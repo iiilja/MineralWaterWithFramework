@@ -18,13 +18,13 @@
                      ng-repeat="promofile in campaign_form.filesArray">
                     <div class="load-wrap img-thumbnail">
                         <div>
-                            <img ng-click="isFileConverting(promofile) ? false : openPlayer($index)" 
+                            <img ng-click="isFileConverting(promofile) ? false : openPlayer($index)"
                                 ng-src="{{apiEndpoint}}files/thumb/{{promofile.id}}" alt="">
                         </div>
-                                                    
-                        <ul class="controll-block" ng-if="promofile.fileType == 2 || promofile.fileType == 4">
+
+                        <ul class="controll-block" ng-if="! isPreviewAvailableForFileType(promofile.fileType)">
                             <li class="Play-audio" 
-                                ng-if="!isFileConverting(promofile)">
+                                ng-if="!isFileConverting(promofile) && isPlaybackAvailableForFileType(promofile.fileType)">
                                 <a ng-click="openPlayer($index)"></a>
                             </li>
                             <li class="Play-on-device">
@@ -41,7 +41,7 @@
                         
                         <p>{{promofile.name| limitTo: 30 | lowercase }}{{promofile.name.length > 30 ? '...' : ''}}</p>
                     </div>
-                    <div class="Video-picture-wrap img-thumbnail" ng-if="promofile.fileType != 2 && promofile.fileType != 4">
+                    <div class="Video-picture-wrap img-thumbnail" ng-if="isPreviewAvailableForFileType(promofile.fileType)">
                         <div class="cont">
                             <img ng-click="isFileConverting(promofile) ? false : openPlayer($index)"
                                  ng-src="{{apiEndpoint}}files/thumb/{{promofile.id}}"  alt="">

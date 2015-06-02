@@ -32,9 +32,9 @@
                 <div class="dropdown-campaigns">
                     <ul>
                         <li><a href="#" data-toggle="modal" data-target="#installToGroup" href="javascript:void(0)"
-                               ng-click="installCampaign(campaign)">Установить</a></li>
-                        <li><a href="#"> Снять</a></li>
-                        <li><a href="#" ng-click="copyCampaign(campaign)">Копировать</a></li>
+                               ng-click="addToGroup(campaign)">{{ 'campaign_add_to_group' | translate }}</a></li>
+                        <!--<li><a href="#">{{ 'campaign_add_to_group' | translate }}</a></li>-->
+                        <li><a href="#" ng-click="copyCampaign(campaign)">{{ 'campaign_make_copy' | translate }}</a></li>
                     </ul>
                 </div>
 
@@ -53,27 +53,49 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
                         class="sr-only"></span></button>
-                <h4 class="modal-title" id="myModalLabel">{{"campaign_edit_statistics"| translate}}</h4>
+                <h4 class="modal-title" id="myModalLabel">{{"modal_campaign_add_to_group_or_devices"| translate}}</h4>
             </div>
             <div class="modal-body">
-                <div ng-repeat="group in groups" ng-show="group.devices.length > 0" class="acardion-wrap">
-                    <h4 ng-click="currentGroupId = (currentGroupId == group.id ? -1 : group.id)" class="acardion-title"
-                        ng-class="{active: group.id == currentGroupId}"><i></i>{{group.name}}
-                        <span>{{group.devices.length}} {{ 'device_devices_multiple' | translate }}</span>
-                    </h4>
-                    <div class="checkbox pull-right">
-                        <label><input type="checkbox" ng-model="group.selected" ng-change="selectGroup(group)"></label>
+                <!--<div ng-repeat="group in groups" ng-show="group.devices.length > 0" class="acardion-wrap">-->
+                    <!--<h4 ng-click="currentGroupId = (currentGroupId == group.id ? -1 : group.id)" class="acardion-title"-->
+                        <!--ng-class="{active: group.id == currentGroupId}"><i></i>{{group.name}}-->
+                        <!--<span>{{group.devices.length}} {{ 'device_devices_multiple' | translate }}</span>-->
+                    <!--</h4>-->
+                    <!--<div class="checkbox pull-right">-->
+                        <!--<label><input type="checkbox" ng-model="group.selected" ng-change="selectGroup(group)"></label>-->
+                    <!--</div>-->
+
+                    <!--<div class="add-company-list mCustomScrollbar" ng-show="currentGroupId == group.id">-->
+                        <!--<ul class="btn-group">-->
+                            <!--<li ng-repeat="device in group.devices" ng-click="selectDevice(device,group)">-->
+                                <!--<label class="btn btn-primary" ng-class="device.selected ? 'active' : ''">-->
+                                    <!--{{device.name}}-->
+                                    <!--<span class="glyphicon glyphicon-ok"></span>-->
+                                <!--</label>-->
+                            <!--</li>-->
+                        <!--</ul>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <div class="setting-row" ng-repeat="group in groups" ng-show="group.devices.length > 0">
+                    <div class="setting-header clearfix">
+                        <div class="pull-left"
+                            ng-class="{active: group.id == currentGroupId}"><i></i>{{group.name}}
+                            <h>{{group.devices.length}} {{ 'device_devices_multiple' | translate }}</h>
+                        </div>
+                        <div class="btn pull-right" ng-click="selectGroup(group)">
+                            <span class="glyphicon glyphicon-ok" ng-show = "group.selected"></span>
+                            {{ 'modal_campaign_select_whole_group' | translate }}
+                        </div>
                     </div>
 
-                    <div class="add-company-list mCustomScrollbar" ng-show="currentGroupId == group.id">
-                        <ul class="btn-group">
-                            <li ng-repeat="device in group.devices" ng-click="selectDevice(device,group)">
-                                <label class="btn btn-primary" ng-class="device.selected ? 'active' : ''">
-                                    {{device.name}}
-                                    <span class="glyphicon glyphicon-ok"></span>
-                                </label>
-                            </li>
-                        </ul>
+                    <div class="setting-body row">
+
+                        <div class="col-sm-4 setting-item" ng-repeat="device in group.devices" ng-click="selectDevice(device,group)">
+                            <h4 ng-class="device.selected ? 'active btn btn-primary' : ''">
+                                {{device.name}}
+                                <span class="glyphicon glyphicon-ok" ng-show = "device.selected"></span>
+                            </h4>
+                        </div>
                     </div>
                 </div>
             </div>

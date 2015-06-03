@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SeekBar;
-import android.widget.TextView;
 
 import com.google.android.exoplayer.ExoPlaybackException;
 import com.google.android.exoplayer.ExoPlayer;
@@ -32,7 +31,7 @@ import ee.promobox.promoboxandroid.widgets.MyAnimatedDrawable;
 //https://github.com/felixpalmer/android-visualizer
 public class FragmentAudio extends FragmentWithSeekBar implements ExoPlayer.Listener{
 
-    private static final String TAG = "AudioActivity ";
+    private static final String TAG = "FragmentAudio ";
 
     private ExoPlayer exoPlayer;
     private MediaCodecAudioTrackRenderer audioRenderer;
@@ -55,7 +54,7 @@ public class FragmentAudio extends FragmentWithSeekBar implements ExoPlayer.List
         audioAnimation = new MyAnimatedDrawable(mainActivity.getBaseContext(), MyAnimatedDrawable.AUDIO, 0, 23);
         audioView.setBackground(audioAnimation);
         audioAnimation.start();
-        super.setView(audioView);
+        super.setView(audioView.findViewById(R.id.player_controls));
         audioView.setOnLongClickListener(mainActivity);
 
 
@@ -244,6 +243,11 @@ public class FragmentAudio extends FragmentWithSeekBar implements ExoPlayer.List
     @Override
     public void onPlayerNext() {
         tryNextFile();
+    }
+
+    @Override
+    public void onSettingsPressed() {
+        audioView.performLongClick();
     }
 
 

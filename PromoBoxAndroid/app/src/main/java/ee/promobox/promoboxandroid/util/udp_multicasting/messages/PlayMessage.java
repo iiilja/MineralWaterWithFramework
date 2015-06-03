@@ -1,7 +1,5 @@
 package ee.promobox.promoboxandroid.util.udp_multicasting.messages;
 
-import android.util.Log;
-
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 

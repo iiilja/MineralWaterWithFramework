@@ -661,6 +661,10 @@ input[readonly] {
     left: 50%;
 }
 
+.modal.modal-body {
+
+}
+
 .statistics-list  {
     overflow: hidden;
     padding-top: 17px;

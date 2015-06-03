@@ -1,8 +1,6 @@
 package ee.promobox.promoboxandroid;
 
 import android.app.Activity;
-import android.app.Fragment;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -10,11 +8,9 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.URLUtil;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.ImageView;
 import android.widget.SeekBar;
 
 import ee.promobox.promoboxandroid.data.CampaignFile;
@@ -44,7 +40,7 @@ public class FragmentWeb extends FragmentWithSeekBar implements View.OnTouchList
         fragmentView = inflater.inflate(R.layout.fragment_web,container,false);
         fragmentView.setOnLongClickListener(mainActivity);
 
-        super.setView(fragmentView);
+        super.setView(fragmentView.findViewById(R.id.player_controls));
 
         webView = (WebView) fragmentView.findViewById(R.id.webView);
         WebSettings settings = webView.getSettings();
@@ -150,6 +146,11 @@ public class FragmentWeb extends FragmentWithSeekBar implements View.OnTouchList
     public void onPlayerNext() {
         webView.removeCallbacks(runnable);
         tryNextFile();
+    }
+
+    @Override
+    public void onSettingsPressed() {
+        fragmentView.performLongClick();
     }
 
     @Override

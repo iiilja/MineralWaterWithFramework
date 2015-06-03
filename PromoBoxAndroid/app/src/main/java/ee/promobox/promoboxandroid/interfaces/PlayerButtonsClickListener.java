@@ -10,4 +10,5 @@ public interface PlayerButtonsClickListener extends View.OnClickListener {
     public void  onPlayerPlay();
     public void  onPlayerPrevious();
     public void  onPlayerNext();
+    public void  onSettingsPressed();
 }

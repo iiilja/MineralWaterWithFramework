@@ -2,16 +2,11 @@ package ee.promobox.promoboxandroid.util.udp_multicasting;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
-import android.view.View;
-
-import org.apache.http.conn.util.InetAddressUtils;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -24,7 +19,7 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Enumeration;
 
-import ee.promobox.promoboxandroid.util.udp_multicasting.messages.*;
+import ee.promobox.promoboxandroid.util.udp_multicasting.messages.MultiCastMessage;
 
 /**
  * Created by ilja on 25.02.2015.

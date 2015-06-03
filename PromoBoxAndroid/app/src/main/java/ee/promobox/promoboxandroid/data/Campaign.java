@@ -8,19 +8,18 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.awt.font.TextAttribute;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 /**
  * Created by MaximDorofeev on 12.07.2014.
  */
 public class Campaign implements Parcelable{
+    private static final String TAG = "Campaign";
 
     public final static int ORDER_ASC = 1;
     public final static int ORDER_RANDOM = 2;
@@ -190,6 +189,16 @@ public class Campaign implements Parcelable{
         return null;
     }
 
+    public void setNextSpecificFileId(int fileId){
+        int filePosition = getCampaignFilePositionById(fileId);
+        if (filePosition != -1){
+            position = filePosition;
+        } else {
+            Log.e(TAG, " File with id " + fileId +" not found");
+            position = 0;
+        }
+    }
+
     public int getCampaignFilePositionById(int fileId){
         for (int i = 0; i < files.size(); i++) {
             CampaignFile file = files.get(i);
@@ -197,7 +206,7 @@ public class Campaign implements Parcelable{
                 return i;
             }
         }
-        return 0;
+        return -1;
     }
 
     public CampaignFile getNextFile(){

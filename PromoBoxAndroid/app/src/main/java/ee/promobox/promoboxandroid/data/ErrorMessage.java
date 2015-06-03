@@ -3,8 +3,6 @@ package ee.promobox.promoboxandroid.data;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.io.Serializable;
-
 /**
  * Created by ilja on 28.01.2015.
  */

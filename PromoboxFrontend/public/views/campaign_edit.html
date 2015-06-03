@@ -223,7 +223,7 @@
                                 <ui-select ng-model="campaign_form.campaign_start_time" theme="select2">
                                     <ui-select-match placeholder="{{'select_pick' | translate }}">{{formatWorkingHours(campaign_form.campaign_start_time)}}</ui-select-match>
                                     <ui-select-choices repeat="hour in workhours  | filter: $select.search">
-                                        <span ng-bind-html="formatWorkingHours(hour) | highlight: $select.search"</span>
+                                        <span ng-bind-html="formatWorkingHours(hour) | highlight: $select.search" />
                                     </ui-select-choices>
                                 </ui-select>
                             </div>
@@ -327,7 +327,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only"></span></button>
-                <h4 class="modal-title" id="myModalLabel">{{"campaign_edit_statistics"| translate}}</h4>
+                <h4 class="modal-title">{{"campaign_edit_statistics"| translate}}</h4>
             </div>
             <div class="modal-body">
                 <ul class="statistics-list">
@@ -376,7 +376,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only"></span></button>
-                <h4 class="modal-title" id="myModalLabel">{{ 'campaign_edit_changefilesorder' | translate }}</h4>
+                <h4 class="modal-title">{{ 'campaign_edit_changefilesorder' | translate }}</h4>
             </div>
             <div class="modal-body">
                 <div class="files-block mCustomScrollbar">
@@ -418,11 +418,14 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only"></span></button>
-                <h4 class="modal-title" id="myModalLabel">{{ 'campaign_edit_changefilesorder' | translate }}</h4>
+                <h4 class="modal-title">{{ 'campaign_edit_add_link' | translate }}</h4>
             </div>
             <div class="modal-body">
-                {{ 'modal_campaign_add_link_txt' | translate }}
-                <input type="text" class="form-control" style="width: 30%;" placeholder="http://" ng-model="httpLink">
+                <div style="margin-bottom: 15px">
+                    {{ 'modal_campaign_add_link_txt' | translate }}
+                    <input type="text" class="form-control"  placeholder="http://" ng-model="httpLink">
+                </div>
+
                 <div class="bottom-buttons">
                     <button type="button" class="btn btn-success" data-dismiss="modal"
                             ng-click="saveLink(httpLink)">{{ 'modal_add' | translate }}</button>

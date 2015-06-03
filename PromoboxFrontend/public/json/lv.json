@@ -177,6 +177,7 @@
     "modal_campaign_add_link_txt":"Here you may enter HTTP, RTSP or RTMP.. link for viewing HTML pages or streaming videos",
     "modal_campaign_add_to_group_or_devices":"Add or remove campaign from devices",
     "modal_campaign_select_whole_group":"Select whole group",
+    "modal_campaign_deselect_whole_group":"Unselect whole group",
     "modal_cancel":"Отмена",
     "modal_read":"Чтение",
     "modal_record":"Запись",

@@ -34,8 +34,7 @@ public class Log {
 
 	public static void d(String msg, Object... args) {
 		try {
-			if (BuildConfig.DEBUG) 
-				android.util.Log.d(TAG, String.format(msg, args));
+			android.util.Log.d(TAG, String.format(msg, args));
 		} catch (MissingFormatArgumentException e) {
 			android.util.Log.e(TAG, "vitamio.Log", e);
 			android.util.Log.d(TAG, msg);

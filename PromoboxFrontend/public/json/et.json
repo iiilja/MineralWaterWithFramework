@@ -177,6 +177,7 @@
     "modal_campaign_add_link_txt":"Siia lisage HTTP, rtsp or rtmp link HTML lehte näitamiseks või video streamiseks",
     "modal_campaign_add_to_group_or_devices":"Lisa või eemalda kampaania seadmetele",
     "modal_campaign_select_whole_group":"Vali terve grup",
+    "modal_campaign_deselect_whole_group":"Kustuta grupist",
     "modal_cancel":"Tühista",
     "modal_read":"Lugemine",
     "modal_record":"Salvestamine",

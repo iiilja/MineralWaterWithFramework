@@ -84,7 +84,7 @@
                         </div>
                         <div class="btn pull-right" ng-click="selectGroup(group)">
                             <span class="glyphicon glyphicon-ok" ng-show = "group.selected"></span>
-                            {{ 'modal_campaign_select_whole_group' | translate }}
+                            {{ !group.selected ? ('modal_campaign_select_whole_group' | translate) : ('modal_campaign_deselect_whole_group' | translate) }}
                         </div>
                     </div>
 

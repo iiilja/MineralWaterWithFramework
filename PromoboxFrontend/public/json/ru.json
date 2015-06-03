@@ -177,6 +177,7 @@
     "modal_campaign_add_link_txt":"Можно ввести ссылку HTTP, rtsp or rtmp для показа HTML страниц или потокового видео",
     "modal_campaign_add_to_group_or_devices":"Добавь или убери кампанию с устройства",
     "modal_campaign_select_whole_group":"Выбери всю группу",
+    "modal_campaign_deselect_whole_group":"Удалить из группы",
     "modal_cancel":"Отмена",
     "modal_read":"Чтение",
     "modal_record":"Запись",

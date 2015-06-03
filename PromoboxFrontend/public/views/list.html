@@ -46,7 +46,7 @@
 </div>
 
 <!-- Modal statistics -->
-<div class="modal fade" id="installToGroup" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+<div class="modal fade delete-campaigns " id="installToGroup" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
      aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -76,26 +76,34 @@
                         <!--</ul>-->
                     <!--</div>-->
                 <!--</div>-->
+
+                <p>Выберите кампании, которые вы хотите удалить</p>
+
                 <div class="setting-row" ng-repeat="group in groups" ng-show="group.devices.length > 0">
                     <div class="setting-header clearfix">
-                        <div class="pull-left"
+                        <h3 class="pull-left"
                             ng-class="{active: group.id == currentGroupId}"><i></i>{{group.name}}
-                            <h>{{group.devices.length}} {{ 'device_devices_multiple' | translate }}</h>
-                        </div>
-                        <div class="btn pull-right" ng-click="selectGroup(group)">
-                            <span class="glyphicon glyphicon-ok" ng-show = "group.selected"></span>
+                            {{group.devices.length}} {{ 'device_devices_multiple' | translate }}
+                        </h3>
+
+                        <button type="button" class="btn btn-default btn-select-all pull-right"
+                            ng-click="selectGroup(group)">
+                            <i class="glyphicon glyphicon-ok" ng-show = "group.selected"></i>
                             {{ !group.selected ? ('modal_campaign_select_whole_group' | translate) : ('modal_campaign_deselect_whole_group' | translate) }}
-                        </div>
+
+                        </button>
                     </div>
 
                     <div class="setting-body row">
 
-                        <div class="col-sm-4 setting-item" ng-repeat="device in group.devices" ng-click="selectDevice(device,group)">
-                            <h4 ng-class="device.selected ? 'active btn btn-primary' : ''">
-                                {{device.name}}
-                                <span class="glyphicon glyphicon-ok" ng-show = "device.selected"></span>
-                            </h4>
-                        </div>
+                        <div class="col-md-4 setting-item device-groups"
+                            ng-repeat="device in group.devices"
+                            ng-click="selectDevice(device,group)">
+                                <h4 ng-class="device.selected ? 'active' : ''" >
+                                    {{device.name}}
+                                    <i class="delete glyphicon glyphicon-ok"></i>
+                                </h4>
+                            </div>
                     </div>
                 </div>
             </div>

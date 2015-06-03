@@ -2,27 +2,19 @@ package ee.promobox.promoboxandroid;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.SeekBar;
 
 import ee.promobox.promoboxandroid.data.CampaignFile;
 import ee.promobox.promoboxandroid.data.CampaignFileType;
 import ee.promobox.promoboxandroid.interfaces.FragmentPlaybackListener;
 import ee.promobox.promoboxandroid.interfaces.PlayerButtonsClickListener;
-import ee.promobox.promoboxandroid.util.PlayerLengthWatcher;
-import ee.promobox.promoboxandroid.widgets.FragmentWithSeekBar;
-import ee.promobox.promoboxandroid.widgets.MyAnimatedDrawable;
-import ee.promobox.promoboxandroid.widgets.VideoViewVitamio;
 import ee.promobox.promoboxandroid.util.vitamio.MediaController;
 import io.vov.vitamio.LibsChecker;
 import io.vov.vitamio.MediaPlayer;
@@ -131,15 +123,14 @@ public class FragmentRTP extends Fragment implements MediaPlayer.OnErrorListener
             }
         }
         videoView.setVideoURI(Uri.parse(campaignFile.getName()));
-//        videoView.setMediaController(new MediaController(getActivity()));
         videoView.requestFocus();
+        bufferingCheckerHandler.postDelayed(bufferingChecker, bufferingCheckDelay);
 
         videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mediaPlayer) {
                 // optional need Vitamio 4.0
                 Log.d(TAG, "Prepared");
-                bufferingCheckerHandler.postDelayed(bufferingChecker, bufferingCheckDelay);
                 mediaPlayer.setPlaybackSpeed(1.0f);
                 mediaPlayer.start();
             }

@@ -463,7 +463,8 @@ public class FilesController {
             
             if (campaign != null ) {
 
-                int fileTypeNumber = FileTypeUtils.FILE_TYPE_HTML;
+                int fileTypeNumber = isHyperTextProtocol(protocol)
+                        ? FileTypeUtils.FILE_TYPE_HTML : FileTypeUtils.FILE_TYPE_RTP;
 
                 Date createdDt = new Date();
 
@@ -726,7 +727,9 @@ public class FilesController {
             File file = null;
             OutputStream outputStream = response.getOutputStream();
 
-            if (dbFile.getFileType() != FileTypeUtils.FILE_TYPE_AUDIO && dbFile.getFileType() != FileTypeUtils.FILE_TYPE_HTML 
+            if (dbFile.getFileType() != FileTypeUtils.FILE_TYPE_AUDIO 
+                    && dbFile.getFileType() != FileTypeUtils.FILE_TYPE_HTML 
+                    && dbFile.getFileType() != FileTypeUtils.FILE_TYPE_RTP
                     && !(dbFile.getStatus() == CampaignsFiles.STATUS_UPLOADED || dbFile.getStatus() == CampaignsFiles.STATUS_CONVERTING)) {
                 file = fileService.getThumbFile(dbFile.getClientId(), dbFile.getFileId(), dbFile.getPage());
 
@@ -740,7 +743,7 @@ public class FilesController {
                 InputStream is = getClass().getClassLoader().getResourceAsStream("ee/promobox/assets/play.png");
                 IOUtils.copy(is, outputStream);
                 IOUtils.closeQuietly(is);
-            } else if (dbFile.getFileType() == FileTypeUtils.FILE_TYPE_HTML) {
+            } else if (dbFile.getFileType() == FileTypeUtils.FILE_TYPE_HTML || dbFile.getFileType() == FileTypeUtils.FILE_TYPE_RTP) {
                 InputStream is = getClass().getClassLoader().getResourceAsStream("ee/promobox/assets/html.png");
                 IOUtils.copy(is, outputStream);
                 IOUtils.closeQuietly(is);
@@ -788,8 +791,16 @@ public class FilesController {
         known |= protocol.equals("http");
         known |= protocol.equals("https");
         known |= protocol.equals("rtmp");
-        known |= protocol.equals("trsp");
+        known |= protocol.equals("rtsp");
         return known;
+    }
+    
+    private static boolean isHyperTextProtocol(String protocol){
+        protocol = protocol.toLowerCase();
+        boolean isHTTP = false;
+        isHTTP |= protocol.equals("http");
+        isHTTP |= protocol.equals("https");
+        return isHTTP;
     }
     
     

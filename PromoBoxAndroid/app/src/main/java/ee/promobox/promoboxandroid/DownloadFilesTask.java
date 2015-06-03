@@ -77,7 +77,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
                 return null;
             }
 
-            Log.d(TAG, "Data: " + data.toString());
+//            Log.d(TAG, "Data: " + data.toString());
 
             if (data.has("currentDt")){
                 Date serverDate = new Date(data.getLong("currentDt"));
@@ -345,7 +345,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
 
 
         Log.i(TAG, "Pull info:" + json.toString());
-        Log.i(TAG, conn.getURL().toString());
+//        Log.i(TAG, conn.getURL().toString());
 
 
         String query = "json=" + URLEncoder.encode(json.toString(), "UTF-8");
@@ -353,7 +353,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
         String response = "";
 
         if (conn.getResponseCode() == HttpURLConnection.HTTP_OK && !service.getIsDownloading().get()) {
-            Log.d(TAG, "Response code = " + conn.getResponseCode());
+//            Log.d(TAG, "Response code = " + conn.getResponseCode());
             response = IOUtils.toString(conn.getInputStream(),"UTF-8");
             if (!response.equals("")) {
                 try {

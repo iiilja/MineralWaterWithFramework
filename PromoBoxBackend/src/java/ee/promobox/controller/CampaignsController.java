@@ -58,7 +58,8 @@ public class CampaignsController {
     @Autowired
     private UserService userService;
     
-    @Autowired FileService fileService;
+    @Autowired 
+    private FileService fileService;
 
     @RequestMapping(value = "token/{token}/campaigns/{campaignId}", method = RequestMethod.GET)
     public @ResponseBody
@@ -502,12 +503,6 @@ public class CampaignsController {
         return permission == null ? false : permission.isPermissionWrite();
     }
 
-    @ExceptionHandler(Exception.class)
-    public void handleAllException(Exception ex) {
-
-        log.error(ex.getMessage(), ex);
-
-    }
     
     private boolean copyFileIfExists(File src, File dst){
         try {
@@ -565,6 +560,14 @@ public class CampaignsController {
         jsonCampaign.put("videoLength", campaign.getVideoLength());
         
         return jsonCampaign;
+    }
+    
+    
+    @ExceptionHandler(Exception.class)
+    public void handleAllException(Exception ex) {
+
+        log.error(ex.getMessage(), ex);
+
     }
 
 }

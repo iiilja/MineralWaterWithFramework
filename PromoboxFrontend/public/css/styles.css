@@ -2002,6 +2002,7 @@ input[readonly] {
     padding-left: 13px;
     position: relative;
     font-size: 10pt;
+    cursor: pointer;
 }
 
 .setting-item h4 a {
@@ -2021,7 +2022,30 @@ input[readonly] {
     color: #cc4f4f;
 }
 
+.setting-item h4 .delete {
+    right: 7px;
+    color: #cc4f4f;
+}
+
 .setting-item h4 .delete:hover {color: #A20B0B;}
+
+.delete-campaigns .setting-item h4 .delete {
+    right: 7px;
+    top: 6px;
+    color: white;
+    font-size: large;
+    position: absolute;
+}
+
+.delete-campaigns .setting-item h4.active  {
+    background-color: #3071a9;
+    color: white;
+}
+
+.delete-campaigns .setting-row .btn-select-all .glyphicon  {
+    padding-right: 7px;
+    font-size: larger;
+}
 
 .label {font-size: 10pt;}
 

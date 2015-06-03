@@ -112,7 +112,7 @@ remotes {
 }
 
 ssh.settings {
-    identity = file("${System.properties['user.home']}/.ssh/gradle/id_rsa")
+    identity = file("${System.properties['user.home']}/.ssh/putty.pem")
     knownHosts = allowAnyHosts    // Disable host key verification
 }
 

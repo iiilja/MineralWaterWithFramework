@@ -7,7 +7,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.RemoteException;
-import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -57,7 +56,7 @@ public class FragmentWallImage extends FragmentVideoWall {
         imageFragment.setOnLongClickListener(mainActivity);
 
         slide = (WallImageView) imageFragment.findViewById(R.id.slide_1);
-        super.setView(imageFragment);
+        super.setView(imageFragment.findViewById(R.id.player_controls));
 
         return imageFragment;
     }
@@ -307,5 +306,10 @@ public class FragmentWallImage extends FragmentVideoWall {
     public void onPlayerNext() {
         slide.removeCallbacks(runnable);
         tryNextFile();
+    }
+
+    @Override
+    public void onSettingsPressed() {
+        imageFragment.performLongClick();
     }
 }

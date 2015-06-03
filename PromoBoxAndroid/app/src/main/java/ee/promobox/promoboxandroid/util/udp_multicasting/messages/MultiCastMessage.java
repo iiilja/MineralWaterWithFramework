@@ -2,7 +2,6 @@ package ee.promobox.promoboxandroid.util.udp_multicasting.messages;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 
 /**
  * Created by ilja on 25.02.2015.

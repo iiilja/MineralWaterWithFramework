@@ -14,7 +14,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 
-
 import java.io.File;
 
 import ee.promobox.promoboxandroid.data.CampaignFile;
@@ -47,7 +46,7 @@ public class FragmentImage extends FragmentWithSeekBar {
         Log.d(TAG, "onCreateView");
         imageFragment = inflater.inflate(R.layout.fragment_image, container, false);
         imageFragment.setOnLongClickListener(mainActivity);
-        super.setView(imageFragment);
+        super.setView(imageFragment.findViewById(R.id.player_controls));
 
         slide = (ImageView) imageFragment.findViewById(R.id.slide_1);
 
@@ -239,5 +238,10 @@ public class FragmentImage extends FragmentWithSeekBar {
     public void onPlayerNext() {
         slide.removeCallbacks(runnable);
         tryNextFile();
+    }
+
+    @Override
+    public void onSettingsPressed() {
+        imageFragment.performLongClick();
     }
 }

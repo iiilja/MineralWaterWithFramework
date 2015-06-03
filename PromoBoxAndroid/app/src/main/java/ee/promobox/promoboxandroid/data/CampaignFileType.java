@@ -19,4 +19,8 @@ public enum CampaignFileType {
 
         return  CampaignFileType.IMAGE;
     }
+
+    public int getTypeNumber() {
+        return type;
+    }
 }

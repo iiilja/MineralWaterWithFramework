@@ -1,6 +1,5 @@
 package ee.promobox.promoboxandroid.util.udp_multicasting;
 
-import ee.promobox.promoboxandroid.util.udp_multicasting.messages.MasterMessage;
 import ee.promobox.promoboxandroid.util.udp_multicasting.messages.PlayMessage;
 import ee.promobox.promoboxandroid.util.udp_multicasting.messages.PrepareMessage;
 

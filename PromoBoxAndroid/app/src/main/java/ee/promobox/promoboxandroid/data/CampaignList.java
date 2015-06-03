@@ -8,9 +8,6 @@ import org.json.JSONException;
 import java.util.ArrayList;
 import java.util.List;
 
-import ee.promobox.promoboxandroid.data.Campaign;
-import ee.promobox.promoboxandroid.data.CampaignFile;
-
 /**
  * Created by Viktor on 11/16/2014.
  */

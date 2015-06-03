@@ -5,11 +5,9 @@ import android.content.Intent;
 import android.graphics.Point;
 import android.graphics.SurfaceTexture;
 import android.media.MediaCodec;
-import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Surface;
@@ -19,7 +17,6 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 
-
 import com.google.android.exoplayer.ExoPlaybackException;
 import com.google.android.exoplayer.ExoPlayer;
 import com.google.android.exoplayer.FrameworkSampleSource;
@@ -28,18 +25,8 @@ import com.google.android.exoplayer.MediaCodecTrackRenderer;
 import com.google.android.exoplayer.MediaCodecVideoTrackRenderer;
 import com.google.android.exoplayer.SampleSource;
 import com.google.android.exoplayer.audio.AudioTrack;
-import com.google.android.exoplayer.chunk.ChunkSampleSource;
-import com.google.android.exoplayer.chunk.ChunkSource;
-import com.google.android.exoplayer.chunk.FormatEvaluator;
-import com.google.android.exoplayer.dash.DashChunkSource;
-import com.google.android.exoplayer.smoothstreaming.SmoothStreamingChunkSource;
-import com.google.android.exoplayer.upstream.DataSource;
-import com.google.android.exoplayer.upstream.HttpDataSource;
-
 
 import org.apache.commons.io.FilenameUtils;
-
-import java.io.File;
 
 import ee.promobox.promoboxandroid.data.CampaignFile;
 import ee.promobox.promoboxandroid.data.CampaignFileType;
@@ -77,7 +64,7 @@ public class FragmentVideo extends FragmentWithSeekBar implements TextureView.Su
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView");
         fragmentVideoLayout =  inflater.inflate(R.layout.fragment_video,container,false);
-        super.setView(fragmentVideoLayout);
+        super.setView(fragmentVideoLayout.findViewById(R.id.player_controls));
         videoView = (TextureView) fragmentVideoLayout.findViewById(R.id.video_texture_view);
         fragmentVideoLayout.setOnLongClickListener(mainActivity);
         return fragmentVideoLayout;
@@ -322,6 +309,11 @@ public class FragmentVideo extends FragmentWithSeekBar implements TextureView.Su
     @Override
     public void onPlayerNext() {
         tryNextFile();
+    }
+
+    @Override
+    public void onSettingsPressed() {
+        fragmentVideoLayout.performLongClick();
     }
 
 

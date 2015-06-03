@@ -89,6 +89,18 @@ public class CampaignMultiple extends Campaign {
     }
 
     @Override
+    public void setNextSpecificFileId(int fileId) {
+        for (int i = 0; i < campaigns.size(); i++) {
+            int position  = campaigns.get(i).getCampaignFilePositionById(fileId);
+            if (position != -1){
+                campaignPosition = i;
+                this.position = position;
+            }
+        }
+        Log.e(TAG, " File with id " + fileId +" not found, everything stays the same");
+    }
+
+    @Override
     public void setPreviousFilePosition(){
         Campaign campaign = campaigns.get(campaignPosition);
         position = position - 2;

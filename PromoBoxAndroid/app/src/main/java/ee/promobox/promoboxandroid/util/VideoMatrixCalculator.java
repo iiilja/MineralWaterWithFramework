@@ -1,19 +1,12 @@
 package ee.promobox.promoboxandroid.util;
 
 import android.graphics.Point;
-import android.graphics.Rect;
 import android.graphics.RectF;
 import android.media.MediaMetadataRetriever;
 import android.util.Log;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
-import ee.promobox.promoboxandroid.MainActivity;
-import ee.promobox.promoboxandroid.data.ErrorMessage;
 import ee.promobox.promoboxandroid.util.geom.Line;
 
 /**

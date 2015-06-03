@@ -1,6 +1,5 @@
 package ee.promobox.promoboxandroid.util;
 
-import android.util.Log;
 import android.widget.SeekBar;
 
 import java.lang.ref.WeakReference;

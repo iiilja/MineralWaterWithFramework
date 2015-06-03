@@ -35,11 +35,9 @@ public abstract class FragmentWithSeekBar extends Fragment implements PlayerButt
 
     private SeekBar seekBar;
     private View playerControlsLayout;
-    private View extendingFragmentView;
 
     protected void setView(View view) {
-        extendingFragmentView = view;
-        playerControlsLayout = view.findViewById(R.id.player_controls);
+        playerControlsLayout = view;
         seekBar = (SeekBar) playerControlsLayout.findViewById(R.id.audio_seekBar);
         seekBar.setOnSeekBarChangeListener(this);
         seekBar.setProgressDrawable( getResources().getDrawable(R.drawable.seek_bar_progress));
@@ -61,7 +59,7 @@ public abstract class FragmentWithSeekBar extends Fragment implements PlayerButt
         nextButton.setOnClickListener(this);
         settingsButton.setOnClickListener(this);
 
-        view.setOnClickListener(this);
+        playerControlsLayout.setOnClickListener(this);
     }
 
     public void cleanUp(){
@@ -107,7 +105,7 @@ public abstract class FragmentWithSeekBar extends Fragment implements PlayerButt
 
         switch (v.getId()){
             case R.id.player_settings:
-                extendingFragmentView.performLongClick();
+                onSettingsPressed();
                 break;
             case R.id.player_back:
                 onPlayerPrevious();

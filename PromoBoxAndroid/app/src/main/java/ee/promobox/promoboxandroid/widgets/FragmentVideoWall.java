@@ -1,8 +1,6 @@
 package ee.promobox.promoboxandroid.widgets;
 
-import android.app.Fragment;
 import android.graphics.Point;
-import android.view.View;
 
 import ee.promobox.promoboxandroid.data.CampaignFile;
 

@@ -10,12 +10,8 @@ import org.jgroups.JChannel;
 import org.jgroups.Message;
 import org.jgroups.ReceiverAdapter;
 import org.jgroups.View;
-import org.jgroups.blocks.locking.LockNotification;
-import org.jgroups.blocks.locking.LockService;
-import org.jgroups.util.Owner;
 
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.locks.Lock;
 
 import ee.promobox.promoboxandroid.util.udp_multicasting.messages.MultiCastMessage;
 

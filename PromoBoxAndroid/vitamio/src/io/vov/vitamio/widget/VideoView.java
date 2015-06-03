@@ -193,6 +193,7 @@ public class VideoView extends SurfaceView implements MediaController.MediaPlaye
   private Context mContext;
   private Map<String, String> mHeaders;
   private int mBufSize;
+
   private OnCompletionListener mCompletionListener = new OnCompletionListener() {
     public void onCompletion(MediaPlayer mp) {
       Log.d("onCompletion");

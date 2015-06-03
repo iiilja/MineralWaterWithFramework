@@ -11,10 +11,10 @@
 
 package com.pheelicks.utils;
 
-import java.lang.reflect.Method;
-
 import android.content.Context;
 import android.util.Log;
+
+import java.lang.reflect.Method;
 
 public class SystemPropertiesProxy {
   private static final String TAG = "SystemPropertiesProxy";

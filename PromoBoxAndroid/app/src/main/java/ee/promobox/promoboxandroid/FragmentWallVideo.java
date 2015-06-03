@@ -1,7 +1,6 @@
 package ee.promobox.promoboxandroid;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.graphics.Matrix;
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -17,7 +16,6 @@ import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 
 import org.apache.commons.io.FilenameUtils;
@@ -68,7 +66,7 @@ public class FragmentWallVideo extends FragmentVideoWall implements TextureView.
         fragmentView.setOnLongClickListener(mainActivity);
 
         videoView = (TextureView) fragmentView.findViewById(R.id.video_texture_view);
-        super.setView(fragmentView);
+        super.setView(fragmentView.findViewById(R.id.player_controls));
         return fragmentView;
     }
 
@@ -298,5 +296,10 @@ public class FragmentWallVideo extends FragmentVideoWall implements TextureView.
     @Override
     public void onPlayerNext() {
 
+    }
+
+    @Override
+    public void onSettingsPressed() {
+        fragmentView.performLongClick();
     }
 }

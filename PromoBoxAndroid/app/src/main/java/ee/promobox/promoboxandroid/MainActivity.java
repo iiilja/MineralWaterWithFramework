@@ -89,7 +89,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener, 
     Fragment videoFragment = new FragmentVideo();
     Fragment imageFragment = new FragmentImage();
     Fragment webFragment = new FragmentWeb();
-//    Fragment rtpFragment = new FragmentRTP();
+    Fragment rtpFragment = new FragmentRTP();
     Fragment currentFragment;
 
     //    private UDPMessenger udpMessenger;
@@ -176,6 +176,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener, 
     private void startNextFile() {
         Log.d(TAG, "startNextFile()");
         CampaignFile campaignFile = getNextFile(null);
+        Log.d(TAG, "Next file from startNextFile = " + (campaignFile != null ? campaignFile.getType() : "null"));
         Fragment fragment;
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         CampaignFileType fileType = campaignFile != null ? campaignFile.getType() : null;
@@ -467,8 +468,8 @@ public class MainActivity extends Activity implements FragmentPlaybackListener, 
                 return videoFragment;
             case HTML:
                 return webFragment;
-//            case RTP:
-//                return rtpFragment;
+            case RTP:
+                return rtpFragment;
             default:
                 return mainFragment;
         }
@@ -527,6 +528,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener, 
     }
 
     public CampaignFile getNextFile(CampaignFileType fileTypeNeeded) {
+        Log.d(TAG,"FileType needed = " + fileTypeNeeded);
         CampaignFile campaignFile = null;
         boolean playingSpecificFile = false;
 
@@ -554,7 +556,7 @@ public class MainActivity extends Activity implements FragmentPlaybackListener, 
                 try {
                     mainService.setCurrentFileId(0);
                 } catch (RemoteException e) {
-                    Log.w(TAG, "Couldnt send current file id");
+                    Log.w(TAG, "Couldn't send current file id");
                 }
             } else {
                 mainFragment.updateStatus(StatusEnum.NO_ACTIVE_CAMPAIGN, NO_ACTIVE_CAMPAIGN);
@@ -567,20 +569,10 @@ public class MainActivity extends Activity implements FragmentPlaybackListener, 
             setCurrentFileId(campaignFile.getId());
             campaign.setNextFilePosition();
         } else if (fileTypeNeeded != null && !fileTypeNeeded.equals(fileType)) {
+            Log.d(TAG,"FileType needed = " + fileTypeNeeded + " fileType = " + fileType);
             Log.d(TAG, " file type not as needed");
             campaignFile = null;
         }
-//
-//        campaignFile = new CampaignFile();
-//
-//        campaignFile.setId(100);
-//        campaignFile.setType(CampaignFileType.HTML);
-//        campaignFile.setOrderId(1);
-//        campaignFile.setPath("http://www.google.ru/");
-//        campaignFile.setSize(1);
-//        campaignFile.setUpdatedDt(0);
-//        campaignFile.setName("not named file");
-//        campaignFile.setDelay(60);
 
         return campaignFile;
     }
@@ -672,8 +664,9 @@ public class MainActivity extends Activity implements FragmentPlaybackListener, 
                     break;
                 case PLAY_SPECIFIC_FILE:
 
-                    nextSpecificFile = intent.getParcelableExtra("campaignFile");
-                    Log.d(RECEIVER_STRING, "PLAY_SPECIFIC_FILE with id " + nextSpecificFile.getId());
+                    int nextSpecificFileId = intent.getIntExtra("campaignFileId", -1);
+                    Log.d(RECEIVER_STRING, "PLAY_SPECIFIC_FILE with id " + nextSpecificFileId);
+                    campaign.setNextSpecificFileId(nextSpecificFileId);
                     startNextFile();
                     break;
                 case SET_STATUS:

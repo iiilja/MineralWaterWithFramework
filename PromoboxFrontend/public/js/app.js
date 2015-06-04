@@ -797,6 +797,8 @@ app.controller('CampaignsController', ['$scope', 'token', 'Campaign', 'DevicesGr
             $scope.addToGroup = function(campaign){
                 var devicesCampaigns = [];
 
+                $scope.managedCampaign = campaign;
+
                 Device.devicesCampaigns({token: token.get()}, function (response) {
                     devicesCampaigns = response.devices;
 
@@ -861,6 +863,7 @@ app.controller('CampaignsController', ['$scope', 'token', 'Campaign', 'DevicesGr
                             device.initialSelected = campaignIsSet;
                             device.selected = campaignIsSet;
                         }
+                        selectGroupsWithDevicesSelected();
 
                     });
                 });
@@ -871,10 +874,8 @@ app.controller('CampaignsController', ['$scope', 'token', 'Campaign', 'DevicesGr
                     group.selected = ! group.selected;;
                     for(var i=0; i < group.devices.length; i++){
                         group.devices[i].selected = group.selected;
-                        if (! group.selected){
-                            deselectGroupsWithDevice(group.devices[i]);
-                        }
                     }
+                    selectGroupsWithDevicesSelected();
                 };
 
                 $scope.selectDevice = function(device,group){
@@ -882,6 +883,8 @@ app.controller('CampaignsController', ['$scope', 'token', 'Campaign', 'DevicesGr
                     group.selected = false;
                     if (! device.selected){
                         deselectGroupsWithDevice(device);
+                    } else {
+                        selectGroupsWithDevicesSelected();
                     }
                 };
 
@@ -891,8 +894,22 @@ app.controller('CampaignsController', ['$scope', 'token', 'Campaign', 'DevicesGr
                         for (var j = 0; j < group.devices.length; j++){
                             if (group.devices[j] == device){
                                 group.selected = false;
+                                break;
                             }
                         }
+                    }
+                };
+
+                var selectGroupsWithDevicesSelected = function(){
+                    for (var i=0; i < $scope.groups.length; i++){
+                        var group = $scope.groups[i];
+                        var selectedCounter = 0;
+                        for (var j = 0; j < group.devices.length; j++){
+                            if (group.devices[j].selected){
+                                selectedCounter ++;
+                            }
+                        }
+                        group.selected = selectedCounter == group.devices.length;
                     }
                 };
 

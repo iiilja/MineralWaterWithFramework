@@ -401,6 +401,11 @@ input[readonly] {
     height: 16px;
 }
 
+.controll-block > li ul li i.download {
+    width: 16px;
+    height: 16px;
+}
+
 .controll-block > li ul li i.po {
     width: 16px;
     height: 16px;
@@ -413,6 +418,8 @@ input[readonly] {
 
 .controll-block > li ul li i.protiv:after {background: url(../img/protiv-normal.png);}
 .controll-block > li ul li i.protiv:before {background: url(../img/protiv-hover.png);}
+.controll-block > li ul li i.download:after {background: url(../img/download-normal.png);}
+.controll-block > li ul li i.download:before {background: url(../img/download-hover.png);}
 .controll-block > li ul li i.po:after {background: url(../img/po-normal.png);}
 .controll-block > li ul li i.po:before {background: url(../img/po-hover.png);}
 .controll-block > li ul li i.delete:after {

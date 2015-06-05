@@ -556,7 +556,7 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
             var toDo = function(){
                 Campaign.delete_campaigns({token: token.get(), id: $scope.campaign.id}, function (response) {
                     if (response.error) {
-                        sysMessage.error($filter('translate')('system_device') + ' ' + $filter('translate')('campaign_edit_in_use'));
+                        sysMessage.error($filter('translate')('system_campaign_is_used'));
                     } else {
                         sysLocation.goList();
                     }
@@ -650,6 +650,14 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
                 sysMessage.delete_s($filter('translate')('system_filewasdeleted'));
                 refreshFilesModel();
             });
+        };
+
+        $scope.getDownloadFileLink = function (promofile) {
+            return apiEndpoint + 'token/' + token.get() + '/files/' + promofile.id;
+        };
+
+        $scope.isDownloadable = function (fileType) {
+            return fileType != 4 && fileType != 6;
         };
         
         $scope.playNextFile = function (id) {

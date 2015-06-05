@@ -996,24 +996,40 @@ app.controller('DevicesController', ['$scope', 'token', 'Device', 'DevicesGroups
                      //$scope.currentGroup = {};
                      $scope.groups = [];
 
-                     var findDeviceById = function(deviceId){
-                         for (var i=0; i<$scope.devices.length; i++){
-                             if ($scope.devices[i].id == deviceId){
-                                 return $scope.devices[i];
+                     var findDeviceById = function(devices, deviceId){
+                         for (var i=0; i<devices.length; i++){
+                             if (devices[i].id == deviceId){
+                                 return devices[i];
                              }
                          }
+                     };
+
+
+                     var findUnGroupedDevices = function(allDevices){
+                         var devicesCopy = allDevices.slice();
+                         for(var i = 0; i < $scope.groups.length; i++){
+                             var group = $scope.groups[i];
+                             for (var j = 0; j < group.devices.length; j++){
+                                 var found = findDeviceById(devicesCopy, group.devices[j].id)
+                                 if (found){
+                                     devicesCopy.splice(devicesCopy.indexOf(found), 1);
+                                 }
+                             }
+                         }
+                         return devicesCopy;
                      };
 
                      for (var i=0; i < response.groups.length; i++){
                          var respGroup = response.groups[i];
                          var group = {};
                          group.id = respGroup.id;
+                         group.selected = true;
                          group.name = respGroup.name;
                          group.devices = [];
                          for (var j=0; j < respGroup.devices.length; j++){
                              var respDevice = respGroup.devices[j];
                              if ( respDevice.contains){
-                                 var foundDevice = findDeviceById(respDevice.id);
+                                 var foundDevice = findDeviceById($scope.devices, respDevice.id);
                                  if (foundDevice){
                                      group.devices.push(foundDevice);
                                  }
@@ -1023,8 +1039,9 @@ app.controller('DevicesController', ['$scope', 'token', 'Device', 'DevicesGroups
                      }
                      var group = {};
                      group.id = 0;
+                     group.selected = true;
                      group.name = $filter('translate')('device_group_all_devices');
-                     group.devices = $scope.devices;
+                     group.devices = findUnGroupedDevices($scope.devices);
                      $scope.groups.push(group);
 
                  });

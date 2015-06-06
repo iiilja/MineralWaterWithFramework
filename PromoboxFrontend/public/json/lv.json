@@ -72,7 +72,7 @@
     "device_time_intersection": "Пересечение времени кампаний",
     "device_offtime": "Время выключения",
     "device_launch_promobox": "Запустить PROMOBOX",
-    "device_group_all_devices": "Все устройства",
+    "device_group_ungrouped_devices": "Devices which are not in group",
     "device_devices_multiple": "устройств",
     "up": "Выше",
     "down": "Ниже",

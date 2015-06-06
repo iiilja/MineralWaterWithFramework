@@ -306,7 +306,7 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
             $scope.checkedDays = $scope.campaign.days;
             $scope.checkedHours = $scope.campaign.hours;
             $scope.campaign_form = {campaign_status: $scope.campaign.status, 
-                                    filesArray: $scope.campaign.files, 
+                                    filesArray: reverseFilesOrder($scope.campaign.files),
                                     campaign_name: $scope.campaign.name, 
                                     campaign_time: $scope.campaign.duration, 
                                     campaign_order: $scope.campaign.sequence, 
@@ -330,6 +330,19 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
             }
             
         });
+
+        var reverseFilesOrder = function(files){
+            var newOrder = [];
+            var count = files.length;
+            for(var i = 0; i < files.length; i++){
+                newOrder.push(files[count - 1 - i]);
+            }
+            files.splice(0,files.length);
+            for(i = 0; i < newOrder.length; i++){
+                files.push(newOrder[i]);
+            }
+            return files;
+        };
 
         $scope.isWebmVideo = function() {
             var browserName = browser.detectBrowser();
@@ -619,6 +632,7 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         
         var update_files_order_id = function() {
             for (var index in $scope.campaign.files) {
+                //$scope.campaign.files[$scope.campaign.files.length - index - 1].orderId = index;
                 $scope.campaign.files[index].orderId = index;
             }
         };
@@ -704,7 +718,7 @@ app.controller('CampaignEditController', ['$scope', '$stateParams', 'token', 'Ca
         
         var refreshFilesModel = function () {
             Campaign.get_campaigns({token: token.get(), id: $stateParams.cId}, function (response) {
-                $scope.campaign.files = response.files;
+                $scope.campaign.files = reverseFilesOrder(response.files);
                 $scope.campaign_form.filesArray = $scope.campaign.files;
                 
                 for (var i = 0; i < $scope.campaign.files.length; i++) {
@@ -1040,7 +1054,7 @@ app.controller('DevicesController', ['$scope', 'token', 'Device', 'DevicesGroups
                      var group = {};
                      group.id = 0;
                      group.selected = true;
-                     group.name = $filter('translate')('device_group_all_devices');
+                     group.name = $filter('translate')('device_group_ungrouped_devices');
                      group.devices = findUnGroupedDevices($scope.devices);
                      $scope.groups.push(group);
 

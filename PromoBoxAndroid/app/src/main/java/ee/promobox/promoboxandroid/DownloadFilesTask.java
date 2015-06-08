@@ -77,7 +77,7 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
                 return null;
             }
 
-//            Log.d(TAG, "Data: " + data.toString());
+            Log.d(TAG, "Data: " + data.toString());
 
             if (data.has("currentDt")){
                 Date serverDate = new Date(data.getLong("currentDt"));
@@ -348,46 +348,48 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
 //        Log.i(TAG, conn.getURL().toString());
 
 
-        String query = "json=" + URLEncoder.encode(json.toString(), "UTF-8");
-        IOUtils.write(query.getBytes(),conn.getOutputStream());
-        String response = "";
+        try {
+            String query = "json=" + URLEncoder.encode(json.toString(), "UTF-8");
+            IOUtils.write(query.getBytes(),conn.getOutputStream());
+            String response = "";
 
-        if (conn.getResponseCode() == HttpURLConnection.HTTP_OK && !service.getIsDownloading().get()) {
-//            Log.d(TAG, "Response code = " + conn.getResponseCode());
-            try {
+            if (conn.getResponseCode() == HttpURLConnection.HTTP_OK && !service.getIsDownloading().get()) {
+//              Log.d(TAG, "Response code = " + conn.getResponseCode());
+
                 response = IOUtils.toString(conn.getInputStream(),"UTF-8");
-            } finally {
-                conn.disconnect();
-            }
-            if (!response.equals("")) {
-                try {
-                    return new JSONObject(response);
-                } catch (JSONException e) {
-                    ErrorMessage message = new ErrorMessage("JSONException", e.getMessage(), e.getStackTrace());
-                    message.putMoreInfo("json:" + response);
-                    service.addError(message, false);
-                    service.sendBroadcast(new ToastIntent("Error 53 - reading JSON from server"));
+
+                if (!response.equals("")) {
+                    try {
+                        return new JSONObject(response);
+                    } catch (JSONException e) {
+                        ErrorMessage message = new ErrorMessage("JSONException", e.getMessage(), e.getStackTrace());
+                        message.putMoreInfo("json:" + response);
+                        service.addError(message, false);
+                        service.sendBroadcast(new ToastIntent("Error 53 - reading JSON from server"));
+                    }
                 }
+            } else if ( !service.getIsDownloading().get() ){
+                String error = " Status code:" + conn.getResponseCode();
+                String content = IOUtils.toString(conn.getErrorStream(), "UTF-8");
+                error += ". Content:" + content ;
+                Log.e(TAG, error);
+                json = null;
+                try {
+                    json = new JSONObject(content);
+                } catch (JSONException e){
+                    service.addError(new ErrorMessage("ServerError", error, null), false);
+                    service.sendBroadcast(new ToastIntent("Error reading JSON from server"));
+                }
+                if ( json != null && json.has("error") && json.getString("error").equals("not_found_device")) {
+                    Log.d(TAG, "sending WRONG_UUID" );
+                    service.sendBroadcast(new Intent(MainActivity.WRONG_UUID));
+                    service.sendBroadcast(new ToastIntent("Wrong UUID"));
+                }
+            } else {
+                Log.d(TAG, "AM BUSY, AM DOWNLOADING");
             }
-        } else if ( !service.getIsDownloading().get() ){
-            String error = " Status code:" + conn.getResponseCode();
-            String content = IOUtils.toString(conn.getErrorStream(), "UTF-8");
-            error += ". Content:" + content ;
-            Log.e(TAG, error);
-            json = null;
-            try {
-                json = new JSONObject(content);
-            } catch (JSONException e){
-                service.addError(new ErrorMessage("ServerError", error, null), false);
-                service.sendBroadcast(new ToastIntent("Error reading JSON from server"));
-            }
-            if ( json != null && json.has("error") && json.getString("error").equals("not_found_device")) {
-                Log.d(TAG, "sending WRONG_UUID" );
-                service.sendBroadcast(new Intent(MainActivity.WRONG_UUID));
-                service.sendBroadcast(new ToastIntent("Wrong UUID"));
-            }
-        } else {
-            Log.d(TAG, "AM BUSY, AM DOWNLOADING");
+        } finally {
+            conn.disconnect();
         }
 
         return null;

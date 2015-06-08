@@ -576,6 +576,54 @@ public class FilesController {
         return null;
     }
     
+    @RequestMapping(value = "token/{token}/files/{id}", method = RequestMethod.GET)
+    public @ResponseBody void getRawFile(
+            @PathVariable("token") String token,
+            @PathVariable("id") int id,
+            HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+        
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+        
+        Session session = sessionService.findSession(token);
+
+        if (session != null) {
+            CampaignsFiles dbFile = userService.findCampaignFile(id, session.getClientId());
+            if (dbFile != null) {
+                response.setStatus(HttpServletResponse.SC_OK);
+
+                /*if (dbFile.getFileType() == FileTypeUtils.FILE_TYPE_VIDEO) {
+                    response.setContentType("video/webm");
+                } else if (dbFile.getFileType() == FileTypeUtils.FILE_TYPE_AUDIO) {
+                    response.setContentType("audio/mpeg");
+                } else if (dbFile.getFileType() == FileTypeUtils.FILE_TYPE_IMAGE) {
+                    response.setContentType("image/png");
+                }*/
+
+
+                File file = fileService.getRawFile(dbFile.getClientId(), dbFile.getFileId());
+                
+                response.setHeader( "Content-Disposition", "attachment; filename=" + dbFile.getFilename() );
+
+                response.setContentLength((int)file.length());
+
+                FileInputStream fileInputStream = new FileInputStream(file);
+                OutputStream outputStream = response.getOutputStream();
+
+                IOUtils.copy(fileInputStream, outputStream);
+
+                IOUtils.closeQuietly(fileInputStream);
+                IOUtils.closeQuietly(outputStream);
+
+            } else {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            }
+        } else {
+            ResponseUtils.sendUnauthorized(response);
+        }
+    }
+    
     @RequestMapping(value = "token/{token}/files/status", method = RequestMethod.GET)
     public @ResponseBody String getFilesStatus(
             @PathVariable("token") String token,

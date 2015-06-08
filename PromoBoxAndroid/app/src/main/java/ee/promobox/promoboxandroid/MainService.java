@@ -47,8 +47,8 @@ public class MainService extends Service {
 
     public final static String TAG = "MainService ";
 
-    public final static String DEFAULT_SERVER = "http://46.182.31.101:8080"; //"http://api.promobox.ee/";   DEV
-//    public final static String DEFAULT_SERVER = "https://api.promobox.ee"; // production
+//    public final static String DEFAULT_SERVER = "http://46.182.31.101:8080"; //"http://api.promobox.ee/";   DEV
+    public final static String DEFAULT_SERVER = "http://api.promobox.ee"; // production
 //    public final static String DEFAULT_SERVER = "http://46.182.30.93:8080"; // production
     public final static String DEFAULT_SERVER_JSON = DEFAULT_SERVER + "/service/device/%s/pull";
 
@@ -114,7 +114,7 @@ public class MainService extends Service {
 
         Timer timer = new Timer();
         TimerTask serviceTimer = new MainServiceTimerTask(this);
-        timer.scheduleAtFixedRate(serviceTimer, 0, 5000);
+        timer.scheduleAtFixedRate(serviceTimer, 0, 15000);
     }
 
 

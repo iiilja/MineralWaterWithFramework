@@ -64,7 +64,7 @@ public class FragmentWallVideo extends FragmentVideoWall implements TextureView.
         Log.d(TAG, "onCreateView");
         fragmentView = inflater.inflate(R.layout.fragment_wall_video, container, false);
         fragmentView.setOnLongClickListener(mainActivity);
-
+        fragmentView.setOnClickListener(this);
         videoView = (TextureView) fragmentView.findViewById(R.id.video_texture_view);
         super.setView(fragmentView.findViewById(R.id.player_controls));
         return fragmentView;

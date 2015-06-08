@@ -39,6 +39,7 @@ public class FragmentWeb extends FragmentWithSeekBar implements View.OnTouchList
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         fragmentView = inflater.inflate(R.layout.fragment_web,container,false);
         fragmentView.setOnLongClickListener(mainActivity);
+        fragmentView.setOnClickListener(this);
 
         super.setView(fragmentView.findViewById(R.id.player_controls));
 

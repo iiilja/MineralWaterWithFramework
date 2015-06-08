@@ -56,7 +56,7 @@ public class FragmentAudio extends FragmentWithSeekBar implements ExoPlayer.List
         audioAnimation.start();
         super.setView(audioView.findViewById(R.id.player_controls));
         audioView.setOnLongClickListener(mainActivity);
-
+        audioView.setOnClickListener(this);
 
         return audioView;
     }

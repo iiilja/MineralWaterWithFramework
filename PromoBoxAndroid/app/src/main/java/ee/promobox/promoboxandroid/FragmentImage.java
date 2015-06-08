@@ -46,6 +46,7 @@ public class FragmentImage extends FragmentWithSeekBar {
         Log.d(TAG, "onCreateView");
         imageFragment = inflater.inflate(R.layout.fragment_image, container, false);
         imageFragment.setOnLongClickListener(mainActivity);
+        imageFragment.setOnClickListener(this);
         super.setView(imageFragment.findViewById(R.id.player_controls));
 
         slide = (ImageView) imageFragment.findViewById(R.id.slide_1);

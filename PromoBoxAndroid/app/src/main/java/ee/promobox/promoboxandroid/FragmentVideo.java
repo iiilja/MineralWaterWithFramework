@@ -67,6 +67,7 @@ public class FragmentVideo extends FragmentWithSeekBar implements TextureView.Su
         super.setView(fragmentVideoLayout.findViewById(R.id.player_controls));
         videoView = (TextureView) fragmentVideoLayout.findViewById(R.id.video_texture_view);
         fragmentVideoLayout.setOnLongClickListener(mainActivity);
+        fragmentVideoLayout.setOnClickListener(this);
         return fragmentVideoLayout;
     }
 

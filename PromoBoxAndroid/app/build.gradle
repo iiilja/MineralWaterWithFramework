@@ -8,8 +8,8 @@ android {
         applicationId "ee.promobox.promoboxandroid"
         minSdkVersion 17
         targetSdkVersion 21
-        versionCode 9
-        versionName "Migrating to settings file part 1"
+        versionCode 10
+        versionName "RTP & WebView"
     }
     buildTypes {
         release {

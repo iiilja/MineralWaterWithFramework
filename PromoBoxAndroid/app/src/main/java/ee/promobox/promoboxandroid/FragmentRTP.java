@@ -213,6 +213,7 @@ public class FragmentRTP extends Fragment implements MediaPlayer.OnErrorListener
 
     private class BufferingCheckerRunnable implements Runnable {
         private int previousPercent = -1;
+        private int doingNothingCounter = 0;
         @Override
         public void run() {
             if (videoView == null){
@@ -228,7 +229,22 @@ public class FragmentRTP extends Fragment implements MediaPlayer.OnErrorListener
                 tryNextFile();
                 return;
             }
+            if (! videoView.isBuffering() && !videoView.isPlaying()){
+                Log.e(TAG, "Is not playing, trying to start, counter = " + doingNothingCounter);
+                videoView.start();
+                doingNothingCounter ++;
+                if (doingNothingCounter >= 6){
+                    doingNothingCounter = 0;
+                    Log.e(TAG, "Too long doing nothing");
+                    videoView.stopPlayback();
+                    tryNextFile();
+                    return;
+                }
+            }
             bufferingCheckerHandler.postDelayed(this, bufferingCheckDelay);
+
+
+            Log.d(TAG, "Isplaying = " + videoView.isPlaying() + " is valid = " + videoView.isValid());
         }
     }
 }

@@ -58,8 +58,6 @@ public abstract class FragmentWithSeekBar extends Fragment implements PlayerButt
         previousButton.setOnClickListener(this);
         nextButton.setOnClickListener(this);
         settingsButton.setOnClickListener(this);
-
-        playerControlsLayout.setOnClickListener(this);
     }
 
     public void cleanUp(){

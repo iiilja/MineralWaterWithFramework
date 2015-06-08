@@ -354,7 +354,11 @@ public class DownloadFilesTask extends AsyncTask<String, Integer, File> {
 
         if (conn.getResponseCode() == HttpURLConnection.HTTP_OK && !service.getIsDownloading().get()) {
 //            Log.d(TAG, "Response code = " + conn.getResponseCode());
-            response = IOUtils.toString(conn.getInputStream(),"UTF-8");
+            try {
+                response = IOUtils.toString(conn.getInputStream(),"UTF-8");
+            } finally {
+                conn.disconnect();
+            }
             if (!response.equals("")) {
                 try {
                     return new JSONObject(response);

@@ -54,6 +54,7 @@ public class FragmentWallImage extends FragmentVideoWall {
         Log.d(TAG, "onCreateView");
         imageFragment = inflater.inflate(R.layout.fragment_wall_image, container, false);
         imageFragment.setOnLongClickListener(mainActivity);
+        imageFragment.setOnClickListener(this);
 
         slide = (WallImageView) imageFragment.findViewById(R.id.slide_1);
         super.setView(imageFragment.findViewById(R.id.player_controls));

@@ -179,6 +179,7 @@ public class DevicesController {
             d.setCurrentCampaignId(objectGiven.has("currentCampaignId") ? objectGiven.getInt("currentCampaignId") : null);
             d.setLoadingCampaignId(objectGiven.has("loadingCampaingId") ? objectGiven.getInt("loadingCampaingId") : null);
             d.setLoadingCampaignProgress(objectGiven.has("loadingCampaingProgress") ? objectGiven.getInt("loadingCampaingProgress") : null);
+            d.setVersion(objectGiven.has("version") ? objectGiven.getInt("version") : null);
 
             boolean onTop = objectGiven.has("isOnTop") ? objectGiven.getBoolean("isOnTop") : true;
             d.setOnTop(onTop);
@@ -215,6 +216,10 @@ public class DevicesController {
             resp.put("orientation", d.getOrientation());
             resp.put("clearCache", d.isClearCache());
             resp.put("openApp", d.isOpenApp());
+            
+            resp.put("restart", d.isRastart());
+            d.setRastart(false);
+
 
             resp.put("videoWall", d.isVideoWall());
             resp.put("resolutionVertical", d.getResolutionVertical());
@@ -321,7 +326,9 @@ public class DevicesController {
             } else {
                 resp.put("status", "error");
                 resp.put("error", "no_active_campaign");
-
+                
+                userService.updateDevice(d);
+                
                 response.setStatus(HttpServletResponse.SC_OK);
 
                 return resp.toString();

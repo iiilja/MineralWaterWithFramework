@@ -162,6 +162,12 @@ public class Devices implements Serializable {
     @Column(name = "on_off_check_number", nullable = false)
     private int onOffCheckNumber;
 
+    @Column(name = "version", nullable = false)
+    private Integer version;
+
+    @Column(name = "restart", nullable = false)
+    private boolean rastart;
+
     @Column(name = "state_period", nullable = false)
     private long statePeriod;
 
@@ -499,4 +505,19 @@ public class Devices implements Serializable {
         this.statePeriod = statePeriod;
     }
 
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
+
+    public boolean isRastart() {
+        return rastart;
+    }
+
+    public void setRastart(boolean rastart) {
+        this.rastart = rastart;
+    }
 }

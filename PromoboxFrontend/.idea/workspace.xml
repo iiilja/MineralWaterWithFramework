@@ -2,11 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9b44007b-a825-43ba-8a60-51fd2b364aed" name="Default" comment="#122 fix">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/data/CampaignFileType.java" afterPath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/data/CampaignFileType.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../PromoBoxBackend/src/java/ee/promobox/controller/FilesController.java" afterPath="$PROJECT_DIR$/../PromoBoxBackend/src/java/ee/promobox/controller/FilesController.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/FragmentRTP.java" afterPath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/FragmentRTP.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/js/app.js" afterPath="$PROJECT_DIR$/public/js/app.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/views/device.html" afterPath="$PROJECT_DIR$/public/views/device.html" />
+      <change type="DELETED" beforePath="D:\Android Workspace\kiosk\PromoBoxBackend\db\15.04.2015 - devices groups.sql" afterPath="" />
+      <change type="DELETED" beforePath="D:\Android Workspace\kiosk\PromoBoxBackend\db\27.02.15.changes.sql" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/DownloadFilesTask.java" afterPath="$PROJECT_DIR$/../PromoBoxAndroid/app/src/main/java/ee/promobox/promoboxandroid/DownloadFilesTask.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/json/en.json" afterPath="$PROJECT_DIR$/public/json/en.json" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/json/et.json" afterPath="$PROJECT_DIR$/public/json/et.json" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/json/lv.json" afterPath="$PROJECT_DIR$/public/json/lv.json" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/json/ru.json" afterPath="$PROJECT_DIR$/public/json/ru.json" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/views/settings/usersPermissions.html" afterPath="$PROJECT_DIR$/public/views/settings/usersPermissions.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="PromoboxFrontEnd.iws" />
@@ -32,14 +35,24 @@
       <file leaf-file-name="app.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/public/js/app.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-10.551724">
-              <caret line="978" column="61" selection-start-line="978" selection-start-column="61" selection-end-line="978" selection-end-column="61" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="1024" column="45" selection-start-line="1024" selection-start-column="45" selection-end-line="1024" selection-end-column="45" />
               <folding>
-                <element signature="e#7849#9734#0" expanded="false" />
-                <element signature="e#9811#11077#0" expanded="false" />
-                <element signature="e#11410#30458#0" expanded="false" />
-                <element signature="e#31297#31851#0" expanded="false" />
+                <element signature="e#6702#7779#0" expanded="false" />
+                <element signature="e#11410#31015#0" expanded="false" />
+                <element signature="e#31057#39851#0" expanded="false" />
+                <element signature="e#31854#32408#0" expanded="false" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="usersPermissions.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/public/views/settings/usersPermissions.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-14.269231">
+              <caret line="33" column="145" selection-start-line="33" selection-start-column="118" selection-end-line="33" selection-end-column="145" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -47,8 +60,8 @@
       <file leaf-file-name="lv.json" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/public/json/lv.json">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-9.961538">
-              <caret line="102" column="44" selection-start-line="102" selection-start-column="44" selection-end-line="102" selection-end-column="44" />
+            <state vertical-scroll-proportion="-17.653847">
+              <caret line="169" column="40" selection-start-line="169" selection-start-column="36" selection-end-line="169" selection-end-column="40" />
               <folding />
             </state>
           </provider>
@@ -57,18 +70,18 @@
       <file leaf-file-name="ru.json" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/public/json/ru.json">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-5.3846154">
-              <caret line="101" column="40" selection-start-line="101" selection-start-column="40" selection-end-line="101" selection-end-column="40" />
+            <state vertical-scroll-proportion="-25.5">
+              <caret line="168" column="45" selection-start-line="168" selection-start-column="45" selection-end-line="168" selection-end-column="45" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="et.json" pinned="false" current-in-tab="false">
+      <file leaf-file-name="et.json" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/public/json/et.json">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-6.0384617">
-              <caret line="102" column="44" selection-start-line="102" selection-start-column="44" selection-end-line="102" selection-end-column="44" />
+            <state vertical-scroll-proportion="0.5263761">
+              <caret line="165" column="53" selection-start-line="165" selection-start-column="53" selection-end-line="165" selection-end-column="53" />
               <folding />
             </state>
           </provider>
@@ -77,8 +90,8 @@
       <file leaf-file-name="en.json" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/public/json/en.json">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-6.6545453">
-              <caret line="68" column="26" selection-start-line="68" selection-start-column="5" selection-end-line="68" selection-end-column="26" />
+            <state vertical-scroll-proportion="-6.3454547">
+              <caret line="167" column="46" selection-start-line="167" selection-start-column="46" selection-end-line="168" selection-end-column="42" />
               <folding />
             </state>
           </provider>
@@ -87,8 +100,8 @@
       <file leaf-file-name="campaign_edit.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/public/views/campaign_edit.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-2.7818182">
-              <caret line="9" column="30" selection-start-line="9" selection-start-column="30" selection-end-line="9" selection-end-column="30" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="64" column="241" selection-start-line="64" selection-start-column="214" selection-end-line="64" selection-end-column="241" />
               <folding>
                 <element signature="n#style#0;n#div#0;n#div#1;n#div#0;n#div#0;n#div#5;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#input#0;n#div#0;n#div#1;n#div#0;n#div#0;n#div#5;n#!!top" expanded="true" />
@@ -100,18 +113,18 @@
       <file leaf-file-name="styles.css" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/public/css/styles.css">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-13.4827585">
+            <state vertical-scroll-proportion="0.0">
               <caret line="404" column="13" selection-start-line="404" selection-start-column="13" selection-end-line="404" selection-end-column="13" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="device.html" pinned="false" current-in-tab="true">
+      <file leaf-file-name="device.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/public/views/device.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.24228029">
-              <caret line="12" column="34" selection-start-line="12" selection-start-column="34" selection-end-line="12" selection-end-column="34" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="35" column="28" selection-start-line="35" selection-start-column="28" selection-end-line="35" selection-end-column="28" />
               <folding />
             </state>
           </provider>
@@ -120,7 +133,7 @@
       <file leaf-file-name="bootstrap.min.css" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/public/css/bootstrap.min.css">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-9.965517">
+            <state vertical-scroll-proportion="0.0">
               <caret line="370" column="19" selection-start-line="370" selection-start-column="11" selection-end-line="370" selection-end-column="19" />
               <folding />
             </state>
@@ -168,7 +181,6 @@
         <option value="$PROJECT_DIR$/public/index.html" />
         <option value="$PROJECT_DIR$/public/views/settings/users.html" />
         <option value="$PROJECT_DIR$/public/js/settings.js" />
-        <option value="$PROJECT_DIR$/public/views/settings/usersPermissions.html" />
         <option value="$PROJECT_DIR$/public/views/login.html" />
         <option value="$PROJECT_DIR$/public/views/register.html" />
         <option value="$PROJECT_DIR$/public/views/modal/campaignToGroup.html" />
@@ -177,14 +189,15 @@
         <option value="$PROJECT_DIR$/public/views/modal/addDeviceToGroup.html" />
         <option value="$PROJECT_DIR$/public/views/list.html" />
         <option value="$PROJECT_DIR$/public/views/campaign_edit.html" />
-        <option value="$PROJECT_DIR$/public/json/en.json" />
-        <option value="$PROJECT_DIR$/public/json/et.json" />
-        <option value="$PROJECT_DIR$/public/json/ru.json" />
-        <option value="$PROJECT_DIR$/public/json/lv.json" />
         <option value="$PROJECT_DIR$/public/views/footer.html" />
         <option value="$PROJECT_DIR$/public/css/styles.css" />
-        <option value="$PROJECT_DIR$/public/js/app.js" />
         <option value="$PROJECT_DIR$/public/views/device.html" />
+        <option value="$PROJECT_DIR$/public/js/app.js" />
+        <option value="$PROJECT_DIR$/public/views/settings/usersPermissions.html" />
+        <option value="$PROJECT_DIR$/public/json/en.json" />
+        <option value="$PROJECT_DIR$/public/json/lv.json" />
+        <option value="$PROJECT_DIR$/public/json/ru.json" />
+        <option value="$PROJECT_DIR$/public/json/et.json" />
       </list>
     </option>
   </component>
@@ -357,24 +370,6 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="json" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="PromoboxFrontEnd" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="PromoboxFrontend" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="public" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="img" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -740,19 +735,8 @@
       <workItem from="1432799511602" duration="11038000" />
       <workItem from="1432919605897" duration="1081000" />
       <workItem from="1433141824091" duration="14358000" />
-      <workItem from="1433233176088" duration="34289000" />
-    </task>
-    <task id="LOCAL-00001" summary="Test 2">
-      <created>1406150675432</created>
-      <option name="number" value="00001" />
-      <option name="project" value="LOCAL" />
-      <updated>1406150675432</updated>
-    </task>
-    <task id="LOCAL-00002" summary="Test 3">
-      <created>1406187414070</created>
-      <option name="number" value="00002" />
-      <option name="project" value="LOCAL" />
-      <updated>1406187414070</updated>
+      <workItem from="1433233176088" duration="45921000" />
+      <workItem from="1433767369036" duration="1064000" />
     </task>
     <task id="LOCAL-00003" summary="Test 4">
       <created>1406188232097</created>
@@ -1036,11 +1020,23 @@
       <option name="project" value="LOCAL" />
       <updated>1433493563452</updated>
     </task>
-    <option name="localTasksCounter" value="50" />
+    <task id="LOCAL-00050" summary="#123 device groups open">
+      <created>1433512726671</created>
+      <option name="number" value="00050" />
+      <option name="project" value="LOCAL" />
+      <updated>1433512726753</updated>
+    </task>
+    <task id="LOCAL-00051" summary="#123 #124 Files order">
+      <created>1433602271559</created>
+      <option name="number" value="00051" />
+      <option name="project" value="LOCAL" />
+      <updated>1433602271559</updated>
+    </task>
+    <option name="localTasksCounter" value="52" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="372847000" />
+    <option name="totallyTimeSpent" value="385543000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -1056,30 +1052,30 @@
     <editor active="false" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32893288" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32864866" sideWeight="0.4978678" order="10" side_tool="false" content_ui="tabs" />
-      <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32864866" sideWeight="0.5021322" order="13" side_tool="true" content_ui="tabs" />
-      <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32893288" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.19027027" sideWeight="0.5042644" order="13" side_tool="true" content_ui="tabs" />
+      <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.19027027" sideWeight="0.4978678" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.19027027" sideWeight="0.49573562" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="true" anchor="left" auto_hide="true" internal_type="SLIDING" type="SLIDING" visible="true" weight="0.25479743" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39871383" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.23151125" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39871383" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.23151125" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32864866" sideWeight="0.4978678" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2742616" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.32756758" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
@@ -1096,8 +1092,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Fixed locales" />
-    <MESSAGE value="Fixs" />
     <MESSAGE value="confirmation" />
     <MESSAGE value="#104 Register validation" />
     <MESSAGE value="#105 #106 Forgotten password info + locale language" />
@@ -1121,7 +1115,9 @@
     <MESSAGE value="tesrh" />
     <MESSAGE value="#120 fixes closes" />
     <MESSAGE value="#122 , # 121 , #119 fix" />
-    <option name="LAST_COMMIT_MESSAGE" value="#122 , # 121 , #119 fix" />
+    <MESSAGE value="#123 device groups open" />
+    <MESSAGE value="#123 #124 Files order" />
+    <option name="LAST_COMMIT_MESSAGE" value="#123 #124 Files order" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1146,6 +1142,14 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/public/css/bootstrap.min.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="370" column="19" selection-start-line="370" selection-start-column="11" selection-end-line="370" selection-end-column="19" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/public/js/libs/angular-moment.min.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -1204,7 +1208,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.4245176">
           <caret line="184" column="12" selection-start-line="184" selection-start-column="12" selection-end-line="186" selection-end-column="73" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1348,11 +1351,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="131" column="15" selection-start-line="131" selection-start-column="8" selection-end-line="131" selection-end-column="15" />
-          <folding>
-            <element signature="e#6742#7489#0" expanded="false" />
-            <element signature="e#8617#8870#0" expanded="false" />
-            <element signature="e#8933#9478#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1360,13 +1358,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.25373134">
           <caret line="13" column="68" selection-start-line="13" selection-start-column="68" selection-end-line="13" selection-end-column="68" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/views/settings/usersPermissions.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="47" column="24" selection-start-line="47" selection-start-column="24" selection-end-line="47" selection-end-column="24" />
         </state>
       </provider>
     </entry>
@@ -1388,7 +1379,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="102" column="42" selection-start-line="102" selection-start-column="42" selection-end-line="102" selection-end-column="42" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1396,7 +1386,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="187" column="21" selection-start-line="187" selection-start-column="11" selection-end-line="187" selection-end-column="21" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1404,28 +1393,22 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-21.73077">
           <caret line="79" column="48" selection-start-line="79" selection-start-column="48" selection-end-line="79" selection-end-column="48" />
-          <folding>
-            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#div#0;n#!!top" expanded="false" />
-            <element signature="n#style#0;n#div#1;n#!!top" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/public/css/bootstrap.css.map">
-      <provider editor-type-id="sourcemapFileViewerProvider">
-        <state />
-      </provider>
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
+      </provider>
+      <provider editor-type-id="sourcemapFileViewerProvider">
+        <state />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/public/css/bootstrap.min.css">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-9.965517">
+        <state vertical-scroll-proportion="0.0">
           <caret line="370" column="19" selection-start-line="370" selection-start-column="11" selection-end-line="370" selection-end-column="19" />
           <folding />
         </state>
@@ -1441,41 +1424,16 @@
         <state />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/public/json/et.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-6.0384617">
-          <caret line="102" column="44" selection-start-line="102" selection-start-column="44" selection-end-line="102" selection-end-column="44" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/json/ru.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-5.3846154">
-          <caret line="101" column="40" selection-start-line="101" selection-start-column="40" selection-end-line="101" selection-end-column="40" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/public/views/footer.html">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.09758898">
           <caret line="5" column="4" selection-start-line="5" selection-start-column="4" selection-end-line="5" selection-end-column="4" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/json/lv.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-9.961538">
-          <caret line="102" column="44" selection-start-line="102" selection-start-column="44" selection-end-line="102" selection-end-column="44" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/public/css/styles.css">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-13.4827585">
+        <state vertical-scroll-proportion="0.0">
           <caret line="404" column="13" selection-start-line="404" selection-start-column="13" selection-end-line="404" selection-end-column="13" />
           <folding />
         </state>
@@ -1483,8 +1441,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/public/views/campaign_edit.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-2.7818182">
-          <caret line="9" column="30" selection-start-line="9" selection-start-column="30" selection-end-line="9" selection-end-column="30" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="64" column="241" selection-start-line="64" selection-start-column="214" selection-end-line="64" selection-end-column="241" />
           <folding>
             <element signature="n#style#0;n#div#0;n#div#1;n#div#0;n#div#0;n#div#5;n#!!top" expanded="true" />
             <element signature="n#style#0;n#input#0;n#div#0;n#div#1;n#div#0;n#div#0;n#div#5;n#!!top" expanded="true" />
@@ -1492,31 +1450,63 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/public/json/en.json">
+    <entry file="file://$PROJECT_DIR$/public/views/device.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-6.6545453">
-          <caret line="68" column="26" selection-start-line="68" selection-start-column="5" selection-end-line="68" selection-end-column="26" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="35" column="28" selection-start-line="35" selection-start-column="28" selection-end-line="35" selection-end-column="28" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/public/js/app.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-10.551724">
-          <caret line="978" column="61" selection-start-line="978" selection-start-column="61" selection-end-line="978" selection-end-column="61" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="1024" column="45" selection-start-line="1024" selection-start-column="45" selection-end-line="1024" selection-end-column="45" />
           <folding>
-            <element signature="e#7849#9734#0" expanded="false" />
-            <element signature="e#9811#11077#0" expanded="false" />
-            <element signature="e#11410#30458#0" expanded="false" />
-            <element signature="e#31297#31851#0" expanded="false" />
+            <element signature="e#6702#7779#0" expanded="false" />
+            <element signature="e#11410#31015#0" expanded="false" />
+            <element signature="e#31057#39851#0" expanded="false" />
+            <element signature="e#31854#32408#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/public/views/device.html">
+    <entry file="file://$PROJECT_DIR$/public/views/settings/usersPermissions.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.24228029">
-          <caret line="12" column="34" selection-start-line="12" selection-start-column="34" selection-end-line="12" selection-end-column="34" />
+        <state vertical-scroll-proportion="-14.269231">
+          <caret line="33" column="145" selection-start-line="33" selection-start-column="118" selection-end-line="33" selection-end-column="145" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/json/en.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-6.3454547">
+          <caret line="167" column="46" selection-start-line="167" selection-start-column="46" selection-end-line="168" selection-end-column="42" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/json/lv.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-17.653847">
+          <caret line="169" column="40" selection-start-line="169" selection-start-column="36" selection-end-line="169" selection-end-column="40" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/json/ru.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-25.5">
+          <caret line="168" column="45" selection-start-line="168" selection-start-column="45" selection-end-line="168" selection-end-column="45" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/json/et.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.5263761">
+          <caret line="165" column="53" selection-start-line="165" selection-start-column="53" selection-end-line="165" selection-end-column="53" />
           <folding />
         </state>
       </provider>

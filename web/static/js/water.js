@@ -3,7 +3,7 @@ div = gid("description_form");
 div.style.visibility="visible";
 div2 = gid("id");
 div2.value = id;
-var url = 't112818_MineralWater/waterService?id='+id;
+var url = '/waterService?id='+id;
 
 
 $.getJSON(url, function (data) {
